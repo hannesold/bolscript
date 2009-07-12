@@ -1,4 +1,5 @@
 #summary Manual for setting up the project (in eclipse) as a developer.
+#labels Phase-Implementation,Phase-Requirements
 
 = Introduction =
 On this page I will try to give some advice about how to initially set up the project in eclipse.
