@@ -3,9 +3,8 @@
 = Introduction =
 On this page I will try to give some advice about how to initially set up the project in eclipse.
 
-= Setting up in eclipse =
-* First checkout trunk using ´svn checkout https://bolscript.googlecode.com/svn/trunk/ bolscript --username your.name´ . Move the trunk folder into your eclipse workspace and rename it to bolscript or whatever.
-In eclipse create a new Java Project, select _create from existing source_ and select the folder.
-* In Eclipse go to preferences->team->ignored resources and add .project, .classpath, settings.xml, or deselect them at each commit.
-* In project preferences make sure the source folders are bolscript_src, bolscript_tests, gat_src, gat_tests, and set the Java Compiler to 1.6 or greater.
-
+= Setting up =
+ * First checkout trunk using 'svn checkout https://bolscript.googlecode.com/svn/trunk/ bolscript --username your.name' . Move the trunk folder into your eclipse workspace and rename it to bolscript or whatever.
+In eclipse create a new Java Project, select _create from existing source_ and select the  folder.
+ * In Eclipse go to preferences->team->ignored resources and add .project, .classpath, settings.xml, or deselect them at each commit.
+ * In project preferences make sure the source folders are bolscript_src, bolscript_tests, gat_src, gat_tests, and set the Java Compiler to 1.6 or greater.
