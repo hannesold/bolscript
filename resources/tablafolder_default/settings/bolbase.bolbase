@@ -1,0 +1,60 @@
+﻿# attention, this is just a sample. the devanagri entries are just placeholders!
+#
+# Bols
+# Short, Exact, Devanagari, Transliteration, short description, hands
+# The hands section has one of the following patterns [left, right, other, Bol1 + Bol2]
+
+Dha, Dha, ऐ, Dha, D, Normal, Na + Ke
+Dha, Dha1, ऐ, Dha, D, Sur Dha, Tin1 + Ke
+Dhe, Dhe, ह, Dhe, D, normal, Na + Ke
+Dhin, Dhin, ऑ, Dhin, D, normal, Tin1 + Ge
+Dhin, Dhin1, ऑ, Dhin, D, normal using Tun, Tun + Ke
+Dhit, Dhit, ह, Dhit, D, normal, Tit + Ge
+Dhun, Dhun, र, Dhun, D, normal, Tun1 + Ge
+Dhi, Dhi, ह, Dhi, D, normal, right
+Di, Di, ह, Di, D, normal, right
+
+Na, Na, प, Na, N, normal, right
+Ne, Ne, प, Ne, N, normal, right
+
+Ta, Ta, प, Ta, T, closed, right
+Ta, Ta1, प, Ta, T, open like Na, right
+Ta, Ta2, प, Ta, T, open on Sur, right
+Tak, Tak, प, Tak, TK, normal, right
+Ti, Ti, प, Ti, T, normal, right
+Te, Te, प, Te, T, normal, right
+Tit, Tit, प, Tit, T, normal, right
+Tin, Tin, य, Tin, T, Normal Tin, Tin1 + Ke
+Tin, Tin1, र, Tin, T, Just the plain Sur Tin, right
+Tin, Tin2, र, Tin, T, Open Tin similar to Tun, right
+Tun, Tun, र, Tun, T, Open, Tun1 + Ke
+Tun, Tun1, र, Tun, T, Open, right
+Tre, Tre, छ, Tre, T, normal, other
+
+
+Gi, Gi, ह, Gi, G, normal, left
+Ge, Ge, ह, Ge, G, normal, left
+Ghen, Ghen, ह, G, Ghen, normal, left
+Ga, Ga, ह, Ga, G, normal, left
+
+Re, Re, ह, Re, R, normal, right
+Re, Ri, ह, Re, R, normal, right
+
+Ka, Ka, ह, Ka, K, normal, left
+Kat, Kat, ह, Kat, K, normal, left
+Ki, Ki, ह, Ki, K, normal, left
+Ke, Ke, ह, Ke, K, normal, left
+Kre, Kre, ह, Kre, KR, normal, other
+Kra, Kra, ह, Kra, KR, normal, other
+
+# Bundles
+# Short, Exact, Devanagari, Transliteration, short description, bundle contents
+# bundle contents needs to have the form RELATIVE_SPEED (positive integer) BOL1 BOL2 BOL3 [...]
+# see the existing for an example
+
+Tir, Tir, हह, Tir, TR, normal, 2 Ti Re
+Kit, Kit, हह, Kit, KT, normal, 2 Ki Te
+Ket, Ket, हह, Ket, KT, normal, 2 Ke Te
+Tak, Tak, हह, Tak, TK, normal, 2 Ta Ke
+Tirkit, Tirkit, हहहह, Tirkit, TRKT, 4 Ti Re Ki Te
+
