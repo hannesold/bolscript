@@ -1,0 +1,62 @@
+Editor: Hannes
+Tal:Teental
+Type: Demo
+Name: Mixed Tests
+
+Theme:
+Dha Ge Ti Te "Played Left Right" Dhin Na Gi Na
+
+A:
+Dha Ge
+
+B:
+Ti Te
+
+C: 
+Dhin Na Gi Na
+
+Speed: 13
+
+Speed: 1
+Bla:
+Dha Dha Dhin Dhin
+Speed: 4
+
+Variation 1:
+A x2 Theme
+
+Variation 2:A A B B 1/2 A
+
+Variation 3:
+A x2 4 (Dha Ge Ti Te)x2 Ax3
+
+Variation 4:
+A A B x 3
+A: Na Gi Na
+
+Variation 5:
+A A (B A) x2
+
+Variation 6:
+A A B "hi"
+
+Tihai:
+(Theme Dha - 3 Ti Te)x3<3 
+
+Tihai2:
+2 (2 Theme Dha - Ti Te)x3<3 
+
+Speed:
+2
+
+TestMinus:
+(Dha Ti Ge Na)x2 < 4 Ti Te "At the End"
+
+Speed:
+3
+
+TestMinus2:
+(A (Dha Ge Dha Ge)x3<2 )x3<4 x2
+
+
+

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<frame id="frame" size="1000,620" Background="FFFFFF" Title="Algorithm tests" layout="BorderLayout" Visible="true">
+
+	<panel id="panelPlot" Background="white" layout="BorderLayout">
+	</panel>	
+	
+	<panel size="400,300" Background="DDDDDD" constraints="BorderLayout.SOUTH">
+		<label text="Runs"/>
+		<textfield id="txtRuns" Columns="4" text="100"/>
+		<label text="Generations"/>
+		<textfield id="txtGens" Columns="4" text="100"/>
+		<progressbar id="progress" width="200"/>
+		<button id="start" text="Start"/>
+		<button id="stop" text="Stop"/>
+    </panel>
+
+		
+
+</frame>

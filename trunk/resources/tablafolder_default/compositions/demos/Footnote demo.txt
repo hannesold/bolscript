@@ -1,0 +1,17 @@
+Editor: Hannes
+Type: Demo
+Tal: Teental
+Name: Footnote Demo
+
+Speed:2
+Theme:
+Dha Ge "hello" Ti Te "world" Dha Dha Tun Na
+
+Footnotes are not copied:
+Theme
+
+More footnotes:
+Dha Ge "and here" ti te "is" Dhin"more" Dhin
+
+
+

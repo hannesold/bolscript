@@ -1,0 +1,22 @@
+Editor: Hannes
+Gharana: Punjab
+Type:Tal
+Name: Dadra
+
+Tal: Dadra
+
+Theka:
+Dha Tin Na Na Dhin Na
+
+Vibhags:
+3 + 3K
+
+Length:
+6
+
+Layout:
+3 3
+6 6
+
+
+
