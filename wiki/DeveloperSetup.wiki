@@ -18,7 +18,7 @@ In the project preferences add links to the following libraries:
 I have an additional folder 3dparty, where I save this kind of stuff.
 
 
-= Two projects in one =
+= Overview =
 
 Note that two projects are included.
 ==Bolscript - tabla notation and composition management ==
