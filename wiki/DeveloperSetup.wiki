@@ -29,6 +29,6 @@ A project I started 2006 in my bachelor report and haven't updated much since th
 For details see [gat].
 
 = Running bolscript =
- # Run ´bolscript/Master´ or ´bolscript/MasterMac´ (OS X) as a Java Program.
- # Copy the ´resources/tablafolder_default´ somewhere on your system, and choose it as tabla folder when first running bolscript. 
- # Running bolscript generates a settings.xml. Do not add it to svn please.
+ # Run `bolscript/Master` or `bolscript/MasterMac` (OS X) as a Java Program.
+ # Copy the `resources/tablafolder_default` somewhere on your system, and choose it as tabla folder when first running bolscript. 
+ # Running bolscript generates a `settings.xml`. Do not add it to svn please.
