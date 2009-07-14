@@ -31,7 +31,7 @@ import bols.BolName;
 import bolscript.compositions.Composition;
 import bolscript.compositions.CompositionChangeEvent;
 import bolscript.compositions.CompositionChangedListener;
-import config.Config;
+import bolscript.config.Config;
 public class CompositionFrame extends JFrame implements WindowListener, CompositionChangedListener {
 
 

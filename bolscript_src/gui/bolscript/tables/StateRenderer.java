@@ -9,9 +9,9 @@ import javax.swing.JTable;
 import javax.swing.border.Border;
 import javax.swing.table.TableCellRenderer;
 
-import config.Config;
 
 import bolscript.compositions.State;
+import bolscript.config.Config;
 
 public class StateRenderer extends JLabel implements TableCellRenderer {
 	Border unselectedBorder = null;

@@ -12,7 +12,7 @@ import javax.swing.border.LineBorder;
 
 import basics.GUI;
 import bols.NamedInLanguages;
-import config.Config;
+import bolscript.config.Config;
 
 public abstract class BolPanelGeneral extends JPanel implements MouseListener{
 	

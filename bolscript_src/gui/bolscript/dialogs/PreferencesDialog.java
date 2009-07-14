@@ -18,9 +18,9 @@ import javax.swing.JTextField;
 import midi.MidiStationSimple;
 import basics.Debug;
 import basics.GUI;
-import config.Config;
-import config.ConfigChangeEvent;
-import config.ConfigChangeListener;
+import bolscript.config.Config;
+import bolscript.config.ConfigChangeEvent;
+import bolscript.config.ConfigChangeListener;
 
 public class PreferencesDialog extends JDialog implements WindowListener, ConfigChangeListener{
 

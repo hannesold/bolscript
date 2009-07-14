@@ -1,4 +1,4 @@
-package config;
+package bolscript.config;
 
 public interface ConfigChangeListener {
 

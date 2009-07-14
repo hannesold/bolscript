@@ -6,13 +6,13 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import config.Config;
 
 import basics.Debug;
 import basics.Rational;
 import bols.BolBase;
 import bols.BolName;
 import bolscript.Reader;
+import bolscript.config.Config;
 import bolscript.packets.Packets;
 import bolscript.sequences.RepresentableSequence;
 

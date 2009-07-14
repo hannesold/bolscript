@@ -24,10 +24,10 @@ import bols.tals.LayoutCycle;
 import bols.tals.Tal;
 import bols.tals.TalBase;
 import bols.tals.Vibhag;
+import bolscript.config.Config;
 import bolscript.sequences.FootnoteUnit;
 import bolscript.sequences.Representable;
 import bolscript.sequences.RepresentableSequence;
-import config.Config;
 
 public class SequencePanel extends PlayablePanel  {
 

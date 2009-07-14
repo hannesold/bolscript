@@ -13,7 +13,7 @@ import basics.FileReadException;
 import basics.Rational;
 import basics.Tools;
 import bolscript.Reader;
-import config.Config;
+import bolscript.config.Config;
 
 
 public class BolBase extends BolBaseGeneral {

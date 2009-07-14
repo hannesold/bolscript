@@ -13,8 +13,8 @@ import bols.Variation;
 import bols.tals.LayoutCycle;
 import bols.tals.Tal;
 import bols.tals.TalBase;
+import bolscript.config.Config;
 import bolscript.sequences.RepresentableSequence;
-import config.Config;
 import config.Themes;
 
 /**

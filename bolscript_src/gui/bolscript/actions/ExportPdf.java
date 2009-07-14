@@ -14,7 +14,7 @@ import bolscript.Master;
 import bolscript.compositions.Composition;
 import bolscript.compositions.CompositionBase;
 import bolscript.compositions.State;
-import config.Config;
+import bolscript.config.Config;
 
 public class ExportPdf extends AbstractAction {
 	CompositionFrame compFrame;

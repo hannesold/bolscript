@@ -27,10 +27,10 @@ import bols.tals.Jhaptal;
 import bols.tals.Tal;
 import bols.tals.Teental;
 import bolscript.Reader;
+import bolscript.config.Config;
 import bolscript.packets.Packet;
 import bolscript.packets.Packets;
 import bolscript.sequences.RepresentableSequence;
-import config.Config;
 import config.Themes;
 
 public class VariationDrawTester extends JFrame implements WindowListener{

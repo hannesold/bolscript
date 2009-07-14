@@ -6,8 +6,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import basics.Debug;
+import bolscript.config.Config;
 import bolscript.sequences.RepresentableSequence;
-import config.Config;
 
 public class BolSequenceTest extends TestCase {
 	BolBaseGeneral bb;

@@ -6,6 +6,8 @@ import java.io.IOException;
 
 import javax.swing.JLabel;
 
+import bolscript.config.Config;
+
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.PageSize;
@@ -16,7 +18,6 @@ import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfTemplate;
 import com.lowagie.text.pdf.PdfWriter;
 
-import config.Config;
 
  class PdfTests {
 	

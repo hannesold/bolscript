@@ -43,6 +43,7 @@ import bols.BundlingDepthToSpeedMap;
 import bols.tals.Tal;
 import bols.tals.TalBase;
 import bolscript.compositions.Composition;
+import bolscript.config.Config;
 import bolscript.packets.Packet;
 import bolscript.packets.Packets;
 import bolscript.sequences.RepresentableSequence;
@@ -54,7 +55,6 @@ import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfTemplate;
 import com.lowagie.text.pdf.PdfWriter;
 
-import config.Config;
 
 public class CompositionPanel extends JLayeredPane {
 

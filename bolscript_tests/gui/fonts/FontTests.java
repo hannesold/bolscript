@@ -18,7 +18,7 @@ import javax.swing.JPanel;
 import basics.Debug;
 import basics.GUI;
 import basics.SuffixFilter;
-import config.Config;
+import bolscript.config.Config;
 
 public class FontTests  implements ItemListener, WindowListener{
 	private  JPanel examplePanel;

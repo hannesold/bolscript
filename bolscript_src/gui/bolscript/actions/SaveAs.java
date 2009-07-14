@@ -13,7 +13,7 @@ import basics.SuffixFilter;
 import bolscript.Master;
 import bolscript.compositions.CompositionBase;
 import bolscript.compositions.State;
-import config.Config;
+import bolscript.config.Config;
 
 public class SaveAs extends AbstractAction {
 
