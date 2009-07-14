@@ -394,7 +394,7 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 				debug.temporary("storing config....");
 				boolean configStored = false;
 				try {
-					Config.storeProperties();
+					Config.storePreferences();
 					configStored = true;
 				} catch (Exception e) {
 					configStored = false;

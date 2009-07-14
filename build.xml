@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project default="jar" name="create runnable jars for bolscript">
+<!--this file was created by Eclipse Runnable JAR Export Wizard and changed by hannes-->
+<!--I oriented myself by http://onjava.com/pub/a/onjava/2003/12/17/ant_bestpractices.html-->
+<!--http://www.rgagnon.com/javadetails/java-0532.html-->
+<!--http://www.devdaily.com/blog/post/mac-os-x/sample-mac-jar-bundler-ant-build-script/-->
+<!--ANT 1.7 is required-->
+	
+<taskdef name="jarbundler" 
+	         classname="net.sourceforge.jarbundler.JarBundler" />
+	<property name="version.num" value="0.1"/>
+	<property name="dir.bin" value="bin"/>
+	<property name="dir.build" value="builds"/>
+	<property name="jar.filename" value="bolscript_mac.jar" />
+	<property name ="jar.completepath" value="${dir.build}/${jar.filename}"/>
+	<property name ="app.icon" value="resources/icons/bolscript_logo.icns" />
+	
+<target name="jar">
+	<!--create a runnable jar and a mac os x application bundle using jar bundler-->
+	<delete file="${jar.filename}"/>
+	
+	<buildnumber file="build.num"/>
+	<tstamp>
+		<format property="TODAY" pattern="yyyy-MM-dd HH:mm:ss" />
+	</tstamp>
+	<jar destfile="${jar.completepath}" filesetmanifest="mergewithoutmain">
+	<manifest>
+		<attribute name="Main-Class" value="bolscript.MasterMac"/>
+		<attribute name="Class-Path" value="."/>
+		<attribute name="Implementation-Version" 
+		             value="${version.num}-b${build.number}"/>   
+		<attribute name="Built-Date" value="${TODAY}"/>
+		<attribute name="Built-By" value="${user.name}"/>
+	</manifest>
+	<fileset dir="/Users/hannes/Projekte/Workspace/bolscript googlecode/bin"/>
+		<zipfileset excludes="META-INF/*.SF" src="/Users/hannes/Projekte/Workspace/3dparty/iText-2.1.5.jar"/>
+		<!-- <zipfileset excludes="META-INF/*.SF" src="/Applications/eclipse/plugins/org.hamcrest.core_1.1.0.v20090501071000.jar"/> -->
+	</jar>
+	<!-- create the application bundle -->
+	<jarbundler dir="${dir.build}"
+	            name="Bolscript"
+				shortname="Bolscript"
+	            mainclass="bolscript.MasterMac" 
+	            jar="${jar.completepath}" 
+				icon="${app.icon}" 
+       		 	signature="Hannes Oud"
+		        jvmversion="1.6+"
+        		version="${version.num}"
+        		infostring="Bolscript v${version.num}, ${TODAY}"
+        		build="${build.number}"
+        		bundleid="bolscript/MasterMac"/>
+</target>
+	
+</project>
+

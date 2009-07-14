@@ -246,10 +246,10 @@ public class Config {
 	}
 	
 	/**
-	 * Stores the properties file.
+	 * Stores the part of config, that is kept in preferences.
 	 * @throws Exception
 	 */
-	public static void storeProperties() throws Exception{
+	public static void storePreferences() throws Exception{
 			if (tablaFolder != null) {
 				preferences.put("tablaFolder", tablaFolder);
 			}
