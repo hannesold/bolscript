@@ -1,4 +1,4 @@
-package config;
+package bolscript.config;
 
 import java.awt.Color;
 import java.awt.EventQueue;
@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Properties;
+import java.util.prefs.Preferences;
 
 import javax.swing.JTable;
 
@@ -80,7 +81,7 @@ public class Config {
 	private static HashMap<Rational, BundlingDepthToSpeedMap> bundlingMaps;
 	
 	
-	public static Properties properties;
+	public static Preferences preferences;
 
 	public static boolean firstRun = true;
 	public static final String propertiesFilename = "settings.xml";
@@ -107,7 +108,7 @@ public class Config {
 			if (System.getProperty("os.name").toLowerCase().startsWith("windows")) OS = WINDOWS;
 		}
 
-		initFromPropertiesfile();
+		initFromPreferencesfile();
 		
 		initBundlingMaps();
 		
@@ -132,43 +133,28 @@ public class Config {
 	 * Most importantly attempts to load the String tablaFolder from the Properties file,
 	 * then calling setTablaFolder.
 	 */
-	private static boolean initFromPropertiesfile() {
-		properties = new Properties();
-		File propertyFile = new File(propertiesFilename);
-		boolean failed = false;
-		if (propertyFile.exists()) {
-			try {
-				FileInputStream propertyReader = new FileInputStream(propertyFile);
-				properties.load(propertyReader);
-				Debug.temporary(Config.class, "reading property: " + properties.get("tablaFolder"));
-				if (properties.get("tablaFolder") != null) {
-					Debug.temporary(Config.class, "is not null");
-					setTablaFolder(properties.getProperty("tablaFolder"));
-					firstRun = false;
-
-					if (properties.get("pdfExportPath") != null) {
-						pdfExportPath = (String) properties.get("pdfExportPath");
-					} else {
-						pdfExportPath = null;
-					}
-
-				}else { 
-					tablaFolder = homeDir;
-					pdfExportPath = null;
-					firstRun = true;
-				}
-			} catch (Exception e) {
-				Debug.critical(Config.class, "Properties could not be loaded " + e);
-				properties = new Properties();
-				failed = false;
-			}
-		} else {
-			failed = false;
-			firstRun = true;
-			pdfExportPath = null;
-			tablaFolder = homeDir;
-		}
+	private static boolean initFromPreferencesfile() {
+		preferences = Preferences.userNodeForPackage(Config.class);
 		
+		boolean failed = false;
+		try {
+			tablaFolder = preferences.get("tablaFolder", null);
+
+			if (tablaFolder == null) {
+				firstRun = true;
+				tablaFolder = homeDir;
+				pdfExportPath = null;
+			} else {
+				setTablaFolder(tablaFolder);
+				firstRun = false;
+			}
+			pdfExportPath = preferences.get("pdfExportPath", tablaFolder);
+
+		} catch (Exception e) {
+			Debug.critical(Config.class, "Preferences could not be loaded " + e);
+			failed = false;
+		}
+
 		return failed;
 	}
 	
@@ -259,23 +245,23 @@ public class Config {
 		
 	}
 	
-	public String getProperty (String key) {
-		return properties.getProperty(key);
-	}
-	
 	/**
 	 * Stores the properties file.
 	 * @throws Exception
 	 */
 	public static void storeProperties() throws Exception{
-		try {
-			if (tablaFolder != null) properties.put("tablaFolder", tablaFolder);
-			if (pdfExportPath != null) properties.put("pdfExportPath",pdfExportPath);
+			if (tablaFolder != null) {
+				preferences.put("tablaFolder", tablaFolder);
+			}
+			if (pdfExportPath != null) {
+				preferences.put("pdfExportPath",pdfExportPath);
+			}
 			Debug.debug(Config.class, "storing properties under : " + new File(propertiesFilename).getAbsoluteFile());
-			properties.store(new FileOutputStream(new File(propertiesFilename)), "no comment");
-			Debug.debug(Config.class, "Properties stored");
+		try {
+			preferences.flush();
+			Debug.debug(Config.class, "Preferences stored");
 		} catch (Exception e) {
-			Debug.critical(Config.class, "Properties could not be stored: " + e + ", " + e.getMessage());
+			Debug.critical(Config.class, "Preferences could not be stored: " + e + ", " + e.getMessage());
 			throw e;
 		}
 	}
@@ -302,7 +288,7 @@ public class Config {
 	}
 	
 	/**
-	 * Sets the tablaFolder and the resulting subfolders settings compositions fonts etc,
+	 * Sets and initialises the tablaFolder and the resulting subfolders settings compositions fonts etc,
 	 * checking each for existence and creating the nonexistent.
 	 * Especially pathToDevanageriFont is established.
 	 * 
@@ -312,7 +298,7 @@ public class Config {
 		Debug.temporary(Config.class, "setTablaFolder : " + chosenFolder + " (old: " + tablaFolder + ")");
 		//if (!tablaFolder.equals(chosenFolder)) {
 			tablaFolder = chosenFolder;
-			properties.setProperty("tablaFolder", tablaFolder);
+			preferences.put("tablaFolder", tablaFolder);
 
 			File s = new File(chosenFolder + Config.fileSeperator + "settings");
 			if (!s.exists()) {

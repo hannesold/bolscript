@@ -7,7 +7,8 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 
-import config.Config;
+import bolscript.config.Config;
+
 
 public class IncreaseBundling extends AbstractAction {
 	CompositionPanel compPanel;

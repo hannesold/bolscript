@@ -19,7 +19,6 @@ import java.awt.event.WindowListener;
 
 import javax.swing.JPanel;
 
-import config.Config;
 import config.Themes;
 
 import midi.MidiStation;
@@ -33,6 +32,7 @@ import basics.GUI;
 import bols.BolBase;
 import bols.tals.Tal;
 import bols.tals.Teental;
+import bolscript.config.Config;
 
 public class Manager extends ManagerGraphics implements WindowListener, ActionListener {
 	

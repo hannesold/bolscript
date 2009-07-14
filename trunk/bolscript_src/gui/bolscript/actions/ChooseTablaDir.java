@@ -11,7 +11,7 @@ import javax.swing.filechooser.FileFilter;
 
 import basics.Debug;
 import basics.FolderFilter;
-import config.Config;
+import bolscript.config.Config;
 
 public class ChooseTablaDir extends AbstractAction {
 

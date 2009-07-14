@@ -66,7 +66,7 @@ public class Reader {
 	public static void main(String[] args) throws Exception {
 		BolBase bolBase = new BolBase();
 			
-		Packets packets = compilePacketsFromFile(config.Config.pathToCompositions+"tukra1.txt", bolBase);
+		Packets packets = compilePacketsFromFile(bolscript.config.Config.pathToCompositions+"tukra1.txt", bolBase);
 
 		println(packets);
 	}
@@ -134,7 +134,7 @@ public class Reader {
 							
 						}
 						//Do not allow too high multiplications
-						if (multiples > config.Config.BOLSCRIPT_MAXIMUM_REPETITIONS) {
+						if (multiples > bolscript.config.Config.BOLSCRIPT_MAXIMUM_REPETITIONS) {
 							multiples = 1;
 						}
 					} 
@@ -505,7 +505,7 @@ public class Reader {
 		s = s.replaceAll(SN + "+", "");
 		
 		Rational speedCandidate = Rational.parseNonNegRational(s);
-		if (speedCandidate.compareTo(config.Config.BOLSCRIPT_MAXIMUM_SPEED_R)<=0) {
+		if (speedCandidate.compareTo(bolscript.config.Config.BOLSCRIPT_MAXIMUM_SPEED_R)<=0) {
 			//the resulting speed is not too high
 			return speedCandidate;
 		} else {
@@ -537,7 +537,7 @@ public class Reader {
 				try {
 					
 					Rational speedCandidate = basicSpeed.times(Rational.parseNonNegRational(all[i].substring(0, all[i].length()-1)));
-					if (speedCandidate.compareTo(config.Config.BOLSCRIPT_MAXIMUM_SPEED_R)<=0) {
+					if (speedCandidate.compareTo(bolscript.config.Config.BOLSCRIPT_MAXIMUM_SPEED_R)<=0) {
 						//the resulting speed is not too high
 						currentSpeed = speedCandidate;
 					}

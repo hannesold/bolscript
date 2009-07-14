@@ -32,9 +32,9 @@ import bols.tals.TalDynamic;
 import bolscript.compositions.Composition;
 import bolscript.compositions.CompositionBase;
 import bolscript.compositions.State;
-import config.Config;
-import config.ConfigChangeEvent;
-import config.ConfigChangeListener;
+import bolscript.config.Config;
+import bolscript.config.ConfigChangeEvent;
+import bolscript.config.ConfigChangeListener;
 public class Master implements ConfigChangeListener{//implements ApplicationListener{//extends JFrame implements WindowListener {
 
 		public static Master master;
@@ -117,7 +117,7 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 			
 			compositionBase = new CompositionBase();
 			compositionBase.addFolderRecursively(Config.pathToTalsNoSlash);
-			compositionBase.addFolderRecursively(config.Config.pathToCompositionsNoSlash);
+			compositionBase.addFolderRecursively(bolscript.config.Config.pathToCompositionsNoSlash);
 			compTableModel = new CompositionTableModel(compositionBase);
 			
 			searchPanel = new SearchPanel();

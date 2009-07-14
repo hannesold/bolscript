@@ -19,9 +19,9 @@ import bols.BolBaseGeneral;
 import bols.tals.TalBase;
 import bols.tals.TalDynamic;
 import bolscript.Reader;
+import bolscript.config.Config;
 import bolscript.filters.StringArrayFilterGeneral;
 import bolscript.filters.VisibleCompositionDonator;
-import config.Config;
 
 public class CompositionBase extends basics.Basic implements VisibleCompositionDonator{
 	BolBaseGeneral bolBase = null;
@@ -237,7 +237,7 @@ public class CompositionBase extends basics.Basic implements VisibleCompositionD
 		ArrayList<Composition> compositionsAdded = new ArrayList<Composition>();
 		out("ADDING FOLDER " + path);
 		File file = new File(path);
-		FilenameFilter tablaFileFilter = new SuffixFilter(config.Config.bolscriptSuffix);
+		FilenameFilter tablaFileFilter = new SuffixFilter(bolscript.config.Config.bolscriptSuffix);
 		FileFilter folderFilter = new FolderFilter();
 		
 		if (file.isDirectory()) {

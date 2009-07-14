@@ -1,4 +1,4 @@
-package config;
+package bolscript.config;
 
 import java.util.EventObject;
 

@@ -16,7 +16,7 @@ import javax.swing.table.TableRowSorter;
 
 import basics.GUI;
 import bolscript.Master;
-import config.Config;
+import bolscript.config.Config;
 
 public class CompositionListPanel extends JScrollPane {
 

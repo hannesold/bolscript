@@ -16,8 +16,8 @@ import bols.BolName;
 import bols.tals.TalBase;
 import bolscript.Master;
 import bolscript.Reader;
+import bolscript.config.Config;
 import bolscript.filters.SearchTextFilterCategorized;
-import config.Config;
 
 /**
  * <p>This class is used for debug messages of different debug codes.</p>

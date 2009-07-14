@@ -9,7 +9,7 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import basics.GUI;
-import config.Config;
+import bolscript.config.Config;
 
 public class CellRenderer extends DefaultTableCellRenderer {
 

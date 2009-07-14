@@ -8,7 +8,7 @@ import basics.SuffixFilter;
 import bols.BolBase;
 import bols.BolBaseGeneral;
 import bolscript.compositions.Composition;
-import config.Config;
+import bolscript.config.Config;
 
 public class TalBase extends basics.Basic {
 	
@@ -30,7 +30,7 @@ public class TalBase extends basics.Basic {
 		try {
 			Debug.debug(TalBase.class, "init");
 			standard = new TalBase(BolBase.standard());
-			standard.initTalsFromDirectory(config.Config.pathToTals);
+			standard.initTalsFromDirectory(bolscript.config.Config.pathToTals);
 			standardInitialised = true;
 		} catch (Exception e) {
 			Debug.critical(TalBase.class, "error initialising tals");

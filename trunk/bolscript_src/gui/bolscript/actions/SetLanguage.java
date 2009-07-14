@@ -7,7 +7,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 
 import bols.BolName;
-import config.Config;
+import bolscript.config.Config;
 
 public class SetLanguage extends AbstractAction {
 	CompositionPanel compPanel;

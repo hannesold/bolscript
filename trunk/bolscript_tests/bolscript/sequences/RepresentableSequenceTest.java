@@ -8,8 +8,8 @@ import basics.Rational;
 import bols.BolBase;
 import bols.BundlingDepthToSpeedMap;
 import bolscript.Reader;
+import bolscript.config.Config;
 import bolscript.sequences.RepresentableSequence;
-import config.Config;
 
 public class RepresentableSequenceTest {
 

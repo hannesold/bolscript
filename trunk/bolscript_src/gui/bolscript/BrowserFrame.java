@@ -23,7 +23,7 @@ import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 
 import bolscript.Master;
-import config.Config;
+import bolscript.config.Config;
 
 public class BrowserFrame extends JFrame implements WindowListener{
 	private CompositionListPanel compositionListPanel;
