@@ -3,7 +3,6 @@
 = Introduction =
 Bolscript features a fairly simple syntax. This page provides an overview. However it might be simpler to look at some examples.
 
-== Example 1 - a complete bolscript file ==
 
 = General structure =
 Each composition is kept in one bolscript file with the file ending `.comp.txt`, with the only exception being tals, which need to have the ending `.tal.txt`.
@@ -28,7 +27,7 @@ Some special keys are reserved for defining tals:
 You can use any other key, such as `Theme`, `Variation 1` or `A` or `Tihai` to begin a bol sequence. 
 
 = Entering bol sequences = 
-== Exampe 1 ==
+== Exampe 1 - entering bolsequences ==
 {{{
 My first sequence:
 dha dhin dhin dha dha dhin dhin dha dha tin tin na na dhin dhin dha
@@ -39,6 +38,4 @@ B: na ge dhin ne
 An example of reusing sequences:
 A A B B
 }}}
-
-
 
