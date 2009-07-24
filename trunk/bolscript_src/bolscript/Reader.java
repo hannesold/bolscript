@@ -31,6 +31,15 @@ import bolscript.sequences.Representable;
 import bolscript.sequences.RepresentableSequence;
 import bolscript.sequences.Unit;
 
+/**
+ * This class contains the essential methods for reading and parsing bolscript files,
+ * converting them into a series of typed Packets and extracting a RepresentableSequence from each
+ * Packet of type BOL.
+ * The most important methods is compilePacketsFromString.
+ * 
+ * @author hannes
+ * @see Packet, Packets
+ */
 public class Reader {
 	/**
 	 * Regex: Whitespaces and newline characters
@@ -53,29 +62,15 @@ public class Reader {
 	public static final String SNatBeginningOrEnd = "^("+SN + ")*|("+SN+"*(?:$|\\z))";
 
 	
-	private static DecimalFormat threePlaces = new DecimalFormat("000");
+	private static DecimalFormat threeDigitFormat = new DecimalFormat("000");
 	//regex for a Rational Nr
 	
-	public static String RATIONAL = "\\d{1,10}+(?:/\\d{1,10}+)?";
-	
-	
-	public static boolean DEBUG = false;
+	/**
+	 * Regex: A nonnegative Rational number bounded to 2 digits in numerator and denominator each.
+	 */
+	public static String RATIONAL = "\\d{1,2}+(?:/\\d{1,2}+)?";
 	
 	public static Debug debug = new Debug(Reader.class);
-	
-	public static void main(String[] args) throws Exception {
-		BolBase bolBase = new BolBase();
-			
-		Packets packets = compilePacketsFromFile(bolscript.config.Config.pathToCompositions+"tukra1.txt", bolBase);
-
-		println(packets);
-	}
-
-	public static Packets compilePacketsFromFile(String filename, BolBaseGeneral bolBase) throws FileReadException {
-		String fileContents = getContents(filename);
-		
-		return compilePacketsFromString(fileContents, bolBase);
-	}
 	
 	public static Packets compilePacketsFromString(String input, BolBaseGeneral bolBase) {
 
@@ -83,9 +78,7 @@ public class Reader {
 		
 		Packets packets = spliceFootnotesAndDoCosmetics(rawPackets);
 		
-		
 		packets.addAll(0, BolBase.getStandard().getReplacementPackets());
-		Debug.temporary(Reader.class, "packets with replacementpackets: " + packets);
 		
 		insertValuesOfKeys(packets);		
 		
@@ -95,10 +88,10 @@ public class Reader {
 		
 		try {
 			packets = makeSpeedsAbsolute(packets);
-		} catch (Exception e) {
-			println(e.getStackTrace());
+		} catch (IllegalArgumentException e) {
+			debug.critical(e.getStackTrace());
 		}
-		println(packets);
+		debug.debug(packets);
 		
 		addSequencesToBolPackets(packets, bolBase);
 		
@@ -111,7 +104,7 @@ public class Reader {
 		for(int k=0; k < packets.size(); k++) {
 			Packet p = packets.get(k);
 			if (p.getType() == Packet.BOLS) {
-				println(p.getKey());
+				debug.debug(p.getKey());
 				// "()x3 (?:<(\\d+))
 				String regex = "\\(([^\\(\\)]+)\\)(?:x(\\d+))?(?:<(\\d+))?";
 				// 1 klammerinhalt, 2 multfaktor, 3 tailcut?
@@ -140,14 +133,14 @@ public class Reader {
 					} 
 					int tailCut = 0;
 					
-					println("count: " + m.groupCount());
+					debug.debug("count: " + m.groupCount());
 					if (m.group(3) != null) {
 						try {
 							tailCut = Integer.parseInt(m.group(3));
 						} catch (NumberFormatException e) {
 							
 						}
-						println("tailcut: " + tailCut);
+						debug.debug("tailcut: " + tailCut);
 					}
 
 					// insert up to last multiple
@@ -262,6 +255,17 @@ public class Reader {
 		}
 	}
 
+	/**
+	 * String-based. Replaces footnotes in a string bol sequence by a footnote code and adds a footnote-packet after the bol-packet containing the footnote's text.
+	 * Corrects several malformed expressions. Examples (incomplete list!)
+	 * <li>removes leading and ending whitespaces or line-breaks</li>
+	 * <li>removes whitespaces or line-breaks within multiplication syntax, e.g. <code> x 3 < 2</code> -> <code>x3<2</code></li>
+	 * <li>removes $ signs (they only belong at the beginning of keys)</li>
+	 * <li>adds brackets around single multiplied expressions, e.g. <code>Ax3</code> -> <code>(A)x3</code>.</li>
+	 * <li>makes sure there are whitespaces around commas</li>
+	 * @param packets
+	 * @return A new Packets containing the improved version.
+	 */
 	public static Packets spliceFootnotesAndDoCosmetics(
 			Packets packets) {
 		
@@ -294,7 +298,7 @@ public class Reader {
 
 				}
 			
-				//put spaces around colons
+				//put spaces around comas
 				s = s.replaceAll(",", " , ");
 				//SN + "*,"+SN + "*"
 				
@@ -341,14 +345,43 @@ public class Reader {
 		return newPackets;
 	}
 
+	/**
+	 * Returns a placeholder-string for replacing footnotes in bol sequences 
+	 * while they are in String form.
+	 * Each footnoteCode is composed of a unique string containing various 
+	 * indices that code its position in the bolscript document.
+	 * 
+	 * @param packetNr The index of the Packet in which the footnote lies.
+	 * @param footnoteNrInPacket The index of the footnote within the Packet
+	 * @param footnoteNr The index of the footnote amoung all footnotes
+	 *  of the current bolscript document.
+	 * @return A code for the given footnote numbers.
+	 */
 	public static String getFootnoteCode(int packetNr, int footnoteNrInPacket, int footnoteNr) {
-		return "FOOTNOTE_GLOBALNR_"+threePlaces.format(footnoteNr)+"_FROMPACKET_"+threePlaces.format(packetNr) +"_AT_"+ threePlaces.format(footnoteNrInPacket);
+		return "FOOTNOTE_GLOBALNR_"+threeDigitFormat.format(footnoteNr)+"_FROMPACKET_"+threeDigitFormat.format(packetNr) +"_AT_"+ threeDigitFormat.format(footnoteNrInPacket);
 	}	
 	
+	/**
+	 * Returns a regular expression to find and extract footnote codes in a string.
+	 * @return A regular expression for footnote codes.
+	 */
 	public static String getFootnoteRegex () {
 		return "FOOTNOTE_GLOBALNR_(\\d\\d\\d)_FROMPACKET_(\\d\\d\\d)_AT_(\\d\\d\\d)";
 	}
 	
+	/**
+	 * String-based. Splits an input string in bolscript format into Packet objects 
+	 * which are bundled in one Packets container.
+	 * Packet types and visibilities are assigned by using the maps 
+	 * Packet.keyPacketTypes and Packet.visibilityMap.
+	 * The hide-symbol "$" at the beginning of a key is removed and 
+	 * the packet is assigned invisible.
+	 * 
+	 * @param input An input string in bolscript format.
+	 * @return A Packets container containing the Packets that were 
+	 * found in the input.
+	 * @see Packet, Packets
+	 */
 	public static Packets splitIntoPackets(String input) {
 		String regex = "(\\$)?((?:[^:\n\r\f])+):" + //Key
 		"((?:[^:]|[\n\r\f])*)" +  //Value
@@ -388,15 +421,15 @@ public class Reader {
 	}
 	
 	/**
-	 * This processes the Values of the bol packets
-	 * based on the basic speed 1.
-	 * The speed tags are considerred later in addSequencesToBolPackets
+	 * String-based. Processes the values of the bol packets based on the basic speed 1.
+	 * The speed tags are considered later in addSequencesToBolPackets.
 	 * 
 	 * @param packets
-	 * @return
-	 * @throws Exception
+	 * @return A Packets container featuring the processed version.
+	 * @throws IllegalArgumentException This Exception may be caused in subroutines 
+	 * due to parsing errors of Rationals or bracketing errors.
 	 */
-	public static Packets makeSpeedsAbsolute(Packets packets) throws Exception {
+	public static Packets makeSpeedsAbsolute(Packets packets) throws IllegalArgumentException {
 		Packets newPackets = new Packets();
 		
 		Rational basicSpeed = new Rational(1);
@@ -420,7 +453,7 @@ public class Reader {
 
 	
 	/**
-	 * Processes a String and replaces relative speed changes by absolute speed changes.
+	 * String-based. Processes a String and replaces relative speed changes by absolute speed changes.
 	 * After each closing bracket the speed before opening the bracket is inserted.
 	 * Also the outerSpeed is inserted at the beginning as absolute speed.
 	 * Example  2 Dha Ge [ 2 Ti Te ] <1 Dha Ge     outerSpeed = 2
@@ -429,12 +462,12 @@ public class Reader {
 	 * @param outerSpeed The general absolute speed, that was set before this sequence.
 	 * It will be multiplied with any relative speed.
 	 * @return The processed String containing only absolute speeds.
-	 * @throws Exception When something went wrong with parsing.
+	 * @throws IllegalArgumentException This Exception may be caused when parsing Rationals or thrown when brackets are malformed.
 	 */
-	public static String makeSpeedsAbsolute(String input, Rational outerSpeed) throws Exception {
+	public static String makeSpeedsAbsolute(String input, Rational outerSpeed) throws IllegalArgumentException {
 		
 	
-		println("making speeds\n" + input);
+		debug.debug("making speeds\n" + input);
 		// catches '[' ']' and 3 and 3! if there are spaces around it
 		Pattern p = Pattern.compile("(?<=\\s+)([\\[\\]]|"+RATIONAL+"(?:\\!)?)(?=\\s)");
 		Matcher m = p.matcher(input);
@@ -449,13 +482,13 @@ public class Reader {
 		
 		output.append(" " + outerSpeed.toString() + "! ");
 		while (m.find()) {
-			//println(i+"(0): '" + m.group(0) +"'");
-			//println(i+"(1): '" + m.group(1)+"'");
+			//debug.debug(i+"(0): '" + m.group(0) +"'");
+			//debug.debug(i+"(1): '" + m.group(1)+"'");
 			
 			String token = new String(m.group(1));
 			
 			if (token.matches(RATIONAL)) {
-				//println("new rel speed");
+				//debug.debug("new rel speed");
 				Rational r = speedStack.get(depth-1).times(Rational.parseNonNegRational(token));
 				speedStack.set(depth,r);
 				output.append(input.substring(cursor, m.start(1))
@@ -477,7 +510,7 @@ public class Reader {
 				speedStack.remove(depth);
 				depth--;
 				if (depth <0) {
-					throw new Exception("ERROR! wrong bracketing, close to " + m.end());
+					throw new IllegalArgumentException("ERROR! wrong bracketing, close to " + m.end());
 				}
 				Rational r = speedStack.get(depth);
 				output.append(input.substring(cursor, m.end(1)+1)
@@ -496,22 +529,9 @@ public class Reader {
 		
 		String finalOutput = output.toString().replaceAll("\\s+", " ") 
 			.replaceAll("(?<=(?:(?:"+RATIONAL+")!\\s){1,10}+)("+RATIONAL+")", "$1"); //replace multiple chains of speeds by the last one
-		//println(output);
+		//debug.debug(output);
 		return finalOutput;
 	}
-	
-	public static Rational getSpeedFromSpeedPacket(Packet p) throws Exception {
-		String s = p.getValue();
-		s = s.replaceAll(SN + "+", "");
-		
-		Rational speedCandidate = Rational.parseNonNegRational(s);
-		if (speedCandidate.compareTo(bolscript.config.Config.BOLSCRIPT_MAXIMUM_SPEED_R)<=0) {
-			//the resulting speed is not too high
-			return speedCandidate;
-		} else {
-			return new Rational(1);
-		}
-	}	
 
 	/**
 	 * Expects a String that only contains ABSOLUTE Speeds 4! 2! etc.
@@ -544,7 +564,7 @@ public class Reader {
 					
 					seq.add(new Unit(Representable.SPEED, currentSpeed));
 				} catch (Exception e) {
-					println("Speed could not be read out of: '" + all[i]+"'");
+					debug.debug("Speed could not be read out of: '" + all[i]+"'");
 					e.printStackTrace();
 				}				
 			} else if (all[i].matches("<\\d+")) {
@@ -553,7 +573,7 @@ public class Reader {
 				try {
 					bolsToRemove= Integer.parseInt(all[i].substring(1));			
 				} catch (Exception e) {
-					println("Nr of Bols to Remove could not be read out of: '" + all[i]+"'");
+					debug.debug("Nr of Bols to Remove could not be read out of: '" + all[i]+"'");
 					e.printStackTrace();					
 				}
 				// remove bols
@@ -592,12 +612,12 @@ public class Reader {
 					Representable c = new FootnoteUnit(all[i]);
 					seq.add(c);	
 				} catch (Exception e) {
-					println(e.getMessage());
-					println("Footnote will be ignored.");
+					debug.debug(e.getMessage());
+					debug.debug("Footnote will be ignored.");
 				}
 				
 			} else if (all[i].matches("[A-Za-z\\-]+(\\d)*(\\?)?!?")){
-				//println("Bolcandidate " + all[i]);
+				//debug.debug("Bolcandidate " + all[i]);
 				String candidate = new String(all[i]);
 				
 				boolean emphasized;
@@ -615,7 +635,7 @@ public class Reader {
 				
 				BolName bolName = bolBase.getBolName(candidate);
 				if (bolName==null) {
-					println("Bol '"+candidate+"' not found in BolBase, adding placeholder");
+					debug.debug("Bol '"+candidate+"' not found in BolBase, adding placeholder");
 					bolName = new BolName(candidate);
 					bolName.setWellDefinedInBolBase(false);
 					bolBase.addBolName(bolName);
@@ -638,19 +658,37 @@ public class Reader {
 	
 	
 	/**
-	 * Processes Meta-packets, such as
-	 * SPEED, TAL, TYPE, NAME packets
-	 * Adds according objects to the packets.
-	 * @param packets
-	 * @throws Exception
+	 * <p>Processes meta-packets of the following types:
+	 * <li>COMMENT</li>
+	 * <li>EDITOR</li>
+	 * <li>FOOTNOTE</li>
+	 * <li>GHARANA</li>
+	 * <li>NAME</li>
+	 * <li>SPEED</li>
+	 * <li>TAL</li>
+	 * <li>TYPE</li>
+	 * </p>
+	 * <p>The packets values are parsed and stored within the <code>obj</obj>-field 
+	 * of the owning Packet. Packets where parsing failed get their <code>type</code> 
+	 * changed to <code>FAILED</code>.
+	 * </p>
+	 * <p>Note that not all meta-packets are processed in this method: Talspecific packets 
+	 * such as LAYOUT, LENGTH and VIBHAGS are processed in the overwritten method of the class TalDynamic. 
+	 * @param packets The Packets to be processed. Note that these will be manipulated.
+	 * @see Packet Packet, for a description of the meta-types.
 	 */
 	public static void processMetaPackets(Packets packets) {
+		
 		Iterator<Packet> i = packets.listIterator();
 		Packet p;
+		
 		while (i.hasNext()) {
 			p = i.next();
+		
 			int type = p.getType();
+			
 			switch (type) {
+			
 			case Packet.TAL:
 				String regex = SN + "*([^\\s\\n\\r\\f]+)" + SN +"*";
 				Matcher m = Pattern.compile(regex).matcher(p.getValue());
@@ -659,15 +697,16 @@ public class Reader {
 					if (TalBase.standardInitialised()) {
 						Tal tal = TalBase.standard().getTalFromName(talName);
 						if (tal != null) {
-							println("Tal " + tal + " added to talpacket");
+							debug.debug("Tal " + tal + " added to talpacket");
 							p.setObject(tal);
 						}					
 					}
 				} else {
-					println("Tal could not be parsed: " + p.getValue());
+					debug.debug("Tal could not be parsed: " + p.getValue());
 					p.setType(Packet.FAILED);
 				}
 				break;
+				
 			case Packet.TYPE:
 				ArrayList<String> types = new ArrayList<String>();
 				
@@ -682,17 +721,19 @@ public class Reader {
 					p.setObject((Object[]) types.toArray());
 				} else p.setType(Packet.FAILED);
 				break;
+				
 			case Packet.NAME:
 				p.setObject(p.getValue().replaceAll(SNatBeginningOrEnd, ""));
 				break;
+				
 			case Packet.SPEED:
 				String input = p.getValue().replaceAll(SN +"*", "");
 				try {
 					Rational speed = Rational.parseNonNegRational(input);
 					p.setObject(speed);
-					println("read speed " + speed);
+					debug.debug("read speed " + speed);
 				} catch (Exception e) {
-					println("failed to parse Speed, will be ignored!");
+					debug.debug("failed to parse Speed, will be ignored!");
 					p.setType(Packet.FAILED);
 				}
 				break;
@@ -700,6 +741,7 @@ public class Reader {
 			case Packet.FOOTNOTE:
 				p.setObject(p.getValue().replaceAll(SNatBeginningOrEnd, ""));
 				break;
+				
 			case Packet.EDITOR:
 				ArrayList<String> editors = new ArrayList<String>();
 				
@@ -737,7 +779,6 @@ public class Reader {
 				} else p.setType(Packet.FAILED);
 				break;
 			}
-			//switch (p.getType)
 			
 		}
 		
@@ -758,52 +799,40 @@ public class Reader {
 				try {
 					p.setObject(getRepresentableSequence(p.getValue(), new Rational(1), bolBase));
 				} catch (Exception e) {
-					println("Failed to process Sequence in " + p.getKey() + ", will be ignored : " + p.getValue());
+					debug.debug("Failed to process Sequence in " + p.getKey() + ", will be ignored : " + p.getValue());
 					p.setType(Packet.FAILED);
 				}
 			} 
 		}
 	}
 	
-	public static void print(String [] strings) {
-		if (DEBUG) {
-		for (int i = 0; i < strings.length; i++) {
-			println(i +" = " + strings[i]);
-		}
-		}
-	}
-
-	public static void print(Object o) {
-		if (DEBUG) {
-		System.out.print(o);
-		}
-	}
 	
-	public static void print(Packets packets) {
-		if (DEBUG) {
- 		for (int i=0; i < packets.size(); i++) {
-			println(packets.get(i));
-		}
-		}
-	}
-	
-	public static void println(Object o) {
-		if (DEBUG) {
-		println(o);
-		}
+	/**
+	 * Returns the contents of a textfile, but only if it does not exceed a specified maximum file size. In case of exceeding or
+	 * in case of some reading error a FileReadException is thrown.
+	 * @param file The file.
+	 * @param maxFileSize The maximum allowed file size in bytes.
+	 * @return
+	 * @throws FileReadException Is thrown if it is larger than maxFileSize or there is some readError.
+	 */
+	static public String getContents(File file, int maxFileSize) throws FileReadException{
+		if (file.length() < maxFileSize) {
+			debug.debug("reading file "+file.getName()+" with file size: " + file.length() + " bytes.");
+	    	return getContents(file);
+	    } else {
+	    	throw new FileReadException(file, new Exception("File exceeds maximum allowed filesize of: " + maxFileSize + "B, it has size:" + file.length()));
+	    } 
 	}
 	
 	/**
-	 * http://www.javapractices.com/topic/TopicAction.do?Id=42
-	 * @param aFile
+	 * Original version from http://www.javapractices.com/topic/TopicAction.do?Id=42
+	 * Returns the contents of a textfile. In case of some reading error a FileReadException is thrown.
+	 * @param file The file.
+	 * @param maxFileSize The maximum allowed file size in bytes.
 	 * @return
+	 * @throws FileReadException Is thrown if it is larger than maxFileSize or there is some readError.
 	 */
-	 
-	static public String getContents(String filename) throws FileReadException{
-		return getContents(new File(filename));
-	}
-	
-	static public String getContents(File aFile) throws FileReadException {
+	static public String getContents(File file) throws FileReadException {
 		 //...checks on aFile are elided
 		    StringBuilder contents = new StringBuilder();
 		    
@@ -811,7 +840,7 @@ public class Reader {
 		      //use buffering, reading one line at a time
 		      //FileReader always assumes default encoding is OK!
 		      
-			    FileInputStream fin = new FileInputStream(aFile);
+			    FileInputStream fin = new FileInputStream(file);
 			    InputStreamReader in = new InputStreamReader(fin, "UTF-8");
 			    BufferedReader input = new BufferedReader(in);
 			    
@@ -833,10 +862,10 @@ public class Reader {
 		      }
 		    }
 		    catch (FileNotFoundException ex) {
-		    	throw new FileReadException (aFile, ex);
+		    	throw new FileReadException (file, ex);
 		    }
 		    catch (IOException ex){
-		    	throw new FileReadException (aFile, ex);
+		    	throw new FileReadException (file, ex);
 		    }
 		    
 		    return contents.toString();
@@ -849,7 +878,7 @@ public class Reader {
 	 * 
 	 * @param filename
 	 * @param contents
-	 * @throws FileWriteException if anything goes wrong
+	 * @throws FileWriteException if anything goes wrong.
 	 */
 	static public void writeFile(String filename, String contents) throws FileWriteException {
 		File file = new File(filename);

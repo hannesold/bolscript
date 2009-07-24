@@ -2,6 +2,16 @@ package bolscript.packets;
 
 import java.util.HashMap;
 
+/**
+ * <p>Packet represents one Key/Value packet in a bolscript string. The class  
+ * contains the key, the string value, a type identifier (e.g. BOLS, SPEED, EDITOR...)
+ * and a link to obj, which is the interpreted version of the string value. Also it is stored if the object is visible.</p>
+ * <p>An Example:<br />
+ * After parsed by the Reader-class the string "Speed: 2" would be stored as one Packet with Key:"Speed", Value:"2", obj: a Rational with value 2, visible: false</p>
+ * 
+ * @author hannes
+ * @see Reader, Packets
+ */
 public class Packet {
 	public static final int META = 0;
 	public static final int BOLS = 1;
