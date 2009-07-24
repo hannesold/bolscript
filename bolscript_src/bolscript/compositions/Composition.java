@@ -13,6 +13,7 @@ import bols.BolBase;
 import bols.BolName;
 import bols.tals.Tal;
 import bolscript.Reader;
+import bolscript.config.Config;
 import bolscript.packets.AccessRights;
 import bolscript.packets.HistoryEvent;
 import bolscript.packets.Packet;
@@ -77,12 +78,14 @@ import bolscript.sequences.RepresentableSequence;
 	 * Sets the linklocal to the files absolute path
 	 * and the datastate to CONNECTED.
 	 * Makes a first backup of rawData.
+	 * A FileReadException is thrown if any problems occurred in Reader,
+	 * or the size of the file exceeded Config.maxBolscriptFileSize.
 	 * 
 	 * @param file
 	 * @throws FileReadException
 	 */
-	public Composition(File file) throws FileReadException{ 
-		this(Reader.getContents(file));
+	public Composition(File file) throws FileReadException{
+		this(Reader.getContents(file, Config.maxBolscriptFileSize));
 		setLinkLocal(file.getAbsolutePath());
 		setDataState(State.CONNECTED);
 		backUpRawData();
@@ -469,7 +472,7 @@ import bolscript.sequences.RepresentableSequence;
 		if (dataState == State.NEW) return true;
 		
 		try {
-			rawData = Reader.getContents(this.linkLocal);
+			rawData = Reader.getContents(new File(this.linkLocal), Config.maxBolscriptFileSize);
 			dataState.connect(this);
 			return true;
 		} 

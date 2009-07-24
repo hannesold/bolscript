@@ -1,12 +1,11 @@
 package bols;
 
+import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Scanner;
-import java.util.regex.Pattern;
-
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import basics.Debug;
 import basics.FileReadException;
@@ -127,7 +126,7 @@ public class BolBase extends BolBaseGeneral {
 		ArrayList<PotentialCombinedBolName> potentialCombined = new ArrayList<PotentialCombinedBolName>();
 		ArrayList<PotentialBundle> potentialBundles = new ArrayList<PotentialBundle>();
 		
-		Scanner scanner = new Scanner(Reader.getContents(filename));
+		Scanner scanner = new Scanner(Reader.getContents(new File(filename)));
 		
 		String seperator = "\\s*,\\s*";
 		

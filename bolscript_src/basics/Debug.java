@@ -150,7 +150,7 @@ public class Debug {
 	 * @param message the message
 	 */
 	public static void out (Debugcodes d, Object message) {
-		if (mute == false || d == Debugcodes.CRITICAL) {
+		if (mute == false || d == Debugcodes.CRITICAL || d == Debugcodes.TEMPORARY) {
 			if (codeMap.containsKey(d)) {
 				if (codeMap.get(d) == true ) {
 					out(d + ": " + message);
@@ -175,7 +175,7 @@ public class Debug {
 	public static void out (Class c, Debugcodes d, Object message) {
 		
 		String classname = c.getSimpleName();
-		if (d == Debugcodes.CRITICAL) {
+		if (d == Debugcodes.CRITICAL || d == Debugcodes.TEMPORARY) {
 			//show critical messages in any case
 			out(d + ": " + classname + ": "  + message);
 		} else {

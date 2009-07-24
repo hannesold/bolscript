@@ -37,9 +37,11 @@ public class Config {
 	public static String pdfExportPath = null;
 	
 	public static String pathToDevanageriFont = "";
-	public static String bolscriptSuffix = ".txt";
-	public static String talSuffix = "tal.txt";
+	public static String bolscriptSuffix = ".bols.txt";
+	public static String talSuffix = ".tal.bols.txt";
+	public static String bolBaseSuffix = ".bolbase.txt";
 	public static String pdfSuffix = ".pdf";
+	public static String bolBaseFilename = "bolbase" + bolBaseSuffix;
 	
 	public static String pathToBolBase = "";// = pathToCompositions + "bolbase.bolbase";
 
@@ -92,6 +94,7 @@ public class Config {
 	public static Config config;
 	
 	static ArrayList<ConfigChangeListener> listeners;
+	public static int maxBolscriptFileSize = 200 * 1024; // 200kb is maximum size.
 
 	static {
 		if (!initialised) {
@@ -165,6 +168,7 @@ public class Config {
 	
 	/**
 	 * Returns a Map of bundling depths to bundling speeds, according to the given maxSpeed.
+	 * @see BundlingDepthToSpeedMap
 	 */
 	public static BundlingDepthToSpeedMap getBundlingDepthToSpeedMap(Rational maxSpeed) {
 		BundlingDepthToSpeedMap map = bundlingMaps.get(maxSpeed);
@@ -316,7 +320,7 @@ public class Config {
 				fontFolder.mkdir();
 			}
 
-			pathToBolBase = s.getAbsolutePath() + fileSeperator + "bolbase.bolbase";
+			pathToBolBase = s.getAbsolutePath() + fileSeperator + bolBaseFilename;
 			Debug.temporary(Config.class, pathToBolBase);
 			pathToCompositionsNoSlash = c.getAbsolutePath();
 			Debug.temporary(Config.class, pathToCompositionsNoSlash);

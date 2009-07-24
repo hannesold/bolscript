@@ -31,6 +31,15 @@ import bolscript.sequences.RepresentableSequence;
 public class Rational implements Comparable<Rational> {
     private static Rational zero = new Rational(0, 1);
 
+    /**
+     * Regex: A nonnegative rational number which fills a string.
+     */
+    private static String NONNEG_RATIONAL = "^(\\d+)(?:/(\\d+))?$";
+    /**
+     * Regex Pattern: for parsing nonnegative rationals.
+     */
+    private static Pattern nonNegativeRationalPattern = Pattern.compile(NONNEG_RATIONAL);
+	
     private int num;   // the numerator
     private int den;   // the denominator
 
@@ -69,8 +78,7 @@ public class Rational implements Comparable<Rational> {
      * Currently only nonnegative rationals!
      */
     public static Rational parseNonNegRational(String asString) throws IllegalArgumentException {
-    	Pattern p = Pattern.compile("^(\\d+)(?:/(\\d+))?$");
-    	Matcher m = p.matcher(asString);
+    	Matcher m = nonNegativeRationalPattern.matcher(asString);
     	if (m.matches()) {
     		
     		int num = Integer.parseInt(m.group(1));
