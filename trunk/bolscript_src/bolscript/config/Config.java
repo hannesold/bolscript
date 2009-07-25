@@ -4,21 +4,29 @@ import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.FontFormatException;
-import java.awt.geom.AffineTransform;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Properties;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.prefs.Preferences;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import javax.swing.JTable;
 
+import com.sun.tools.javac.util.DefaultFileManager.ZipArchive;
+
 import basics.Debug;
 import basics.Rational;
+import basics.ZipTools;
 import bols.BolName;
 import bols.BundlingDepthToSpeedMap;
 
@@ -102,6 +110,7 @@ public class Config {
 		}
 	}
 	public static void init () {
+		
 		config = new Config();
 		listeners = new ArrayList<ConfigChangeListener>();
 		
@@ -304,10 +313,11 @@ public class Config {
 			tablaFolder = chosenFolder;
 			preferences.put("tablaFolder", tablaFolder);
 
+			
 			File s = new File(chosenFolder + Config.fileSeperator + "settings");
 			if (!s.exists()) {
 				s.mkdir();
-			}
+			} 
 
 			File c = new File(chosenFolder + Config.fileSeperator + "compositions");
 			if (!c.exists()) { 
@@ -321,21 +331,78 @@ public class Config {
 			}
 
 			pathToBolBase = s.getAbsolutePath() + fileSeperator + bolBaseFilename;
-			Debug.temporary(Config.class, pathToBolBase);
+			//Debug.temporary(Config.class, pathToBolBase);
+			
+			
 			pathToCompositionsNoSlash = c.getAbsolutePath();
-			Debug.temporary(Config.class, pathToCompositionsNoSlash);
+			//Debug.temporary(Config.class, pathToCompositionsNoSlash);
 			pathToCompositions = pathToCompositionsNoSlash + fileSeperator;
-			Debug.temporary(Config.class, pathToCompositions);
+			//Debug.temporary(Config.class, pathToCompositions);
 			pathToTalsNoSlash = c.getAbsolutePath() + fileSeperator + "tals";
-			Debug.temporary(Config.class, pathToTalsNoSlash);
+			//Debug.temporary(Config.class, pathToTalsNoSlash);
 			pathToTals = pathToTalsNoSlash + fileSeperator;
 			pathToFonts = s.getAbsolutePath() + fileSeperator + "fonts";
-			Debug.temporary(Config.class, pathToTals);
+			//Debug.temporary(Config.class, pathToTals);
 			pathToDevanageriFont = s.getAbsolutePath() + fileSeperator + "devanageri.ttf";
 			
+			String[] requiredFiles = new String[]{pathToBolBase, pathToDevanageriFont};
+			boolean allEssentialsExist = true;
+			for (int i=0; i < requiredFiles.length; i++ ) {
+				allEssentialsExist = allEssentialsExist & (new File(requiredFiles[i])).exists();
+				if (!allEssentialsExist) break;
+			}
+			if (!allEssentialsExist) {
+				//defaults are copied non-destructively from the jar archives resources.zip
+				try {
+					extractDefaultTablafolder(chosenFolder);
+				} catch (Exception e) {
+					Debug.critical(Config.class, "Default tabla folder could not be extracted.");
+					Debug.critical(Config.class, e);
+				}
+			}
 
 	//	}
 
+	}
+	
+	public static void extractDefaultTablafolder(String targetFolder) throws Exception {
+		Debug.temporary(Config.class, "extracting default tabla folder to target folder");
+		URI uri = Config.class.getProtectionDomain().getCodeSource().getLocation().toURI();
+		Debug.temporary(Config.class, "uri.getpath " + uri.getPath());
+		
+		String jarPath;
+		if (uri.getPath().endsWith(".jar")) {
+			//the program is running from a jar file
+			jarPath = uri.getPath();
+		} else {
+			//the program is running from eclipse or so
+			//a builds/bolscript.jar is needed in any case
+			jarPath = (new File(uri.getPath()).getParent()) + fileSeperator + "builds" + fileSeperator + "bolscript.jar"; 
+		}
+		
+		Debug.temporary(Config.class, "jarPath " + jarPath);
+		JarFile jar = new JarFile(jarPath);
+		
+		//this is launched from a jar or app bundle.
+		//the resources.zip file needs to be extracted to a temporary destination
+		//before proceeding. It shall be deleted afterwards
+
+		ZipEntry entry = jar.getEntry("resources.zip");
+		String resourcesTempPath = targetFolder + fileSeperator + "resources_temp.zip";
+		Debug.debug(Config.class, "Extracting temporary resources zip to " + resourcesTempPath);
+		
+		//extract the resources zip file from the jar bundle to a temporary destination
+		File tempFile = ZipTools.extractOneFile(entry.toString(), resourcesTempPath, jar.getInputStream(entry));			
+		
+		//zip file can now be opened
+		Debug.temporary(Config.class, "opening zipfile: " + resourcesTempPath);
+		ZipFile resources = new ZipFile(tempFile);
+
+		ZipTools.extractSubentries(targetFolder, resources, resources.getEntry("tablafolder_default"));
+
+		tempFile.delete();
+		
+		
 	}
 
 	public static void setStandardBundlingDepth(int bundlingDepth) {

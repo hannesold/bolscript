@@ -26,6 +26,7 @@ import midi.MidiStationSimple;
 import basics.Debug;
 import basics.FileWriteException;
 import basics.GUI;
+import basics.ZipTools;
 import bols.BolBase;
 import bols.tals.TalBase;
 import bols.tals.TalDynamic;
@@ -70,11 +71,14 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 		public void initDebug() {
 			Debug.init();
 			Debug.initClassMaps(new Class[]{
-				Master.class,
+				
 				Config.class,
-				CompositionBase.class
+				
+				ZipTools.class
 			}, new Class[]{
+					Master.class,
 				Reader.class,
+				CompositionBase.class,
 				FilterPanel.class,
 				Composition.class,
 				TalDynamic.class,
@@ -82,13 +86,14 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 				SequencePanel.class,
 				BolBase.class
 			});
-			Debug.setExclusivelyMapped(false);
+			Debug.setExclusivelyMapped(true);
 		}
 		
 		public void init() {
 			GUI.setNativeLookAndFeel();
 			
 			initDebug();
+			debug.showErrorConsole();
 			
 			GUI.init();
 			
@@ -101,6 +106,7 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 				Debug.critical(this, "MidiStationSimple could not be initialised");
 				e1.printStackTrace();
 			}*/
+			
 			
 			prefsDialog = new PreferencesDialog();
 			

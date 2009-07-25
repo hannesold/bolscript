@@ -14,20 +14,37 @@
 	<property name="version.num" value="0.1"/>
 	<property name="dir.bin" value="bin"/>
 	<property name="dir.build" value="builds"/>
+	<property name="dir.resources" value="resources" />
+	<property name="resources.zip.filename" value="resources.zip"/>
+	<property name="resources.zip.completepath" value="${dir.build}/${resources.zip.filename}"/>
+	<property name="lib.itext" value="lib/iText-2.1.5.jar" />
 	<property name="jar.filename.mac" value="bolscript_mac.jar" />
 	<property name="jar.filename.other" value="bolscript.jar" />
 	<property name="jar.completepath.mac" value="${dir.build}/${jar.filename.mac}"/>
 	<property name="jar.completepath.other" value="${dir.build}/${jar.filename.other}"/>
 	<property name="app.icon" value="resources/icons/bolscript_logo.icns" />
+	<property name="app.name" value="Bolscript" />
 	<buildnumber file="build.num"/>
 	<tstamp>
 		<format property="TODAY" pattern="yyyy-MM-dd HH:mm:ss" />
 	</tstamp>
 
-<target name="create_jar_for_mac">
-	<!--create a runnable jar and a mac os x application bundle using jar bundler-->
+<target name="clean_all">
 	<delete file="${jar.completepath.mac}"/>
+	<delete file="${jar.completepath.other}"/>
+	<delete file="${resources.zip.completepath}"/>
+	<delete dir="${dir.build}/${app.name}.app"/>
+</target>
 	
+<target name="zip_resources">
+<!-- zip alll resources that shall be bundled in the distributed jar as resources.zip -->
+	<zip destfile="${resources.zip.completepath}" 
+		basedir="${dir.resources}" excludes="**/*.icns">
+	</zip>
+</target>
+
+<target name="create_jar_for_mac" depends="zip_resources">
+	<!--create a runnable jar and a mac os x application bundle using jar bundler-->	
 	<jar destfile="${jar.completepath.mac}" filesetmanifest="mergewithoutmain">
 		<manifest>
 			<attribute name="Main-Class" value="bolscript.MasterMac"/>
@@ -37,30 +54,34 @@
 			<attribute name="Built-Date" value="${TODAY}"/>
 			<attribute name="Built-By" value="${user.name}"/>
 		</manifest>
-		<fileset dir="/Users/hannes/Projekte/Workspace/bolscript googlecode/bin"/>
-		<zipfileset excludes="META-INF/*.SF" src="/Users/hannes/Projekte/Workspace/3dparty/iText-2.1.5.jar"/>
+		<fileset dir="${dir.bin}"/>
+		<zipfileset excludes="META-INF/*.SF" src="${lib.itext}"/>
+		
+		<!-- include the resources.zip -->
+		<fileset file="${resources.zip.completepath}"/>
+		
 		<!-- eclipse had this added, I dont know if it is needed: <zipfileset excludes="META-INF/*.SF" src="/Applications/eclipse/plugins/org.hamcrest.core_1.1.0.v20090501071000.jar"/> -->
 	</jar>
+</target>
 	
+<target name="create_applicationbundle_for_mac" depends="create_jar_for_mac">
 	<!-- create the application bundle, using jarbundler -->
 	<jarbundler dir="${dir.build}"
-	            name="Bolscript"
-				shortname="Bolscript"
+	            name="${app.name}"
+				shortname="${app.name}"
 	            mainclass="bolscript.MasterMac" 
 	            jar="${jar.completepath.mac}" 
 				icon="${app.icon}" 
        		 	signature="Hannes Oud"
 		        jvmversion="1.6+"
         		version="${version.num}"
-        		infostring="Bolscript v${version.num}, ${TODAY}"
+        		infostring="${app.name} ${version.num}, ${TODAY}"
         		build="${build.number}"
         		bundleid="bolscript/MasterMac"/>
-	</target>
+</target>
 	
 	<target name="create_jar_for_pc">
-		<!--create a runnable jar which is plattform independent -->
-		<delete file="${jar.completepath.other}"/>
-		
+		<!--create a runnable jar which is plattform independent -->		
 		<jar destfile="${jar.completepath.other}" filesetmanifest="mergewithoutmain">
 			<manifest>				<attribute name="Main-Class" value="bolscript.Master"/>
 				<attribute name="Class-Path" value="."/>
@@ -69,9 +90,11 @@
 				<attribute name="Built-Date" value="${TODAY}"/>
 				<attribute name="Built-By" value="${user.name}"/>
 			</manifest>
-			<fileset dir="/Users/hannes/Projekte/Workspace/bolscript googlecode/bin"/>
-			<zipfileset excludes="META-INF/*.SF" src="/Users/hannes/Projekte/Workspace/3dparty/iText-2.1.5.jar"/>
-			<!-- eclipse had this added, I dont know if it is needed: <zipfileset excludes="META-INF/*.SF" src="/Applications/eclipse/plugins/org.hamcrest.core_1.1.0.v20090501071000.jar"/> -->
+			<fileset dir="${dir.bin}"/>
+			<zipfileset excludes="META-INF/*.SF" src="${lib.itext}"/>
+			
+			<!-- include the resources.zip -->
+			<fileset file="${resources.zip.completepath}"/>
 		</jar>
 	</target>
 	
