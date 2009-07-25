@@ -23,7 +23,7 @@ import bolscript.config.Config;
 import bolscript.filters.StringArrayFilterGeneral;
 import bolscript.filters.VisibleCompositionDonator;
 
-public class CompositionBase extends basics.Basic implements VisibleCompositionDonator{
+public class CompositionBase implements VisibleCompositionDonator{
 	BolBaseGeneral bolBase = null;
 	TalBase talBase = null;
 	private ArrayList<CompositionBaseListener> listeners;
@@ -235,7 +235,7 @@ public class CompositionBase extends basics.Basic implements VisibleCompositionD
 	 */
 	public ArrayList<Composition> addFolderRecursively (String path) {
 		ArrayList<Composition> compositionsAdded = new ArrayList<Composition>();
-		out("ADDING FOLDER " + path);
+		Debug.debug(this, "ADDING FOLDER " + path);
 		File file = new File(path);
 		FilenameFilter tablaFileFilter = new SuffixFilter(bolscript.config.Config.bolscriptSuffix);
 		FileFilter folderFilter = new FolderFilter();
@@ -244,7 +244,7 @@ public class CompositionBase extends basics.Basic implements VisibleCompositionD
 			
 			File[] files = file.listFiles(tablaFileFilter);
 			for (int i=0; i < files.length; i++) {
-				out("ADDING FILE " + files[i]);
+				Debug.debug(this, "ADDING FILE " + files[i]);
 				try {
 					Composition added = addFile(files[i]);
 					if (added != null) {
@@ -258,7 +258,7 @@ public class CompositionBase extends basics.Basic implements VisibleCompositionD
 			
 			File[] subFolders = file.listFiles(folderFilter);
 			for (int i=0; i < subFolders.length; i++) {
-				out("ADDING FOLDER " + file);
+				Debug.debug(this, "ADDING FOLDER " + file);
 				compositionsAdded.addAll(addFolderRecursively(subFolders[i].getAbsolutePath()));
 			}			
 			

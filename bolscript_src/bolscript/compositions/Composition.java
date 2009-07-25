@@ -114,9 +114,9 @@ import bolscript.sequences.RepresentableSequence;
 		if (tals == null) tals = new ArrayList<String>();
 		if (!tals.contains(talAsString)) {
 			tals.add(talAsString);
-			Debug.temporary(this, Tools.toString(tals));
+			//Debug.temporary(this, Tools.toString(tals));
 			Collections.sort(tals);
-			Debug.temporary(this, "sorted" + Tools.toString(tals));
+			//Debug.temporary(this, "sorted" + Tools.toString(tals));
 			
 			//s.comp
 		}

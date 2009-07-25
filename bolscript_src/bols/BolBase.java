@@ -257,7 +257,7 @@ public class BolBase extends BolBaseGeneral {
 					bundle.setDescription(potBundle.description);
 					
 					addBolNameBundle(bundle);
-					Debug.temporary(this, "setting replacement bundle name to '" + bundle.getName(BolName.EXACT).replaceAll(Reader.SNatBeginningOrEnd,"") +"'");
+					//Debug.temporary(this, "setting replacement bundle name to '" + bundle.getName(BolName.EXACT).replaceAll(Reader.SNatBeginningOrEnd,"") +"'");
 					addReplacementPacket(bundle.getName(BolName.EXACT), 
 							" ( " + bundleSpeed + " " + bundle.getExactBolNames() + " ) ");
 				}
@@ -295,7 +295,7 @@ public class BolBase extends BolBaseGeneral {
 		addMidiMap("Ge", 2, 28, MidiMap.LEFT);
 		addMidiMap("GeHigh",2,29, MidiMap.LEFT);
 		
-		Debug.temporary(this, "midimaps set: " + Tools.toString(midiMaps));
+		Debug.debug(this, "midimaps set: " + Tools.toString(midiMaps));
 
 	}
 		
@@ -326,7 +326,7 @@ public class BolBase extends BolBaseGeneral {
 		addBolMap("Dhun", getMidiMap("Ge"), getMidiMap("Tun"));		
 		addBolMap("SurNa", getMidiMap("-"), getMidiMap("SurNa"));
 		
-		Debug.temporary(this, "bolsMaps set: " + Tools.toString(bolMaps));
+		Debug.debug(this, "bolsMaps set: " + Tools.toString(bolMaps));
 	}
 	
 	public void initKaliMaps() throws NoBolNameException {
