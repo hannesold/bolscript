@@ -1,6 +1,16 @@
 #summary Manual for setting up the project (in eclipse) as a developer.
 #labels Phase-Requirements,Phase-Implementation
 
+= Overview - Bolscript and Gat=
+
+Note that two projects are included.
+==Bolscript - tabla notation and composition management ==
+This is the program, for which I installed this google code site, it should be the focus of your attention. The bolscript source folders are bolscript_src and bolscript_tests and they are independent of the other group called gat.
+Main class is `bolscript/Master` or `bolscript/MasterMac` for OS X
+==Gat - genetic algorithm tabla composition program for kaidas ==
+A project I started 2006 in my bachelor report and haven't updated much since then. Gat uses a lot of bolscripts classes. I want to have it in here so it keeps working when refactorings in bolscript are done. Main class is `managing/Manager`.
+For details see [gat].
+
 = Developer setup =
 == Requirements ==
  * Make sure you have the Java 1.6 JDK or higher.
@@ -18,20 +28,9 @@ In the project preferences add links to the following libraries:
  * swixml - this is not used in bolscript, but in gat. Get a jar at http://www.swixml.org/.
 I have an additional folder 3dparty, where I save this kind of stuff.
 
-= Overview =
-
-Note that two projects are included.
-==Bolscript - tabla notation and composition management ==
-This is the program, for which I installed this google code site, it should be the focus of your attention. The bolscript source folders are bolscript_src and bolscript_tests and they are independent of the other group called gat
-Main class is `bolscript/Master` or `bolscript/MasterMac` for OS X
-==Gat - genetic algorithm tabla composition program for kaidas ==
-A project I started 2006 in my bachelor report and haven't updated much since then. Gat uses a lot of bolscripts classes. I want to have it in here so it keeps working when refactorings in bolscript are done. Main class is `managing/Manager`.
-For details see [gat].
-
 = Building Bolscript =
 == Java building and source folders ==
 Choose 1.6 as Java compiler in your eclipse or project settings.
-
 
 == Preparing ant for mac os x application bundles ==
 Download [http://sourceforge.net/projects/jarbundler/ jarbundler] and place the jarbundler.jar somewhere, I chose my 3dparty project folder. Go to Eclipse preferences->Runtime->add external jars. Jarbundler provides an ant task for building application bundles, and this is used in the build.xml.
@@ -49,5 +48,4 @@ Note that the jar bundles contain all classes from the bin folder, where only th
 
 = Running bolscript =
  # Run `bolscript/Master` or `bolscript/MasterMac` (OS X) as a Java Program.
- # Copy the `resources/tablafolder_default` somewhere on your system, and choose it as tabla folder when first running bolscript. 
- # Running bolscript generates a `settings.xml`. Do not add it to svn please.
+ # Copy the `resources/tablafolder_default` somewhere on your system, and choose it as tabla folder when first running bolscript, or: choose a new folder and bolscript will extract the default contents there from the jar. <b>The ant build process has to be run at least once for this to work.</b> This is because bolscript uses either the resources.zip from within builds/bolscript.jar or from within the jar from which it is run, if this is the case.
