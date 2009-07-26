@@ -7,16 +7,16 @@
  * As an IDE I use eclipse with subclipse plugin for svn support. 
 == Svn checkout and eclipse project ==
  # Checkout trunk using `svn checkout https://bolscript.googlecode.com/svn/trunk/ bolscript --username your.name` . Move the trunk folder into your eclipse workspace and rename it to bolscript or whatever.
- # In eclipse create a new Java Project, select _create from existing source_ and select the  folder.
+ # In eclipse create a new Java Project, select _create from existing source_ and select the folder.
  # Go to preferences->team->ignored resources and add .project, .classpath, settings.xml, or deselect them at each commit.
  # In project preferences make sure the source folders are bolscript_src, bolscript_tests, gat_src, gat_tests, and set the Java Compiler to 1.6 or greater.
+Assign <code>bin</code> as output folder for bolscript_src, <b>provide other output folders for the other three source folders!</b>This is because the ant script (see below) includes everything from the bin folder in the jars for distribution, and only bolscript (not gat and tests) shall be included.
 == Required libraries ==
 In the project preferences add links to the following libraries:
  * junit 4 - this is part of the jdk
- * itext - this is used for pdf export. Download the itext core jar from http://www.lowagie.com/iText/ <b>I added itext to the lib folder included in the svn</<b>. I did this, so I could process it in the bolscript Ant build.xml without referring to system specific external paths.
+ * itext - this is used for pdf export. Download the itext core jar from [http://www.lowagie.com/iText/] <b>Note: I added itext to the lib folder included in the svn</b>. I did this, so I could process it in the bolscript Ant build.xml without referring to system specific external paths.
  * swixml - this is not used in bolscript, but in gat. Get a jar at http://www.swixml.org/.
 I have an additional folder 3dparty, where I save this kind of stuff.
-
 
 = Overview =
 
@@ -29,7 +29,10 @@ A project I started 2006 in my bachelor report and haven't updated much since th
 For details see [gat].
 
 = Building Bolscript =
+== Java building and source folders ==
 Choose 1.6 as Java compiler in your eclipse or project settings.
+
+
 == Preparing ant for mac os x application bundles ==
 Download [http://sourceforge.net/projects/jarbundler/ jarbundler] and place the jarbundler.jar somewhere, I chose my 3dparty project folder. Go to Eclipse preferences->Runtime->add external jars. Jarbundler provides an ant task for building application bundles, and this is used in the build.xml.
 
@@ -37,12 +40,12 @@ Download [http://sourceforge.net/projects/jarbundler/ jarbundler] and place the 
 Go to Project preferences, add an Ant Builder to your project builders, choose build.xml. Go to targets and include
 create_applicationbundle_for_mac, create_jar_for_pc targets at "After a 'Clean'",
 and clean_all at "During a 'Clean'".
-The ant script builds:
+=== The ant script build.xml builds: ===
  * A resources.zip including the default tablafolder and the bolscript icon as png.
- * A jar bundle for mac using MasterMac as main class
- * A jar bundle for any system using Master as main class
+ * A jar bundle for mac using MasterMac as main class.
+ * A jar bundle for any system using Master as main class.
  * An application bundle for mac os x using a Jarbundler task.
-
+Note that the jar bundles contain all classes from the bin folder, where only the compiled bolscript (not the gat) classes are kept.
 
 = Running bolscript =
  # Run `bolscript/Master` or `bolscript/MasterMac` (OS X) as a Java Program.
