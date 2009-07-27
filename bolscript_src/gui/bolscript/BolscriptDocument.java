@@ -1,6 +1,7 @@
 package gui.bolscript;
 
 import java.awt.Color;
+import java.awt.EventQueue;
 import java.util.HashMap;
 
 import javax.swing.text.AttributeSet;
@@ -16,8 +17,9 @@ import bolscript.packets.Packets;
 public class BolscriptDocument extends DefaultStyledDocument{
 		 
 		static Color metaColor = new Color(20,200,20);
-		static Color bolKeyColor = new Color(20,20,200);
-		
+		static Color bolKeyColor = Color.BLACK;
+		static Color failedKeyColor = bolKeyColor;
+		static Color failedValueColor = Color.red;
 	      //final Matcher matcher =
 	        //    Pattern.compile("sneach").matcher("");
 	 
@@ -33,7 +35,10 @@ public class BolscriptDocument extends DefaultStyledDocument{
 	    
 	      
 	       HashMap<Integer, Style> keyStyleMaps, valueStyleMaps;
+		private Style styleFailedKey;
+		private Style styleFailedValue;
 	    //  static Matcher metaKeyMatcher;
+		
 	      
 	      
 	      public  void initStylesAndMaps(){
@@ -46,18 +51,25 @@ public class BolscriptDocument extends DefaultStyledDocument{
 	          styleBolKey = addStyle("meta", styleMetaKey);
 	          StyleConstants.setForeground(styleBolKey, bolKeyColor);
 	          
+	          styleFailedKey = addStyle("failedkey", styleMetaKey);
+	          styleFailedValue = addStyle("failedkey", styleMetaValue);
+	          StyleConstants.setForeground(styleFailedKey, failedKeyColor);
+	          StyleConstants.setForeground(styleFailedValue, failedValueColor);
+	          StyleConstants.setItalic(styleFailedValue, true);
+	          
 	          styleMetaValue = addStyle("metavalue", rootStyle);
 	          styleBolValue = addStyle("bolvalue", styleMetaValue);
 	          
 	    	 
-	          
-	          
 	          keyStyleMaps = new HashMap<Integer, Style>();
 	          valueStyleMaps = new HashMap<Integer, Style>();
 	          for (int i = 0; i < Packet.METATYPES.length; i++) {
 	        	  keyStyleMaps.put(Packet.METATYPES[i], styleMetaKey);
 	        	  valueStyleMaps.put(Packet.METATYPES[i], styleMetaValue);
+	        	  
 	          }
+	          keyStyleMaps.put(Packet.FAILED, styleFailedKey);
+			valueStyleMaps.put(Packet.FAILED, styleFailedValue);
 	          
 	          //packetTypeStyleMap.put(Packet., value)
 	      }
@@ -101,7 +113,7 @@ public class BolscriptDocument extends DefaultStyledDocument{
 	        }*/
 	      }
 	      
-	      public void updateStyles(Packets packets) {
+	      public void updateStylesNow(Packets packets) {
 	    	  Debug.temporary(getClass(), "update styles!");
 	    	  setCharacterAttributes(0, getLength(), rootStyle, true);
 	    	  try {
@@ -125,7 +137,21 @@ public class BolscriptDocument extends DefaultStyledDocument{
 	        	Debug.critical(BolscriptDocument.class, "error in updating styles");
 	          ex.printStackTrace();
 	        }
+	      }
+	      
+	      private class StyleUpdater implements Runnable {
+	    	  Packets packets;
 	    	  
+	    	  StyleUpdater(Packets packets) {
+	    		  this.packets = packets;
+	    	  }
+	    	  public void run() {
+	    		updateStylesNow(packets);  
+	    	  }
+	      }
+	      
+	      public void updateStyles(Packets packets) {
+	    	  EventQueue.invokeLater(new StyleUpdater(packets));
 	      }
 
 }
