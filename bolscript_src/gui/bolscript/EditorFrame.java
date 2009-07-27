@@ -47,7 +47,7 @@ public class EditorFrame extends JFrame implements WindowListener, CompositionCh
 	
 	String lastVersion = null;
 	
-	public JTextPane textArea;
+	public JTextPane textPane;
 	public JButton buttonCompile;
 	RenderWorker renderer;
 	
@@ -64,22 +64,17 @@ public class EditorFrame extends JFrame implements WindowListener, CompositionCh
 		JPanel editorPanel = new JPanel(true);
 		editorPanel.setLayout(new BoxLayout(editorPanel, BoxLayout.Y_AXIS));
 		document = new BolscriptDocument();
-		textArea = new JTextPane(document);
-		//textArea.set
-		//textArea.setLineWrap(true);
-		//textArea.setWrapStyleWord(true);
-
+		textPane = new JTextPane(document);
 		
-		JScrollPane scrollpane =new JScrollPane(textArea,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		JScrollPane scrollpane =new JScrollPane(textPane,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 				
 		editorPanel.add(scrollpane);
 		this.setContentPane(editorPanel);
 		this.setJMenuBar(initMenuBar());
 		
 		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-		textArea.getDocument().addDocumentListener(this);
+		document.addDocumentListener(this);
 		addWindowListener(this);	
-
 	}
 
 	public BolscriptDocument getDocument() {
@@ -92,10 +87,11 @@ public class EditorFrame extends JFrame implements WindowListener, CompositionCh
 		composition = comp;
 		composition.addChangeListener(this);
 		this.setText(comp.getRawData());
-		textArea.getDocument().addUndoableEditListener(undoManager);
-		 
+		
+		document.addUndoableEditListener(undoManager); 
 		renderer = new RenderWorker(this);
 		renderer.begin();
+		document.updateStyles(composition.getPackets());
 		
 	}
 	
@@ -152,11 +148,11 @@ public class EditorFrame extends JFrame implements WindowListener, CompositionCh
 	}
 
 	public void setText(String contents) {
-		textArea.setText(contents);
+		textPane.setText(contents);
 	}
 
 	public String getText() {
-		return textArea.getText();
+		return textPane.getText();
 	}
 	
 	public Composition getComposition() {
@@ -226,24 +222,24 @@ public class EditorFrame extends JFrame implements WindowListener, CompositionCh
 	public void windowOpened(WindowEvent e) {}
 
 	public void changedUpdate(DocumentEvent e) {
-		if (!textArea.getText().equals(lastVersion)){
+		if (!textPane.getText().equals(lastVersion)){
 		  compile();
-		  lastVersion = textArea.getText();
+		  lastVersion = textPane.getText();
 		}
 		
 	}
 
 	public void insertUpdate(DocumentEvent e) {
-		if (!textArea.getText().equals(lastVersion)){
+		if (!textPane.getText().equals(lastVersion)){
 			  compile();
-			  lastVersion = textArea.getText();
+			  lastVersion = textPane.getText();
 			}
 	}
 
 	public void removeUpdate(DocumentEvent e) {
-		if (!textArea.getText().equals(lastVersion)){
+		if (!textPane.getText().equals(lastVersion)){
 			  compile();
-			  lastVersion = textArea.getText();
+			  lastVersion = textPane.getText();
 			}	
 	}
 

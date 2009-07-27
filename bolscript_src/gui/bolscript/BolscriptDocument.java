@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.EventQueue;
 import java.util.HashMap;
 
+import javax.swing.event.DocumentListener;
+import javax.swing.event.UndoableEditListener;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
@@ -39,7 +41,8 @@ public class BolscriptDocument extends DefaultStyledDocument{
 		private Style styleFailedValue;
 	    //  static Matcher metaKeyMatcher;
 		
-	      
+		DocumentListener[] documentListeners;
+	    UndoableEditListener[] undoListeners;
 	      
 	      public  void initStylesAndMaps(){
 	    	  rootStyle = addStyle("root", null);
@@ -113,7 +116,37 @@ public class BolscriptDocument extends DefaultStyledDocument{
 	        }*/
 	      }
 	      
+	      /**
+	       * Removes and backs up undo listeners
+	       */
+	      public void removeAndBackupListeners(){
+	    	//documentListeners = getListeners(DocumentListener.class);
+		    undoListeners = getListeners(UndoableEditListener.class);
+//		    for (DocumentListener listener:documentListeners) {
+//		    	//removeDocumentListener(listener);
+//		    }
+		    for (UndoableEditListener listener:undoListeners) {
+		    	removeUndoableEditListener(listener);
+		    }
+	      }
+	      
+	      /**
+	       * Rebuilds undo listeners from backup
+	       * @param packets
+	       */
+	      public void rebuildListeners() {
+	  		    //for (DocumentListener listener:documentListeners) {
+	  		    	//addDocumentListener(listener);
+	  		    //}
+	  		    for (UndoableEditListener listener:undoListeners) {
+	  		    	addUndoableEditListener(listener);
+	  		    }
+	      }
+	      
 	      public void updateStylesNow(Packets packets) {
+	    	
+	    	removeAndBackupListeners();
+	    	
 	    	  Debug.temporary(getClass(), "update styles!");
 	    	  setCharacterAttributes(0, getLength(), rootStyle, true);
 	    	  try {
@@ -137,6 +170,8 @@ public class BolscriptDocument extends DefaultStyledDocument{
 	        	Debug.critical(BolscriptDocument.class, "error in updating styles");
 	          ex.printStackTrace();
 	        }
+	        
+	        rebuildListeners();
 	      }
 	      
 	      private class StyleUpdater implements Runnable {

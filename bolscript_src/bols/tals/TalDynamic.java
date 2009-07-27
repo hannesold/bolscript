@@ -128,7 +128,9 @@ public class TalDynamic extends Composition implements Tal {
 				Vibhag[] vibs = new Vibhag[vibhags.size()];
 				vibhags.toArray(vibs);
 
-				this.setVibhags(vibs);
+				if (vibs.length >0) {
+					this.setVibhags(vibs);
+				} else p.setType(Packet.FAILED);
 			}
 
 		}
