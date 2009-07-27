@@ -1,29 +1,35 @@
 package gui.bolscript;
 
-import java.awt.TextArea;
 import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import javax.swing.JTextPane;
-
 import basics.Debug;
 import bolscript.compositions.Composition;
 
+/**
+ * Contains a thread for parsing and rendering bolscripts.
+ * This class is more of a sketch up, but it seems to work.
+ * @author hannes
+ *
+ */
 public class RenderWorker implements Runnable {
 
-	private CompositionPanel compPanel;
+	/*private CompositionPanel compPanel;
 	private TextArea textArea;
-	private Composition comp;
+	private Composition comp;*/
+	
 	private EditorFrame editor;
 	private boolean stop = false;
 	
 	//private static ArrayList<Thread> workers;
+	
 	java.util.List<Thread> workers;
-
 	
 	static boolean running;
 	
+	/** A thread that runs an object of this class 
+	 */
 	public Thread renderThread;
 	
 	public RenderWorker (EditorFrame editor) {
@@ -48,7 +54,14 @@ public class RenderWorker implements Runnable {
 		
 		Worker worker = new Worker(editor.getComposition(), editor.getCompositionPanel(), editor.getText());
 		workers.add(new Thread(worker));
-		renderThread.interrupt();
+		
+		synchronized (renderThread) {
+			
+			if (renderThread.getState().equals(Thread.State.TIMED_WAITING)) {
+				renderThread.interrupt();
+			}
+			
+		}
 	}
 	
 	public void begin() {
@@ -67,7 +80,8 @@ public class RenderWorker implements Runnable {
 		while (stop == false) {
 			try {
 				//Debug.debug(this, "Starting to wait now.");
-				renderThread.sleep(60000);
+				Thread.sleep(60000); //pause the renderthread, wait for the next update.
+				
 			} catch (InterruptedException e) {
 			}
 			
@@ -94,10 +108,6 @@ public class RenderWorker implements Runnable {
 			this.compPanel = compPanel;
 		}
 		
-		public boolean isRunning() {
-			return running;
-		}
-
 		public void run() {
 			comp.setRawData(text);
 			comp.extractInfoFromRawData();
