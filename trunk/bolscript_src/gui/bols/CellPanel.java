@@ -7,6 +7,13 @@ import javax.swing.JPanel;
 
 import basics.GUI;
 
+/**
+ * A Cell is simply one beat (/matra)
+ * The CellPanel has a CellBorder.
+ * @see CellBorder
+ * @author hannes
+ *
+ */
 public class CellPanel extends JPanel {
 	
 	public static Color cBorder = new Color(20,20,20);

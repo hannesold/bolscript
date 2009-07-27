@@ -93,7 +93,7 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 			GUI.setNativeLookAndFeel();
 			
 			initDebug();
-			debug.showErrorConsole();
+			//debug.showErrorConsole();
 			
 			GUI.init();
 			

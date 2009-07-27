@@ -10,6 +10,7 @@ import java.io.OutputStreamWriter;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -26,6 +27,7 @@ import bols.tals.Tal;
 import bols.tals.TalBase;
 import bolscript.packets.Packet;
 import bolscript.packets.Packets;
+import bolscript.packets.TextReference;
 import bolscript.sequences.FootnoteUnit;
 import bolscript.sequences.Representable;
 import bolscript.sequences.RepresentableSequence;
@@ -400,21 +402,30 @@ public class Reader {
 		while (m.find()) {
 			//isVisible
 			
+			TextReference packetReference = null;
+			TextReference keyReference = null;
+			TextReference valueReference = null;
+			
+			MatchResult result = m.toMatchResult();
 			
 			String key = m.group(2).replaceAll(SNatBeginningOrEnd, "");
 			if (key.length()>0) { //ignore packets with empty keys
-			
-			if (Packet.keyPacketTypes.containsKey(m.group(2).toUpperCase())) {
-				type = (Integer) Packet.keyPacketTypes.get(m.group(2).toUpperCase());
-			} else {
-				type = Packet.BOLS;
-			}
-			isVisible = Packet.visibilityMap[type] && (m.group(1) == null);
-			Packet packet = new Packet(m.group(2), m.group(3), type, isVisible);
-			packet.setTextReference(m.start(), m.end());
-			
-			packets.add(packet);
-			i++;
+				packetReference = new TextReference(result.start(0),result.end(0));
+				keyReference = new TextReference(result.start(2),result.end(2));
+				valueReference = new TextReference(result.start(3),result.end(3));
+				if (Packet.keyPacketTypes.containsKey(m.group(2).toUpperCase())) {
+					type = (Integer) Packet.keyPacketTypes.get(m.group(2).toUpperCase());
+				} else {
+					type = Packet.BOLS;
+				}
+				isVisible = Packet.visibilityMap[type] && (m.group(1) == null);
+				Packet packet = new Packet(m.group(2), m.group(3), type, isVisible);
+				packet.setTextReferencePacket(packetReference);
+				packet.setTextRefKey(keyReference);
+				packet.setTextRefValue(valueReference);
+
+				packets.add(packet);
+				i++;
 			}
 		}
 		return packets;
