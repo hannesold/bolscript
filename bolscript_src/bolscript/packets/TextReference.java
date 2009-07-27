@@ -8,16 +8,41 @@ package bolscript.packets;
  *
  */
 public class TextReference {
-	public int startIndex;
-	public int endIndex;
+	private int startIndex;
+	private int endIndex;
+	private int length;
 	
 	public TextReference (int startIndex, int endIndex) {
-		this.startIndex = startIndex;
-		this.endIndex = endIndex;
+		this.setStart(startIndex);
+		this.setEnd(endIndex);
+		this.length = endIndex-startIndex;
+	}
+	
+	public int length() {
+		return length;
 	}
 	
 	public String toString() {
-		return "(Start: " + startIndex + ", End: " + endIndex + ")";
+		return "(Start: " + start() + ", End: " + end() + ")";
 	}
-	
+
+	public void setStart(int startIndex) {
+		this.startIndex = startIndex;
+	}
+
+	public int start() {
+		return startIndex;
+	}
+
+	public void setEnd(int endIndex) {
+		this.endIndex = endIndex;
+	}
+
+	public int end() {
+		return endIndex;
+	}
+
+	public TextReference clone() {
+		return new TextReference(startIndex, endIndex);
+	}
 }

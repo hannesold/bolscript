@@ -22,10 +22,11 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
+import javax.swing.JTextPane;
 import javax.swing.KeyStroke;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.text.Document;
 import javax.swing.undo.UndoManager;
 
 import basics.Debug;
@@ -44,11 +45,14 @@ public class EditorFrame extends JFrame implements WindowListener, CompositionCh
 	
 	public JMenuBar menuBar;
 	
-	public JTextArea textArea;
+	String lastVersion = null;
+	
+	public JTextPane textArea;
 	public JButton buttonCompile;
 	RenderWorker renderer;
 	
 	final UndoManager undoManager;
+	private BolscriptDocument document;
 	
 	public EditorFrame(Dimension size) {
 		super("Composition editor");
@@ -59,12 +63,12 @@ public class EditorFrame extends JFrame implements WindowListener, CompositionCh
 		
 		JPanel editorPanel = new JPanel(true);
 		editorPanel.setLayout(new BoxLayout(editorPanel, BoxLayout.Y_AXIS));
-		
-		
-		textArea = new JTextArea();
-		textArea.setLineWrap(true);
-		textArea.setWrapStyleWord(true);
-		
+		document = new BolscriptDocument();
+		textArea = new JTextPane(document);
+		//textArea.set
+		//textArea.setLineWrap(true);
+		//textArea.setWrapStyleWord(true);
+
 		
 		JScrollPane scrollpane =new JScrollPane(textArea,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 				
@@ -76,6 +80,10 @@ public class EditorFrame extends JFrame implements WindowListener, CompositionCh
 		textArea.getDocument().addDocumentListener(this);
 		addWindowListener(this);	
 
+	}
+
+	public BolscriptDocument getDocument() {
+		return document;
 	}
 
 	public EditorFrame(Composition comp, Dimension dimension) {
@@ -218,15 +226,25 @@ public class EditorFrame extends JFrame implements WindowListener, CompositionCh
 	public void windowOpened(WindowEvent e) {}
 
 	public void changedUpdate(DocumentEvent e) {
-		compile();		
+		if (!textArea.getText().equals(lastVersion)){
+		  compile();
+		  lastVersion = textArea.getText();
+		}
+		
 	}
 
 	public void insertUpdate(DocumentEvent e) {
-		compile();
+		if (!textArea.getText().equals(lastVersion)){
+			  compile();
+			  lastVersion = textArea.getText();
+			}
 	}
 
 	public void removeUpdate(DocumentEvent e) {
-		compile();		
+		if (!textArea.getText().equals(lastVersion)){
+			  compile();
+			  lastVersion = textArea.getText();
+			}	
 	}
 
 	/**
@@ -235,7 +253,6 @@ public class EditorFrame extends JFrame implements WindowListener, CompositionCh
 	 * @param e
 	 */
 	public void compile() {
-		
 		if (compositionPanel != null) {
 			renderer.addUpdate();
 		}

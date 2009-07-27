@@ -31,6 +31,10 @@ public class Packet {
 	public static final int COMMENT = 15;
 	public static final int nrOfTypes = 16;
 	
+	public static final int[] METATYPES = new int[]{ META, FOOTNOTE, SPEED, 
+		LAYOUT, LENGTH, NAME, VIBHAGS, TAL, TYPE, 
+		GHARANA, RIGHTS, EDITOR, DESCRIPTION, COMMENT};
+	
 	/**
 	 * Maps packet Keys to their types.
 	 */
@@ -73,7 +77,9 @@ public class Packet {
 	private boolean visible;
 	private Object object;
 	private int type;
-	private TextReference textReference;
+	private TextReference textRefPacket;
+	private TextReference textRefKey;
+	private TextReference textRefValue;
 	
 	public Packet(String key, String value, int type, boolean visible) {
 		super();
@@ -82,7 +88,9 @@ public class Packet {
 		this.type = type;
 		this.visible = visible;
 		this.object = null;
-		this.textReference = null;
+		this.textRefPacket = null;
+		this.textRefKey = null;
+		this.textRefValue = null;
 	}
 
 
@@ -113,8 +121,8 @@ public class Packet {
 		if (object != null){
 			s.append(key + ":: " + object.toString() + "\n");
 		} else s.append(key + ": " + value+ "\n");//+value.split(" ").length;
-		if (textReference!=null) {
-			s.append(textReference + "\n");
+		if (textRefPacket!=null) {
+			s.append(textRefPacket + "\n");
 		}
 		return s.toString();
 		
@@ -135,21 +143,47 @@ public class Packet {
 	}
 	
 	public Packet replaceValue(String val) {
-		return new Packet(new String(this.key), val, type, visible);
+		Packet p = new Packet(new String(this.key), val, type, visible);
+		if (textRefPacket != null) {
+			p.setTextReferencePacket(textRefPacket.clone());
+		} if (textRefKey != null) p.setTextRefKey(textRefKey.clone());
+		if (textRefValue != null) p.setTextRefValue(textRefValue.clone());
+		return p;
 	}
 	
 	public TextReference getTextReference() {
-		return textReference;
+		return textRefPacket;
 	}
-	public boolean hasTextReference() {
-		return (this.textReference!=null);
+	public boolean hasTextReferences() {
+		return (textRefPacket!=null && textRefKey!=null && textRefValue!=null);
 	}
 	
-	public void setTextReference(TextReference textReference) {
-		this.textReference = textReference;
+	public void setTextReferencePacket(TextReference textReference) {
+		this.textRefPacket = textReference;
 	}
-	public void setTextReference(int startIndex, int endIndex) {
-		this.textReference = new TextReference(startIndex,endIndex);
+	public void setTextReferencePacket(int startIndex, int endIndex) {
+		this.textRefPacket = new TextReference(startIndex,endIndex);
 	}
+
+
+	public TextReference getTextRefKey() {
+		return textRefKey;
+	}
+
+
+	public void setTextRefKey(TextReference textRefKey) {
+		this.textRefKey = textRefKey;
+	}
+
+
+	public TextReference getTextRefValue() {
+		return textRefValue;
+	}
+
+
+	public void setTextRefValue(TextReference textRefValue) {
+		this.textRefValue = textRefValue;
+	}
+	
 	
 }

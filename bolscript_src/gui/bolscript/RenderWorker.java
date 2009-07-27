@@ -5,6 +5,8 @@ import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import javax.swing.JTextPane;
+
 import basics.Debug;
 import bolscript.compositions.Composition;
 
@@ -100,6 +102,7 @@ public class RenderWorker implements Runnable {
 			comp.setRawData(text);
 			comp.extractInfoFromRawData();
 			compPanel.renderComposition(comp);
+			editor.getDocument().updateStyles(comp.getPackets());
 		}
 		
 		

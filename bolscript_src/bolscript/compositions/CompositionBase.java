@@ -282,7 +282,6 @@ public class CompositionBase implements VisibleCompositionDonator{
 	/**
 	 * 
 	 */
-	
 	public void updateFiltered() {
 		this.fireCompositionBaseChanged(filterGUI, CompositionBaseChangeEvent.VIEW);
 	}
@@ -368,7 +367,6 @@ public class CompositionBase implements VisibleCompositionDonator{
 	}
 
 	public void setFilterGUI(FilterPanel filterGUI) {
-		
 		this.filterGUI = filterGUI;
 	}
 	
