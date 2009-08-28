@@ -101,7 +101,7 @@ public class Reader {
 		return packets;
 	}
 	
-	public static void solveMultiplesAndBrackets(Packets packets) {
+	protected static void solveMultiplesAndBrackets(Packets packets) {
 		Matcher m;
 		for(int k=0; k < packets.size(); k++) {
 			Packet p = packets.get(k);
@@ -193,7 +193,7 @@ public class Reader {
 	 * B: and then bla bla
 	 * @param packets
 	 */
-	private static void insertValuesOfKeys (
+	protected static void insertValuesOfKeys (
 			Packets packets) {
 		
 		for (int j=0; j < packets.size(); j++){
@@ -268,7 +268,7 @@ public class Reader {
 	 * @param packets
 	 * @return A new Packets containing the improved version.
 	 */
-	public static Packets spliceFootnotesAndDoCosmetics(
+	protected static Packets spliceFootnotesAndDoCosmetics(
 			Packets packets) {
 		
 		Packets newPackets = new Packets();
@@ -384,7 +384,7 @@ public class Reader {
 	 * found in the input.
 	 * @see Packet, Packets
 	 */
-	public static Packets splitIntoPackets(String input) {
+	protected static Packets splitIntoPackets(String input) {
 		String regex = "(\\$)?((?:[^:\n\r\f])+):" + //Key
 		"((?:[^:]|[\n\r\f])*)" +  //Value
 		"(?=$|[\n\r\f]+(?:(?:(?:(?:[^:\n\r\f]*):)|(?:[\n\r\f]*\\s)*\\z)))" //following Key or End of Input (not captured)
@@ -440,7 +440,7 @@ public class Reader {
 	 * @throws IllegalArgumentException This Exception may be caused in subroutines 
 	 * due to parsing errors of Rationals or bracketing errors.
 	 */
-	public static Packets makeSpeedsAbsolute(Packets packets) throws IllegalArgumentException {
+	protected static Packets makeSpeedsAbsolute(Packets packets) throws IllegalArgumentException {
 		Packets newPackets = new Packets();
 		
 		Rational basicSpeed = new Rational(1);
@@ -475,7 +475,7 @@ public class Reader {
 	 * @return The processed String containing only absolute speeds.
 	 * @throws IllegalArgumentException This Exception may be caused when parsing Rationals or thrown when brackets are malformed.
 	 */
-	public static String makeSpeedsAbsolute(String input, Rational outerSpeed) throws IllegalArgumentException {
+	protected static String makeSpeedsAbsolute(String input, Rational outerSpeed) throws IllegalArgumentException {
 		
 	
 		debug.debug("making speeds\n" + input);
@@ -688,7 +688,7 @@ public class Reader {
 	 * @param packets The Packets to be processed. Note that these will be manipulated.
 	 * @see Packet Packet, for a description of the meta-types.
 	 */
-	public static void processMetaPackets(Packets packets) {
+	protected static void processMetaPackets(Packets packets) {
 		
 		Iterator<Packet> i = packets.listIterator();
 		Packet p;
@@ -800,7 +800,7 @@ public class Reader {
 	 * @param packets
 	 * @param bolBase
 	 */
-	public static void addSequencesToBolPackets(Packets packets, BolBaseGeneral bolBase) {
+	protected static void addSequencesToBolPackets(Packets packets, BolBaseGeneral bolBase) {
 		
 		
 		for (int i=0; i < packets.size(); i++) {
@@ -912,6 +912,7 @@ public class Reader {
 		}
 	}
 	
+	
 	/**
 	  * Change the contents of text file in its entirety, overwriting any
 	  * existing text.
@@ -956,3 +957,4 @@ public class Reader {
 
 
 }
+

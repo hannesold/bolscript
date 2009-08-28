@@ -1,60 +1,70 @@
-﻿# attention, this is just a sample. the devanagri entries are just placeholders!
-#
 # Bols
-# Short, Exact, Devanagari, Transliteration, short description, hands
+# Short; Exact; Devanagari; Transliteration; Initials; short description; hands
 # The hands section has one of the following patterns [left, right, other, Bol1 + Bol2]
 
-Dha, Dha, ऐ, Dha, D, Normal, Na + Ke
-Dha, Dha1, ऐ, Dha, D, Sur Dha, Tin1 + Ke
-Dhe, Dhe, ह, Dhe, D, normal, Na + Ke
-Dhin, Dhin, ऑ, Dhin, D, normal, Tin1 + Ge
-Dhin, Dhin1, ऑ, Dhin, D, normal using Tun, Tun + Ke
-Dhit, Dhit, ह, Dhit, D, normal, Tit + Ge
-Dhun, Dhun, र, Dhun, D, normal, Tun1 + Ge
-Dhi, Dhi, ह, Dhi, D, normal, right
-Di, Di, ह, Di, D, normal, right
+#listed by thomas and jatinder
+dha; dha; ग; dha; D; Normal; na + ke
+dhe; dhe; धे; dhe; D; Normal; te2 + ghe
+dhet; dhet; धेत; dhet; D; Short, closed right hand; te2 + ge
+dhi; dhi; धि;  dhi; D; As in dhitetite; te2 + ghe
+dhi; dhi2; धि; dhi; D; As in dhiredhire; thi + ghe
+dhin; dhin; धिं; dhin; D; Normal; tin2 + ghe
+dhin; dhin2; धिं; dhin; D; Open; tun2 + ghe
+di;di; दी; di; D; whole hand on tabla puri, followed by stroke beginning with n; right
+din; din; दीं; din; D; whole hand on tabla puri; right
+ga; ga; ग; ga; G; Normal; left
+ge; ge; गे; ge; G; normal; left
+ghe; ghe; घे; ghe; G; normal; left
+ghen; ghen; घेन; ghen; GHN; As in ghen - te ran; left
+ghi; ghi; घि; G; As in Ghirenage; left
+gi; gi; गि; gi; G; Normal; left
+ka; ka; क; ka; K; Normal; left
+ka; ka2; क; ka; K; As in Tra ka, spoken Tra Kra; other
+kat; kat; कत; kat; KT; Normal; left
+ke; ke; के; ke; K; Normal; left
+kra; kra; क्र; kra; KR; Normal; other
+na; na; ना; na; N; Normal on kinaar; right
+ne; ne; न; ne; N; Normal; right
+ra; ra; रा; ra; R; As in ghen - te ra - ne dha; right
+re; re; र; re; R; As in tirekite; right 
+re; re2; ड़; re; R; As in ghirenage; right
+re; re2; र; re; R; As in thire, slap with left side of right hand; right
+ta; ta2; ता; ta; T; Sur na; right
+tak; tak; तक; tak; TK; Whole hand on syahi; right
+te; te; ट; te; T; As in tirekite; right
+te; te2; ट; te; T; As in tite; right
+te; te3; त; te; T; As in katedha; right
+te; te4; ट; te; T; As in kitedha; right
+te; te5; त; te; T; As in ghen-teran; right
+thi; thi; थि; thi; TH; As in thire, slap with right side of right hand; right
+thun; thun; थून; thun; T; Whole hand on tabla puri, strong; right
+ti; ti; ति; ti; T; As in tite; right
+ti; ti2; ति; ti; T; As in tinakena (like tin, but next bol starts with n); tin2 + ke
+tin; tin; तिं; tin; T; Normal on sur; tin2 + ke
+tra; tra; त्र; tra; TR; As in traka; other
+tu; tu; तू; tu; T; As in tunakena (like tun, but next bol starts with n); tun2 + ke
+tun; tun; तूं; tun; T; Normal; tun2 + ke
 
-Na, Na, प, Na, N, normal, right
-Ne, Ne, प, Ne, N, normal, right
+# missing in thomas' list:
+dha; dha2; धा; dha; D; Sur Dha; tin + ke
+tin; tin2; तिं; tin; T; Tin without bayan; right
+tit; tit; ति; tit; T; Like dit, but no bayan; right
+tun; tun2; तिं; tun; T; Tun without bayan; right
+ta; ta; ता; ta; T; Closed as in taketirekite; right
+ta3; ta3; ता; ta; T; Same as Na, khali version of normal Dha; right
+ki; ki; के; ki; K; As in kitetake; left
 
-Ta, Ta, प, Ta, T, closed, right
-Ta, Ta1, प, Ta, T, open like Na, right
-Ta, Ta2, प, Ta, T, open on Sur, right
-Tak, Tak, प, Tak, TK, normal, right
-Ti, Ti, प, Ti, T, normal, right
-Te, Te, प, Te, T, normal, right
-Tit, Tit, प, Tit, T, normal, right
-Tin, Tin, य, Tin, T, Normal Tin, Tin1 + Ke
-Tin, Tin1, र, Tin, T, Just the plain Sur Tin, right
-Tin, Tin2, र, Tin, T, Open Tin similar to Tun, right
-Tun, Tun, र, Tun, T, Open, Tun1 + Ke
-Tun, Tun1, र, Tun, T, Open, right
-Tre, Tre, छ, Tre, T, normal, other
-
-
-Gi, Gi, ह, Gi, G, normal, left
-Ge, Ge, ह, Ge, G, normal, left
-Ghen, Ghen, ह, G, Ghen, normal, left
-Ga, Ga, ह, Ga, G, normal, left
-
-Re, Re, ह, Re, R, normal, right
-Re, Ri, ह, Re, R, normal, right
-
-Ka, Ka, ह, Ka, K, normal, left
-Kat, Kat, ह, Kat, K, normal, left
-Ki, Ki, ह, Ki, K, normal, left
-Ke, Ke, ह, Ke, K, normal, left
-Kre, Kre, ह, Kre, KR, normal, other
-Kra, Kra, ह, Kra, KR, normal, other
+#unclear to me
+kran; kran; कड़ाँ; KRN; Both hands; other
 
 # Bundles
-# Short, Exact, Devanagari, Transliteration, short description, bundle contents
+# Short; Exact; Devanagari; Transliteration; short description; bundle contents
 # bundle contents needs to have the form RELATIVE_SPEED (positive integer) BOL1 BOL2 BOL3 [...]
 # see the existing for an example
 
-Tir, Tir, हह, Tir, TR, normal, 2 Ti Re
-Kit, Kit, हह, Kit, KT, normal, 2 Ki Te
-Ket, Ket, हह, Ket, KT, normal, 2 Ke Te
-Tak, Tak, हह, Tak, TK, normal, 2 Ta Ke
-Tirkit, Tirkit, हहहह, Tirkit, TRKT, 4 Ti Re Ki Te
+tir; tir; हह; tir; TR; normal; 2 ti re
+kit; kit; हह; kit; KT; normal; 2 ki te
+ket; ket; हह; ket; KT; normal; 2 ke te
+tak; take; हह; tak; TK; normal; 2 ta ke
+tirkit; tirkit; हहहह; tirkit; TRKT; 4 ti re ki te
 

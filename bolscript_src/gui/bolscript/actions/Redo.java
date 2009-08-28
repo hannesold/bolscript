@@ -13,6 +13,7 @@ public class Redo extends AbstractAction {
 	
 	public Redo(UndoManager undoManager) {
 		super();
+		if (undoManager == null) this.setEnabled(false);
 		this.undoManager = undoManager;
 		this.putValue(NAME, "Redo");
 		

@@ -20,9 +20,10 @@ public class ExportPdf extends AbstractAction {
 	CompositionFrame compFrame;
 		
 	public ExportPdf(CompositionFrame compFrame) {
+		if (compFrame==null) this.setEnabled(false);
 		this.compFrame = compFrame;
 		
-		this.putValue(NAME, "Export Pdf");
+		this.putValue(NAME, "Save PDF");
 	}
 	
 	public void actionPerformed(ActionEvent e) {

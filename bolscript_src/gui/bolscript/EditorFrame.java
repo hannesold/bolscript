@@ -1,32 +1,26 @@
 package gui.bolscript;
 
 import gui.bolscript.actions.CloseEditor;
-import gui.bolscript.actions.OpenNew;
-import gui.bolscript.actions.Redo;
-import gui.bolscript.actions.SaveAs;
-import gui.bolscript.actions.SaveChanges;
-import gui.bolscript.actions.Undo;
 import gui.bolscript.dialogs.SaveChangesDialog;
+import gui.menus.EditMenu;
+import gui.menus.FileMenu;
+import gui.menus.LanguageMenu;
+import gui.menus.ViewMenu;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
-import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JMenu;
 import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
-import javax.swing.KeyStroke;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.text.Document;
 import javax.swing.undo.UndoManager;
 
 import basics.Debug;
@@ -70,7 +64,7 @@ public class EditorFrame extends JFrame implements WindowListener, CompositionCh
 				
 		editorPanel.add(scrollpane);
 		this.setContentPane(editorPanel);
-		this.setJMenuBar(initMenuBar());
+		initMenuBar();
 		
 		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		document.addDocumentListener(this);
@@ -96,9 +90,9 @@ public class EditorFrame extends JFrame implements WindowListener, CompositionCh
 	}
 	
 	public JMenuBar initMenuBar() {
-		if (menuBar == null) {
+		//if (menuBar == null) {
 			menuBar = new JMenuBar();
-			JMenu menuFile = new JMenu("File");
+			/*JMenu menuFile = new JMenu("File");
 			JMenuItem saver = new JMenuItem(new SaveChanges(this,false));
 			saver.setAccelerator(KeyStroke.getKeyStroke(
 			        KeyEvent.VK_S, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
@@ -127,10 +121,16 @@ public class EditorFrame extends JFrame implements WindowListener, CompositionCh
 			menuEdit.add(undo);
 			menuEdit.add(redo);
 			
-			menuBar.add(menuEdit);
-
+			menuBar.add(menuEdit);*/
 			
-		}
+			menuBar.add(new FileMenu(this));
+			menuBar.add(new EditMenu(this));
+			menuBar.add(new ViewMenu(this));
+			menuBar.add(new LanguageMenu(this));
+
+			this.setJMenuBar(menuBar);
+		//
+			
 		return menuBar;
 	}
 	
@@ -138,6 +138,10 @@ public class EditorFrame extends JFrame implements WindowListener, CompositionCh
 
 	
 	
+	public UndoManager getUndoManager() {
+		return undoManager;
+	}
+
 	public CompositionPanel getCompositionPanel() {
 		return compositionPanel;
 	}

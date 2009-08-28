@@ -9,7 +9,7 @@ public interface Representable {
 	public static final int OTHER = 5;
 	public static final int COMMA = 6;
 	public static final int BUNDLE = 7;
-
+	public static final int SEQUENCE = 8;
 	public int getType();
 	
 }

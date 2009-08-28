@@ -289,12 +289,17 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
        			 EditorFrame editor = new EditorFrame(comp, new Dimension(390,700));
        			
        			 editor.setCompositionFrame(compositionFrame);	 
+       			 compositionFrame.setEditor(editor);
+      			 editor.initMenuBar();
+       			 compositionFrame.initMenuBar();
+       			 
+       			
        			 editor.setLocation(GUI.topRight(browserFrame));
        			 editor.arrangeCompositionFrame();
+
        			 
        			 
-       			 compositionFrame.setEditor(editor);
-       			 
+
        			 // add to list of composition frames and editors
        			 compositionFrames.add(compositionFrame); 
        			 editors.add(editor);

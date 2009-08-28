@@ -2,36 +2,33 @@ package gui.bolscript;
 
 
 import gui.bolscript.actions.CloseEditor;
-import gui.bolscript.actions.DecreaseBundling;
-import gui.bolscript.actions.DecreaseFontSize;
-import gui.bolscript.actions.ExportPdf;
-import gui.bolscript.actions.IncreaseBundling;
-import gui.bolscript.actions.IncreaseFontSize;
-import gui.bolscript.actions.ResetFontSize;
-import gui.bolscript.actions.SetLanguage;
+import gui.menus.EditMenu;
+import gui.menus.FileMenu;
+import gui.menus.LanguageMenu;
+import gui.menus.ViewMenu;
 
 import java.awt.Dimension;
-import java.awt.Toolkit;
-import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
 import javax.swing.JFrame;
-import javax.swing.JMenu;
 import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.KeyStroke;
 
 import basics.GUI;
 import bols.BolBase;
 import bols.BolBaseGeneral;
-import bols.BolName;
 import bolscript.compositions.Composition;
 import bolscript.compositions.CompositionChangeEvent;
 import bolscript.compositions.CompositionChangedListener;
 import bolscript.config.Config;
+
+/**
+ * This is the Composition Viewer Frame.
+ * @author hannes
+ *
+ */
 public class CompositionFrame extends JFrame implements WindowListener, CompositionChangedListener {
 
 
@@ -65,16 +62,18 @@ public class CompositionFrame extends JFrame implements WindowListener, Composit
 			initMenuBar();
 		}
 		
-		private void initMenuBar() {
+		public void initMenuBar() {
 			JMenuBar menuBar = new JMenuBar();
-			JMenu fileMenu = new JMenu("File");
+			menuBar.add(new FileMenu(this));
+			menuBar.add(new EditMenu(this));
+			menuBar.add(new ViewMenu(this));
+			menuBar.add(new LanguageMenu(this));
+			/*JMenu fileMenu = new JMenu("File");
 			fileMenu.add(new ExportPdf(this));
-			
-
 			
 			menuBar.add(fileMenu);
 			menuBar.add(compositionPanel.getLanguageMenu());
-			menuBar.add(compositionPanel.getViewMenu());
+			menuBar.add(compositionPanel.getViewMenu());*/
 			
 			this.setJMenuBar(menuBar);
 		}

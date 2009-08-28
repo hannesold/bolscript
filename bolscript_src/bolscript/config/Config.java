@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.FontFormatException;
+import java.awt.Toolkit;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -71,8 +73,8 @@ public class Config {
 	
 	public static HashMap<Float, Font>[] bolFontsSized;
 	public static HashMap<Float, Font>[] bolFontsSizedBold;
-	public static float fontSizeStep = 2f;
-	public static float fontSizeAtomicStep = 0.5f;
+	public static final float fontSizeStep = 2f;
+	public static final float fontSizeAtomicStep = 0.5f;
 	
 	/**
 	 * The standard setting for bundling. Initially it is 0, meaning, there is no bundling active.
@@ -96,6 +98,7 @@ public class Config {
 	public static boolean firstRun = true;
 	public static final String propertiesFilename = "settings.xml";
 	public static final int MAC = 1111, WINDOWS = 2222;
+	public static final int MENU_SHORTKEY_MASK = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
 	public static int OS = 0;
 	public static boolean initialised = false;
 	
@@ -374,7 +377,7 @@ public class Config {
 		if (uri.getPath().endsWith(".jar")) {
 			//the program is running from a jar file
 			jarPath = uri.getPath();
-		} else {
+		} else { 
 			//the program is running from eclipse or so
 			//a builds/bolscript.jar is needed in any case
 			jarPath = (new File(uri.getPath()).getParent()) + fileSeperator + "builds" + fileSeperator + "bolscript.jar"; 

@@ -14,6 +14,7 @@ public class SetLanguage extends AbstractAction {
 	int language;
 	
 	public SetLanguage(CompositionPanel comp, int language) {
+		if (comp == null) this.setEnabled(false);
 		this.compPanel = comp;
 		this.language = language;
 		

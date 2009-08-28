@@ -13,6 +13,7 @@ public class Undo extends AbstractAction {
 	
 	public Undo(UndoManager undoManager) {
 		super();
+		if (undoManager == null) this.setEnabled(false);
 		this.undoManager = undoManager;
 		this.putValue(NAME, "Undo");
 		

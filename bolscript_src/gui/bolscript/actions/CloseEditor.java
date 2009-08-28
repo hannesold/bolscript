@@ -14,11 +14,11 @@ import bolscript.compositions.State;
 
 public class CloseEditor extends AbstractAction {
 	EditorFrame editor;
-	boolean closeAfterwards;
 	
 	public CloseEditor(EditorFrame editor) {
 		this.editor = editor;
-		this.putValue(NAME, "Close");
+		if (editor == null) this.setEnabled(false);
+		this.putValue(NAME, "Close");  
 	}
 	
 	public void actionPerformed(ActionEvent e) {

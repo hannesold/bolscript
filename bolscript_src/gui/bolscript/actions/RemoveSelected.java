@@ -21,8 +21,12 @@ public class RemoveSelected extends AbstractAction {
 	JTable compositionTable;
 	BrowserFrame browser;
 	
-	public RemoveSelected(BrowserFrame browser, JTable compositionTable) {
-		this.compositionTable = compositionTable;
+	public RemoveSelected(BrowserFrame browser) {
+		if (browser == null) {
+			this.setEnabled(false);
+		} else {
+			this.compositionTable = browser.getCompositionListPanel().getCompositionTable();
+		}
 		this.browser = browser;
 		this.putValue(NAME, "Remove");
 	}

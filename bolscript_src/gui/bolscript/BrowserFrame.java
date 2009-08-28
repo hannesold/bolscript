@@ -1,29 +1,21 @@
 package gui.bolscript;
 
-import gui.bolscript.actions.OpenPreferences;
-import gui.bolscript.actions.ExitProgram;
 import gui.bolscript.actions.OpenNew;
-import gui.bolscript.actions.RefreshFromTablafolder;
-import gui.bolscript.actions.RemoveSelected;
 import gui.bolscript.tables.CompositionTableModel;
+import gui.menus.EditMenu;
+import gui.menus.FileMenu;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.Toolkit;
-import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JMenu;
 import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.KeyStroke;
 
 import bolscript.Master;
-import bolscript.config.Config;
 
 public class BrowserFrame extends JFrame implements WindowListener{
 	private CompositionListPanel compositionListPanel;
@@ -56,7 +48,7 @@ public class BrowserFrame extends JFrame implements WindowListener{
 		
 		this.setContentPane(panel);
 		//this.pack();
-		initMenu();
+		initMenuBar();
 		this.pack();
 		this.addWindowListener(this);
 		this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
@@ -64,8 +56,15 @@ public class BrowserFrame extends JFrame implements WindowListener{
 		
 		
 	}
-	public void initMenu() {
+	
+	
+	public CompositionListPanel getCompositionListPanel() {
+		return compositionListPanel;
+	}
 
+
+	public void initMenuBar() {
+/*
 		JMenu filemenu = new JMenu("File");
 		filemenu.add(new OpenNew());
 		filemenu.addSeparator();
@@ -78,17 +77,18 @@ public class BrowserFrame extends JFrame implements WindowListener{
 		}
 		
 		JMenu editmenu = new JMenu("Edit");
-		JMenuItem remover = new JMenuItem(new RemoveSelected(this, compositionListPanel.getCompositionTable()));
+		JMenuItem remover = new JMenuItem(new RemoveSelected(this));
 		
 		int remKey = (Config.OS == Config.MAC) ? KeyEvent.VK_BACK_SPACE : KeyEvent.VK_DELETE;
 		remover.setAccelerator(KeyStroke.getKeyStroke(
-		        remKey, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+		        remKey, Config.MENU_SHORTKEY_MASK));
 		
 		editmenu.add(remover);
-		
+		*/
 		JMenuBar menubar = new JMenuBar();		
-		menubar.add(filemenu);
-		menubar.add(editmenu);
+		menubar.add(new FileMenu(this));
+		menubar.add(new EditMenu(this));
+		
 		this.setJMenuBar(menubar);
 	}
 	public void windowClosing(WindowEvent e) {

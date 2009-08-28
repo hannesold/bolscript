@@ -17,6 +17,7 @@ public class SaveChanges extends AbstractAction {
 	
 	public SaveChanges(EditorFrame editor, boolean closeAfterwards) {
 		this.editor = editor;
+		if (editor == null) this.setEnabled(false);
 		this.closeAfterwards = closeAfterwards;
 		this.putValue(NAME, "Save");
 	}

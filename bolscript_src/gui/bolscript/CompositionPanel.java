@@ -11,13 +11,13 @@ import gui.bolscript.actions.SetLanguage;
 import gui.bolscript.composition.CommentText;
 import gui.bolscript.composition.FootnoteText;
 import gui.bolscript.composition.PageBreakPanel;
+import gui.menus.ViewerActions;
 
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Graphics2D;
 import java.awt.Insets;
-import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -37,7 +37,6 @@ import javax.swing.border.LineBorder;
 
 import basics.Debug;
 import basics.GUI;
-import bols.BolBaseGeneral;
 import bols.BolName;
 import bols.BundlingDepthToSpeedMap;
 import bols.tals.Tal;
@@ -58,6 +57,8 @@ import com.lowagie.text.pdf.PdfWriter;
 
 public class CompositionPanel extends JLayeredPane {
 
+
+	
 	private static int contentLayer = 1;
 	private static int metaLayer = 2;
 	
@@ -69,6 +70,7 @@ public class CompositionPanel extends JLayeredPane {
 	
 	private AbstractAction decreaseBundling, increaseBundling, decreaseFontsize, increaseFontsize, resetFontsize;
 	private AbstractAction[] setLanguage;
+	private ViewerActions viewerActions;
 	
 	/**
 	 * The depth to which single bols are bundled.
@@ -156,28 +158,36 @@ public class CompositionPanel extends JLayeredPane {
 	 * <p>Font size increase/decrease, Bundling, language choosing etc.</p>
 	 */
 	private void initActions() {
-		ArrayList<AbstractAction> actions = new ArrayList<AbstractAction>();
+		
+		ArrayList<AbstractAction> absActions = new ArrayList<AbstractAction>();
+		
 		decreaseBundling = new DecreaseBundling(this);		
 		increaseBundling = new IncreaseBundling(this);
 		decreaseFontsize = new DecreaseFontSize(this);
 		increaseFontsize = new IncreaseFontSize(this);
 		resetFontsize = new ResetFontSize(this);
 		
-		actions.add(decreaseBundling); actions.add(increaseBundling); actions.add(decreaseFontsize); actions.add(increaseFontsize);
+		absActions.add(decreaseBundling); absActions.add(increaseBundling); absActions.add(decreaseFontsize); absActions.add(increaseFontsize);
 			
 		setLanguage = new SetLanguage[BolName.languagesCount];
 		
 		for (int i=0; i < BolName.languagesCount; i++) {
 			setLanguage[i] = new SetLanguage(this, i);
-			actions.add(setLanguage[i]);
+			absActions.add(setLanguage[i]);
 		}
 		
-		for (AbstractAction action: actions) {
+		for (AbstractAction action: absActions) {
 			action.setEnabled(false);
 		}
-
+		
+		viewerActions = new ViewerActions(decreaseBundling,increaseBundling,decreaseFontsize,increaseFontsize,resetFontsize,setLanguage);
+		
 	}
 	
+	public ViewerActions getViewerActions() {
+		return viewerActions;
+	}
+
 	/**
 	 * <p>Sets each action to enabled or disabled, considering the current state.</p>
 	 * <p>For example the font size increase action is disabled when maximum size is already set.</p>
@@ -211,7 +221,7 @@ public class CompositionPanel extends JLayeredPane {
 		for (int i=0; i < BolName.languagesCount; i++) {
 			JMenuItem l = new JMenuItem(setLanguage[i]);
 			l.setAccelerator(KeyStroke.getKeyStroke(
-			        numberKeys[i], Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+			        numberKeys[i], Config.MENU_SHORTKEY_MASK));
 
 			languageMenu.add(l);
 			
@@ -220,21 +230,23 @@ public class CompositionPanel extends JLayeredPane {
 	}
 	
 
+	
 	/**
 	 * Generates a JMenu containing view-specific MenuItems using Actions of this CompositionPanel,
 	 * handling font size and bol bundling.
 	 * @return a view menu
 	 */
 	public JMenu getViewMenu() {
+		
 		JMenu viewMenu = new JMenu("View");
 		JMenuItem incrFonts = new JMenuItem(increaseFontsize);
 		viewMenu.add(incrFonts);
 		incrFonts.setAccelerator(KeyStroke.getKeyStroke(
-		        KeyEvent.VK_I, KeyEvent.ALT_DOWN_MASK | Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+		        KeyEvent.VK_I, KeyEvent.ALT_DOWN_MASK | Config.MENU_SHORTKEY_MASK));
 
 		JMenuItem decrFonts = new JMenuItem (decreaseFontsize);
 		decrFonts.setAccelerator(KeyStroke.getKeyStroke(
-		        KeyEvent.VK_U, KeyEvent.ALT_DOWN_MASK | Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+		        KeyEvent.VK_U, KeyEvent.ALT_DOWN_MASK | Config.MENU_SHORTKEY_MASK));
 		viewMenu.add(decrFonts);
 		
 		viewMenu.add(resetFontsize);
@@ -242,12 +254,12 @@ public class CompositionPanel extends JLayeredPane {
 		viewMenu.addSeparator();
 		JMenuItem incrBundling = new JMenuItem(increaseBundling);
 		incrBundling.setAccelerator(KeyStroke.getKeyStroke(
-		        KeyEvent.VK_I, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));			
+		        KeyEvent.VK_I, Config.MENU_SHORTKEY_MASK));			
 		viewMenu.add(incrBundling);
 		
 		JMenuItem decrBundling = new JMenuItem(decreaseBundling);
 		decrBundling.setAccelerator(KeyStroke.getKeyStroke(
-		        KeyEvent.VK_U, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+		        KeyEvent.VK_U, Config.MENU_SHORTKEY_MASK));
 		viewMenu.add(decrBundling);
 		return viewMenu;
 	}
