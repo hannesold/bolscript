@@ -16,7 +16,7 @@ import bols.HasPlayingStyle;
 import bols.PlayingStyle;
 import bolscript.Reader;
 
-public class RepresentableSequence extends ArrayList<Representable> {
+public class RepresentableSequence extends ArrayList<Representable> implements Representable {
 
 	public RepresentableSequence() {
 		super();
@@ -30,8 +30,11 @@ public class RepresentableSequence extends ArrayList<Representable> {
 		super(initialCapacity);
 	}
 	
-	public double duration;
+	private double duration;
 	
+	public int getType() {
+		return Representable.SEQUENCE;
+	}
 	
 	/**
 	 * Strips brackets, removes double collons and double speeds

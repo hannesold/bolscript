@@ -81,6 +81,7 @@ public class BolBase extends BolBaseGeneral {
 			addBolNames("-");
 			addBolNamesFromFile(Config.pathToBolBase);
 			addBolNames("SurNa GeHigh");
+			
 		} catch (FileReadException ex) {
 			Debug.critical(this, "BolBase could not read bolbase file. Using defaults. " + ex);
 			addBolNames("Dha Ge Ti Ri Ke Te Tin Na Ne Ta Ke Dhin SurNa Tun Dhun GeHigh");
@@ -128,19 +129,26 @@ public class BolBase extends BolBaseGeneral {
 		
 		Scanner scanner = new Scanner(Reader.getContents(new File(filename)));
 		
-		String seperator = "\\s*,\\s*";
+		String seperator = "\\s*;\\s*";
 		
 		while (scanner.hasNextLine()) {
+			
 			String line = scanner.nextLine();
+			Debug.temporary(this.getClass(),line);
 			if (!line.startsWith("#")) {
 				//String line = scanner.nextLine();
 				String [] entries = line.split(seperator);
+				Debug.temporary(getClass(), Tools.toString(entries));
 				String description = "";
 				
 				if (entries.length >= BolName.languagesCount) {
 					String[] labels = new String[BolName.languagesCount];
 					for (int i = 0; i < labels.length; i++) {
-						labels[i] = entries[i].replaceAll(Reader.SNatBeginningOrEnd, "");
+						if (false) {//(i != BolName.DEVANAGERI) {
+							labels[i] = Tools.formatFirstCapital(entries[i].replaceAll(Reader.SNatBeginningOrEnd, ""));
+						} else {
+							labels[i] = entries[i].replaceAll(Reader.SNatBeginningOrEnd, "");
+						}
 					}
 					//Debug.temporary(this, "exact name scanned: '" + labels[BolName.EXACT]+"'");
 

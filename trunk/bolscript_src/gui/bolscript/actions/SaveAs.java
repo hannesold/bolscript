@@ -22,6 +22,7 @@ public class SaveAs extends AbstractAction {
 	
 	public SaveAs(EditorFrame editor) {
 		super();
+		if (editor == null) this.setEnabled(false);
 		this.editor = editor;
 		this.putValue(NAME, "Save as...");
 		
