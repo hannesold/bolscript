@@ -134,7 +134,7 @@ public class BolBase extends BolBaseGeneral {
 		while (scanner.hasNextLine()) {
 			
 			String line = scanner.nextLine();
-			Debug.temporary(this.getClass(),line);
+			//Debug.temporary(this.getClass(),line);
 			if (!line.startsWith("#")) {
 				//String line = scanner.nextLine();
 				String [] entries = line.split(seperator);

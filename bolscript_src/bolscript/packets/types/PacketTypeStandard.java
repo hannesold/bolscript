@@ -1,15 +1,15 @@
-package bolscript.packets;
+package bolscript.packets.types;
 
 import java.awt.Color;
 
-import bolscript.packets.PacketType.Kardinality;
-import bolscript.packets.PacketType.ParseMode;
+import bolscript.packets.types.PacketType.Kardinality;
+import bolscript.packets.types.PacketType.ParseMode;
 
-public abstract class PacketTypeStandard implements PacketType {
+public class PacketTypeStandard implements PacketType {
 
 	protected int id;
 	protected String displayNameSingular;
-	protected String displayNamePlural;
+	protected String displayNamePlural;	
 	protected String[] keys;
 	protected boolean displayInTable;
 	protected int tableWeight;
@@ -20,8 +20,33 @@ public abstract class PacketTypeStandard implements PacketType {
 	protected boolean searchable;
 	protected Color keyColor;
 
+	
+	public PacketTypeStandard(int id, String displayNameSingular,
+			String displayNamePlural, String[] keys, boolean displayInTable,
+			int tableWeight, Kardinality kardinality, ParseMode parseMode,
+			boolean displayInCompositionView, boolean metaPaket,
+			boolean searchable, Color keyColor) {
+		super();
+		this.id = id;
+		this.displayNameSingular = displayNameSingular;
+		this.displayNamePlural = displayNamePlural;
+		this.keys = keys;
+		this.displayInTable = displayInTable;
+		this.tableWeight = tableWeight;
+		this.kardinality = kardinality;
+		this.parseMode = parseMode;
+		this.displayInCompositionView = displayInCompositionView;
+		this.metaPaket = metaPaket;
+		this.searchable = searchable;
+		this.keyColor = keyColor;
+	}
+
 	public int getId() {
 		return id;
+	}
+	
+	public String toString () {
+		return displayNameSingular;
 	}
 
 	public String getDisplayNameSingular() {

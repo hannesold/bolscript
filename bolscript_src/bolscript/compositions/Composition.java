@@ -4,6 +4,7 @@ import java.awt.EventQueue;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 
 import basics.Debug;
 import basics.FileReadException;
@@ -18,6 +19,8 @@ import bolscript.packets.AccessRights;
 import bolscript.packets.HistoryEvent;
 import bolscript.packets.Packet;
 import bolscript.packets.Packets;
+import bolscript.packets.types.PacketType;
+import bolscript.packets.types.PacketTypeFactory;
 import bolscript.sequences.RepresentableSequence;
 
 	public class Composition implements DataStatePosessor{
@@ -60,8 +63,10 @@ import bolscript.sequences.RepresentableSequence;
 	protected ArrayList<AccessRights> rights = null;	
 	protected Packets packets = null;
 
+	
 	protected boolean istal = false;
 	
+	protected MetaValues metaValues;
 	
 	/**
 	 * This constructs a Composition from the rawData.
@@ -71,6 +76,7 @@ import bolscript.sequences.RepresentableSequence;
 	public Composition(String rawData) {
 		changeListeners = new ArrayList<CompositionChangedListener>();
 		this.setRawData(rawData);
+		metaValues = new MetaValues();
 		extractInfoFromRawData();
 	}
 	
@@ -135,8 +141,9 @@ import bolscript.sequences.RepresentableSequence;
 			Collections.sort(types);
 			if (types.size() == 1) {
 
-				Integer typeInt = Packet.keyPacketTypes.get(((String) type).toUpperCase());
-				if (typeInt != null) if ( typeInt.intValue() == Packet.TAL) {
+				//check if the entry has the value Tal, Tals or Tala or so
+				PacketType associatedType = PacketTypeFactory.getType(type.toUpperCase());
+				if (associatedType != null) if ( associatedType.getId() == PacketTypeFactory.TAL) {
 					istal = true;
 				} else {
 					istal = false;
@@ -193,13 +200,14 @@ import bolscript.sequences.RepresentableSequence;
 		}
 	}
 	
-	public void addComment(String comment) {
+	/*public void addComment(String comment) {
 		if (comments == null) comments = new ArrayList<String>();
 		if (!comments.contains(comment)) {
 			comments.add(comment);
 			Collections.sort(comments);
 		}
-	}
+		
+	}*/
 	
 	public void addKey(String key) {
 		if (keys== null) keys = new ArrayList<String>();
@@ -213,7 +221,7 @@ import bolscript.sequences.RepresentableSequence;
 	}
 	
 	public ArrayList<String> getComments() {
-		return comments;
+		return (ArrayList<String>) metaValues.get(PacketTypeFactory.COMMENT);
 	}
 	
 	public ArrayList<String> getSpeeds() {
@@ -280,7 +288,7 @@ import bolscript.sequences.RepresentableSequence;
 		if (packets != null) {
 		//add bols to searchstring
 		for (Packet p: packets) {
-			if (p.getType() == Packet.BOLS) {
+			if (p.getType() == PacketTypeFactory.BOLS) {
 				if (p.getObject() != null) {
 					RepresentableSequence compact = ((RepresentableSequence) p.getObject()).getCompact();
 					addSearchString(compact.toString(true, false, false, false, false, false, BolName.EXACT));
@@ -382,6 +390,7 @@ import bolscript.sequences.RepresentableSequence;
 	 * @param packets
 	 */
 	protected void extractInfoFromPackets(Packets packets) {
+		metaValues.clear();
 		name = ""; //might be set somewhere else
 		// reset everything
 		tals = new ArrayList<String> (); 
@@ -408,57 +417,59 @@ import bolscript.sequences.RepresentableSequence;
 			String key = packets.get(i).getKey();
 			Object obj = packets.get(i).getObject();
 			int type = packets.get(i).getType();
-			if (type != Packet.FAILED) addKey(key);
+			if (type != PacketTypeFactory.FAILED) addKey(key);
 			
-			if (obj!=null) switch (type) {
-			case Packet.NAME:
+			if (obj!=null) {
+				switch (type) {
+			
+			case PacketTypeFactory.NAME:
 				name = (String) obj;
 				break;
-			case Packet.TAL:
+			case PacketTypeFactory.TAL:
 				addTal(((Tal) obj).getName());
 				break;
-			case Packet.SPEED:
+			case PacketTypeFactory.SPEED:
 				addSpeed((Rational) obj);
 				//addSpeed(obj.toString());
 				break;
-			case Packet.TYPE:
+			case PacketTypeFactory.TYPE:
 				Object [] types = (Object[]) obj;
 				for (int j=0; j < types.length; j++) {
 					addType((String) types[j]);
 				}
 				break;
 				
-			case Packet.DESCRIPTION:
+			case PacketTypeFactory.DESCRIPTION:
 				setDescription((String) obj);
 				break;
-			case Packet.COMMENT:
-				addComment((String) obj);
+			case PacketTypeFactory.COMMENT:
+				metaValues.addString(PacketTypeFactory.COMMENT, (String) obj);
 				break;
-			case Packet.SOURCE:
+			case PacketTypeFactory.SOURCE:
 				addSource((String) obj);
 				break;
 
-			case Packet.GHARANA:
+			case PacketTypeFactory.GHARANA:
 				Object [] ghars = (Object[]) obj;
 				for (int j=0; j < ghars.length; j++) {
 					addGharana((String) ghars[j]);
 				}
 				break;
 
-			case Packet.EDITOR:
+			case PacketTypeFactory.EDITOR:
 				Object [] editors = (Object[]) obj;
 				for (int j=0; j < editors.length; j++) {
 					addEditor((String) editors[j]);
 				}
 				break;
-			case Packet.COMPOSER:
+			case PacketTypeFactory.COMPOSER:
 				Object [] composers = (Object[]) obj;
 				for (int j=0; j < composers.length; j++) {
 					addComposer((String) composers[j]);
 				}
 				break;
 
-			case Packet.BOLS:		
+			case PacketTypeFactory.BOLS:		
 				RepresentableSequence compact = ((RepresentableSequence) obj).getCompact();
 				maxSpeed = Rational.max(maxSpeed, compact.getMaxSpeed());
 				if (snippet.equals("")) {
@@ -473,6 +484,7 @@ import bolscript.sequences.RepresentableSequence;
 					}
 				} 
 			} //switch (type)
+			} //obj != null
 		} //for
 		
 		//after processing all packets gather missing information

@@ -7,6 +7,7 @@ import java.util.regex.Pattern;
 import basics.Debug;
 import bolscript.packets.Packet;
 import bolscript.packets.Packets;
+import bolscript.packets.types.PacketTypeFactory;
 
 public abstract class BolBaseGeneral extends basics.Basic{
 
@@ -128,7 +129,8 @@ public abstract class BolBaseGeneral extends basics.Basic{
 	}
 	
 	public void addReplacementPacket(String key, String val) {
-		Packet replacementPacket = new Packet(key, val,Packet.BOLS,false);
+		//Debug.temporary(this, "type for replpacket: " + PacketTypeFactory.getType(PacketTypeFactory.BOLS));
+		Packet replacementPacket = new Packet(key, val, PacketTypeFactory.BOLS, false);
 		standardReplacements.add(replacementPacket);
 	}
 	

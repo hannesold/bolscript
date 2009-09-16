@@ -28,6 +28,9 @@ import bols.tals.TalBase;
 import bolscript.packets.Packet;
 import bolscript.packets.Packets;
 import bolscript.packets.TextReference;
+import bolscript.packets.types.PacketType;
+import bolscript.packets.types.PacketTypeFactory;
+import bolscript.packets.types.PacketType.ParseMode;
 import bolscript.sequences.FootnoteUnit;
 import bolscript.sequences.Representable;
 import bolscript.sequences.RepresentableSequence;
@@ -78,9 +81,13 @@ public class Reader {
 
 		Packets rawPackets = splitIntoPackets(input);
 		
+		debug.temporary(rawPackets);
+		
 		Packets packets = spliceFootnotesAndDoCosmetics(rawPackets);
 		
 		packets.addAll(0, BolBase.getStandard().getReplacementPackets());
+		
+		
 		
 		insertValuesOfKeys(packets);		
 		
@@ -105,7 +112,7 @@ public class Reader {
 		Matcher m;
 		for(int k=0; k < packets.size(); k++) {
 			Packet p = packets.get(k);
-			if (p.getType() == Packet.BOLS) {
+			if (p.getType() == PacketTypeFactory.BOLS) {
 				debug.debug(p.getKey());
 				// "()x3 (?:<(\\d+))
 				String regex = "\\(([^\\(\\)]+)\\)(?:x(\\d+))?(?:<(\\d+))?";
@@ -199,13 +206,13 @@ public class Reader {
 		for (int j=0; j < packets.size(); j++){
 			Packet p = packets.get(j);
 			
-			if (p.getType() == Packet.BOLS) {
+			if (p.getType() == PacketTypeFactory.BOLS) {
 				
 				//run replacements, starting at the next packet
 				int k = j+1;
 				boolean stop = false;
 				while ((k < packets.size()) &! stop) {
-					if	((packets.get(k).getType() == Packet.BOLS) && 
+					if	((packets.get(k).getType() == PacketTypeFactory.BOLS) && 
 						(packets.get(k).getKey().equals(p.getKey()))) {
 						//stop if a packet with an equal key is found (the key is then sort of overwritten)
 						stop = true;
@@ -282,7 +289,7 @@ public class Reader {
 			Packet p = packets.get(j);
 			footnotes[j] = new ArrayList<String>();
 			
-			if (p.getType() == Packet.BOLS) {
+			if (p.getType() == PacketTypeFactory.BOLS) {
 				String s = new String(p.getValue());
 				
 				
@@ -333,7 +340,7 @@ public class Reader {
 				
 				//add footnote packets:
 				for (int k = 0; k < footnotes[j].size(); k++) {
-					newPackets.add(new Packet(getFootnoteCode(j,k, footnoteCounter+k),footnotes[j].get(k),Packet.FOOTNOTE, true));	
+					newPackets.add(new Packet(getFootnoteCode(j,k, footnoteCounter+k),footnotes[j].get(k),PacketTypeFactory.FOOTNOTE, true));	
 				}
 				
 				footnoteCounter+=footnotes[j].size();
@@ -397,7 +404,7 @@ public class Reader {
 		
 		int i=0;
 		boolean isVisible;
-		int type;
+		//PacketType type;
 		
 		while (m.find()) {
 			//isVisible
@@ -413,13 +420,13 @@ public class Reader {
 				packetReference = new TextReference(result.start(0),result.end(0));
 				keyReference = new TextReference(result.start(2),result.end(2));
 				valueReference = new TextReference(result.start(3),result.end(3));
-				if (Packet.keyPacketTypes.containsKey(m.group(2).toUpperCase())) {
-					type = (Integer) Packet.keyPacketTypes.get(m.group(2).toUpperCase());
-				} else {
-					type = Packet.BOLS;
-				}
-				isVisible = Packet.visibilityMap[type] && (m.group(1) == null);
+				
+				PacketType type = PacketTypeFactory.getType(m.group(2).toUpperCase());
+				debug.temporary(m.group(2).toUpperCase() + " => " + type);
+				isVisible = type.displayInCompositionView() && (m.group(1) == null);
+				
 				Packet packet = new Packet(m.group(2), m.group(3), type, isVisible);
+				
 				packet.setTextReferencePacket(packetReference);
 				packet.setTextRefKey(keyReference);
 				packet.setTextRefValue(valueReference);
@@ -447,13 +454,13 @@ public class Reader {
 		
 		for (int i = 0; i < packets.size(); i++) {
 			Packet p = packets.get(i);
-			if (p.getType() == Packet.BOLS) {
+			if (p.getType() == PacketTypeFactory.BOLS) {
 				String newSequence = 
 					makeSpeedsAbsolute(p.getValue(), new Rational(basicSpeed));
 				
 				newPackets.add(p.replaceValue(newSequence));
 			} else {
-				if (p.getType() == Packet.SPEED) {
+				if (p.getType() == PacketTypeFactory.SPEED) {
 					basicSpeed = (Rational) p.getObject();
 				}
 				newPackets.add(p);
@@ -699,10 +706,16 @@ public class Reader {
 			p = i.next();
 		
 			int type = p.getType();
+			debug.temporary(p.getKey() + " => " + p.getValue() + ", type: " + p.getPType());
+			ParseMode parseMode = p.getPType().getParseMode();
 			
-			switch (type) {
-			
-			case Packet.TAL:
+			if (parseMode == ParseMode.string) {
+				setObjFromString(p);
+			} else if (parseMode == parseMode.commaSeperated) {
+				setObjFromCommaSeperated(p);
+			} else if (parseMode == parseMode.other) switch (type) {
+
+			case PacketTypeFactory.TAL:
 				String regex = SN + "*([^\\s\\n\\r\\f]+)" + SN +"*";
 				Matcher m = Pattern.compile(regex).matcher(p.getValue());
 				if (m.find()) {
@@ -716,11 +729,11 @@ public class Reader {
 					}
 				} else {
 					debug.debug("Tal could not be parsed: " + p.getValue());
-					p.setType(Packet.FAILED);
+					p.setType(PacketTypeFactory.FAILED);
 				}
 				break;
-				
-			case Packet.SPEED:
+
+			case PacketTypeFactory.SPEED:
 				String input = p.getValue().replaceAll(SN +"*", "");
 				try {
 					Rational speed = Rational.parseNonNegRational(input);
@@ -728,49 +741,15 @@ public class Reader {
 					debug.debug("read speed " + speed);
 				} catch (Exception e) {
 					debug.debug("failed to parse Speed, will be ignored!");
-					p.setType(Packet.FAILED);
+					p.setType(PacketTypeFactory.FAILED);
 				}
 				break;
-			
-			//simple string objs
-			case Packet.NAME:
-				setObjFromString(p);
-				break;
-				
-			case Packet.FOOTNOTE:
-				setObjFromString(p);
-				break;
-			
-			case Packet.COMMENT:
-				setObjFromString(p);
-				break;
-			
-			case Packet.SOURCE:
-				setObjFromString(p);
-				break;
-					
-			//comma seperated objs
-			case Packet.TYPE:
-				setObjFromCommaSeperated(p);
-				break;
-				
-			case Packet.EDITOR:
-				setObjFromCommaSeperated(p);
-				break;	
-			
-			case Packet.GHARANA:
-				setObjFromCommaSeperated(p);
-				break;	
-			
-			case Packet.COMPOSER:
-				setObjFromCommaSeperated(p);
-				break;
-				
-			}
-			
-		}
-		
-	}
+
+
+			} // switch	
+		} //while
+
+	} 
 	
 	/**
 	 * Sets a packet's object under the assumption, that its value is a comma
@@ -781,7 +760,7 @@ public class Reader {
 		String[] entries = getEntriesFromCommaSeperated(p.getValue());
 		if (entries.length != 0) {
 			p.setObject(entries);
-		} else p.setType(Packet.FAILED);	
+		} else p.setType(PacketTypeFactory.FAILED);	
 	}
 	
 	/**
@@ -794,7 +773,7 @@ public class Reader {
 		String val = p.getValue().replaceAll(SNatBeginningOrEnd, "");
 		if (val.length() != 0) {
 			p.setObject(val);
-		} else p.setType(Packet.FAILED);	
+		} else p.setType(PacketTypeFactory.FAILED);	
 	}
 	
 	/**
@@ -829,12 +808,12 @@ public class Reader {
 		for (int i=0; i < packets.size(); i++) {
 			Packet p = packets.get(i);
 			
-			if (p.getType() == Packet.BOLS) {
+			if (p.getType() == PacketTypeFactory.BOLS) {
 				try {
 					p.setObject(getRepresentableSequence(p.getValue(), new Rational(1), bolBase));
 				} catch (Exception e) {
 					debug.debug("Failed to process Sequence in " + p.getKey() + ", will be ignored : " + p.getValue());
-					p.setType(Packet.FAILED);
+					p.setType(PacketTypeFactory.FAILED);
 				}
 			} 
 		}

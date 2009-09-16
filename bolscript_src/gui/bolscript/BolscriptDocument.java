@@ -15,6 +15,8 @@ import javax.swing.text.StyleConstants;
 import basics.Debug;
 import bolscript.packets.Packet;
 import bolscript.packets.Packets;
+import bolscript.packets.types.PacketType;
+import bolscript.packets.types.PacketTypeFactory;
 
 public class BolscriptDocument extends DefaultStyledDocument{
 		 
@@ -66,13 +68,14 @@ public class BolscriptDocument extends DefaultStyledDocument{
 	    	 
 	          keyStyleMaps = new HashMap<Integer, Style>();
 	          valueStyleMaps = new HashMap<Integer, Style>();
-	          for (int i = 0; i < Packet.METATYPES.length; i++) {
-	        	  keyStyleMaps.put(Packet.METATYPES[i], styleMetaKey);
-	        	  valueStyleMaps.put(Packet.METATYPES[i], styleMetaValue);
+	          PacketType[] metaTypes = PacketTypeFactory.getMetaTypes();
+	          for (int i = 0; i < metaTypes.length; i++) {
+	        	  keyStyleMaps.put(metaTypes[i].getId(), styleMetaKey);
+	        	  valueStyleMaps.put(metaTypes[i].getId(), styleMetaValue);
 	        	  
 	          }
-	          keyStyleMaps.put(Packet.FAILED, styleFailedKey);
-			valueStyleMaps.put(Packet.FAILED, styleFailedValue);
+	          keyStyleMaps.put(PacketTypeFactory.FAILED, styleFailedKey);
+			valueStyleMaps.put(PacketTypeFactory.FAILED, styleFailedValue);
 	          
 	          //packetTypeStyleMap.put(Packet., value)
 	      }

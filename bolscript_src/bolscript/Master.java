@@ -36,6 +36,7 @@ import bolscript.compositions.State;
 import bolscript.config.Config;
 import bolscript.config.ConfigChangeEvent;
 import bolscript.config.ConfigChangeListener;
+import bolscript.packets.types.PacketTypeFactory;
 public class Master implements ConfigChangeListener{//implements ApplicationListener{//extends JFrame implements WindowListener {
 
 		public static Master master;
@@ -96,6 +97,8 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 			//debug.showErrorConsole();
 			
 			GUI.init();
+			
+			PacketTypeFactory.init();
 			
 			Config.init();
 			
