@@ -26,15 +26,19 @@ public class CompositionTableModel extends AbstractTableModel implements Composi
 	public final static int SNIPPET = 4;
 	public final static int GHARANAS = 5;
 	public final static int SPEEDS = 6;
-	public final static int NR_OF_COLUMNS = 7;
+	public final static int COMPOSERS = 7;
+	public final static int SOURCES = 8;
+	public final static int EDITORS = 9;
+	
+	public final static int NR_OF_COLUMNS = 10;
 	public static int[] COLUMNS_TO_SHOW;
 	public static String[] COLUMN_NAMES;
 	public static int[] COLUMN_ORDER;
 	public static HashMap<Integer, Integer> COLUMN_INDEX;
 	static {
-		COLUMNS_TO_SHOW = new int[]{STATE,NAME,TALS,TYPE, SNIPPET, GHARANAS, SPEEDS};
-		COLUMN_NAMES = new String[]{" ", "Name", "Tals", "Type", "Snippet", "Gharanas", "Speeds"};
-		COLUMN_ORDER = new int[]{STATE, NAME, TALS, TYPE, SPEEDS,GHARANAS, SNIPPET};
+		COLUMNS_TO_SHOW = new int[]{STATE,NAME,TALS,TYPE, SNIPPET, GHARANAS, SPEEDS, COMPOSERS, SOURCES, EDITORS};
+		COLUMN_NAMES = new String[]{" ", "Name", "Tals", "Type", "Snippet", "Gharanas", "Speeds", "Composers", "Sources", "Editors"};
+		COLUMN_ORDER = new int[]{STATE, NAME, TALS, TYPE, SPEEDS,GHARANAS, SNIPPET, COMPOSERS, SOURCES, EDITORS};
 		COLUMN_INDEX = new HashMap<Integer, Integer>();
 		COLUMN_INDEX.put(STATE, 0);
 		COLUMN_INDEX.put(NAME, 1);
@@ -43,6 +47,9 @@ public class CompositionTableModel extends AbstractTableModel implements Composi
 		COLUMN_INDEX.put(SPEEDS, 4);
 		COLUMN_INDEX.put(GHARANAS, 5);
 		COLUMN_INDEX.put(SNIPPET, 6);
+		COLUMN_INDEX.put(COMPOSERS, 7);
+		COLUMN_INDEX.put(SOURCES, 8);
+		COLUMN_INDEX.put(EDITORS, 9);
 		
 	}
 	
@@ -86,15 +93,6 @@ public class CompositionTableModel extends AbstractTableModel implements Composi
 			return Integer.class; 
 		default:
 			return String.class;
-			//return String.class;
-		/*case TALS:
-			return String.class;
-		case TYPE:
-			return String.class;
-		case NAME:
-			return String.class;
-		case SNIPPET:
-			return String.class;*/
 		}
 		
 		
@@ -111,6 +109,12 @@ public class CompositionTableModel extends AbstractTableModel implements Composi
 			return Tools.toString(c.getTals());
 		case TYPE:
 			return Tools.toString(c.getTypes());
+		case COMPOSERS:
+			return Tools.toString(c.getComposers());
+		case SOURCES:
+			return Tools.toString(c.getSources());
+		case EDITORS:
+			return Tools.toString(c.getEditors());
 		case NAME:
 			return c.getName();
 		case SNIPPET:
