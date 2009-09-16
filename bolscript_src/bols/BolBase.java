@@ -127,7 +127,7 @@ public class BolBase extends BolBaseGeneral {
 		ArrayList<PotentialCombinedBolName> potentialCombined = new ArrayList<PotentialCombinedBolName>();
 		ArrayList<PotentialBundle> potentialBundles = new ArrayList<PotentialBundle>();
 		
-		Scanner scanner = new Scanner(Reader.getContents(new File(filename)));
+		Scanner scanner = new Scanner(Reader.getContents(new File(filename), "UTF-16"));
 		
 		String seperator = "\\s*;\\s*";
 		

@@ -29,11 +29,13 @@ public class Packet {
 	public static final int EDITOR = 13;
 	public static final int DESCRIPTION = 14;
 	public static final int COMMENT = 15;
-	public static final int nrOfTypes = 16;
+	public static final int COMPOSER = 16;
+	public static final int SOURCE = 17;
+	public static final int nrOfTypes = 18;
 	
 	public static final int[] METATYPES = new int[]{ META, FOOTNOTE, SPEED, 
 		LAYOUT, LENGTH, NAME, VIBHAGS, TAL, TYPE, 
-		GHARANA, RIGHTS, EDITOR, DESCRIPTION, COMMENT};
+		GHARANA, RIGHTS, EDITOR, DESCRIPTION, COMMENT, COMPOSER, SOURCE};
 	
 	/**
 	 * Maps packet Keys to their types.
@@ -64,6 +66,10 @@ public class Packet {
 		keyPacketTypes.put("EDITORS", EDITOR);
 		keyPacketTypes.put("COMMENT", COMMENT);
 		keyPacketTypes.put("COMMENTS", COMMENT);
+		keyPacketTypes.put("COMPOSER", COMPOSER);
+		keyPacketTypes.put("COMPOSERS", COMPOSER);
+		keyPacketTypes.put("SOURCE", SOURCE);
+
 		
 		visibilityMap = new boolean[nrOfTypes]; //default value is false
 		visibilityMap[BOLS] = true;

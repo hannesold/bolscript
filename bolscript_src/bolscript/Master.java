@@ -366,6 +366,7 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 		 */
 		public void openNewComposition() {
 
+			
 			String template = "Editor: Unknown\nGharana: Punjab\nTal: Teental\nType: Unknown\n\n";
 		
 			Composition comp = new Composition(template);
