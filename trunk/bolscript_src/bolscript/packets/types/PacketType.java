@@ -1,10 +1,14 @@
-package bolscript.packets;
+package bolscript.packets.types;
 
 import java.awt.Color;
 
 public interface PacketType {
 	
 	public enum Kardinality {
+		/**
+		 * This Packet is not stored in compositions
+		 */
+		none,
 		/** 
 		 * This Packet is stored only once per composition
 		 */
@@ -13,18 +17,32 @@ public interface PacketType {
 		/**
 		 * This Packet is stored multiple times per composition (in an array)
 		 */
-		multiple
+		multiple,
+		
+		/**
+		 * This Packet is specially treated
+		 */
+		other
 	}
 	
 	public enum ParseMode{
+		/**
+		 * This packet is subject to parsing
+		 */
+		none,
 		/**
 		 * A Packets Value is parsed as one string
 		 */
 		string,
 		/**
-		 * A Packets Value is parsed as a comma seperated list.
+		 * A Packets Value is parsed as a comma seperated list
 		 */
-		commaSeperated
+		commaSeperated,
+		
+		/**
+		 * This Packet cannot be parsed in a trivial way
+		 */
+		other
 	}
 	
 	/**
@@ -90,7 +108,5 @@ public interface PacketType {
 	 * The color of the key in the composition editor.
 	 */
 	Color getKeyColor();
-	
-	
 	
 }

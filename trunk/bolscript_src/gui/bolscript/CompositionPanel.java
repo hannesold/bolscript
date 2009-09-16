@@ -45,6 +45,7 @@ import bolscript.compositions.Composition;
 import bolscript.config.Config;
 import bolscript.packets.Packet;
 import bolscript.packets.Packets;
+import bolscript.packets.types.PacketTypeFactory;
 import bolscript.sequences.RepresentableSequence;
 
 import com.lowagie.text.Document;
@@ -329,11 +330,11 @@ public class CompositionPanel extends JLayeredPane {
 		Tal tal = TalBase.standard().getTalFromName("Teental");
 		for (Packet p : packets) {
 			//System.out.println("checking p");
-			if (p.getType() == Packet.TAL) {
+			if (p.getType() == PacketTypeFactory.TAL) {
 				tal = (Tal) p.getObject();
 			}
 			if (p.isVisible()) {
-				if (p.getType()==Packet.FOOTNOTE) {
+				if (p.getType()==PacketTypeFactory.FOOTNOTE) {
 					FootnoteText ft = new FootnoteText(p);
 					addLineBreak(new Float(newHeight), PageBreakPanel.LOW);
 					components.add(ft);
@@ -348,13 +349,13 @@ public class CompositionPanel extends JLayeredPane {
 					
 					
 				} 
-				if ((p.getType()==Packet.COMMENT)) {
+				if ((p.getType()==PacketTypeFactory.COMMENT)) {
 					CommentText ct = new CommentText(p);
 					addLineBreak(new Float(newHeight), PageBreakPanel.HIGH);
 					components.add(ct);
 					newHeight += components.get(components.size()-1).getPreferredSize().height;
 
-				} else  if ((p.getType()==Packet.BOLS)) {
+				} else  if ((p.getType()==PacketTypeFactory.BOLS)) {
 
 					SequenceTitlePanel title = new SequenceTitlePanel(p.getKey());
 

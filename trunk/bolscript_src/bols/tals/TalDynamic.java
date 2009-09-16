@@ -12,6 +12,7 @@ import bolscript.compositions.Composition;
 import bolscript.compositions.State;
 import bolscript.packets.Packet;
 import bolscript.packets.Packets;
+import bolscript.packets.types.PacketTypeFactory;
 import bolscript.sequences.RepresentableSequence;
 
 public class TalDynamic extends Composition implements Tal {
@@ -89,18 +90,18 @@ public class TalDynamic extends Composition implements Tal {
 		//gather aditional infos needed for tal
 		for (int i=0; i<packets.size(); i++) {
 			Packet p = packets.get(i);
-			if (p.getType() == Packet.LENGTH)  {
+			if (p.getType() == PacketTypeFactory.LENGTH)  {
 				String s = p.getValue().replaceAll(Reader.SN, "");
 				int length = Integer.parseInt(s);
 				this.setLength(length);
-			} else if  ((p.getType() == Packet.BOLS) && 
+			} else if  ((p.getType() == PacketTypeFactory.BOLS) && 
 					(p.getKey().equalsIgnoreCase("Theka"))) {
 				//get the Theka
 				this.setTheka((RepresentableSequence) p.getObject());
-			} else if (p.getType() == Packet.LAYOUT) {
+			} else if (p.getType() == PacketTypeFactory.LAYOUT) {
 				// do this after length!! So we postpone it and do it after the for loop
 				layoutPacket = p;
-			} else if (p.getType() == Packet.VIBHAGS) {
+			} else if (p.getType() == PacketTypeFactory.VIBHAGS) {
 				Matcher m = Pattern.compile(Reader.SN +"*(\\d+)\\s*([kK]|Kali|Khali|kali|khali)?").matcher(p.getValue());
 
 				int k = 0;
@@ -130,7 +131,7 @@ public class TalDynamic extends Composition implements Tal {
 
 				if (vibs.length >0) {
 					this.setVibhags(vibs);
-				} else p.setType(Packet.FAILED);
+				} else p.setType(PacketTypeFactory.FAILED);
 			}
 
 		}
@@ -182,21 +183,21 @@ public class TalDynamic extends Composition implements Tal {
 
 		for (int i=0; i<packets.size(); i++) {
 			Packet p = packets.get(i);
-			if (p.getType() == Packet.NAME) {
+			if (p.getType() == PacketTypeFactory.NAME) {
 				String s = p.getValue().replaceAll(Reader.SNatBeginningOrEnd, "");
 				this.setName(s);
-			} else if (p.getType() == Packet.LENGTH)  {
+			} else if (p.getType() == PacketTypeFactory.LENGTH)  {
 				String s = p.getValue().replaceAll(Reader.SN, "");
 				int length = Integer.parseInt(s);
 				this.setLength(length);
-			} else if  ((p.getType() == Packet.BOLS) && 
+			} else if  ((p.getType() == PacketTypeFactory.BOLS) && 
 					(p.getKey().equalsIgnoreCase("Theka"))) {
 				//get the Theka
 				this.setTheka((RepresentableSequence) p.getObject());
-			} else if (p.getType() == Packet.LAYOUT) {
+			} else if (p.getType() == PacketTypeFactory.LAYOUT) {
 				// do this after length!! So we postpone it and do it after the for loop
 				layoutPacket = p;
-			} else if (p.getType() == Packet.VIBHAGS) {
+			} else if (p.getType() == PacketTypeFactory.VIBHAGS) {
 				Matcher m = Pattern.compile(Reader.SN +"*(\\d+)\\s*([kK]|Kali|Khali|kali|khali)?").matcher(p.getValue());
 
 				int k = 0;

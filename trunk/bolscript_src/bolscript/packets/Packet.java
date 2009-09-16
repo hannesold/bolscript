@@ -2,6 +2,10 @@ package bolscript.packets;
 
 import java.util.HashMap;
 
+import basics.Debug;
+import bolscript.packets.types.PacketType;
+import bolscript.packets.types.PacketTypeFactory;
+
 /**
  * <p>Packet represents one Key/Value packet in a bolscript string. The class  
  * contains the key, the string value, a type identifier (e.g. BOLS, SPEED, EDITOR...)
@@ -13,34 +17,11 @@ import java.util.HashMap;
  * @see Reader, Packets
  */
 public class Packet {
-	public static final int META = 0;
-	public static final int BOLS = 1;
-	public static final int FOOTNOTE = 2;
-	public static final int SPEED = 3;
-	public static final int FAILED = 4;
-	public static final int LAYOUT = 5;
-	public static final int LENGTH = 6;
-	public static final int NAME = 7;
-	public static final int VIBHAGS = 8;
-	public static final int TAL = 9;
-	public static final int TYPE = 10;
-	public static final int GHARANA = 11;
-	public static final int RIGHTS = 12;
-	public static final int EDITOR = 13;
-	public static final int DESCRIPTION = 14;
-	public static final int COMMENT = 15;
-	public static final int COMPOSER = 16;
-	public static final int SOURCE = 17;
-	public static final int nrOfTypes = 18;
-	
-	public static final int[] METATYPES = new int[]{ META, FOOTNOTE, SPEED, 
-		LAYOUT, LENGTH, NAME, VIBHAGS, TAL, TYPE, 
-		GHARANA, RIGHTS, EDITOR, DESCRIPTION, COMMENT, COMPOSER, SOURCE};
 	
 	/**
 	 * Maps packet Keys to their types.
 	 */
-	public static HashMap<String, Integer> keyPacketTypes;
+	//public static HashMap<String, Integer> keyPacketTypes;
 	
 	/**
 	 * Maps the packet types to their packets default visibility in output.
@@ -48,33 +29,34 @@ public class Packet {
 	public static boolean [] visibilityMap;
 	
 	static {
-		keyPacketTypes = new HashMap<String, Integer>();
-		keyPacketTypes.put("TAL", TAL);
-		keyPacketTypes.put("TALA", TAL);
-		keyPacketTypes.put("TYPE", TYPE);
-		keyPacketTypes.put("TYPES", TYPE);
-		keyPacketTypes.put("SPEED", SPEED);
-		keyPacketTypes.put("LAYOUT", LAYOUT);
-		keyPacketTypes.put("LENGTH", LENGTH);
-		keyPacketTypes.put("NAME", NAME);
-		keyPacketTypes.put("VIBHAGS", VIBHAGS);
-		keyPacketTypes.put("GHARANA", GHARANA);
-		keyPacketTypes.put("GHARANAS", GHARANA);
-		keyPacketTypes.put("DESCRIPTION", DESCRIPTION);
-		keyPacketTypes.put("RIGHTS", RIGHTS);
-		keyPacketTypes.put("EDITOR", EDITOR);
-		keyPacketTypes.put("EDITORS", EDITOR);
-		keyPacketTypes.put("COMMENT", COMMENT);
-		keyPacketTypes.put("COMMENTS", COMMENT);
-		keyPacketTypes.put("COMPOSER", COMPOSER);
-		keyPacketTypes.put("COMPOSERS", COMPOSER);
-		keyPacketTypes.put("SOURCE", SOURCE);
+	/*	keyPacketTypes = new HashMap<String, Integer>();
+		keyPacketTypes.put("TAL", PacketTypeFactory.TAL);
+		keyPacketTypes.put("TALA", PacketTypeFactory.TAL);
+		keyPacketTypes.put("TYPE", PacketTypeFactory.TYPE);
+		keyPacketTypes.put("TYPES", PacketTypeFactory.TYPE);
+		keyPacketTypes.put("SPEED", PacketTypeFactory.SPEED);
+		keyPacketTypes.put("LAYOUT", PacketTypeFactory.LAYOUT);
+		keyPacketTypes.put("LENGTH", PacketTypeFactory.LENGTH);
+		keyPacketTypes.put("NAME", PacketTypeFactory.NAME);
+		keyPacketTypes.put("VIBHAGS", PacketTypeFactory.VIBHAGS);
+		keyPacketTypes.put("GHARANA", PacketTypeFactory.GHARANA);
+		keyPacketTypes.put("GHARANAS", PacketTypeFactory.GHARANA);
+		keyPacketTypes.put("DESCRIPTION", PacketTypeFactory.DESCRIPTION);
+		keyPacketTypes.put("RIGHTS", PacketTypeFactory.RIGHTS);
+		keyPacketTypes.put("EDITOR", PacketTypeFactory.EDITOR);
+		keyPacketTypes.put("EDITORS", PacketTypeFactory.EDITOR);
+		keyPacketTypes.put("COMMENT", PacketTypeFactory.COMMENT);
+		keyPacketTypes.put("COMMENTS", PacketTypeFactory.COMMENT);
+		keyPacketTypes.put("COMPOSER", PacketTypeFactory.COMPOSER);
+		keyPacketTypes.put("COMPOSERS", PacketTypeFactory.COMPOSER);
+		keyPacketTypes.put("SOURCE", PacketTypeFactory.SOURCE);
 
-		
-		visibilityMap = new boolean[nrOfTypes]; //default value is false
-		visibilityMap[BOLS] = true;
-		visibilityMap[FOOTNOTE] = true;
-		visibilityMap[COMMENT] = true;
+		*/
+		/*
+		visibilityMap = new boolean[PacketTypeFactory.nrOfTypes]; //default value is false
+		visibilityMap[PacketTypeFactory.BOLS] = true;
+		visibilityMap[PacketTypeFactory.FOOTNOTE] = true;
+		visibilityMap[PacketTypeFactory.COMMENT] = true;*/
 		
 	}
 	
@@ -82,7 +64,6 @@ public class Packet {
 	private String value;
 	private boolean visible;
 	private Object object;
-	private int type;
 	private PacketType packetType;
 	private TextReference textRefPacket;
 	private TextReference textRefKey;
@@ -92,7 +73,20 @@ public class Packet {
 		super();
 		this.key = key;
 		this.value = value;
-		this.type = type;
+		//this.type = type;
+		this.visible = visible;
+		this.object = null;
+		this.textRefPacket = null;
+		this.textRefKey = null;
+		this.textRefValue = null;
+		setType(type);
+	}
+	
+	public Packet(String key, String value, PacketType type, boolean visible) {
+		super();
+		this.key = key;
+		this.value = value;
+		this.packetType = type;
 		this.visible = visible;
 		this.object = null;
 		this.textRefPacket = null;
@@ -128,6 +122,7 @@ public class Packet {
 		if (object != null){
 			s.append(key + ":: " + object.toString() + "\n");
 		} else s.append(key + ": " + value+ "\n");//+value.split(" ").length;
+		s.append("type: " + packetType + "\n");
 		if (textRefPacket!=null) {
 			s.append(textRefPacket + "\n");
 		}
@@ -135,7 +130,10 @@ public class Packet {
 		
 	}
 	public int getType() {
-		return type;
+		if (packetType == null) {
+			Debug.critical(this, "type is null: " + this.toString());
+		}
+		return packetType.getId();
 	}
 	
 	public PacketType getPType() {
@@ -147,7 +145,14 @@ public class Packet {
 	}
 	
 	public void setType(int type) {
-		this.type = type;
+		/*if (PacketTypeFactory.getType(type) == null) {
+			PacketTypeFactory.init();
+		}*/
+		this.packetType = PacketTypeFactory.getType(type);
+		if (this.packetType == null) {
+			Debug.critical(this, "type "+type+" could not be set!!");
+		}
+		
 	}
 
 	public Object getObject() {
@@ -159,7 +164,7 @@ public class Packet {
 	}
 	
 	public Packet replaceValue(String val) {
-		Packet p = new Packet(new String(this.key), val, type, visible);
+		Packet p = new Packet(new String(this.key), val, packetType.getId(), visible);
 		if (textRefPacket != null) {
 			p.setTextReferencePacket(textRefPacket.clone());
 		} if (textRefKey != null) p.setTextRefKey(textRefKey.clone());
