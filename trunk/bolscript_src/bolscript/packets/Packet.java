@@ -83,6 +83,7 @@ public class Packet {
 	private boolean visible;
 	private Object object;
 	private int type;
+	private PacketType packetType;
 	private TextReference textRefPacket;
 	private TextReference textRefKey;
 	private TextReference textRefValue;
@@ -136,6 +137,15 @@ public class Packet {
 	public int getType() {
 		return type;
 	}
+	
+	public PacketType getPType() {
+		return packetType;
+	}
+	
+	public void setPType(PacketType type) {
+		this.packetType = type;
+	}
+	
 	public void setType(int type) {
 		this.type = type;
 	}
