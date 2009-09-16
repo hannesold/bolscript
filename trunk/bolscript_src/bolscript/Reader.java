@@ -678,6 +678,8 @@ public class Reader {
 	 * <li>SPEED</li>
 	 * <li>TAL</li>
 	 * <li>TYPE</li>
+	 * <li>COMPOSER</li>
+	 * <li>SOURCE</li>
 	 * </p>
 	 * <p>The packets values are parsed and stored within the <code>obj</obj>-field 
 	 * of the owning Packet. Packets where parsing failed get their <code>type</code> 
@@ -718,25 +720,6 @@ public class Reader {
 				}
 				break;
 				
-			case Packet.TYPE:
-				ArrayList<String> types = new ArrayList<String>();
-				
-				String[] splittedTypes = p.getValue().split(",");
-				for (int j = 0; j < splittedTypes.length; j++) {
-					String stripped = splittedTypes[j].replaceAll(SNatBeginningOrEnd, "");
-					stripped = stripped.replaceAll(N, " ");
-					stripped = stripped.replaceAll("\\s+", " ");
-					if (!stripped.equals("")) types.add(stripped);
-				}
-				if (types.size()>0) {
-					p.setObject((Object[]) types.toArray());
-				} else p.setType(Packet.FAILED);
-				break;
-				
-			case Packet.NAME:
-				p.setObject(p.getValue().replaceAll(SNatBeginningOrEnd, ""));
-				break;
-				
 			case Packet.SPEED:
 				String input = p.getValue().replaceAll(SN +"*", "");
 				try {
@@ -749,52 +732,92 @@ public class Reader {
 				}
 				break;
 			
+			//simple string objs
+			case Packet.NAME:
+				setObjFromString(p);
+				break;
+				
 			case Packet.FOOTNOTE:
-				p.setObject(p.getValue().replaceAll(SNatBeginningOrEnd, ""));
+				setObjFromString(p);
+				break;
+			
+			case Packet.COMMENT:
+				setObjFromString(p);
+				break;
+			
+			case Packet.SOURCE:
+				setObjFromString(p);
+				break;
+					
+			//comma seperated objs
+			case Packet.TYPE:
+				setObjFromCommaSeperated(p);
 				break;
 				
 			case Packet.EDITOR:
-				ArrayList<String> editors = new ArrayList<String>();
-				
-				String[] splittedEditors = p.getValue().split(",");
-				for (int j = 0; j < splittedEditors.length; j++) {
-					String stripped = splittedEditors[j].replaceAll(SNatBeginningOrEnd, "");
-					stripped = stripped.replaceAll(N, " ");
-					stripped = stripped.replaceAll("\\s+", " ");
-					if (!stripped.equals("")) editors.add(stripped);
-				}
-				if (editors.size()>0) {
-					p.setObject((Object[]) editors.toArray());
-				} else p.setType(Packet.FAILED);
-
-				break;				
-			case Packet.GHARANA:
-				ArrayList<String> gharanas = new ArrayList<String>();
-				
-				String[] splitted = p.getValue().split(",");
-				for (int j = 0; j < splitted.length; j++) {
-					String stripped = splitted[j].replaceAll(SNatBeginningOrEnd, "");
-					stripped = stripped.replaceAll(N, " ");
-					stripped = stripped.replaceAll("\\s+", " ");
-					if (!stripped.equals("")) gharanas.add(stripped);
-				}
-				if (gharanas.size()>0) {
-					p.setObject((Object[]) gharanas.toArray());
-				} else p.setType(Packet.FAILED);
+				setObjFromCommaSeperated(p);
 				break;	
-			 
-			case Packet.COMMENT:
-				String obj = p.getValue().replaceAll(SNatBeginningOrEnd, "");
-				if (!obj.equals("")) {
-					p.setObject(obj);
-				} else p.setType(Packet.FAILED);
+			
+			case Packet.GHARANA:
+				setObjFromCommaSeperated(p);
+				break;	
+			
+			case Packet.COMPOSER:
+				setObjFromCommaSeperated(p);
 				break;
+				
 			}
 			
 		}
 		
 	}
 	
+	/**
+	 * Sets a packet's object under the assumption, that its value is a comma
+	 * seperated list. If the resulting entries are empty the Packet is set to FAILED.
+	 * @param p the Packet
+	 */
+	private static void setObjFromCommaSeperated(Packet p) {
+		String[] entries = getEntriesFromCommaSeperated(p.getValue());
+		if (entries.length != 0) {
+			p.setObject(entries);
+		} else p.setType(Packet.FAILED);	
+	}
+	
+	/**
+	 * Sets a packet's object under the assumption, that its value is non-empty string.
+	 * If it is empty the Packet is set to FAILED.
+	 * Removes whitespaces and linebreaks at beginning and end.
+	 * @param p the Packet
+	 */
+	private static void setObjFromString(Packet p) {
+		String val = p.getValue().replaceAll(SNatBeginningOrEnd, "");
+		if (val.length() != 0) {
+			p.setObject(val);
+		} else p.setType(Packet.FAILED);	
+	}
+	
+	/**
+	 * Builds a String array from a comma seperated list.
+	 * Removes any superflouous white spaces and linebreaks,
+	 * and ignores empty entries.
+	 * 
+	 * @param A comma seperated list of entries.
+	 * @return The String array of entries.
+	 */
+	private static String[] getEntriesFromCommaSeperated(String input) {
+		ArrayList<String> entries = new ArrayList<String>();
+		
+		String[] splittedEntries = input.split(",");
+		for (int j = 0; j < splittedEntries.length; j++) {
+			String stripped = splittedEntries[j].replaceAll(SNatBeginningOrEnd, "");
+			stripped = stripped.replaceAll(N, " ");
+			stripped = stripped.replaceAll("\\s+", " ");
+			if (!stripped.equals("")) entries.add(stripped);
+		}
+		String[] entriesArray = new String[entries.size()];
+		return entries.toArray(entriesArray);
+	}
 	/**
 	 * Expects preprocessed bol packets in the final synthax, including preprocessed absolute speeds
 	 * @param packets
@@ -829,7 +852,7 @@ public class Reader {
 	static public String getContents(File file, int maxFileSize) throws FileReadException{
 		if (file.length() < maxFileSize) {
 			debug.debug("reading file "+file.getName()+" with file size: " + file.length() + " bytes.");
-	    	return getContents(file);
+	    	return getContents(file, "UTF-8");
 	    } else {
 	    	throw new FileReadException(file, new Exception("File exceeds maximum allowed filesize of: " + maxFileSize + "B, it has size:" + file.length()));
 	    } 
@@ -839,11 +862,12 @@ public class Reader {
 	 * Original version from http://www.javapractices.com/topic/TopicAction.do?Id=42
 	 * Returns the contents of a textfile. In case of some reading error a FileReadException is thrown.
 	 * @param file The file.
+	 * @param encoding TODO
 	 * @param maxFileSize The maximum allowed file size in bytes.
 	 * @return
 	 * @throws FileReadException Is thrown if it is larger than maxFileSize or there is some readError.
 	 */
-	static public String getContents(File file) throws FileReadException {
+	static public String getContents(File file, String encoding) throws FileReadException {
 		 //...checks on aFile are elided
 		    StringBuilder contents = new StringBuilder();
 		    
@@ -852,7 +876,7 @@ public class Reader {
 		      //FileReader always assumes default encoding is OK!
 		      
 			    FileInputStream fin = new FileInputStream(file);
-			    InputStreamReader in = new InputStreamReader(fin, "UTF-8");
+			    InputStreamReader in = new InputStreamReader(fin, encoding);
 			    BufferedReader input = new BufferedReader(in);
 			    
 		      try {

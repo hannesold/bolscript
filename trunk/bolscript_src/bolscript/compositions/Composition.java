@@ -31,6 +31,8 @@ import bolscript.sequences.RepresentableSequence;
 	protected ArrayList<String> speeds = null;
 	protected ArrayList<String> editors = null;
 	protected ArrayList<String> comments = null;
+	protected ArrayList<String> composers = null;
+	protected ArrayList<String> sources = null;
 	protected ArrayList<Rational> speedsR = null;
 	protected Rational maxSpeed = null;
 	protected ArrayList<String> keys = null;
@@ -156,6 +158,30 @@ import bolscript.sequences.RepresentableSequence;
 		}
 	}
 	
+	public ArrayList<String> getSources() {
+		return sources;
+	}
+	
+	public void addSource(String source) {
+		if (sources == null) sources = new ArrayList<String>();
+		if (!sources.contains(source)) {
+			sources.add(source);
+			Collections.sort(sources);
+		}
+	}
+	
+	public ArrayList<String> getComposers() {
+		return composers;
+	}
+	
+	public void addComposer(String composer) {
+		if (composers == null) composers = new ArrayList<String>();
+		if (!composers.contains(composer)) {
+			composers.add(composer);
+			Collections.sort(composers);
+		}
+	}
+	
 	public ArrayList<String> getEditors() {
 		return editors;
 	}
@@ -234,6 +260,8 @@ import bolscript.sequences.RepresentableSequence;
 		addSearchString(Tools.toString(getTals()));
 		addSearchString(Tools.toString(getTypes()));
 		addSearchString(Tools.toString(getEditors()));
+		addSearchString(Tools.toString(getComposers()));
+		addSearchString(Tools.toString(getSources()));
 		addSearchString(getDescription());
 		
 		if (linkLocal != null) {
@@ -369,6 +397,8 @@ import bolscript.sequences.RepresentableSequence;
 		//addSpeed(new Rational(1));
 		comments = new ArrayList<String>();
 		keys = new ArrayList<String>();
+		sources = new ArrayList<String>();
+		composers = new ArrayList<String>();
 		
 		Packet firstBolPacket = null;
 		
@@ -385,42 +415,50 @@ import bolscript.sequences.RepresentableSequence;
 				name = (String) obj;
 				break;
 			case Packet.TAL:
-					addTal(((Tal) obj).getName());
+				addTal(((Tal) obj).getName());
+				break;
+			case Packet.SPEED:
+				addSpeed((Rational) obj);
+				//addSpeed(obj.toString());
 				break;
 			case Packet.TYPE:
 				Object [] types = (Object[]) obj;
 				for (int j=0; j < types.length; j++) {
 					addType((String) types[j]);
 				}
-		
-				break;
-			case Packet.DESCRIPTION:
-					setDescription((String) obj);
 				break;
 				
+			case Packet.DESCRIPTION:
+				setDescription((String) obj);
+				break;
+			case Packet.COMMENT:
+				addComment((String) obj);
+				break;
+			case Packet.SOURCE:
+				addSource((String) obj);
+				break;
+
 			case Packet.GHARANA:
 				Object [] ghars = (Object[]) obj;
 				for (int j=0; j < ghars.length; j++) {
 					addGharana((String) ghars[j]);
 				}
 				break;
-				
-			case Packet.SPEED:
-				addSpeed((Rational) obj);
-				//addSpeed(obj.toString());
-				break;
-			
-			case Packet.COMMENT:
-				addComment((String) obj);
-				break;
+
 			case Packet.EDITOR:
 				Object [] editors = (Object[]) obj;
 				for (int j=0; j < editors.length; j++) {
 					addEditor((String) editors[j]);
 				}
 				break;
-			case Packet.BOLS:
-				
+			case Packet.COMPOSER:
+				Object [] composers = (Object[]) obj;
+				for (int j=0; j < composers.length; j++) {
+					addComposer((String) composers[j]);
+				}
+				break;
+
+			case Packet.BOLS:		
 				RepresentableSequence compact = ((RepresentableSequence) obj).getCompact();
 				maxSpeed = Rational.max(maxSpeed, compact.getMaxSpeed());
 				if (snippet.equals("")) {
