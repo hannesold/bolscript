@@ -4,45 +4,45 @@ import java.awt.Color;
 
 public interface PacketType {
 	
-	public enum Kardinality {
+	public enum StorageType {
 		/**
 		 * This Packet is not stored in compositions
 		 */
-		none,
+		NONE,
 		/** 
 		 * This Packet is stored only once per composition
 		 */
-		unique, 
+		STRING, 
 		
 		/**
 		 * This Packet is stored multiple times per composition (in an array)
 		 */
-		multiple,
+		STRINGLIST,
 		
 		/**
 		 * This Packet is specially treated
 		 */
-		other
+		OTHER
 	}
 	
 	public enum ParseMode{
 		/**
 		 * This packet is subject to parsing
 		 */
-		none,
+		NONE,
 		/**
 		 * A Packets Value is parsed as one string
 		 */
-		string,
+		STRING,
 		/**
 		 * A Packets Value is parsed as a comma seperated list
 		 */
-		commaSeperated,
+		COMMASEPERATED,
 		
 		/**
 		 * This Packet cannot be parsed in a trivial way
 		 */
-		other
+		OTHER
 	}
 	
 	/**
@@ -65,7 +65,7 @@ public interface PacketType {
 	/**
 	 * Returns the kardinality, that is, if it is supposed to have a single or list of values.
 	 */
-	Kardinality getKardinality();
+	StorageType getStorageType();
 	
 	/**
 	 * Shall this Type be Part of the display in the composition browsers table.

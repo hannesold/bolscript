@@ -709,11 +709,11 @@ public class Reader {
 			debug.temporary(p.getKey() + " => " + p.getValue() + ", type: " + p.getPType());
 			ParseMode parseMode = p.getPType().getParseMode();
 			
-			if (parseMode == ParseMode.string) {
+			if (parseMode == ParseMode.STRING) {
 				setObjFromString(p);
-			} else if (parseMode == parseMode.commaSeperated) {
+			} else if (parseMode == parseMode.COMMASEPERATED) {
 				setObjFromCommaSeperated(p);
-			} else if (parseMode == parseMode.other) switch (type) {
+			} else if (parseMode == parseMode.OTHER) switch (type) {
 
 			case PacketTypeFactory.TAL:
 				String regex = SN + "*([^\\s\\n\\r\\f]+)" + SN +"*";
