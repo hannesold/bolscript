@@ -19,12 +19,16 @@ import bolscript.compositions.CompositionBaseListener;
 import bolscript.compositions.CompositionChangeEvent;
 import bolscript.compositions.CompositionChangedListener;
 import bolscript.filters.FullTextSearchFilter;
-import bolscript.filters.GharanaFilter;
+import bolscript.filters.MetaValueFilter;
 import bolscript.filters.SpeedFilter;
-import bolscript.filters.StringArrayFilterGeneral;
-import bolscript.filters.TalFilter;
-import bolscript.filters.TypeFilter;
+import bolscript.filters.StringArrayFilter;
+import bolscript.packets.types.PacketTypeFactory;
 
+/**
+ * This class contains the filter gui, mapping of filters as well as the filter logics
+ * @author hannes
+ *
+ */
 public class FilterPanel extends JPanel implements ListSelectionListener, KeyListener, CompositionBaseListener, CompositionChangedListener {
 
 	private static final long serialVersionUID = 9132774459629687854L;
@@ -37,38 +41,33 @@ public class FilterPanel extends JPanel implements ListSelectionListener, KeyLis
 	//the gui elements
 	private SearchPanel searchPanel;
 	private int nrOfLists;
-	private ArrayList<StringArrayFilterGeneral> listFilters;
-	private FilterList gharanaList;
-	private FilterList talList;
-	private FilterList typeList;
-	private FilterList speedList;
+	private ArrayList<MetaValueFilter> listFilters;
 		
 	//the filters
 	private ArrayList<FilterList> lists;
 	private FullTextSearchFilter searchFilter;
 	
 	
-	public FilterPanel(CompositionBase compBase, SearchPanel searchPanel) {
+	public FilterPanel(CompositionBase compBase) {
 		super();
 		this.compBase = compBase;
-		this.searchPanel = searchPanel;
-		initPanels();
+		initFiltersAndPanels();
 		compBase.addChangeListener(this);
 	}
 	
-	public void initPanels() {
-		
+	public void initFiltersAndPanels() {
 		
 		lists = new ArrayList<FilterList>();
-		listFilters = new ArrayList<StringArrayFilterGeneral>();
 		
-	    nrOfLists = 4;
+		listFilters = new ArrayList<MetaValueFilter>();
 		
 	    searchFilter = new FullTextSearchFilter();	   
-	    listFilters.add(new GharanaFilter());
-		listFilters.add(new TalFilter());
-		listFilters.add(new TypeFilter());	
+	    listFilters.add(new MetaValueFilter(PacketTypeFactory.EDITOR));
+	    listFilters.add(new MetaValueFilter(PacketTypeFactory.GHARANA));
+		listFilters.add(new MetaValueFilter(PacketTypeFactory.TAL));
+		listFilters.add(new MetaValueFilter(PacketTypeFactory.TYPE));	
 		listFilters.add(new SpeedFilter());
+		nrOfLists = listFilters.size();
 		
 		// set Sources
 	    searchFilter.setCompositionSource(compBase);
@@ -79,43 +78,30 @@ public class FilterPanel extends JPanel implements ListSelectionListener, KeyLis
 		
 		// set all to bypass and generate initial data sets
 	    searchFilter.setAcceptAll(true);
-	    searchFilter.bypass();
+	    searchFilter.runBypass();
 		for(int i=0; i< nrOfLists; i++) {
+			//
 			listFilters.get(i).setAcceptAll(true);
-			listFilters.get(i).bypass();
-			ArrayList<String> collection = listFilters.get(i).collect(true);
+			listFilters.get(i).runBypass();
+			ArrayList<String> collection = listFilters.get(i).collectStringSamples(true);
 			collection.add(0,ALL + " (" + collection.size()+")");
-		}
-				
-		// generate the JLists
-		gharanaList = new FilterList(listFilters.get(0).getCollectedStrings().toArray());
-		talList = new FilterList(listFilters.get(1).getCollectedStrings().toArray());
-		typeList = new FilterList(listFilters.get(2).getCollectedStrings().toArray());
-		speedList = new FilterList(listFilters.get(3).getCollectedStrings().toArray());
-		
-		lists.add(gharanaList);		
-		lists.add(talList);
-		lists.add(typeList);
-		lists.add(speedList);
-		
-		for(FilterList list: lists) {
+			
+			//The list 
+			FilterList list = new FilterList(listFilters.get(i).getCollectedStringSamples().toArray());
+			lists.add(list);
 			list.setSelectedIndex(0);
 			list.setLayoutOrientation(FilterList.VERTICAL);
 			list.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+			
+			//The wrapping panel
+			FilterListPanel listPanel = new FilterListPanel(listFilters.get(i).getFilterHeader(), lists.get(i));
+			this.add(listPanel);
+		
 		}
 		
-		//add the Wrapper Panels for the JLists (and set their title)
-		FilterListPanel gharanaPanel = new FilterListPanel("Gharanas", gharanaList);
-		FilterListPanel talPanel = new FilterListPanel("Tals", talList);
-		FilterListPanel typePanel = new FilterListPanel("Types", typeList);
-		FilterListPanel speedPanel = new FilterListPanel("Speeds", speedList);
+		searchPanel = new SearchPanel(searchFilter.getFilterHeader());
 		
 		this.setLayout(new BoxLayout(this,BoxLayout.X_AXIS));
-		this.add(gharanaPanel);
-		this.add(talPanel);
-		this.add(typePanel);
-		this.add(speedPanel);
-		
 		
 		refreshDataAndSelectionsInList(0);
 		processSelections(0);
@@ -164,7 +150,7 @@ public class FilterPanel extends JPanel implements ListSelectionListener, KeyLis
 			
 			if (searchKey.replaceAll(Reader.SN, "").equals("")) {
 				searchFilter.setAcceptAll(true);	
-				searchFilter.bypass();
+				searchFilter.runBypass();
 			} else {
 				searchFilter.setAcceptAll(false);
 				searchFilter.filter(new String[]{searchKey});
@@ -220,7 +206,7 @@ public class FilterPanel extends JPanel implements ListSelectionListener, KeyLis
 		
 		if (index>=0 && index < listFilters.size()) {
 			FilterList list = lists.get(index);
-			StringArrayFilterGeneral filter = listFilters.get(index);
+			StringArrayFilter filter = listFilters.get(index);
 
 			int[] indices = list.getSelectedIndices();
 			if (indices.length > 0) {
@@ -229,7 +215,7 @@ public class FilterPanel extends JPanel implements ListSelectionListener, KeyLis
 				filter.setAcceptAll(indices[0]==0);
 
 				if (filter.acceptsAll()) {
-					filter.bypass();
+					filter.runBypass();
 				} else {
 					//obtain search patterns
 					String[] searchPattern = new String[indices.length];
@@ -245,7 +231,7 @@ public class FilterPanel extends JPanel implements ListSelectionListener, KeyLis
 			} else { //there is no selection so "ALL" is selected
 				list.setSelectedIndex(0);
 				filter.setAcceptAll(true);
-				filter.bypass();
+				filter.runBypass();
 			}
 
 		} //if index >=0
@@ -256,7 +242,7 @@ public class FilterPanel extends JPanel implements ListSelectionListener, KeyLis
 		
 		if (i >= 0 && i < lists.size()) {
 			FilterList list = lists.get(i);
-			StringArrayFilterGeneral filter = listFilters.get(i);
+			StringArrayFilter filter = listFilters.get(i);
 			
 			int [] indices = list.getSelectedIndices();
 			if (indices.length >0) {
@@ -270,7 +256,7 @@ public class FilterPanel extends JPanel implements ListSelectionListener, KeyLis
 				}
 
 				//set the new list entries
-				ArrayList<String> collection = filter.collect(true);
+				ArrayList<String> collection = filter.collectStringSamples(true);
 				collection.add(0, ALL + " (" + collection.size()+")");
 				
 				//collect all strings for this list from the compositionbase 
@@ -351,6 +337,10 @@ public class FilterPanel extends JPanel implements ListSelectionListener, KeyLis
 	}
 	public void keyTyped(KeyEvent e) {
 		//Debug.debug(this, "Key Released!");
+	}
+
+	public SearchPanel getSearchPanel() {
+		return searchPanel;
 	}
 
 }

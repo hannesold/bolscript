@@ -20,7 +20,7 @@ import bols.tals.TalBase;
 import bols.tals.TalDynamic;
 import bolscript.Reader;
 import bolscript.config.Config;
-import bolscript.filters.StringArrayFilterGeneral;
+import bolscript.filters.StringArrayFilter;
 import bolscript.filters.VisibleCompositionDonator;
 
 public class CompositionBase implements VisibleCompositionDonator{
@@ -35,7 +35,7 @@ public class CompositionBase implements VisibleCompositionDonator{
 	private ArrayList<String> visibleTals;
 	private ArrayList<String> visibleTypes;
 	
-	private ArrayList<StringArrayFilterGeneral> filters;
+	private ArrayList<StringArrayFilter> filters;
 	private FilterPanel filterGUI = null;
 	
 	public CompositionBase() {

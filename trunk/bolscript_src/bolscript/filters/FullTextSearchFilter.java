@@ -6,7 +6,7 @@ import basics.Debug;
 import basics.GUI;
 import bolscript.compositions.Composition;
 
-public class FullTextSearchFilter extends StringArrayFilterGeneral implements Filter {
+public class FullTextSearchFilter extends StringArrayFilter implements Filter {
 
 
 	
@@ -14,23 +14,18 @@ public class FullTextSearchFilter extends StringArrayFilterGeneral implements Fi
 		super();
 	}
 	
-	public FullTextSearchFilter(String[] searchStrings){
-		super(searchStrings);	
-	}
-	
-	public FullTextSearchFilter(String searchString) {
-		super(searchString);
-	}
-	
 	@Override
-	public ArrayList<String> getSamples(Composition comp) {
+	protected ArrayList<String> getSamples(Composition comp) {
 		ArrayList<String> samples = new ArrayList<String> ();
 		samples.add(comp.getFulltextSearchString());
 		return samples;
 	}
 
+	/**
+	 * Returns true if at least one of the sample strings contained one of the search patterns.
+	 */
 	@Override
-	public boolean accepts(ArrayList<String> samples, String[] searchPatterns) {
+	protected boolean accepts(ArrayList<String> samples, String[] searchPatterns) {
 		if (acceptAll) return true;
 		
 		for (int i=0; i< searchPatterns.length; i++) {
@@ -46,6 +41,10 @@ public class FullTextSearchFilter extends StringArrayFilterGeneral implements Fi
 		}
 		return false;
 		
+	}
+	
+	public String getFilterHeader() {
+		return "Fulltext Search";
 	}
 
 
