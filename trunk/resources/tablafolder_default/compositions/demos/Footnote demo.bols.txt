@@ -10,7 +10,7 @@ Dha Ge "hello" Ti Te "world" Dha Dha Tun Na
 Footnotes are not copied:
 Theme
 
-More footnotes:
+More footnotes : 
 Dha Ge "and here" ti te "is" Dhin"more" Dhin
 
 

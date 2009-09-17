@@ -24,6 +24,9 @@
 	<property name="jar.completepath.other" value="${dir.build}/${jar.filename.other}"/>
 	<property name="app.icon" value="resources/icons/bolscript_logo.icns" />
 	<property name="app.name" value="Bolscript" />
+	
+	<property name="dir.mytablafolder" value="../../Bolscript/Tablafolder"/>
+	
 	<buildnumber file="build.num"/>
 	<tstamp>
 		<format property="TODAY" pattern="yyyy-MM-dd HH:mm:ss" />
@@ -36,7 +39,21 @@
 	<delete dir="${dir.build}/${app.name}.app"/>
 </target>
 	
-<target name="zip_resources">
+<target name="copy_resources_from_my_tablafolder">
+	 <copy todir="${dir.resources}/tablafolder_default/compositions/demos" overwrite="true">
+	    <fileset dir="${dir.mytablafolder}/compositions/demos">
+	    </fileset>
+	 </copy>
+	<copy todir="${dir.resources}/tablafolder_default/compositions/tals" overwrite="true">
+		<fileset dir="${dir.mytablafolder}/compositions/tals">
+		</fileset>
+	</copy>
+	<copy todir="${dir.resources}/tablafolder_default/settings" overwrite="true">
+		<file file="${dir.mytablafolder}/settings/bolbase.bolbase.txt"/>
+	</copy>
+</target>
+	
+<target name="zip_resources" depends="copy_resources_from_my_tablafolder">
 <!-- zip alll resources that shall be bundled in the distributed jar as resources.zip -->
 	<zip destfile="${resources.zip.completepath}" 
 		basedir="${dir.resources}" excludes="**/*.icns">
