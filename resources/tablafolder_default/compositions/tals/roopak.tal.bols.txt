@@ -1,19 +1,9 @@
 Editor: Hannes
-Type: 
-Tal
-
-Gharana:
-Punjab
-
-Name: 
-Roopak
-
-Length:
-7
-
-Tal:
-Roopak
-
+Type: Tal
+Gharana: Punjab
+Name: Roopak
+Length: 7
+Tal: Roopak
 Speed: 1
 
 Theka:
