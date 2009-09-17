@@ -1,6 +1,7 @@
 package bolscript;
 	
 import gui.bols.SequencePanel;
+import gui.bolscript.BolBaseFrame;
 import gui.bolscript.BrowserFrame;
 import gui.bolscript.CompositionFrame;
 import gui.bolscript.CompositionPanel;
@@ -36,7 +37,6 @@ import bolscript.compositions.State;
 import bolscript.config.Config;
 import bolscript.config.ConfigChangeEvent;
 import bolscript.config.ConfigChangeListener;
-import bolscript.filters.FullTextSearchFilter;
 import bolscript.packets.types.PacketTypeFactory;
 public class Master implements ConfigChangeListener{//implements ApplicationListener{//extends JFrame implements WindowListener {
 
@@ -51,6 +51,7 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 		
 		ArrayList<EditorFrame> editors;
 		BrowserFrame browserFrame;
+		BolBaseFrame bolBaseFrame;
 		
 		PreferencesDialog prefsDialog;
 
@@ -138,6 +139,9 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 				browserFrame.setVisible(true);
 				editors = new ArrayList<EditorFrame>();//new EditorFrame(new Dimension(400,800));
 				compositionFrames = new ArrayList<CompositionFrame>();//new CompositionFrame(new Dimension(800,600),false);
+				
+				bolBaseFrame = new BolBaseFrame(new Dimension(800,800));
+				//bolBaseFrame.setVisible(true);
 				
 			} catch (Exception e) {
 				debug.critical("something went wrong");
@@ -289,7 +293,7 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
        			 
        			 CompositionFrame compositionFrame = new CompositionFrame(comp, new Dimension(600,700));
        			 
-       			 EditorFrame editor = new EditorFrame(comp, new Dimension(390,700));
+       			 EditorFrame editor = new EditorFrame(comp, new Dimension(410,700));
        			
        			 editor.setCompositionFrame(compositionFrame);	 
        			 compositionFrame.setEditor(editor);

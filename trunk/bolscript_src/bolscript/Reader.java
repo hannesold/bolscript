@@ -85,7 +85,8 @@ public class Reader {
 		
 		Packets packets = spliceFootnotesAndDoCosmetics(rawPackets);
 		
-		packets.addAll(0, BolBase.getStandard().getReplacementPackets());
+		
+		packets.addAll(0, BolBase.getStandard().getReplacementPacketClones());
 		
 		
 		

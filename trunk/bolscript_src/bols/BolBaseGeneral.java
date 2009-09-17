@@ -9,9 +9,9 @@ import bolscript.packets.Packet;
 import bolscript.packets.Packets;
 import bolscript.packets.types.PacketTypeFactory;
 
-public abstract class BolBaseGeneral extends basics.Basic{
+public abstract class BolBaseGeneral {
 
-	protected ArrayList<BolName> bolNames;
+	protected ArrayList<BolName> bolNames, wellDefinedBolNames;
 	protected HashMap<String, BolNameBundle> bundleMap;
 	protected ArrayList<BolMap> bolMaps;
 	protected ArrayList<MidiMap> midiMaps;
@@ -22,10 +22,14 @@ public abstract class BolBaseGeneral extends basics.Basic{
 	
 	protected BolName emptyBol;
 	
+	protected int nrOfWellDefinedBolNames;
+	
 	// bolNames = new ArrayList();
 	
 	public BolBaseGeneral () {
 		bolNames = new ArrayList<BolName>();
+		wellDefinedBolNames = new ArrayList<BolName>();
+		
 		bolMaps = new ArrayList<BolMap>();
 		midiMaps = new ArrayList<MidiMap>();
 		kaliMaps = new HashMap<BolName,BolName>();
@@ -76,13 +80,20 @@ public abstract class BolBaseGeneral extends basics.Basic{
 	
 	public void addBolName(BolName bolName) {
 		if (getBolName(bolName.getName(BolName.EXACT)) == null) {
+			
 			bolNames.add(bolName);
+			if (bolName.isWellDefinedInBolBase()) {
+				wellDefinedBolNames.add(bolName);
+			}
 		}
 	}
 	
+
+	public ArrayList<BolName> getBolNames() {
+		return bolNames;
+	}
 	
 	public BolName getBolName(String name) {
-		
 		boolean found = false;
 		BolName bolName = null;
 	
@@ -128,9 +139,9 @@ public abstract class BolBaseGeneral extends basics.Basic{
 		bundleMap.put(bundle.getExactBolNames(), bundle);
 	}
 	
-	public void addReplacementPacket(String key, String val) {
-		//Debug.temporary(this, "type for replpacket: " + PacketTypeFactory.getType(PacketTypeFactory.BOLS));
+	public void addReplacementPacket(String key, String val, BolNameBundle bolNameBundle) {
 		Packet replacementPacket = new Packet(key, val, PacketTypeFactory.BOLS, false);
+		replacementPacket.setObject(bolNameBundle);
 		standardReplacements.add(replacementPacket);
 	}
 	
@@ -140,6 +151,18 @@ public abstract class BolBaseGeneral extends basics.Basic{
 	 */
 	public Packets getReplacementPackets () {
 		return standardReplacements;
+	}
+	
+	/**
+	 * Returns packets of type BOL, which are supposed to be used
+	 * for key -> value inserting in Reader.
+	 */
+	public Packets getReplacementPacketClones() {
+		Packets r = new Packets();
+		for (Packet p: standardReplacements) {
+			r.add(p.cloneClearObj());
+		}
+		return r;
 	}
 	
 	public BolMap getBolMap(BolName bolName) {
@@ -245,9 +268,9 @@ public abstract class BolBaseGeneral extends basics.Basic{
 		
 		if (existingKaliBol==null) {
 			kaliMaps.put(name1,name2);
-			out("kaliBol: " + name1 + " -> " + name2 + " added");
+			Debug.debug(this, "kaliBol: " + name1 + " -> " + name2 + " added");
 		} else {
-			out("kaliBol for bolName: " + name1 + " already exists");
+			Debug.debug(this, "kaliBol for bolName: " + name1 + " already exists");
 		}
 
 	}
@@ -267,7 +290,7 @@ public abstract class BolBaseGeneral extends basics.Basic{
 		if (kb!=null) {
 			return kb;
 		} else {
-			out("no kali map found for " + bolName);
+			Debug.debug(this, "no kali map found for " + bolName);
 			return bolName;
 		}
 	}
@@ -278,9 +301,9 @@ public abstract class BolBaseGeneral extends basics.Basic{
 		
 		if (existingMap==null) {
 			bolMaps.add(map);
-			out(map + "added");
+			Debug.debug(this, map + "added");
 		} else {
-			out("BolMap with bolName: " + map.getBolName().toString() + " already exists");
+			Debug.debug(this, "BolMap with bolName: " + map.getBolName().toString() + " already exists");
 		}
 	}
 	
@@ -329,7 +352,7 @@ public abstract class BolBaseGeneral extends basics.Basic{
 			strBolMaps += ((BolMap)bolMaps.get(i)).toString()+ "\n";		
 		}
 		
-		out (strBolNames + strMidiMaps + strBolMaps);
+		Debug.debug(this, strBolNames + strMidiMaps + strBolMaps);
 	}
 	
 	public double getDifference(BolMap bm1, BolMap bm2) {
@@ -345,8 +368,9 @@ public abstract class BolBaseGeneral extends basics.Basic{
 	public double getDifference(BolName name1, BolName name2) {
 		return getDifference(getBolMap(name1), getBolMap(name2));
 	}
-	
-	public ArrayList<BolName> getBolNames() {
-		return bolNames;
+
+	public ArrayList<BolName> getWellDefinedBolNames() {
+		return wellDefinedBolNames;
 	}
+	
 }

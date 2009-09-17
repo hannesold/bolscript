@@ -2,6 +2,7 @@ package gui.bolscript;
 
 import gui.bolscript.actions.CloseEditor;
 import gui.bolscript.dialogs.SaveChangesDialog;
+import gui.bolscript.tables.BolBasePanel;
 import gui.menus.EditMenu;
 import gui.menus.FileMenu;
 import gui.menus.LanguageMenu;
@@ -18,6 +19,7 @@ import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.JTextPane;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -48,6 +50,8 @@ public class EditorFrame extends JFrame implements WindowListener, CompositionCh
 	final UndoManager undoManager;
 	private BolscriptDocument document;
 	
+	private BolBasePanel bolBasePanel;
+	
 	public EditorFrame(Dimension size) {
 		super("Composition editor");
 		undoManager = new UndoManager();
@@ -55,15 +59,27 @@ public class EditorFrame extends JFrame implements WindowListener, CompositionCh
 		
 		compositionPanel = null;
 		
-		JPanel editorPanel = new JPanel(true);
-		editorPanel.setLayout(new BoxLayout(editorPanel, BoxLayout.Y_AXIS));
+		
+		
+		//editorPanel.setLayout(new BoxLayout(editorPanel, BoxLayout.Y_AXIS));
 		document = new BolscriptDocument();
 		textPane = new JTextPane(document);
 		
-		JScrollPane scrollpane =new JScrollPane(textPane,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-				
-		editorPanel.add(scrollpane);
+		JScrollPane scrollpane = new JScrollPane(textPane,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);		
+		//scrollpane.setPreferredSize(new Dimension(size.width, size.height-50));
+		scrollpane.setMinimumSize(new Dimension(200, 150));
+		
+		
+		bolBasePanel = new BolBasePanel();
+		//bolBasePanel.setPreferredSize(new Dimension(size.width, 50));
+		
+		JSplitPane editorPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true);
+		editorPanel.setLeftComponent(scrollpane);
+		editorPanel.setRightComponent(bolBasePanel);
+		editorPanel.setDividerLocation((int)Math.floor(((double) size.height) * 0.66));
+		
 		this.setContentPane(editorPanel);
+		
 		initMenuBar();
 		
 		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);

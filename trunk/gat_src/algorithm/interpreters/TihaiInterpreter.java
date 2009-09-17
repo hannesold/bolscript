@@ -146,7 +146,7 @@ public class TihaiInterpreter extends VariationInterpreterStandard implements Va
 								lowBayan = false; // for next time
 							} else {
 								if (!lowBayan) {
-									mm = bolBase.getMidiMap("GeHigh");
+									mm = bolBase.getMidiMap("Ge2");
 								} 
 								lowBayan = !lowBayan; // for next time
 							}

@@ -205,6 +205,14 @@ public class Packet {
 	public void setTextRefValue(TextReference textRefValue) {
 		this.textRefValue = textRefValue;
 	}
+
+	/**
+	 * Returns an independent clone of the packet,
+	 * however the obj is set to null. 
+	 */
+	public Packet cloneClearObj() {
+		return new Packet(new String(this.key), new String(this.value), packetType, visible);
+	}
 	
 	
 }

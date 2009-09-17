@@ -145,7 +145,7 @@ public class KaidaInterpreter extends VariationInterpreterStandard implements Va
 						// one low one high one low one high ...
 						if (mm.getBolName().toString().equals("Ge")) {
 							if (!lowBayan) {
-								mm = bolBase.getMidiMap("GeHigh");
+								mm = bolBase.getMidiMap("Ge2");
 							} 
 							lowBayan = !lowBayan;
 						}
