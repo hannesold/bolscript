@@ -23,7 +23,7 @@ public class BrowserFrame extends JFrame implements WindowListener{
 	private SearchPanel searchPanel;
 	
 	//private CompositionTableModel tableModel;
-	public BrowserFrame(Dimension size, CompositionTableModel model, FilterPanel filterPanel, SearchPanel searchPanel) {
+	public BrowserFrame(Dimension size, CompositionTableModel model, FilterPanel filterPanel) {
 		super("Bolscript Browser");
 		JPanel panel = new JPanel();
 		panel.setLayout(new BorderLayout());
@@ -31,7 +31,7 @@ public class BrowserFrame extends JFrame implements WindowListener{
 		compositionListPanel = new CompositionListPanel(model);
 		
 		this.filterPanel = filterPanel;
-		this.searchPanel = searchPanel;
+		this.searchPanel = filterPanel.getSearchPanel();
 		
 		panel.add(searchPanel,BorderLayout.NORTH);
 		JPanel headPanel = new JPanel();

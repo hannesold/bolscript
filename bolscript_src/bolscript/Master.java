@@ -36,6 +36,7 @@ import bolscript.compositions.State;
 import bolscript.config.Config;
 import bolscript.config.ConfigChangeEvent;
 import bolscript.config.ConfigChangeListener;
+import bolscript.filters.FullTextSearchFilter;
 import bolscript.packets.types.PacketTypeFactory;
 public class Master implements ConfigChangeListener{//implements ApplicationListener{//extends JFrame implements WindowListener {
 
@@ -123,18 +124,17 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 
 			TalBase.init();
 			
-			
 			compositionBase = new CompositionBase();
 			compositionBase.addFolderRecursively(Config.pathToTalsNoSlash);
 			compositionBase.addFolderRecursively(bolscript.config.Config.pathToCompositionsNoSlash);
 			compTableModel = new CompositionTableModel(compositionBase);
 			
-			searchPanel = new SearchPanel();
-			filterPanel = new FilterPanel(compositionBase, searchPanel);
+			
+			filterPanel = new FilterPanel(compositionBase);
 			compositionBase.setFilterGUI(filterPanel);
 			
 			try {
-				browserFrame = new BrowserFrame(new Dimension(800,800),compTableModel, filterPanel, searchPanel);
+				browserFrame = new BrowserFrame(new Dimension(800,800),compTableModel, filterPanel);
 				browserFrame.setVisible(true);
 				editors = new ArrayList<EditorFrame>();//new EditorFrame(new Dimension(400,800));
 				compositionFrames = new ArrayList<CompositionFrame>();//new CompositionFrame(new Dimension(800,600),false);

@@ -19,7 +19,7 @@ public interface Filter {
 	 * @param Composition the examined CompositionInfo
 	 * @return true or false.
 	 */
-	public boolean accepts(Composition composition);
+	//public boolean accepts(Composition composition);
 	
 	/**
 	 * Sets a filter on or off bypass mode. If bypass mode is on
@@ -28,6 +28,7 @@ public interface Filter {
 	 * @param bypass
 	 */
 	public void setAcceptAll(boolean acceptAll);
-	//filter by tals and type
+	
+	public String getFilterHeader();
 	
 }

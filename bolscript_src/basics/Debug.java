@@ -1,23 +1,8 @@
 package basics;
 
-import gui.bolscript.CompositionFrame;
-import gui.bolscript.CompositionPanel;
-import gui.bolscript.FilterPanel;
-import gui.bolscript.actions.ChooseTablaDir;
-import gui.bolscript.dialogs.PreferencesDialog;
-
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.util.HashMap;
-
-import bols.BolBase;
-import bols.BolBaseGeneral;
-import bols.BolName;
-import bols.tals.TalBase;
-import bolscript.Master;
-import bolscript.Reader;
-import bolscript.config.Config;
-import bolscript.filters.SearchTextFilterCategorized;
 
 /**
  * <p>This class is used for debug messages of different debug codes.</p>

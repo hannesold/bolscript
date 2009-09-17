@@ -7,13 +7,8 @@ import basics.Debug;
 import basics.Tools;
 import bolscript.compositions.Composition;
 
-public abstract class StringArrayFilterGeneral implements Filter, VisibleCompositionDonator{
+public abstract class StringArrayFilter implements Filter, VisibleCompositionDonator{
 	protected boolean acceptAll = false;
-	protected String name = "Unnamed filter";
-	protected String[] searchPatterns = null;
-	protected boolean recording = false;
-	protected ArrayList<String> record = null;
-	
 	protected VisibleCompositionDonator source;
 	
 	/**
@@ -27,70 +22,43 @@ public abstract class StringArrayFilterGeneral implements Filter, VisibleComposi
 	protected ArrayList<String> collectedStrings;
 	
 	
-	public StringArrayFilterGeneral() {
-		searchPatterns = new String[0];
+	public StringArrayFilter() {
 		acceptAll = true;
-		record = new ArrayList<String>();
-		filteredCompositions = new ArrayList<Composition>();
-		collectedStrings = new ArrayList<String>();
-	}
-	
-	public StringArrayFilterGeneral(String[] searchPatterns) {
-		this.searchPatterns = searchPatterns;
-		acceptAll = true;
-		record = new ArrayList<String>();
-		filteredCompositions = new ArrayList<Composition>();
-		collectedStrings = new ArrayList<String>();
-	}
-	
-	public StringArrayFilterGeneral(String searchPattern) {
-		this.searchPatterns = new String[]{searchPattern};
-		acceptAll = true;
-		record = new ArrayList<String>();
 		filteredCompositions = new ArrayList<Composition>();
 		collectedStrings = new ArrayList<String>();
 	}
 	
 	/**
 	 * this HAS TO BE RUN if the input-free methods filter and collect shall be used!
-	 * @param donator
+	 * @param donator The provider of the compositions that shall be treated.
 	 */
 	public void setCompositionSource(VisibleCompositionDonator donator) {
 		this.source = donator;
 	}
 	
+	/**
+	 * Returns true if the Filter is set to accept any composition, even if it is not accepted by the Filters actual algorithm.
+	 * @return
+	 */
 	public boolean acceptsAll() {
 		return acceptAll;
 	}
 
+	/**
+	 * Sets the Filter to accept all compositions, , even if it is not accepted by the Filters actual algorithm.
+	 */
 	public void setAcceptAll(boolean acceptAll) {
 		this.acceptAll = acceptAll;
 	}
 	
-	public boolean in(Composition comp, ArrayList<String> samples) {
-		if (acceptAll) return true;
-		
-		for (int i=0; i< searchPatterns.length; i++) {
-			for (int j=0; j < samples.size();j++) {
-				 if (searchPatterns[i].equalsIgnoreCase(samples.get(j))) {
-					 return true;
-				 }
-			}	
-		}
-		return false;
-	}
-	
-	public boolean accepts(Composition c) {
-		return accepts(getSamples(c), searchPatterns);
-	}
-	
+
 	/**
-	 * Returns true if the one of the samples is found in one of the search patterns
-	 * @param Samples an arraylist in which to be searched.
-	 * @param searchPatterns
+	 * Returns true if at least the one of the samples matches one of the search patterns.
+	 * @param Samples An arraylist in which to be searched.
+	 * @param searchPatterns An array of strings for which is searched.
 	 * @return
 	 */
-	public boolean accepts(ArrayList<String> samples, String []searchPatterns) {
+	protected boolean accepts(ArrayList<String> samples, String []searchPatterns) {
 		if (acceptAll) {
 			//Debug.debug(this, "accepting all, so also " + samples);
 			return true;
@@ -108,15 +76,6 @@ public abstract class StringArrayFilterGeneral implements Filter, VisibleComposi
 		return false;
 	}
 
-	public void resetRecording() {
-		record = new ArrayList<String>();
-		recording = false;
-	}
-	public void startRecording() {
-		recording = true;
-		
-	}
-
 	/**
 	 * Filters the input from its source (VisibleCompositionDonator) and makes the result
 	 * accessible by getVisibleCompositions()
@@ -126,20 +85,22 @@ public abstract class StringArrayFilterGeneral implements Filter, VisibleComposi
 		return filter(source.getVisibleCompositions(), searchPattern);
 	}
 	
-	public void bypass() {
+	/**
+	 * Sets the filterResult to all available visible compositions
+	 * given by the filters source. All internal filtering is ignored.
+	 */
+	public void runBypass() {
 		if (source != null) {
 			filteredCompositions = source.getVisibleCompositions();
-			
 		}
 	}
 	
 	/**
-	 * Returnes an ArrayList of all compositions, which match the search pattern.
+	 * Returns an ArrayList of all compositions that match the search pattern.
 	 * @param input
-	 * @param searchPattern
-	 * @return
+	 * @param searchPattern The search pattern. An Array of Strings of which at least one has to be found in the sample that the filter extracts from a composition for it to be accepted.
 	 */
-	public ArrayList<Composition> filter(ArrayList<Composition> input, String[]searchPattern) {
+	private ArrayList<Composition> filter(ArrayList<Composition> input, String[]searchPattern) {
 		if (!acceptAll) {
 			ArrayList<Composition> filtered = new ArrayList<Composition>();
 			for (Composition c: input) {
@@ -154,43 +115,54 @@ public abstract class StringArrayFilterGeneral implements Filter, VisibleComposi
 	}
 	
 	/**
-	 * Collects an ArrayList of unique Strings which were found in the compositions 
-	 * that were given by the source (VisibleCompositionDonator)
+	 * Collects an ArrayList of all unique Strings which were found in the compositions 
+	 * that are provided by the filters source (VisibleCompositionDonator).
 	 * @param andSort
 	 */
-	public ArrayList<String> collect(boolean andSort) {
-		return collect(source.getVisibleCompositions(), andSort);
+	public ArrayList<String> collectStringSamples(boolean andSort) {
+		return collectStringSamples(source.getVisibleCompositions(), andSort);
 	}
 	
 	/**
-	 * Returns an ArrayList of unique Strings which were found in the given compositions.
-	 * @param input
+	 * Returns an ArrayList of all unique Strings samples which were found in the given compositions.
+	 * @param input The compositions to search in.
 	 * @param andSort 
 	 * @return
 	 */
-	public ArrayList<String> collect(ArrayList<Composition> input, boolean andSort) {
+	protected ArrayList<String> collectStringSamples(ArrayList<Composition> input, boolean andSort) {
 		ArrayList<String> collection = new ArrayList<String>();
 		for (Composition c: input) {
 			if (getSamples(c) != null) {
 			for (String sample: getSamples(c)){
-				if (!collection.contains(sample)) {
-					collection.add(sample);
+				boolean alreadyContained = false;
+				for (String existing : collection) {
+					if (existing.equalsIgnoreCase(sample)) {
+						alreadyContained = true;
+						break;
+					}
 				}
-				
+				if (!alreadyContained) {
+					collection.add(sample);
+				}				
 			}
 			}
 		}
+		
 		if (andSort) Collections.sort(collection);
 		collectedStrings = collection;
 		return collectedStrings;
 	}
 	
-	public ArrayList<String> getCollectedStrings() {
+	/**
+	 * Returns the Strings that the filter collected from the compositions provided by its source during the last call of the collect method.
+	 */
+	public ArrayList<String> getCollectedStringSamples() {
 		return collectedStrings;
 	}
 
 	/**
-	 * Returns the composition which were accepted by the filter.
+	 * Returns the composition which were accepted by the filter during the last call of the filter method.
+	 * @see filter(String[])
 	 */
 	public ArrayList<Composition> getVisibleCompositions() {
 		return filteredCompositions;
@@ -201,7 +173,7 @@ public abstract class StringArrayFilterGeneral implements Filter, VisibleComposi
 	 * @param comp
 	 * @return
 	 */
-	public abstract ArrayList<String> getSamples(Composition comp);
+	protected abstract ArrayList<String> getSamples(Composition comp);
 
 	
 	

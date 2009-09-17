@@ -94,6 +94,11 @@ public interface PacketType extends Comparable<PacketType> {
 	String getDisplayNameTable();
 	
 	/**
+	 *  The display name for a filter header
+	 */
+	String getDisplayNameFilter();
+	
+	/**
 	 * Is this a Packet which is parsed as a meta packet?
 	 */
 	boolean isMetaPaket();

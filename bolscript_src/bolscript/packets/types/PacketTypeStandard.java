@@ -10,7 +10,7 @@ public class PacketTypeStandard implements PacketType {
 	protected int id;
 	protected String displayNameSingular;
 	protected String displayNamePlural;	
-	protected String displayNameTable;
+	protected String displayNameTable, displayNameFilter;
 	
 	protected String[] keys;
 	protected boolean displayInTable;
@@ -45,9 +45,11 @@ public class PacketTypeStandard implements PacketType {
 		switch (storageType) {
 			case STRINGLIST:
 				this.displayNameTable = displayNamePlural;
+				this.displayNameFilter = displayNamePlural;
 			break;
 			case STRING:
 				this.displayNameTable = displayNameSingular;
+				this.displayNameFilter = displayNameSingular;
 				break;
 			default:
 				this.displayNameTable = "";
@@ -89,6 +91,8 @@ public class PacketTypeStandard implements PacketType {
 	public boolean displayInTable() {
 		return displayInTable;
 	}
+	
+
 
 	public boolean displayInCompositionView() {
 		return displayInCompositionView;
@@ -116,6 +120,10 @@ public class PacketTypeStandard implements PacketType {
 
 	public String getDisplayNameTable() {
 		return displayNameTable;
+	}
+	
+	public String getDisplayNameFilter() {
+		return displayNameFilter;
 	}
 
 }

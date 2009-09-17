@@ -4,23 +4,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import bolscript.compositions.Composition;
+import bolscript.packets.types.PacketTypeFactory;
 
-public class SpeedFilter extends StringArrayFilterGeneral implements Filter {
+public class SpeedFilter extends MetaValueFilter implements Filter {
 
 	public SpeedFilter () {
-		super();
-	}
-	
-	public SpeedFilter(String[] speeds){
-		super(speeds);	
-	}
-	
-	/**
-	 * Sees a composition if it has a tal in a given array of tals
-	 * @param tal: The tal.
-	 */
-	public SpeedFilter(String speed) {
-		super(speed);
+		super(PacketTypeFactory.SPEED);
 	}
 	
 	/**
@@ -29,14 +18,14 @@ public class SpeedFilter extends StringArrayFilterGeneral implements Filter {
 	 * @param andSort 
 	 * @return
 	 */
-	public ArrayList<String> collect(ArrayList<Composition> comps, boolean andSort) {
-		ArrayList collection = super.collect(comps, false);
+	public ArrayList<String> collectStringSamples(ArrayList<Composition> comps, boolean andSort) {
+		ArrayList collection = super.collectStringSamples(comps, false);
 		if (andSort) Collections.sort(collection, new RationalComparator());
 		return collection;
 	}
 	
 	@Override
-	public ArrayList<String> getSamples(Composition comp) {
+	protected ArrayList<String> getSamples(Composition comp) {
 		return comp.getSpeeds();
 	}
 	
