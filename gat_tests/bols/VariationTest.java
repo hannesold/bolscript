@@ -37,7 +37,7 @@ public class VariationTest extends TestCase {
 	 * Test method for 'bols.Variation.Variation(String, BolBaseGeneral)'
 	 */
 	public void testVariationStringBolBaseGeneral() {
-		//setBolNames("Dha Ge Ti Ri Ke Te Tin - Na Ta Ke Dhin SurNa Tun Dhun GeHigh");
+		//setBolNames("Dha Ge Ti Ri Ke Te Tin - Na Ta Ke Dhin Ta3 Tun Dhun Ge2");
 		 
 		Variation var1 = new Variation("Dha Ge Ti Ri Ke Te, Dha -, Dha -, Dha Ge Ti Ri Ke Te", bb);
 		
@@ -57,7 +57,7 @@ public class VariationTest extends TestCase {
 	 * Test method for 'bols.Variation.getTestVariation(BolBaseGeneral)'
 	 */
 	public void testVariationGetTestVariation() {
-		//setBolNames("Dha Ge Ti Ri Ke Te Tin - Na Ta Ke Dhin SurNa Tun Dhun GeHigh");
+		//setBolNames("Dha Ge Ti Ri Ke Te Tin - Na Ta Ke Dhin Ta3 Tun Dhun Ge2");
 		 
 		Variation var1 = Themes.getTheme01(bb);
 		

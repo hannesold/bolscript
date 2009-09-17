@@ -74,17 +74,13 @@ public class BolBase extends BolBaseGeneral {
 	}
 	public BolBase() {
 		super();
-		DEBUG = false;
 		generalNoteOffset = 36;
 		
 		try {
-			addBolNames("-");
 			addBolNamesFromFile(Config.pathToBolBase);
-			addBolNames("SurNa GeHigh");
-			
 		} catch (FileReadException ex) {
 			Debug.critical(this, "BolBase could not read bolbase file. Using defaults. " + ex);
-			addBolNames("Dha Ge Ti Ri Ke Te Tin Na Ne Ta Ke Dhin SurNa Tun Dhun GeHigh");
+			addBolNames("Dha Ge Ti Ri Ke Te Tin Na Ne Ta Ke Dhin Ta3 Tun Dhun Ge2");
 		}
 		Debug.temporary(this, "bols inited: " + Tools.toString(bolNames));
 		Debug.temporary(this, "bundles : " + bundleMap);
@@ -144,7 +140,7 @@ public class BolBase extends BolBaseGeneral {
 				if (entries.length >= BolName.languagesCount) {
 					String[] labels = new String[BolName.languagesCount];
 					for (int i = 0; i < labels.length; i++) {
-						if (false) {//(i != BolName.DEVANAGERI) {
+						if (i != BolName.DEVANAGERI) {
 							labels[i] = Tools.formatFirstCapital(entries[i].replaceAll(Reader.SNatBeginningOrEnd, ""));
 						} else {
 							labels[i] = entries[i].replaceAll(Reader.SNatBeginningOrEnd, "");
@@ -267,12 +263,13 @@ public class BolBase extends BolBaseGeneral {
 					addBolNameBundle(bundle);
 					//Debug.temporary(this, "setting replacement bundle name to '" + bundle.getName(BolName.EXACT).replaceAll(Reader.SNatBeginningOrEnd,"") +"'");
 					addReplacementPacket(bundle.getName(BolName.EXACT), 
-							" ( " + bundleSpeed + " " + bundle.getExactBolNames() + " ) ");
+							" ( " + bundleSpeed + " " + bundle.getExactBolNames() + " ) ", bundle);
 				}
 			}
 		}
 	}
 
+	
 	/**
 	 * BolMaps are maps from one Bol to a Midinote, coordinates and a hand
 	 * @throws Exception
@@ -291,7 +288,7 @@ public class BolBase extends BolBaseGeneral {
 		addMidiMap("Te", 1, 5, MidiMap.RIGHT);
 		addMidiMap("Ne", 1, 6, MidiMap.RIGHT);
 		
-		addMidiMap("SurNa", 2, 1, MidiMap.RIGHT);
+		addMidiMap("Ta3", 2, 1, MidiMap.RIGHT);
 		addMidiMap("Tun", 2, 2, MidiMap.RIGHT);
 		addMidiMap("Na", 3, 0, MidiMap.RIGHT);
 		
@@ -301,7 +298,7 @@ public class BolBase extends BolBaseGeneral {
 		//lefthand only
 		addMidiMap("Ke", 1, 31, MidiMap.LEFT);
 		addMidiMap("Ge", 2, 28, MidiMap.LEFT);
-		addMidiMap("GeHigh",2,29, MidiMap.LEFT);
+		addMidiMap("Ge2",2,29, MidiMap.LEFT);
 		
 		Debug.debug(this, "midimaps set: " + Tools.toString(midiMaps));
 
@@ -328,11 +325,11 @@ public class BolBase extends BolBaseGeneral {
 		
 		//two hand bols
 		addBolMap("Dha", getMidiMap("Ge"), getMidiMap("Na"));
-		addBolMap("Tin", getMidiMap("Ke"), getMidiMap("SurNa"));
-		addBolMap("Dhin", getMidiMap("Ge"), getMidiMap("SurNa"));
+		addBolMap("Tin", getMidiMap("Ke"), getMidiMap("Ta3"));
+		addBolMap("Dhin", getMidiMap("Ge"), getMidiMap("Ta3"));
 		addBolMap("Tun", getMidiMap("Ke"), getMidiMap("Tun"));
 		addBolMap("Dhun", getMidiMap("Ge"), getMidiMap("Tun"));		
-		addBolMap("SurNa", getMidiMap("-"), getMidiMap("SurNa"));
+		addBolMap("Ta3", getMidiMap("-"), getMidiMap("Ta3"));
 		
 		Debug.debug(this, "bolsMaps set: " + Tools.toString(bolMaps));
 	}
@@ -347,7 +344,7 @@ public class BolBase extends BolBaseGeneral {
 					addKaliMap(bolName, bolName);
 				} 	
 			} catch (Exception e) {
-				out("not adding kaliMap, no BolMap for " + bolName);
+				Debug.debug(this, "not adding kaliMap, no BolMap for " + bolName);
 			}
 							
 		}	
