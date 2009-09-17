@@ -10,6 +10,8 @@ public class PacketTypeStandard implements PacketType {
 	protected int id;
 	protected String displayNameSingular;
 	protected String displayNamePlural;	
+	protected String displayNameTable;
+	
 	protected String[] keys;
 	protected boolean displayInTable;
 	protected int tableWeight;
@@ -39,6 +41,17 @@ public class PacketTypeStandard implements PacketType {
 		this.metaPaket = metaPaket;
 		this.searchable = searchable;
 		this.keyColor = keyColor;
+		
+		switch (storageType) {
+			case STRINGLIST:
+				this.displayNameTable = displayNamePlural;
+			break;
+			case STRING:
+				this.displayNameTable = displayNameSingular;
+				break;
+			default:
+				this.displayNameTable = "";
+		} 
 	}
 
 	public int getId() {
@@ -94,6 +107,15 @@ public class PacketTypeStandard implements PacketType {
 	}
 
 
-	
+	/**
+	 * Compares two packet types by comparing their weight.
+	 */
+	public int compareTo(PacketType otherType) {
+		return getTableWeight() - otherType.getTableWeight();
+	}
+
+	public String getDisplayNameTable() {
+		return displayNameTable;
+	}
 
 }

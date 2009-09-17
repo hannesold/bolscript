@@ -43,14 +43,12 @@ public class CompositionListPanel extends JScrollPane {
 		compositionTable.setShowHorizontalLines(false);
 		compositionTable.setShowVerticalLines(true);
 		
+		//set Rowsorters
 		RowSorter<CompositionTableModel> sorter = new TableRowSorter<CompositionTableModel>(model);
 		List <RowSorter.SortKey> sortKeys = new ArrayList<RowSorter.SortKey>();
-		sortKeys.add(new RowSorter.SortKey(model.COLUMN_INDEX.get(model.TALS), SortOrder.ASCENDING));
-		sortKeys.add(new RowSorter.SortKey(model.COLUMN_INDEX.get(model.TYPE), SortOrder.ASCENDING));
-		sortKeys.add(new RowSorter.SortKey(model.COLUMN_INDEX.get(model.NAME), SortOrder.ASCENDING));
-		sortKeys.add(new RowSorter.SortKey(model.COLUMN_INDEX.get(model.SPEEDS), SortOrder.ASCENDING));
-		sortKeys.add(new RowSorter.SortKey(model.COLUMN_INDEX.get(model.GHARANAS), SortOrder.ASCENDING));
-		sortKeys.add(new RowSorter.SortKey(model.COLUMN_INDEX.get(model.TALS), SortOrder.ASCENDING));
+		for (int i = 1; i < model.getColumnCount(); i++) {
+			sortKeys.add(new RowSorter.SortKey(i, SortOrder.ASCENDING));
+		}
 		sorter.setSortKeys(sortKeys); 
 
 		//= new Def
