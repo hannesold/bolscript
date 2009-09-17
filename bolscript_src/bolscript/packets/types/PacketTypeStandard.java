@@ -2,7 +2,7 @@ package bolscript.packets.types;
 
 import java.awt.Color;
 
-import bolscript.packets.types.PacketType.Kardinality;
+import bolscript.packets.types.PacketType.StorageType;
 import bolscript.packets.types.PacketType.ParseMode;
 
 public class PacketTypeStandard implements PacketType {
@@ -13,7 +13,7 @@ public class PacketTypeStandard implements PacketType {
 	protected String[] keys;
 	protected boolean displayInTable;
 	protected int tableWeight;
-	protected Kardinality kardinality;
+	protected StorageType storageType;
 	protected ParseMode parseMode;
 	protected boolean displayInCompositionView;
 	protected boolean metaPaket;
@@ -23,7 +23,7 @@ public class PacketTypeStandard implements PacketType {
 	
 	public PacketTypeStandard(int id, String displayNameSingular,
 			String displayNamePlural, String[] keys, boolean displayInTable,
-			int tableWeight, Kardinality kardinality, ParseMode parseMode,
+			int tableWeight, StorageType storageType, ParseMode parseMode,
 			boolean displayInCompositionView, boolean metaPaket,
 			boolean searchable, Color keyColor) {
 		super();
@@ -33,7 +33,7 @@ public class PacketTypeStandard implements PacketType {
 		this.keys = keys;
 		this.displayInTable = displayInTable;
 		this.tableWeight = tableWeight;
-		this.kardinality = kardinality;
+		this.storageType = storageType;
 		this.parseMode = parseMode;
 		this.displayInCompositionView = displayInCompositionView;
 		this.metaPaket = metaPaket;
@@ -65,8 +65,8 @@ public class PacketTypeStandard implements PacketType {
 		return tableWeight;
 	}
 
-	public Kardinality getKardinality() {
-		return kardinality;
+	public StorageType getStorageType() {
+		return storageType;
 	}
 
 	public ParseMode getParseMode() {

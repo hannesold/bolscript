@@ -21,31 +21,22 @@ import bolscript.packets.Packet;
 import bolscript.packets.Packets;
 import bolscript.packets.types.PacketType;
 import bolscript.packets.types.PacketTypeFactory;
+import bolscript.packets.types.PacketType.StorageType;
+import bolscript.packets.types.PacketType.ParseMode;
+import static bolscript.packets.types.PacketTypeFactory.*;
 import bolscript.sequences.RepresentableSequence;
 
 	public class Composition implements DataStatePosessor{
 		
-	protected String name = null;
-	protected String description = null;
-	protected String compositionType = null;
-	protected ArrayList<String> tals = null;
-	protected ArrayList<String> types = null;
-	protected ArrayList<String> gharanas = null;
-	protected ArrayList<String> speeds = null;
-	protected ArrayList<String> editors = null;
-	protected ArrayList<String> comments = null;
-	protected ArrayList<String> composers = null;
-	protected ArrayList<String> sources = null;
 	protected ArrayList<Rational> speedsR = null;
 	protected Rational maxSpeed = null;
-	protected ArrayList<String> keys = null;
 	
 	protected ArrayList<String> searchStrings = null;
+	
 	protected String completeSearchString = null;
 	protected StringBuilder completeSearchBuilder = null;
 	boolean searchBuilderChanged = true;
 	
-	protected String snippet = null;
 	protected String rawData = new String("");
 	protected String oldRawData = new String("");
 		
@@ -66,6 +57,9 @@ import bolscript.sequences.RepresentableSequence;
 	
 	protected boolean istal = false;
 	
+	/**
+	 * This is where all uncomplicated meta-data is stored.
+	 */
 	protected MetaValues metaValues;
 	
 	/**
@@ -99,134 +93,51 @@ import bolscript.sequences.RepresentableSequence;
 		backUpRawData();
 	}
 	
-	
-
-
-	public String getName() {
-		return name;
+	public MetaValues getMetaValues() {
+		return metaValues;
 	}
-	public void setName(String name) {
-		this.name = name;
+	
+	public String getName() {
+		return metaValues.getString(NAME);
 	}
 	public String getDescription() {
-		return description;
-	}
-	public void setDescription(String description) {
-		this.description = description;
+		return metaValues.getString(DESCRIPTION);
 	}
 
 	public ArrayList<String> getTals() {
-		return tals;
+		return metaValues.getList(TAL);
 	}
-	public void addTal(String talAsString) {
-		if (tals == null) tals = new ArrayList<String>();
-		if (!tals.contains(talAsString)) {
-			tals.add(talAsString);
-			//Debug.temporary(this, Tools.toString(tals));
-			Collections.sort(tals);
-			//Debug.temporary(this, "sorted" + Tools.toString(tals));
-			
-			//s.comp
-		}
-	}
-	
 	
 	public ArrayList<String> getTypes() {
-		return types;
-	}
-	public void addType(String type) {
-		if (types == null) types = new ArrayList<String>();
-		if (!types.contains(type)) {
-			types.add(type);
-			Collections.sort(types);
-			if (types.size() == 1) {
-
-				//check if the entry has the value Tal, Tals or Tala or so
-				PacketType associatedType = PacketTypeFactory.getType(type.toUpperCase());
-				if (associatedType != null) if ( associatedType.getId() == PacketTypeFactory.TAL) {
-					istal = true;
-				} else {
-					istal = false;
-				}
-
-			} else istal = false;
-		}
+		return metaValues.getList(TYPE);
 	}
 	
 	public ArrayList<String> getGharanas() {
-		return gharanas;
-	}
-	
-	public void addGharana(String gharana) {
-		if (gharanas == null) gharanas = new ArrayList<String>();
-		if (!gharanas.contains(gharana)) {
-			gharanas.add(gharana);
-			Collections.sort(gharanas);
-		}
+		return metaValues.getList(GHARANA);
 	}
 	
 	public ArrayList<String> getSources() {
-		return sources;
-	}
-	
-	public void addSource(String source) {
-		if (sources == null) sources = new ArrayList<String>();
-		if (!sources.contains(source)) {
-			sources.add(source);
-			Collections.sort(sources);
-		}
+		return metaValues.getList(SOURCE);
 	}
 	
 	public ArrayList<String> getComposers() {
-		return composers;
-	}
-	
-	public void addComposer(String composer) {
-		if (composers == null) composers = new ArrayList<String>();
-		if (!composers.contains(composer)) {
-			composers.add(composer);
-			Collections.sort(composers);
-		}
+		return metaValues.getList(COMPOSER);
 	}
 	
 	public ArrayList<String> getEditors() {
-		return editors;
-	}
-	public void addEditor(String editor) {
-		if (editors == null) editors = new ArrayList<String>();
-		if (!editors.contains(editor)) {
-			editors.add(editor);
-			Collections.sort(editors);
-		}
+		return metaValues.getList(EDITOR);
 	}
 	
-	/*public void addComment(String comment) {
-		if (comments == null) comments = new ArrayList<String>();
-		if (!comments.contains(comment)) {
-			comments.add(comment);
-			Collections.sort(comments);
-		}
-		
-	}*/
-	
-	public void addKey(String key) {
-		if (keys== null) keys = new ArrayList<String>();
-		if (!keys.contains(key)) {
-			keys.add(key);
-			Collections.sort(keys);
-		}
-	}
 	public ArrayList<String> getKeys () {
-		return keys;
+		return metaValues.getList(KEYS);
 	}
 	
 	public ArrayList<String> getComments() {
-		return (ArrayList<String>) metaValues.get(PacketTypeFactory.COMMENT);
+		return metaValues.getList(COMMENT);
 	}
 	
 	public ArrayList<String> getSpeeds() {
-		
-		return speeds;
+		return metaValues.getList(SPEED);
 	}
 	
 	public void addSpeed(Rational speed) {
@@ -234,14 +145,16 @@ import bolscript.sequences.RepresentableSequence;
 		if (!speedsR.contains(speed)) {
 			speedsR.add(speed);
 			Collections.sort(speedsR);
-			
-			speeds = new ArrayList<String>();
-			for (Rational s: speedsR) {
-				speeds.add(s.toString());
-			}
 		}	
-		
-		
+		updateSpeedStringsFromRationals();
+	}
+	
+	public void updateSpeedStringsFromRationals () {
+		ArrayList<String> speeds = new ArrayList<String>();
+		for (Rational s: speedsR) {
+			speeds.add(s.toString());
+		}	
+		metaValues.setList(SPEED, speeds);
 	}
 	
 	public void addSearchString(String s) {
@@ -260,17 +173,12 @@ import bolscript.sequences.RepresentableSequence;
 	public void rebuildFulltextSearch() {
 		completeSearchBuilder = new StringBuilder();
 		searchBuilderChanged = true;
-		addSearchString(getName());
-		addSearchString(Tools.toString(getGharanas()));
-		addSearchString(Tools.toString(getKeys()));
-		addSearchString(Tools.toString(getComments()));
-		addSearchString(Tools.toString(getSpeeds()));
-		addSearchString(Tools.toString(getTals()));
-		addSearchString(Tools.toString(getTypes()));
-		addSearchString(Tools.toString(getEditors()));
-		addSearchString(Tools.toString(getComposers()));
-		addSearchString(Tools.toString(getSources()));
-		addSearchString(getDescription());
+		
+		for (int i=0; i < PacketTypeFactory.nrOfTypes; i++) {
+			if (PacketTypeFactory.getType(i).isSearchable()) {
+				addSearchString(metaValues.makeString(i));
+			}
+		}
 		
 		if (linkLocal != null) {
 			File f = new File(linkLocal);
@@ -304,11 +212,7 @@ import bolscript.sequences.RepresentableSequence;
 	public void removeSpeed(Rational speed) {
 		if(speedsR == null) speedsR = new ArrayList<Rational>();
 		speedsR.remove(speed);
-		
-		speeds = new ArrayList<String>();
-		for (Rational s: speedsR) {
-			speeds.add(s.toString());
-		}		
+		updateSpeedStringsFromRationals();	
 		
 	}
 	
@@ -331,24 +235,7 @@ import bolscript.sequences.RepresentableSequence;
 	public void setLinkServer(String linkServer) {
 		this.linkServer = linkServer;
 	}
-	public ArrayList<String> getGeneology() {
-		return geneology;
-	}
-	public void setGeneology(ArrayList<String> geneology) {
-		this.geneology = geneology;
-	}
-	public ArrayList<HistoryEvent> getTranscriptionHistory() {
-		return transcriptionHistory;
-	}
-	public void setTranscriptionHistory(ArrayList<HistoryEvent> transcriptionHistory) {
-		this.transcriptionHistory = transcriptionHistory;
-	}
-	public ArrayList<AccessRights> getRights() {
-		return rights;
-	}
-	public void setRights(ArrayList<AccessRights> rights) {
-		this.rights = rights;
-	}
+
 	public int getId() {
 		return id;
 	}
@@ -367,13 +254,9 @@ import bolscript.sequences.RepresentableSequence;
 	}
 	
 	public String getSnippet() {
-		if (snippet == null) snippet = new String();
-		return snippet;
+		return metaValues.getString(SNIPPET);
 	}
 
-	public void setSnippet(String snippet) {
-		this.snippet = snippet;
-	}
 
 	public void extractInfoFromRawData() {
 		if (rawData != null) {
@@ -390,120 +273,103 @@ import bolscript.sequences.RepresentableSequence;
 	 * @param packets
 	 */
 	protected void extractInfoFromPackets(Packets packets) {
-		metaValues.clear();
-		name = ""; //might be set somewhere else
+		
 		// reset everything
-		tals = new ArrayList<String> (); 
-		compositionType = "";
-		description = "";
-		snippet = "";
-		gharanas = new ArrayList<String>();
+		metaValues.setDefault();
 		speedsR = new ArrayList<Rational>();
-		speeds = new ArrayList<String>();
 		maxSpeed = new Rational(1);
-		editors = new ArrayList<String>();
-		types = new ArrayList<String>();
-		//addSpeed(new Rational(1));
-		comments = new ArrayList<String>();
-		keys = new ArrayList<String>();
-		sources = new ArrayList<String>();
-		composers = new ArrayList<String>();
-		
+	
 		Packet firstBolPacket = null;
-		
-		istal = false;
+	
 		for (int i=0; i < packets.size(); i++) {
 			Packet p = packets.get(i);
+			
 			String key = packets.get(i).getKey();
 			Object obj = packets.get(i).getObject();
-			int type = packets.get(i).getType();
-			if (type != PacketTypeFactory.FAILED) addKey(key);
+			PacketType packetType = packets.get(i).getPType();
+		    int type = packetType.getId();
+
+			if (type != PacketTypeFactory.FAILED) metaValues.addString(KEYS, p.getKey());
 			
 			if (obj!=null) {
-				switch (type) {
+				
+			switch (type) {
 			
-			case PacketTypeFactory.NAME:
-				name = (String) obj;
-				break;
 			case PacketTypeFactory.TAL:
-				addTal(((Tal) obj).getName());
-				break;
-			case PacketTypeFactory.SPEED:
-				addSpeed((Rational) obj);
-				//addSpeed(obj.toString());
-				break;
-			case PacketTypeFactory.TYPE:
-				Object [] types = (Object[]) obj;
-				for (int j=0; j < types.length; j++) {
-					addType((String) types[j]);
-				}
+				metaValues.addString(TAL, ((Tal) obj).getName());
 				break;
 				
-			case PacketTypeFactory.DESCRIPTION:
-				setDescription((String) obj);
+			case PacketTypeFactory.SPEED:
+				addSpeed((Rational) obj);
 				break;
-			case PacketTypeFactory.COMMENT:
-				metaValues.addString(PacketTypeFactory.COMMENT, (String) obj);
-				break;
-			case PacketTypeFactory.SOURCE:
-				addSource((String) obj);
-				break;
-
-			case PacketTypeFactory.GHARANA:
-				Object [] ghars = (Object[]) obj;
-				for (int j=0; j < ghars.length; j++) {
-					addGharana((String) ghars[j]);
-				}
-				break;
-
-			case PacketTypeFactory.EDITOR:
-				Object [] editors = (Object[]) obj;
-				for (int j=0; j < editors.length; j++) {
-					addEditor((String) editors[j]);
-				}
-				break;
-			case PacketTypeFactory.COMPOSER:
-				Object [] composers = (Object[]) obj;
-				for (int j=0; j < composers.length; j++) {
-					addComposer((String) composers[j]);
-				}
-				break;
-
+			
 			case PacketTypeFactory.BOLS:		
 				RepresentableSequence compact = ((RepresentableSequence) obj).getCompact();
 				maxSpeed = Rational.max(maxSpeed, compact.getMaxSpeed());
-				if (snippet.equals("")) {
+				if (metaValues.getString(SNIPPET).equals("")) {
 					if (firstBolPacket == null && p.isVisible()) firstBolPacket = p;
 					if ((key.equalsIgnoreCase("Snippet") 
 							|| key.equalsIgnoreCase("Theme") 
 							|| key.equalsIgnoreCase("Tukra") 
 							|| key.equalsIgnoreCase("Theka"))) {
 						
-						snippet = compact.generateSnippet();
-						if (name.equals("")) name = compact.generateShortSnippet();
+						metaValues.setString(SNIPPET,compact.generateSnippet());
+						if (metaValues.getString(NAME).equals("")) metaValues.setString(NAME, compact.generateShortSnippet());
 					}
+				} 
+				break;
+				
+			default:
+				if (packetType.getStorageType() == StorageType.STRINGLIST) {
+						if (packetType.getParseMode() == ParseMode.COMMASEPERATED) {
+							Object [] entries = (Object[]) obj;
+							for (int j=0; j < entries.length; j++) {
+								metaValues.addString(packetType.getId(), (String) entries[j]);
+							}		
+						} else if (packetType.getParseMode() == ParseMode.STRING) {
+							metaValues.addString(packetType.getId(), (String) obj);
+						}
+				} else if (packetType.getStorageType() == StorageType.STRING) {
+					metaValues.setString(packetType.getId(), (String) obj);
 				} 
 			} //switch (type)
 			} //obj != null
 		} //for
 		
+		//check if it is a tal
+		ArrayList<String> types =  metaValues.getList(TYPE);
+		if (types.size() == 1) {
+			//check if the entry has the value Tal, Tals or Tala or so
+			PacketType associatedType = PacketTypeFactory.getType(types.get(0).toUpperCase());
+			if (associatedType != null) if ( associatedType.getId() == TAL) {
+				istal = true;
+			} else {
+				istal = false;
+			}
+		} else istal = false;
+		
+		ArrayList<String> tals = metaValues.getList(PacketTypeFactory.TAL);
+		
+		String name = metaValues.getString(NAME);
+		
 		//after processing all packets gather missing information
-		if (istal && (tals.size() == 0) && (!name.equals(""))) {
+		if (istal && (metaValues.getList(TAL).size() == 0) && (!name.equals(""))) {
 			//if this is of type tal and no tal is set, then add the tal itself.
-			addTal(name);
+			metaValues.addString(PacketTypeFactory.TAL, name);
+			
 		}
 		
-		if (snippet.equals("") && firstBolPacket != null ){
+		if (metaValues.getString(SNIPPET).equals("") && firstBolPacket != null ){
 			if (firstBolPacket.getObject() != null) {
 				RepresentableSequence compact = ((RepresentableSequence) firstBolPacket.getObject()).getCompact();
-				snippet = compact.generateSnippet();
+				metaValues.setString(SNIPPET,compact.generateSnippet());
 				
 				if (name.equals("")) {
-					name = compact.generateShortSnippet();
+					metaValues.setString(NAME, compact.generateShortSnippet());
 				}
 				
 			}
-		} else if (name.equals("")) name = "Unnamed";
+		} else if (name.equals("")) metaValues.setString(NAME, "Unnamed");
 		
 		removeSpeed(new Rational(1));
 		
@@ -512,11 +378,8 @@ import bolscript.sequences.RepresentableSequence;
 	}
 
 	public String toString() {
-		return compositionType + " " + this.getName();
+		return metaValues.getList(TYPE) + " " + metaValues.getString(NAME);
 	}
-	
-
-	
 
 	public boolean establishRawData() {
 		if (dataState == State.NEW) return true;

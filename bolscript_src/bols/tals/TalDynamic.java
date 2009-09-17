@@ -184,8 +184,7 @@ public class TalDynamic extends Composition implements Tal {
 		for (int i=0; i<packets.size(); i++) {
 			Packet p = packets.get(i);
 			if (p.getType() == PacketTypeFactory.NAME) {
-				String s = p.getValue().replaceAll(Reader.SNatBeginningOrEnd, "");
-				this.setName(s);
+				metaValues.setString(PacketTypeFactory.NAME, p.getValue());
 			} else if (p.getType() == PacketTypeFactory.LENGTH)  {
 				String s = p.getValue().replaceAll(Reader.SN, "");
 				int length = Integer.parseInt(s);
@@ -242,11 +241,6 @@ public class TalDynamic extends Composition implements Tal {
 		}
 	}
 	
-	
-	
-	
-	
-	
 	public int getLength() {
 		return length;
 	}
@@ -260,11 +254,9 @@ public class TalDynamic extends Composition implements Tal {
 		this.layoutChooser = layoutChooser;
 	}
 	public String getName() {
-		return name;
+		return metaValues.getString(PacketTypeFactory.NAME);
 	}
-	public void setName(String name) {
-		this.name = name;
-	}
+	
 	public RepresentableSequence getTheka() {
 		return theka;
 	}
@@ -297,7 +289,7 @@ public class TalDynamic extends Composition implements Tal {
 		
 	}	
 	public String toString() {
-		return name + ", " + length + " beats";
+		return metaValues.getString(PacketTypeFactory.NAME) + ", " + length + " beats";
 	}
 	
 
