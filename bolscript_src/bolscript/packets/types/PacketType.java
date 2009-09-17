@@ -2,7 +2,7 @@ package bolscript.packets.types;
 
 import java.awt.Color;
 
-public interface PacketType {
+public interface PacketType extends Comparable<PacketType> {
 	
 	public enum StorageType {
 		/**
@@ -89,6 +89,11 @@ public interface PacketType {
 	String getDisplayNamePlural();
 	
 	/**
+	 * The display name for a table header
+	 */
+	String getDisplayNameTable();
+	
+	/**
 	 * Is this a Packet which is parsed as a meta packet?
 	 */
 	boolean isMetaPaket();
@@ -108,5 +113,6 @@ public interface PacketType {
 	 * The color of the key in the composition editor.
 	 */
 	Color getKeyColor();
+	
 	
 }

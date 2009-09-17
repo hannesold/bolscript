@@ -150,20 +150,20 @@ public class BolscriptDocument extends DefaultStyledDocument{
 	    	
 	    	removeAndBackupListeners();
 	    	
-	    	  Debug.temporary(getClass(), "update styles!");
+	    	 // Debug.temporary(getClass(), "update styles!");
 	    	  setCharacterAttributes(0, getLength(), rootStyle, true);
 	    	  try {
 	    	  for (Packet p: packets) {
-	    		  Debug.temporary(getClass(), "checking packet " + p);
-	    		  Debug.temporary(getClass(), "ref: " + p.getTextReference());
+	    		//  Debug.temporary(getClass(), "checking packet " + p);
+	    		  //Debug.temporary(getClass(), "ref: " + p.getTextReference());
 	    		  if (p.hasTextReferences()) {
-	    			  Debug.temporary(getClass(), "replacing style");
+	    			//  Debug.temporary(getClass(), "replacing style");
 	    			  Style keyStyle = keyStyleMaps.get(p.getType());
 	    			  Style valStyle = valueStyleMaps.get(p.getType());
 	    			  if (keyStyle == null) keyStyle = styleBolKey;
 	    			  if (valStyle == null) valStyle = styleBolValue;
-	    			  Debug.temporary(getClass(), "key: " + p.getTextRefKey());
-	    			  Debug.temporary(getClass(), "val: " + p.getTextRefValue());
+	    			  //Debug.temporary(getClass(), "key: " + p.getTextRefKey());
+	    			  //Debug.temporary(getClass(), "val: " + p.getTextRefValue());
 	    			  setCharacterAttributes(p.getTextRefKey().start(), p.getTextReference().length(), keyStyle, true);
 	    			  setCharacterAttributes(p.getTextRefValue().start(), p.getTextRefValue().length(), valStyle, true);
 	    		  }
