@@ -34,7 +34,7 @@ Choose 1.6 as Java compiler in your eclipse or project settings.
 
 == Preparing Ant for mac os x application bundles ==
 Ant is included in eclipse, however we need an additional ant library:
-Download [http://sourceforge.net/projects/jarbundler/ jarbundler] and place the jarbundler.jar somewhere, I chose my 3dparty project folder. Go to Eclipse preferences->Runtime->add external jars. Jarbundler provides an ant task for building application bundles, and this is used in the build.xml.
+Download [http://sourceforge.net/projects/jarbundler/ jarbundler] and place the jarbundler.jar somewhere, I chose my 3dparty project folder. Go to Eclipse preferences->Ant->Runtime->add external jars. Jarbundler provides an ant task for building application bundles, and this is used in the build.xml.
 
 == Adding the ant builder to the project ==
 Go to Project preferences, add an Ant Builder to your project builders, choose build.xml. Go to targets and include
