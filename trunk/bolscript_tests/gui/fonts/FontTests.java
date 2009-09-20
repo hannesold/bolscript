@@ -24,6 +24,7 @@ public class FontTests  implements ItemListener, WindowListener{
 	private  JPanel examplePanel;
 	private  JLabel exampleLabel;
 	private  JComboBox fontSelector, fontSelectorLocal;
+	private String pathToFonts = "INSERT PATH HERE";
 	
 public FontTests(){
 	init();
@@ -41,7 +42,7 @@ public void init() {
 	Font[] systemFonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts();
 	
 	try {
-		File fontFolder = new File(Config.pathToFonts);
+		File fontFolder = new File(pathToFonts);
 		File[] fontFiles = fontFolder.listFiles(new SuffixFilter(".ttf"));
 		Font[] localFonts = new Font[fontFiles.length];
 		for (int i=0; i < fontFiles.length; i++){

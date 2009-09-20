@@ -29,10 +29,8 @@ public class GUI {
 	public static void setNativeLookAndFeel()
 	{
 	  try {
-	    UIManager.setLookAndFeel(
-//	    		UIManager.getCrossPlatformLookAndFeelClassName());
-	    //UIManager.getLookAndFeel()
-	      UIManager.getSystemLookAndFeelClassName() );
+		UIManager.setLookAndFeel(
+        UIManager.getSystemLookAndFeelClassName() );
 	  } catch( Exception e ) { e.printStackTrace(); }
 	}
 	
@@ -41,8 +39,6 @@ public class GUI {
 	  try {
 	    UIManager.setLookAndFeel(
 	    		UIManager.getCrossPlatformLookAndFeelClassName());
-	    //UIManager.getLookAndFeel()
-	//      UIManager.getSystemLookAndFeelClassName() );
 	  } catch( Exception e ) { e.printStackTrace(); }
 	}
 	

@@ -91,7 +91,7 @@ public class Composition implements DataStatePosessor{
 	 * @throws FileReadException
 	 */
 	public Composition(File file) throws FileReadException{
-		this(Reader.getContents(file, Config.maxBolscriptFileSize));
+		this(Reader.getContents(file, Config.maxBolscriptFileSize, Config.compositionEncoding));
 		setLinkLocal(file.getAbsolutePath());
 		setDataState(State.CONNECTED);
 		backUpRawData();
@@ -386,7 +386,7 @@ public class Composition implements DataStatePosessor{
 		if (dataState == State.NEW) return true;
 
 		try {
-			rawData = Reader.getContents(new File(this.linkLocal), Config.maxBolscriptFileSize);
+			rawData = Reader.getContents(new File(this.linkLocal), Config.maxBolscriptFileSize, Config.compositionEncoding);
 			dataState.connect(this);
 			return true;
 		} 

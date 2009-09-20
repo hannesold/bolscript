@@ -6,14 +6,15 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-
 import basics.Debug;
 import basics.Rational;
 import bols.BolBase;
 import bols.BolName;
-import bolscript.Reader;
+import bols.tals.Teental;
 import bolscript.config.Config;
+import bolscript.packets.Packet;
 import bolscript.packets.Packets;
+import bolscript.packets.types.PacketTypeFactory;
 import bolscript.sequences.RepresentableSequence;
 
 public class ReaderTest {
@@ -56,12 +57,29 @@ public class ReaderTest {
 	//System.out.println(Reader.makeSpeedsAbsolute(g, new Rational(2)));
 	}
 	
-	@Test
+	@Ignore
 	public void testInsertingOfBolBaseStandardReplacements() {
-		
 		Packets packets = Reader.compilePacketsFromString(" Theme: Dha tIr kit tir kit Dha ", bolBase);
 		Debug.out(packets);	
 	}
+	
+	@Test
+	public void testSplitIntoPackets() {
+		Packets packets = Reader.splitIntoPackets(Teental.TEENTAL);
+	}
+	
+	@Test
+	public void testFootNotes() {
+		String s = "A: Dha ge ti re ki te\n B: Dhin Na Ge \"Footnote A for test\" Na";
+		Packets packets = Reader.compilePacketsFromString(s, bolBase);
+		for (Packet p:packets) {
+			if (p.getType() == PacketTypeFactory.FOOTNOTE) {
+				assertEquals("A should remain and not be inserted", "Footnote A for test", p.getValue());
+			}
+		}
+	}
+	
+	//public void te
 	
 	@Ignore
 	public void testRepresentableSequence() throws Exception {

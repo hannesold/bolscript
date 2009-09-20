@@ -11,11 +11,13 @@ public class TextReference {
 	private int startIndex;
 	private int endIndex;
 	private int length;
+	private int line;
 	
-	public TextReference (int startIndex, int endIndex) {
+	public TextReference (int startIndex, int endIndex, int line) {
 		this.setStart(startIndex);
 		this.setEnd(endIndex);
 		this.length = endIndex-startIndex;
+		this.line = line;
 	}
 	
 	public int length() {
@@ -42,7 +44,11 @@ public class TextReference {
 		return endIndex;
 	}
 
+	public int line() {
+		return line;
+	}
+	
 	public TextReference clone() {
-		return new TextReference(startIndex, endIndex);
+		return new TextReference(startIndex, endIndex, line);
 	}
 }

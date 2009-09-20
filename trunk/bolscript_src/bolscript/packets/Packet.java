@@ -164,7 +164,7 @@ public class Packet {
 	}
 	
 	public Packet replaceValue(String val) {
-		Packet p = new Packet(new String(this.key), val, packetType.getId(), visible);
+		Packet p = new Packet(new String(this.key), val, packetType, visible);
 		if (textRefPacket != null) {
 			p.setTextReferencePacket(textRefPacket.clone());
 		} if (textRefKey != null) p.setTextRefKey(textRefKey.clone());
@@ -182,8 +182,8 @@ public class Packet {
 	public void setTextReferencePacket(TextReference textReference) {
 		this.textRefPacket = textReference;
 	}
-	public void setTextReferencePacket(int startIndex, int endIndex) {
-		this.textRefPacket = new TextReference(startIndex,endIndex);
+	public void setTextReferencePacket(int startIndex, int endIndex, int line) {
+		this.textRefPacket = new TextReference(startIndex,endIndex, line);
 	}
 
 
@@ -210,8 +210,8 @@ public class Packet {
 	 * Returns an independent clone of the packet,
 	 * however the obj is set to null. 
 	 */
-	public Packet cloneClearObj() {
-		return new Packet(new String(this.key), new String(this.value), packetType, visible);
+	public Packet cloneClearObjAndTextRef() {
+		return new Packet(new String(this.key), new String(this.value), this.packetType.getId(), this.visible);
 	}
 	
 	

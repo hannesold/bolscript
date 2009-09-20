@@ -160,7 +160,7 @@ public abstract class BolBaseGeneral {
 	public Packets getReplacementPacketClones() {
 		Packets r = new Packets();
 		for (Packet p: standardReplacements) {
-			r.add(p.cloneClearObj());
+			r.add(p.cloneClearObjAndTextRef());
 		}
 		return r;
 	}

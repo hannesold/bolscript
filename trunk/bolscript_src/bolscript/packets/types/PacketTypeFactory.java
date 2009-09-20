@@ -55,7 +55,7 @@ public class PacketTypeFactory {
 
 			types 			= new PacketType[PacketTypeFactory.nrOfTypes];
 			types[BOLS] 	= new PacketTypeStandard(BOLS, "Bol", "Bols", new String[]{},false,0,StorageType.OTHER,ParseMode.OTHER,true,false,true,bolKeyColor);
-			types[FOOTNOTE] = new PacketTypeStandard(FOOTNOTE,"Footnote", "Footnotes", new String[]{}, false,0,StorageType.STRINGLIST,ParseMode.STRING,true,true,true,metaKeyColor);
+			types[FOOTNOTE] = new PacketTypeStandard(FOOTNOTE,"Footnote", "Footnotes", new String[]{}, false,0,StorageType.STRINGLIST,ParseMode.NONE,true,true,true,metaKeyColor);
 			types[SPEED] 	= new PacketTypeStandard(SPEED, "Speed", "Speeds",new String[]{"SPEED"},true,-60,StorageType.STRINGLIST,ParseMode.OTHER,false,true,true,metaKeyColor);
 			types[FAILED] 	= new PacketTypeStandard(FAILED,"Failed","Failed",new String[]{},false,0,StorageType.NONE,ParseMode.NONE,false,true,false,failedKeyColor);
 			types[LAYOUT] 	= new PacketTypeStandard(LAYOUT,"Layout","Layouts",new String[]{"LAYOUT"},false,0,StorageType.STRING, ParseMode.OTHER,false,true,false,metaKeyColor);
