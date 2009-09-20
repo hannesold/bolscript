@@ -9,12 +9,12 @@
 <!--http://www.devdaily.com/blog/post/mac-os-x/sample-mac-jar-bundler-ant-build-script/-->
 <!--ANT 1.7 is required-->
 	
-<taskdef name="jarbundler" 
-	         classname="net.sourceforge.jarbundler.JarBundler" />
+
 	<property name="version.num" value="0.1"/>
 	<property name="dir.bin" value="bin"/>
 	<property name="dir.build" value="builds"/>
 	<property name="dir.resources" value="resources" />
+	<property name="dir.resources.tablafolder_default" value="${dir.resources}/tablafolder_default"/>
 	<property name="resources.zip.filename" value="resources.zip"/>
 	<property name="resources.zip.completepath" value="${dir.build}/${resources.zip.filename}"/>
 	<property name="lib.itext" value="lib/iText-2.1.5.jar" />
@@ -24,6 +24,8 @@
 	<property name="jar.completepath.other" value="${dir.build}/${jar.filename.other}"/>
 	<property name="app.icon" value="resources/icons/bolscript_logo.icns" />
 	<property name="app.name" value="Bolscript" />
+	<property name="dmg.name" value="Bolscript_${version.num}"/>
+	<property name="dmg.size" value="3000"/>
 	
 	<property name="dir.mytablafolder" value="../../Bolscript/Tablafolder"/>
 	
@@ -32,28 +34,41 @@
 		<format property="TODAY" pattern="yyyy-MM-dd HH:mm:ss" />
 	</tstamp>
 
+	
+<taskdef name="jarbundler" 
+	         classname="net.sourceforge.jarbundler.JarBundler" />
+	
+<property name="launch4j.dir" value ="../3dparty/launch4j" />	
+<taskdef name="launch4j"
+	classname="net.sf.launch4j.ant.Launch4jTask" 
+	classpath="${launch4j.dir}/launch4j.jar :${launch4j.dir}/lib/xstream.jar" />
+
+
 <target name="clean_all">
 	<delete file="${jar.completepath.mac}"/>
 	<delete file="${jar.completepath.other}"/>
 	<delete file="${resources.zip.completepath}"/>
 	<delete dir="${dir.build}/${app.name}.app"/>
+	<delete file="${dir.build}/${dmg.name}.dmg" />
+	<delete file="${dir.build}/${app.name}.exe" />
 </target>
 	
-<target name="copy_resources_from_my_tablafolder">
-	 <copy todir="${dir.resources}/tablafolder_default/compositions/demos" overwrite="true">
+<target name="generate_default_tablafolder_from_my_tablafolder">
+	<delete dir="${dir.resources.tablafolder_default}"/>
+	 <copy todir="${dir.resources.tablafolder_default}/compositions/demos" overwrite="true">
 	    <fileset dir="${dir.mytablafolder}/compositions/demos">
 	    </fileset>
 	 </copy>
-	<copy todir="${dir.resources}/tablafolder_default/compositions/tals" overwrite="true">
+	<copy todir="${dir.resources.tablafolder_default}/compositions/tals" overwrite="true">
 		<fileset dir="${dir.mytablafolder}/compositions/tals">
 		</fileset>
 	</copy>
-	<copy todir="${dir.resources}/tablafolder_default/settings" overwrite="true">
-		<file file="${dir.mytablafolder}/settings/bolbase.bolbase.txt"/>
+	<copy todir="${dir.resources.tablafolder_default}/settings" overwrite="true">
+		<fileset dir="${dir.mytablafolder}/settings"/>
 	</copy>
 </target>
 	
-<target name="zip_resources" depends="copy_resources_from_my_tablafolder">
+<target name="zip_resources" depends="generate_default_tablafolder_from_my_tablafolder">
 <!-- zip alll resources that shall be bundled in the distributed jar as resources.zip -->
 	<zip destfile="${resources.zip.completepath}" 
 		basedir="${dir.resources}" excludes="**/*.icns">
@@ -97,10 +112,22 @@
         		bundleid="bolscript/MasterMac"/>
 </target>
 	
-	<target name="create_jar_for_pc">
+<target name="create_dmg" depends="create_applicationbundle_for_mac">
+	<!-- create disk image -->
+	<exec dir="${dir.build}" executable="hdiutil"><arg line="create -size ${dmg.size}k -fs HFS+ -volname ${dmg.name} ${dmg.name}.dmg"/></exec>
+	<!-- mount it -->
+	<exec executable="hdiutil" dir="${dir.build}"><arg line="attach ${dmg.name}.dmg"/></exec>
+	<!-- copy file into it -->
+	<exec executable="cp"><arg line="-r ${dir.build}/${app.name}.app /Volumes/${dmg.name}"/></exec>
+	<!-- unmount it-->
+	<exec executable="hdiutil"><arg line="detach /Volumes/${dmg.name}"/></exec>
+</target>
+	
+	<target name="create_jar_for_pc" depends="zip_resources">
 		<!--create a runnable jar which is plattform independent -->		
 		<jar destfile="${jar.completepath.other}" filesetmanifest="mergewithoutmain">
-			<manifest>				<attribute name="Main-Class" value="bolscript.Master"/>
+			<manifest>				
+				<attribute name="Main-Class" value="bolscript.Master"/>
 				<attribute name="Class-Path" value="."/>
 				<attribute name="Implementation-Version" 
 			             value="${version.num}-b${build.number}"/>   
@@ -114,6 +141,11 @@
 			<fileset file="${resources.zip.completepath}"/>
 		</jar>
 	</target>
+	
+	<target name="create_exe_for_pc" depends="create_jar_for_pc">
+		<launch4j configFile="launch4j.xml" />
+	</target>
+	
 	
 </project>
 

@@ -5,26 +5,19 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.Toolkit;
-import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.prefs.Preferences;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import javax.swing.JTable;
-
-import com.sun.tools.javac.util.DefaultFileManager.ZipArchive;
 
 import basics.Debug;
 import basics.Rational;
@@ -43,7 +36,7 @@ public class Config {
 	public static String pathToCompositionsNoSlash = "";// = "/Users/hannes/Projekte/Workspace/tabla/bols";
 	public static String pathToTals = "";// = pathToCompositions + "tals";
 	public static String pathToTalsNoSlash = "";// = pathToCompositions + "tals";
-	public static String pathToFonts = "";
+	//public static String pathToFonts = "";
 	public static String pdfExportPath = null;
 	
 	public static String pathToDevanageriFont = "";
@@ -106,6 +99,9 @@ public class Config {
 	
 	static ArrayList<ConfigChangeListener> listeners;
 	public static int maxBolscriptFileSize = 200 * 1024; // 200kb is maximum size.
+	public static String compositionEncoding = "UTF-8";
+	public static String bolBaseEncoding = "UTF-16";
+	public static Object lineSeperator ="\n";
 
 	static {
 		if (!initialised) {
@@ -327,11 +323,11 @@ public class Config {
 				c.mkdir();
 			}
 			
-			pathToFonts = s.getAbsolutePath() + fileSeperator + "fonts";
+			/*pathToFonts = s.getAbsolutePath() + fileSeperator + "fonts";
 			File fontFolder = new File(pathToFonts);
 			if (!fontFolder.exists()) {
 				fontFolder.mkdir();
-			}
+			}*/
 
 			pathToBolBase = s.getAbsolutePath() + fileSeperator + bolBaseFilename;
 			//Debug.temporary(Config.class, pathToBolBase);
@@ -344,7 +340,7 @@ public class Config {
 			pathToTalsNoSlash = c.getAbsolutePath() + fileSeperator + "tals";
 			//Debug.temporary(Config.class, pathToTalsNoSlash);
 			pathToTals = pathToTalsNoSlash + fileSeperator;
-			pathToFonts = s.getAbsolutePath() + fileSeperator + "fonts";
+			//pathToFonts = s.getAbsolutePath() + fileSeperator + "fonts";
 			//Debug.temporary(Config.class, pathToTals);
 			pathToDevanageriFont = s.getAbsolutePath() + fileSeperator + "devanageri.ttf";
 			
@@ -404,7 +400,6 @@ public class Config {
 		ZipTools.extractSubentries(targetFolder, resources, resources.getEntry("tablafolder_default"));
 
 		tempFile.delete();
-		
 		
 	}
 

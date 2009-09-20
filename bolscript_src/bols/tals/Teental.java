@@ -10,10 +10,20 @@ import bolscript.sequences.RepresentableSequence;
 
 public class Teental extends bols.tals.TalDynamic implements Tal {
 
+	
 	public static TalDynamic defaultTeental = null;
 	
 	public Teental(BolBaseGeneral bolBase) {
-		super("Type: \n"+
+		super(TEENTAL);
+	}
+	
+	public static Tal getDefaultTeental(BolBaseGeneral bolBase) {
+		if (defaultTeental == null) defaultTeental = new Teental(BolBase.getStandard());
+		return defaultTeental;
+	}
+	
+	public static String TEENTAL =
+		"Type: \n"+
 		"Tal \n"+
 		""+
 		"Gharanas:\n"+
@@ -43,13 +53,7 @@ public class Teental extends bols.tals.TalDynamic implements Tal {
 		"4 4\n"+
 		"8 8\n"+
 		"16 16\n"+
-		"32 16\n");
-	}
-	
-	public static Tal getDefaultTeental(BolBaseGeneral bolBase) {
-		if (defaultTeental == null) defaultTeental = new Teental(BolBase.getStandard());
-		return defaultTeental;
-	}
+		"32 16\n";
 
 
 }
