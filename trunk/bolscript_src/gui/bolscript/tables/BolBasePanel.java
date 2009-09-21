@@ -1,6 +1,7 @@
 package gui.bolscript.tables;
 
 import java.awt.BorderLayout;
+import java.awt.Rectangle;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -17,6 +18,7 @@ public class BolBasePanel extends JPanel {
 	
 	BolBaseTableModel model;
 	JTable table;
+	JScrollPane scrollPane;
 	
 	public BolBasePanel() {
 		super();
@@ -26,7 +28,7 @@ public class BolBasePanel extends JPanel {
 		table = new JTable(model);
 		table.setDefaultRenderer(Object.class, new CellRenderer());
 		
-		JScrollPane scrollPane = new JScrollPane(table);
+		scrollPane = new JScrollPane(table);
 		this.add(scrollPane,BorderLayout.CENTER);
 		
 		initColumnWidths();
@@ -64,8 +66,13 @@ public void selectBol(BolName bolName) {
 	String toFind = bolName.getName(BolName.EXACT);
 	for (int i=0; i < model.getRowCount(); i++) {
 		if (model.getValueAt(i, BolName.EXACT).equals(toFind)) {
+			
 			Debug.temporary(this, "setting selection to " +toFind + ", at row " + i);
 			table.getSelectionModel().setSelectionInterval(i, i);
+			Rectangle r = table.getCellRect(i, BolName.EXACT, false);
+			Debug.temporary(this, "attempting to scroll to " + r);
+			table.scrollRectToVisible(r);
+			//scrollPane.set
 			break;
 		}
 	}
