@@ -13,11 +13,12 @@ public class Teental extends bols.tals.TalDynamic implements Tal {
 	
 	public static TalDynamic defaultTeental = null;
 	
+	
 	public Teental(BolBaseGeneral bolBase) {
 		super(TEENTAL);
 	}
 	
-	public static Tal getDefaultTeental(BolBaseGeneral bolBase) {
+	public static Tal getDefaultTeental() {
 		if (defaultTeental == null) defaultTeental = new Teental(BolBase.getStandard());
 		return defaultTeental;
 	}

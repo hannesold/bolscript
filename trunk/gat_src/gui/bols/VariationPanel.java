@@ -1,18 +1,12 @@
 package gui.bols;
 
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Insets;
-import java.util.ArrayList;
-
-import javax.swing.JPanel;
 
 import bols.BolBase;
 import bols.BolName;
 import bols.Variation;
-import bols.tals.LayoutCycle;
 import bols.tals.Tal;
-import bols.tals.TalBase;
+import bols.tals.Teental;
 import bolscript.config.Config;
 import bolscript.sequences.RepresentableSequence;
 import config.Themes;
@@ -36,7 +30,7 @@ public class VariationPanel extends SequencePanel {
 
 	public VariationPanel() {
 		this(Themes.getTheme01(BolBase.getStandard()), 
-				TalBase.standard().getTalFromName("Teental"),
+				Teental.getDefaultTeental(),
 				new Dimension(400,200), 0, "", 0);
 	}
 	
