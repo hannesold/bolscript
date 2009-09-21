@@ -1,15 +1,9 @@
 package bols.tals;
 
-import java.util.ArrayList;
-
-import bols.BolBaseGeneral;
-import bolscript.Reader;
-import bolscript.packets.Packets;
-import bolscript.sequences.RepresentableSequence;
 
 public class Jhaptal extends bols.tals.TalDynamic implements Tal {
 
-	public Jhaptal(BolBaseGeneral bolBase) {
+	public Jhaptal() {
 		super("Editor: Hannes"  + 
 		"Type: " + 
 		"Tal" + 
@@ -40,6 +34,6 @@ public class Jhaptal extends bols.tals.TalDynamic implements Tal {
 		"1 1" + 
 		"2 2" + 
 		"3 2, 3" + 
-		"5 5");
+		"5 5", TalBaseDefault.getStandard());
 	}
 }

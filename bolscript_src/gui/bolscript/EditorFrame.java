@@ -13,14 +13,14 @@ import java.awt.Toolkit;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextPane;
+import javax.swing.event.CaretEvent;
+import javax.swing.event.CaretListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.undo.UndoManager;
@@ -31,7 +31,7 @@ import bolscript.compositions.Composition;
 import bolscript.compositions.CompositionChangeEvent;
 import bolscript.compositions.CompositionChangedListener;
 
-public class EditorFrame extends JFrame implements WindowListener, CompositionChangedListener, DocumentListener {
+public class EditorFrame extends JFrame implements WindowListener, CompositionChangedListener, DocumentListener, CaretListener {
 	
 	CompositionPanel compositionPanel;
 	CompositionFrame compositionFrame;
@@ -45,21 +45,21 @@ public class EditorFrame extends JFrame implements WindowListener, CompositionCh
 	
 	public JTextPane textPane;
 	public JButton buttonCompile;
-	RenderWorker renderer;
+	
+	SkippingWorker renderWorker;
+	SkippingWorker bolBaseSearchWorker;
 	
 	final UndoManager undoManager;
 	private BolscriptDocument document;
 	
 	private BolBasePanel bolBasePanel;
 	
-	public EditorFrame(Dimension size) {
+	private EditorFrame(Dimension size) {
 		super("Composition editor");
 		undoManager = new UndoManager();
 		this.setSize(size);
 		
 		compositionPanel = null;
-		
-		
 		
 		//editorPanel.setLayout(new BoxLayout(editorPanel, BoxLayout.Y_AXIS));
 		document = new BolscriptDocument();
@@ -84,13 +84,12 @@ public class EditorFrame extends JFrame implements WindowListener, CompositionCh
 		
 		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		document.addDocumentListener(this);
+		textPane.addCaretListener(this);
+		
+//		document.addDocumentListener(bolBasePanel);
 		addWindowListener(this);	
 	}
-
-	public BolscriptDocument getDocument() {
-		return document;
-	}
-
+	
 	public EditorFrame(Composition comp, Dimension dimension) {
 		this(dimension);
 		this.setTitle(comp.getName());
@@ -99,60 +98,29 @@ public class EditorFrame extends JFrame implements WindowListener, CompositionCh
 		this.setText(comp.getRawData());
 		
 		document.addUndoableEditListener(undoManager); 
-		renderer = new RenderWorker(this);
-		renderer.begin();
+		renderWorker = new SkippingWorker(new CompositionPanelRendererFactory(this));
+		renderWorker.begin();
+		bolBaseSearchWorker = new SkippingWorker(new BolBaseSearcher(textPane, bolBasePanel));
+		bolBaseSearchWorker.begin();
 		document.updateStyles(composition.getPackets());
-		
 	}
 	
+
+	public BolscriptDocument getDocument() {
+		return document;
+	}
+
+
 	public JMenuBar initMenuBar() {
-		//if (menuBar == null) {
-			menuBar = new JMenuBar();
-			/*JMenu menuFile = new JMenu("File");
-			JMenuItem saver = new JMenuItem(new SaveChanges(this,false));
-			saver.setAccelerator(KeyStroke.getKeyStroke(
-			        KeyEvent.VK_S, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-			JMenuItem saveAs = new JMenuItem(new SaveAs(this));
-			saveAs.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, 
-					(java.awt.event.InputEvent.SHIFT_MASK | 
-							(Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()))));
-			JMenuItem closer = new JMenuItem(new CloseEditor(this));
-			closer.setAccelerator(KeyStroke.getKeyStroke(
-			        KeyEvent.VK_W, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+		menuBar = new JMenuBar();
+		menuBar.add(new FileMenu(this));
+		menuBar.add(new EditMenu(this));
+		menuBar.add(new ViewMenu(this));
+		menuBar.add(new LanguageMenu(this));
 
-			menuFile.add(new OpenNew());
-			menuFile.add(saver);
-			menuFile.add(saveAs);
-			menuFile.add(closer);
-			menuBar.add(menuFile);
-			
-			JMenu menuEdit = new JMenu("Edit");
-			JMenuItem undo = new JMenuItem(new Undo(this.undoManager));
-			undo.setAccelerator(KeyStroke.getKeyStroke(
-			        KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-			
-			JMenuItem redo = new JMenuItem(new Redo(this.undoManager));
-			redo.setAccelerator(KeyStroke.getKeyStroke(
-			        KeyEvent.VK_Y, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-			menuEdit.add(undo);
-			menuEdit.add(redo);
-			
-			menuBar.add(menuEdit);*/
-			
-			menuBar.add(new FileMenu(this));
-			menuBar.add(new EditMenu(this));
-			menuBar.add(new ViewMenu(this));
-			menuBar.add(new LanguageMenu(this));
-
-			this.setJMenuBar(menuBar);
-		//
-			
+		this.setJMenuBar(menuBar);
 		return menuBar;
 	}
-	
-
-
-	
 	
 	public UndoManager getUndoManager() {
 		return undoManager;
@@ -196,8 +164,9 @@ public class EditorFrame extends JFrame implements WindowListener, CompositionCh
 		this.compositionFrame = compositionFrame;
 		this.setCompositionPanel(compositionFrame.getCompositionPanel());
 		
-		renderer.addUpdate();
-		compositionFrame.addComponentListener(GUI.proxyComponentResizedListener(renderer,"compFrameResized"));
+		renderWorker.addUpdate();
+		bolBaseSearchWorker.addUpdate();
+		compositionFrame.addComponentListener(GUI.proxyComponentResizedListener(renderWorker,"compFrameResized"));
 		composition.addChangeListener(compositionFrame);
 		
 
@@ -220,27 +189,7 @@ public class EditorFrame extends JFrame implements WindowListener, CompositionCh
 		super.setTitle("Composition Editor - " + name);
 	}
 	
-	public void windowClosing(WindowEvent e) {
-		Debug.debug(this, "window closed: " + e);
-		new CloseEditor(this).closeEditor();
-	}
 	
-	public void dispose() {
-		composition.removeChangeListener(this);
-		if (renderer != null) renderer.stop();
-		super.dispose();
-	}
-	
-	public void windowActivated(WindowEvent e) {}
-	
-	public void windowClosed(WindowEvent e) {
-
-	}
-	public void windowDeactivated(WindowEvent e) {}
-	public void windowDeiconified(WindowEvent e) {}
-	public void windowIconified(WindowEvent e) {}
-	public void windowOpened(WindowEvent e) {}
-
 	public void changedUpdate(DocumentEvent e) {
 		if (!textPane.getText().equals(lastVersion)){
 		  compile();
@@ -270,12 +219,42 @@ public class EditorFrame extends JFrame implements WindowListener, CompositionCh
 	 */
 	public void compile() {
 		if (compositionPanel != null) {
-			renderer.addUpdate();
+			renderWorker.addUpdate();
+			bolBaseSearchWorker.addUpdate();
 		}
 		
 	}
+	
+	public void caretUpdate(CaretEvent e) {
+		if (bolBaseSearchWorker != null) bolBaseSearchWorker.addUpdate();
+	}
 
 
+	public void windowClosing(WindowEvent e) {
+		Debug.debug(this, "window closed: " + e);
+		new CloseEditor(this).closeEditor();
+	}
+	
+	public void dispose() {
+		composition.removeChangeListener(this);
+		if (renderWorker != null) renderWorker.stop();
+		if (bolBaseSearchWorker != null) bolBaseSearchWorker.stop();
+		super.dispose();
+	}
+	
+	public void windowActivated(WindowEvent e) {}
+	
+	public void windowClosed(WindowEvent e) {
+
+	}
+	public void windowDeactivated(WindowEvent e) {}
+	public void windowDeiconified(WindowEvent e) {}
+	public void windowIconified(WindowEvent e) {}
+	public void windowOpened(WindowEvent e) {}
+
+	
+
+	
 
 
 }

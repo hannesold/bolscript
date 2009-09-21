@@ -362,7 +362,7 @@ public class MidiTestBlaster2 extends MidiStation implements MetaEventListener{
 	
 	public static void main(String[] args) throws Exception {
 		BolBase bb = new BolBase();
-		KaidaComposer al = new KaidaComposer(bb, new Teental(bb), Themes.getTheme01(bb));
+		KaidaComposer al = new KaidaComposer(bb, new Teental(), Themes.getTheme01(bb));
 		MidiStation ms = new MidiStation(al);
 		ms.initMidi();
 		ms.play();

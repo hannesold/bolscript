@@ -233,8 +233,8 @@ public class SequencePanel extends PlayablePanel  {
 			maxCellWidth = width;
 			
 		}
-		Debug.temporary(this, "determined maxCellwidth: " + maxCellWidth);
-		Debug.temporary(this, "determined maxBolLabelHeight: " + maxBolLabelHeight);
+		//Debug.temporary(this, "determined maxCellwidth: " + maxCellWidth);
+		//Debug.temporary(this, "determined maxBolLabelHeight: " + maxBolLabelHeight);
 		
 		// cell sizes and resulting dimensions of cells and vibhags
 		int cellWidth = maxCellWidth;//(int) (maxBolDimension.width * maxSpeed);

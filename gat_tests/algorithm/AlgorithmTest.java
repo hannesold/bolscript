@@ -29,7 +29,7 @@ public class AlgorithmTest extends TestCase {
 	
 	public void testAlgorithmNew() throws Exception {
 		BolBase bolBase = new BolBase();
-		KaidaComposer al = new KaidaComposer(bolBase, new Teental(bolBase), Themes.getTheme01(bolBase));
+		KaidaComposer al = new KaidaComposer(bolBase, new Teental(), Themes.getTheme01(bolBase));
 		assertEquals("After Constructor al should have 1 generation", 1l, al.getGenerationNr());
 		try {
 			ArrayList<Individual> gen1 = al.getCurrentGeneration();
@@ -41,7 +41,7 @@ public class AlgorithmTest extends TestCase {
 	
 	public void testAlgorithmDoEvolution() throws Exception {
 		BolBase bolBase = new BolBase();
-		KaidaComposer al = new KaidaComposer(bolBase, new Teental(bolBase), Themes.getTheme01(bolBase));
+		KaidaComposer al = new KaidaComposer(bolBase, new Teental(), Themes.getTheme01(bolBase));
 		assertEquals("After Constructor al should have 1 generation", 1l, al.getGenerationNr());
 		int generationCount = 1;
 		//al.setDEBUG(true);

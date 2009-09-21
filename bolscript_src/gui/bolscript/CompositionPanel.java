@@ -40,8 +40,8 @@ import basics.GUI;
 import bols.BolName;
 import bols.BundlingDepthToSpeedMap;
 import bols.tals.Tal;
+import bols.tals.TalBase;
 import bols.tals.Teental;
-import bolscript.Master;
 import bolscript.compositions.Composition;
 import bolscript.config.Config;
 import bolscript.packets.Packet;
@@ -58,8 +58,8 @@ import com.lowagie.text.pdf.PdfWriter;
 
 
 public class CompositionPanel extends JLayeredPane {
-
-
+	
+	private static final long serialVersionUID = -9072151161705640812L;
 	
 	private static int contentLayer = 1;
 	private static int metaLayer = 2;
@@ -73,6 +73,11 @@ public class CompositionPanel extends JLayeredPane {
 	private AbstractAction decreaseBundling, increaseBundling, decreaseFontsize, increaseFontsize, resetFontsize;
 	private AbstractAction[] setLanguage;
 	private ViewerActions viewerActions;
+	
+	/**
+	 * The talBase is queried for retrieving a Tal Object to a Name String 
+	 */
+	private TalBase talBase;
 	
 	/**
 	 * The depth to which single bols are bundled.
@@ -114,9 +119,10 @@ public class CompositionPanel extends JLayeredPane {
 	 */
 	private JPanel contentPanel;
 	
-	public CompositionPanel (Dimension size, int language) {
+	public CompositionPanel (Dimension size, int language, TalBase talBase) {
 		super();
 		this.language = language;
+		this.talBase = talBase;
 		init(size);
 		
 	}
@@ -333,13 +339,13 @@ public class CompositionPanel extends JLayeredPane {
 			//System.out.println("checking p");
 			if (p.getType() == PacketTypeFactory.TAL) {
 				//tal = (Tal) p.getObject();
-				tal = Master.master.getCompositionBase().getTalFromName((String) p.getObject());
+				tal = talBase.getTalFromName((String) p.getObject());
 				
 				if (tal==null) {
-					Debug.temporary(this, "Tal "+p.getObject()+" not found, using teental");
+					Debug.temporary(this, "Tal " + p.getObject() + " not found, using teental");
 					tal = Teental.getDefaultTeental();
 				} else {
-					Debug.temporary(this, "Tal found: " + tal);
+					//Debug.temporary(this, "Tal found: " + tal);
 				}
 				
 			}
@@ -377,7 +383,7 @@ public class CompositionPanel extends JLayeredPane {
 					
 					
 					RepresentableSequence seq = ((RepresentableSequence) p.getObject()).getBundled(bundlingMap,bundlingDepth, true);
-					Debug.temporary(this, "showing seq:" + seq);
+					//Debug.temporary(this, "showing seq:" + seq);
 					SequencePanel sequencePanel = new SequencePanel(seq, tal, variationDim, 0,"",0, language, Config.bolFontSizeStd[language] + fontSizeIncrease);
 					
 					addLineBreak(new Float(newHeight), PageBreakPanel.LOW);

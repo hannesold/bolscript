@@ -19,7 +19,7 @@ public class SpeedFilter extends MetaValueFilter implements Filter {
 	 * @return
 	 */
 	public ArrayList<String> collectStringSamples(ArrayList<Composition> comps, boolean andSort) {
-		ArrayList collection = super.collectStringSamples(comps, false);
+		ArrayList<String> collection = super.collectStringSamples(comps, false);
 		if (andSort) Collections.sort(collection, new RationalComparator());
 		return collection;
 	}

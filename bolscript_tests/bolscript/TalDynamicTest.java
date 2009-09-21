@@ -2,12 +2,13 @@ package bolscript;
 
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import basics.FileReadException;
 import bols.BolBase;
+import bols.tals.TalBaseDefault;
 import bols.tals.TalDynamic;
-import bolscript.packets.Packets;
 
 public class TalDynamicTest {
 	BolBase bolBase;
@@ -18,8 +19,9 @@ public class TalDynamicTest {
 	}
 	
 	
+	@Ignore
 	public void testFromFile() throws FileReadException{
-		TalDynamic tal = new TalDynamic("/Users/hannes/Desktop/teental.tal.txt");
+		TalDynamic tal = new TalDynamic("/Users/hannes/Desktop/teental.tal.txt", TalBaseDefault.getStandard());
 		System.out.println(tal.getName());
 		System.out.println(tal.getLength());
 		//System.out.println(tal.getLayoutChooser());
@@ -48,7 +50,7 @@ public class TalDynamicTest {
 		
 		"3 3\n"+
 		"6 6\n";
-		TalDynamic tal = new TalDynamic(input);
+		TalDynamic tal = new TalDynamic(input, TalBaseDefault.getStandard());
 		System.out.println(tal.toString());
 		System.out.println(tal.getVibhagsAsString());
 		System.out.println(tal.getLayoutChooser());

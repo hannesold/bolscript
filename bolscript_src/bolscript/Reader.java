@@ -81,7 +81,7 @@ public class Reader {
 
 		Packets rawPackets = splitIntoPackets(input);
 
-		debug.temporary(rawPackets);
+		//debug.temporary(rawPackets);
 
 		Packets packets = spliceFootnotesAndDoCosmetics(rawPackets);
 
@@ -255,8 +255,7 @@ public class Reader {
 	 * @param packets
 	 * @return A new Packets containing the improved version.
 	 */
-	protected static Packets spliceFootnotesAndDoCosmetics(
-			Packets packets) {
+	protected static Packets spliceFootnotesAndDoCosmetics(Packets packets) {
 
 		Packets newPackets = new Packets();
 		ArrayList<String> [] footnotes = new ArrayList[packets.size()];
@@ -406,7 +405,7 @@ public class Reader {
 
 
 				PacketType type = PacketTypeFactory.getType(m.group(2).toUpperCase());
-				debug.temporary(m.group(2).toUpperCase() + " => " + type);
+				//debug.temporary(m.group(2).toUpperCase() + " => " + type);
 				isVisible = type.displayInCompositionView() && (m.group(1) == null);
 
 				Packet packet = new Packet(m.group(2), m.group(3), type, isVisible);
@@ -500,7 +499,7 @@ public class Reader {
 			} else if (token.matches(RATIONAL +"!$")){
 
 				Rational r = Rational.parseNonNegRational(token.substring(0, token.length()-1));
-				Debug.temporary(Reader.class, "new fixed speed " + r);
+				//Debug.temporary(Reader.class, "new fixed speed " + r);
 				speedStack.set(depth,r);
 				output.append(input.substring(cursor, m.end(1)+1));
 				cursor = m.end(1)+1;
@@ -690,7 +689,7 @@ public class Reader {
 			p = i.next();
 
 			int type = p.getType();
-			debug.temporary(p.getKey() + " => " + p.getValue() + ", type: " + p.getPType());
+			//debug.temporary(p.getKey() + " => " + p.getValue() + ", type: " + p.getPType());
 			ParseMode parseMode = p.getPType().getParseMode();
 
 			if (parseMode == ParseMode.STRING) {

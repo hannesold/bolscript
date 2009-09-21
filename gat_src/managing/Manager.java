@@ -124,7 +124,7 @@ public class Manager extends ManagerGraphics implements WindowListener, ActionLi
 	private void initComposers() throws Exception {
 		ThreadGroup composerGroup = null;//new ThreadGroup(Thread.currentThread().getThreadGroup(), "Composer ThreadGroup");
 		
-		Tal tal = new Teental(bolBase);
+		Tal tal = new Teental();
 		kaidaComposer = new KaidaComposer(bolBase, tal, Themes
 				.getTheme01(bolBase), true, composerGroup);
 		kaidaComposer.setPauseDuration(0);

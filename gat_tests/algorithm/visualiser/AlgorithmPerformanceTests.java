@@ -102,7 +102,7 @@ public class AlgorithmPerformanceTests extends Thread{
 				
 		//Initialise 4 Algorithms
 		for (int i=0; i<4; i++) {
-			KaidaComposer algorithm = new KaidaComposer(bolBase, new Teental(bolBase), initialVariation, false, null);
+			KaidaComposer algorithm = new KaidaComposer(bolBase, new Teental(), initialVariation, false, null);
 			als.add(algorithm);
 			 
 //			set Raters:
@@ -234,7 +234,7 @@ public class AlgorithmPerformanceTests extends Thread{
 				
 		//Initialise 4 Algorithms
 		for (int i=0; i<4; i++) {
-			KaidaComposer algorithm = new KaidaComposer(bolBase, new Teental(bolBase), initialVariation, false, null);
+			KaidaComposer algorithm = new KaidaComposer(bolBase, new Teental(), initialVariation, false, null);
 			als.add(algorithm);
 			 
 //			set Raters:
@@ -362,8 +362,8 @@ public class AlgorithmPerformanceTests extends Thread{
 		Variation initialVariation = Themes.getTheme02(bolBase);
 		Individual initialIndividual = new Individual(initialVariation);
 		
-		al = new KaidaComposer(bolBase, new Teental(bolBase), initialVariation, false, null);
-		al2 = new KaidaComposer(bolBase, new Teental(bolBase), initialVariation, false, null);
+		al = new KaidaComposer(bolBase, new Teental(), initialVariation, false, null);
+		al2 = new KaidaComposer(bolBase, new Teental(), initialVariation, false, null);
 		
 		als.add(al);
 		als.add(al2);		

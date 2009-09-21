@@ -1,13 +1,10 @@
 package bolscript.compositions;
 
-import static bolscript.packets.types.PacketTypeFactory.COMMENT;
-import static bolscript.packets.types.PacketTypeFactory.COMPOSER;
-import static bolscript.packets.types.PacketTypeFactory.EDITOR;
-import static bolscript.packets.types.PacketTypeFactory.GHARANA;
+
+
 import static bolscript.packets.types.PacketTypeFactory.KEYS;
 import static bolscript.packets.types.PacketTypeFactory.NAME;
 import static bolscript.packets.types.PacketTypeFactory.SNIPPET;
-import static bolscript.packets.types.PacketTypeFactory.SOURCE;
 import static bolscript.packets.types.PacketTypeFactory.SPEED;
 import static bolscript.packets.types.PacketTypeFactory.TAL;
 import static bolscript.packets.types.PacketTypeFactory.TYPE;
@@ -23,6 +20,7 @@ import basics.Rational;
 import bols.BolBase;
 import bols.BolName;
 import bols.tals.Tal;
+import bols.tals.TalBase;
 import bolscript.Master;
 import bolscript.Reader;
 import bolscript.config.Config;
@@ -62,6 +60,11 @@ public class Composition implements DataStatePosessor{
 	protected boolean isTal = false;
 	
 	/**
+	 * Used for retrieving tals
+	 */
+	protected TalBase talBase = null;
+	
+	/**
 	 * If the composition has type TAL
 	 * it will get a talInfo object, which implements Tal.
 	 */
@@ -77,8 +80,9 @@ public class Composition implements DataStatePosessor{
 	 * RawData has to be given in bolscript format.
 	 * @param rawData A String in bolscript format.
 	 */
-	public Composition(String rawData) {
+	public Composition(String rawData, TalBase talBase) {
 		changeListeners = new ArrayList<CompositionChangedListener>();
+		this.talBase = talBase;
 		this.setRawData(rawData);
 		metaValues = new MetaValues();
 		extractInfoFromRawData();
@@ -96,8 +100,8 @@ public class Composition implements DataStatePosessor{
 	 * @param file
 	 * @throws FileReadException
 	 */
-	public Composition(File file) throws FileReadException{
-		this(Reader.getContents(file, Config.maxBolscriptFileSize, Config.compositionEncoding));
+	public Composition(File file, TalBase talBase) throws FileReadException{
+		this(Reader.getContents(file, Config.maxBolscriptFileSize, Config.compositionEncoding), talBase);
 		setLinkLocal(file.getAbsolutePath());
 		setDataState(State.CONNECTED);
 		backUpRawData();
@@ -273,7 +277,7 @@ public class Composition implements DataStatePosessor{
 				case PacketTypeFactory.TAL:
 					String talName = (String) obj;
 					if (Master.master != null) {
-						Tal tal = Master.master.getCompositionBase().getTalFromName(talName);
+						Tal tal = talBase.getTalFromName(talName);
 						if (tal != null) {
 							talName = tal.getName(); //unified apearence for registered tals!
 						}
@@ -338,18 +342,14 @@ public class Composition implements DataStatePosessor{
 		} else isTal = false;
 		
 		
-
-		ArrayList<String> tals = metaValues.getList(PacketTypeFactory.TAL);
-
 		String name = metaValues.getString(NAME);
 
 		//after processing all packets gather missing information
 		if (isTal && (metaValues.getList(TAL).size() == 0) && (!name.equals(""))) {
 			//if this is of type tal and no tal is set, then add the tal itself.
 			metaValues.addString(PacketTypeFactory.TAL, name);
-
 		}
-
+		
 		if (metaValues.getString(SNIPPET).equals("") && firstBolPacket != null ){
 			if (firstBolPacket.getObject() != null) {
 				RepresentableSequence compact = ((RepresentableSequence) firstBolPacket.getObject()).getCompact();
@@ -420,8 +420,6 @@ public class Composition implements DataStatePosessor{
 		}
 	}
 
-
-
 	public void backUpRawData() {
 		if (rawData != null) this.oldRawData = new String(rawData);
 	}
@@ -435,9 +433,5 @@ public class Composition implements DataStatePosessor{
 		extractInfoFromRawData();
 
 	}
-
-	/*public Object getOldRawData() {
-		return oldRawData ;
-	}*/
 
 }

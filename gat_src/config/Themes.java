@@ -47,8 +47,8 @@ public class Themes {
 	}
 	public static VariationItem[] getKaidaThemesAsMenuItems(BolBaseGeneral bolBase) {
 		
-		Tal teental = new Teental(bolBase);
-		Tal jhaptal = new Jhaptal(bolBase);
+		Tal teental = new Teental();
+		Tal jhaptal = new Jhaptal();
 		return new VariationItem[]{
 				new VariationItem("Kaida1", getTheme01(bolBase), teental),
 				//new VariationItem("Kaida1'", getTheme01b(bolBase), teental),

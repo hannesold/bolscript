@@ -62,7 +62,7 @@ public class VariationDrawTester extends JFrame implements WindowListener{
 		
 	//Packets packets = Reader.compilePacketsFromFile(config.Config.pathToCompositions + "test.tabla.txt", bb);
 		
-		Tal tt = new Teental(bb);
+		Tal tt = new Teental();
 /*
 		for (Packet p : packets) {
 			content.add(Box.createRigidArea(new Dimension(10,20)));
@@ -76,13 +76,13 @@ public class VariationDrawTester extends JFrame implements WindowListener{
 		}*/
 		
 		vars.add(var);
-		tals.add(new Teental(bb));
+		tals.add(new Teental());
 		
-		vars.add(Variation.fromTal(new Teental(bb)));
-		tals.add(new Teental(bb));
+		vars.add(Variation.fromTal(new Teental()));
+		tals.add(new Teental());
 		
-		vars.add(Variation.fromTal(new Jhaptal(bb)));
-		tals.add(new Jhaptal(bb));
+		vars.add(Variation.fromTal(new Jhaptal()));
+		tals.add(new Jhaptal());
 		
 		
 		var = Variation.fromTal(tt);

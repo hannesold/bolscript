@@ -29,7 +29,7 @@ public class MidiStationTest extends TestCase {
 	
 	public void testMidiStationInit() throws Exception {
 		BolBase bolBase = new BolBase();
-		KaidaComposer al = new KaidaComposer(bolBase, new Teental(bolBase), Themes.getTheme01(bolBase));
+		KaidaComposer al = new KaidaComposer(bolBase, new Teental(), Themes.getTheme01(bolBase));
 		ms = new MidiStation(al);
 		try {
 			ms.initMidi();
@@ -42,7 +42,7 @@ public class MidiStationTest extends TestCase {
 	
 	public void testMidiStationInitAndPlayABit() throws Exception {
 		BolBase bolBase = new BolBase();
-		KaidaComposer al = new KaidaComposer(bolBase, new Teental(bolBase), Themes.getTheme01(bolBase));
+		KaidaComposer al = new KaidaComposer(bolBase, new Teental(), Themes.getTheme01(bolBase));
 		ms = new MidiStation(al);
 		ms.initMidi();
 		

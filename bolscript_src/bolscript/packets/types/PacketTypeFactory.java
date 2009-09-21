@@ -116,7 +116,7 @@ public class PacketTypeFactory {
 		if (type != null)
 			return type;
 		else {
-			Debug.temporary(PacketTypeFactory.class, "type not found: " + key + ", using " + types[BOLS]);
+			//Debug.debug(PacketTypeFactory.class, "type not found: " + key + ", using " + types[BOLS]);
 			return types[BOLS];
 		}
 		
