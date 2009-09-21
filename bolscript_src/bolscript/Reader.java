@@ -23,8 +23,6 @@ import bols.BolBase;
 import bols.BolBaseGeneral;
 import bols.BolName;
 import bols.PlayingStyle;
-import bols.tals.Tal;
-import bols.tals.TalBase;
 import bolscript.config.Config;
 import bolscript.packets.Packet;
 import bolscript.packets.Packets;
@@ -228,7 +226,6 @@ public class Reader {
 							// replace all keys by existing values defined before, but only if they stand alone,
 							// like " A " or at the beginning or with brackets or with an x3 afterwards
 							try {
-
 								s = s.replaceAll("(?i)(?<="+SN+"|[\\(]|^)+" + p.getKey() + "(?="+SN+"|\\z|$|[x\\)])", replacement);
 							} catch (IllegalArgumentException e) {
 								debug.critical("Error inserting predifinedvalues");
@@ -702,13 +699,13 @@ public class Reader {
 				setObjFromCommaSeperated(p);
 			} else if (parseMode == ParseMode.OTHER) switch (type) {
 
-			case PacketTypeFactory.TAL:
+			/*case PacketTypeFactory.TAL:
 				String regex = SN + "*([^\\s\\n\\r\\f]+)" + SN +"*";
 				Matcher m = Pattern.compile(regex).matcher(p.getValue());
 				if (m.find()) {
 					String talName = m.group(1);
 					if (TalBase.standardInitialised()) {
-						Tal tal = TalBase.standard().getTalFromName(talName);
+						Tal tal = //TalBase.standard().getTalFromName(talName);
 						if (tal != null) {
 							debug.debug("Tal " + tal + " added to talpacket");
 							p.setObject(tal);
@@ -718,7 +715,7 @@ public class Reader {
 					debug.debug("Tal could not be parsed: " + p.getValue());
 					p.setType(PacketTypeFactory.FAILED);
 				}
-				break;
+				break;*/
 
 			case PacketTypeFactory.SPEED:
 				String input = p.getValue().replaceAll(SN +"*", "");

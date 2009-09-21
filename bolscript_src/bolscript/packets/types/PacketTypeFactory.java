@@ -62,7 +62,7 @@ public class PacketTypeFactory {
 			types[LENGTH] 	= new PacketTypeStandard(LENGTH, "Length", "Lengths", new String[]{"LENGTH"},false,0,StorageType.STRING,ParseMode.OTHER,false,true,false,metaKeyColor);
 			types[NAME] 	= new PacketTypeStandard(NAME, "Name", "Names", new String[]{"NAME"},true,-100,StorageType.STRING,ParseMode.STRING,false,true,true,metaKeyColor);
 			types[VIBHAGS] 	= new PacketTypeStandard(VIBHAGS, "Vibhag", "Vibhags", new String[]{"VIBHAGS"},false,0,StorageType.STRING,ParseMode.OTHER,false,false,false,metaKeyColor);
-			types[TAL] 		= new PacketTypeStandard(TAL,"Tal","Tals",	new String[]{"TAL", "TALS", "TALA"},true, -90, StorageType.STRINGLIST,ParseMode.OTHER,false,true,true,metaKeyColor);
+			types[TAL] 		= new PacketTypeStandard(TAL,"Tal","Tals",	new String[]{"TAL", "TALS", "TALA"},true, -90, StorageType.STRINGLIST, ParseMode.STRING,false,true,true,metaKeyColor);
 			types[TYPE]		= new PacketTypeStandard(TYPE,"Type","Types", new String[]{"TYPE","TYPES"},true,-80,StorageType.STRINGLIST,ParseMode.COMMASEPERATED,false,true,true,metaKeyColor);
 			types[GHARANA] 	= new PacketTypeStandard(GHARANA,"Gharana", "Gharanas", new String[]{"GHARANA","GHARANAS"},true,	0,StorageType.STRINGLIST,ParseMode.COMMASEPERATED,false,true,true,metaKeyColor);
 			types[EDITOR] 	= new PacketTypeStandard(EDITOR, "Editor", "Editors", new String[]{"EDITOR","EDITORS"},true,0,StorageType.STRINGLIST,ParseMode.COMMASEPERATED,false,true,true,metaKeyColor);

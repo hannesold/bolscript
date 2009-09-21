@@ -1,7 +1,6 @@
 package gui.bolscript.tables;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -13,6 +12,8 @@ import bols.BolName;
 
 public class BolBasePanel extends JPanel {
 	
+	private static final long serialVersionUID = 7584847766972066875L;
+	
 	BolBaseTableModel model;
 	JTable table;
 	
@@ -22,6 +23,7 @@ public class BolBasePanel extends JPanel {
 
 		BolBaseTableModel model = new BolBaseTableModel(BolBase.getStandard());
 		table = new JTable(model);
+		table.setDefaultRenderer(Object.class, new CellRenderer());
 		
 		JScrollPane scrollPane = new JScrollPane(table);
 		this.add(scrollPane,BorderLayout.CENTER);

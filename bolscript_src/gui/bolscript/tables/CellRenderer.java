@@ -13,18 +13,12 @@ import bolscript.config.Config;
 
 public class CellRenderer extends DefaultTableCellRenderer {
 
-	
-
 	public CellRenderer() {
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
 	public Component getTableCellRendererComponent(JTable table, Object value,
 			boolean isSelected, boolean hasFocus, int row, int column) {
-		// TODO Auto-generated method stub
-		/*Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus,
-				row, column);*/
 		
 		JLabel c = new JLabel();
 		c.setText(" "+ value.toString() );

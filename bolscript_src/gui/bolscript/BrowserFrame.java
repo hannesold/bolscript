@@ -1,6 +1,7 @@
 package gui.bolscript;
 
 import gui.bolscript.actions.OpenNew;
+import gui.bolscript.tables.CompositionListPanel;
 import gui.bolscript.tables.CompositionTableModel;
 import gui.menus.EditMenu;
 import gui.menus.FileMenu;

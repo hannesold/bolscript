@@ -40,7 +40,8 @@ import basics.GUI;
 import bols.BolName;
 import bols.BundlingDepthToSpeedMap;
 import bols.tals.Tal;
-import bols.tals.TalBase;
+import bols.tals.Teental;
+import bolscript.Master;
 import bolscript.compositions.Composition;
 import bolscript.config.Config;
 import bolscript.packets.Packet;
@@ -327,11 +328,20 @@ public class CompositionPanel extends JLayeredPane {
 		pageBreakPanels.clear();
 		
 		if (packets != null) {
-		Tal tal = TalBase.standard().getTalFromName("Teental");
+		Tal tal = Teental.getDefaultTeental();
 		for (Packet p : packets) {
 			//System.out.println("checking p");
 			if (p.getType() == PacketTypeFactory.TAL) {
-				tal = (Tal) p.getObject();
+				//tal = (Tal) p.getObject();
+				tal = Master.master.getCompositionBase().getTalFromName((String) p.getObject());
+				
+				if (tal==null) {
+					Debug.temporary(this, "Tal "+p.getObject()+" not found, using teental");
+					tal = Teental.getDefaultTeental();
+				} else {
+					Debug.temporary(this, "Tal found: " + tal);
+				}
+				
 			}
 			if (p.isVisible()) {
 				if (p.getType()==PacketTypeFactory.FOOTNOTE) {

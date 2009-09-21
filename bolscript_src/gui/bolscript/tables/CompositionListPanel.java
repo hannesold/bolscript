@@ -1,8 +1,5 @@
-package gui.bolscript;
+package gui.bolscript.tables;
 
-import gui.bolscript.tables.CellRenderer;
-import gui.bolscript.tables.CompositionTableModel;
-import gui.bolscript.tables.StateRenderer;
 
 import java.awt.Color;
 import java.util.ArrayList;

@@ -24,10 +24,5 @@ public class SpeedFilter extends MetaValueFilter implements Filter {
 		return collection;
 	}
 	
-	@Override
-	protected ArrayList<String> getSamples(Composition comp) {
-		return comp.getSpeeds();
-	}
-	
 	
 }

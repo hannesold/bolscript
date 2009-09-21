@@ -78,7 +78,7 @@ public class MidiStation extends MidiStationSimple implements MetaEventListener 
 	
 	public static void init() {
 		try {
-			standard = new MidiStation(new ThekaPlayer(BolBase.getStandard(), Teental.getDefaultTeental(BolBase.getStandard())));
+			standard = new MidiStation(new ThekaPlayer(BolBase.getStandard(), Teental.getDefaultTeental()));
 			standard.initMidi();
 			MidiStationSimple.setStandard(standard);
 			standardInitialized = true;

@@ -23,6 +23,7 @@ import basics.Rational;
 import bols.BolBase;
 import bols.BolName;
 import bols.tals.Tal;
+import bolscript.Master;
 import bolscript.Reader;
 import bolscript.config.Config;
 import bolscript.packets.Packet;
@@ -58,8 +59,13 @@ public class Composition implements DataStatePosessor{
 
 	protected Packets packets = null;
 
-
-	protected boolean istal = false;
+	protected boolean isTal = false;
+	
+	/**
+	 * If the composition has type TAL
+	 * it will get a talInfo object, which implements Tal.
+	 */
+	protected TalInfo talInfo = null;
 
 	/**
 	 * This is where all uncomplicated meta-data is stored.
@@ -105,43 +111,6 @@ public class Composition implements DataStatePosessor{
 		return metaValues.getString(NAME);
 	}
 	
-	
-	public ArrayList<String> getTals() {
-		return metaValues.getList(TAL);
-	}
-
-	public ArrayList<String> getTypes() {
-		return metaValues.getList(TYPE);
-	}
-
-	public ArrayList<String> getGharanas() {
-		return metaValues.getList(GHARANA);
-	}
-
-	public ArrayList<String> getSources() {
-		return metaValues.getList(SOURCE);
-	}
-
-	public ArrayList<String> getComposers() {
-		return metaValues.getList(COMPOSER);
-	}
-
-	public ArrayList<String> getEditors() {
-		return metaValues.getList(EDITOR);
-	}
-
-	public ArrayList<String> getKeys () {
-		return metaValues.getList(KEYS);
-	}
-
-	public ArrayList<String> getComments() {
-		return metaValues.getList(COMMENT);
-	}
-
-	public ArrayList<String> getSpeeds() {
-		return metaValues.getList(SPEED);
-	}
-
 	public void addSpeed(Rational speed) {
 		if(speedsR == null) speedsR = new ArrayList<Rational>();
 		if (!speedsR.contains(speed)) {
@@ -240,24 +209,29 @@ public class Composition implements DataStatePosessor{
 	public int getId() {
 		return id;
 	}
+	
 	public boolean isTal() {
-		return istal;
+		return isTal;
+	}
+	
+	/**
+	 * Returns the talInfo object, which implements Tal,
+	 * under the condition that it has been established (in extractInfoFromPackets)
+	 */
+	public Tal getTalInfo() {
+		if (isTal) {
+			return talInfo;
+		} else return null;
 	}
 
 	public void setId(int id) {
 		this.id = id;
 	}
+	
+	
 	public Packets getPackets() {
 		return packets;
 	}
-	public void setPackets(Packets packets) {
-		this.packets = packets;
-	}
-
-	public String getSnippet() {
-		return metaValues.getString(SNIPPET);
-	}
-
 
 	public void extractInfoFromRawData() {
 		if (rawData != null) {
@@ -297,7 +271,14 @@ public class Composition implements DataStatePosessor{
 				switch (type) {
 
 				case PacketTypeFactory.TAL:
-					metaValues.addString(TAL, ((Tal) obj).getName());
+					String talName = (String) obj;
+					if (Master.master != null) {
+						Tal tal = Master.master.getCompositionBase().getTalFromName(talName);
+						if (tal != null) {
+							talName = tal.getName(); //unified apearence for registered tals!
+						}
+					}
+					metaValues.addString(TAL, talName);
 					break;
 
 				case PacketTypeFactory.SPEED:
@@ -343,18 +324,27 @@ public class Composition implements DataStatePosessor{
 			//check if the entry has the value Tal, Tals or Tala or so
 			PacketType associatedType = PacketTypeFactory.getType(types.get(0).toUpperCase());
 			if (associatedType != null) if ( associatedType.getId() == TAL) {
-				istal = true;
+				
+				if (talInfo == null) talInfo = new TalInfo(this);
+				
+				//attempt to extract additional tal relevant info from the packets and store it in talInfo
+				boolean isValidTal = talInfo.extractTalInfoFromPackets(packets);
+				//if it worked this composition may call itself tal
+				isTal = isValidTal;
+				
 			} else {
-				istal = false;
+				isTal = false;
 			}
-		} else istal = false;
+		} else isTal = false;
+		
+		
 
 		ArrayList<String> tals = metaValues.getList(PacketTypeFactory.TAL);
 
 		String name = metaValues.getString(NAME);
 
 		//after processing all packets gather missing information
-		if (istal && (metaValues.getList(TAL).size() == 0) && (!name.equals(""))) {
+		if (isTal && (metaValues.getList(TAL).size() == 0) && (!name.equals(""))) {
 			//if this is of type tal and no tal is set, then add the tal itself.
 			metaValues.addString(PacketTypeFactory.TAL, name);
 

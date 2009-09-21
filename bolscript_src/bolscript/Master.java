@@ -29,7 +29,6 @@ import basics.FileWriteException;
 import basics.GUI;
 import basics.ZipTools;
 import bols.BolBase;
-import bols.tals.TalBase;
 import bols.tals.TalDynamic;
 import bolscript.compositions.Composition;
 import bolscript.compositions.CompositionBase;
@@ -123,9 +122,9 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 			
 			BolBase.init(this.getClass());
 
-			TalBase.init();
+			//TalBase.init();
 			
-			compositionBase = new CompositionBase();
+			compositionBase = new CompositionBase();			
 			compositionBase.addFolderRecursively(Config.pathToTalsNoSlash);
 			compositionBase.addFolderRecursively(bolscript.config.Config.pathToCompositionsNoSlash);
 			compTableModel = new CompositionTableModel(compositionBase);
@@ -372,23 +371,14 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 		 * The new compositions status is set to NEW, and it is instantly added to the compositionBase
 		 */
 		public void openNewComposition() {
+			String template = "Editor: Unknown\nGharana: Punjab\nType: Unknown\n\nTal: Teental\n";
 
-			
-			String template = "Editor: Unknown\nGharana: Punjab\nTal: Teental\nType: Unknown\n\n";
-		
 			Composition comp = new Composition(template);
-			if (comp.isTal()) comp = new TalDynamic(comp);
-			
 			comp.setDataState(State.NEW);
 			comp.setLinkLocal(compositionBase.generateFilename(comp, Config.bolscriptSuffix));
 			compositionBase.addComposition(comp);
 			
 			openEditor(comp);
-			
-			
-			
-			
-			
 		}
 
 		/**
@@ -439,6 +429,10 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 		public void showPreferences() {
 			prefsDialog.setModal(true);
 			prefsDialog.setVisible(true);
+		}
+
+		public CompositionBase getCompositionBase() {
+			return compositionBase;
 		}
 
 

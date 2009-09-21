@@ -22,7 +22,7 @@ import bols.HasPlayingStyle;
 import bols.NamedInLanguages;
 import bols.tals.LayoutCycle;
 import bols.tals.Tal;
-import bols.tals.TalBase;
+import bols.tals.Teental;
 import bols.tals.Vibhag;
 import bolscript.config.Config;
 import bolscript.sequences.FootnoteUnit;
@@ -81,7 +81,7 @@ public class SequencePanel extends PlayablePanel  {
 		//Debug.temporary(this, sequence.toString(true, false, true, false, true, false, BolName.EXACT, 10000));
 		
 		if (tal == null) {
-			this.tal = TalBase.standard().getTalFromName("Teental");
+			this.tal = Teental.getDefaultTeental();
 		} else {
 			this.tal = tal;
 		}

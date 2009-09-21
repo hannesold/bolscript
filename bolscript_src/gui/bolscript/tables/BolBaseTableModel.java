@@ -10,13 +10,9 @@ import bolscript.packets.Packet;
 public class BolBaseTableModel extends AbstractTableModel {
 
 	private BolBase bolBase;
-	
-	
-	
 	public static int descriptionColumn = BolName.languagesCount;
 	public static int detailsColumn = descriptionColumn+1;
 	public static int nrOfColumns = detailsColumn+1;
-	
 	
 	@Override
 	public String getColumnName(int column) {
@@ -27,7 +23,6 @@ public class BolBaseTableModel extends AbstractTableModel {
 		} else if (column == detailsColumn) {
 			return "Details";
 		} else return null;
-		
 	}
 
 	public BolBaseTableModel(BolBase bolBase) {
@@ -69,10 +64,19 @@ public class BolBaseTableModel extends AbstractTableModel {
 				return packet.getValue();
 			} else return null;
 			} else return "undefined, packet: " + packet;
-			
-			
 		}
 		
+	}
+
+	@Override
+	public boolean isCellEditable(int rowIndex, int columnIndex) {
+		return false;
+	}
+
+	@Override
+	public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+		
+		//super.setValueAt(aValue, rowIndex, columnIndex);
 	}
 
 

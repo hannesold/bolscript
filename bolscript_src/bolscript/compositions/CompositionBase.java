@@ -13,19 +13,18 @@ import basics.FileReadException;
 import basics.FileWriteException;
 import basics.FolderFilter;
 import basics.SuffixFilter;
-import basics.Tools;
 import bols.BolBase;
 import bols.BolBaseGeneral;
-import bols.tals.TalBase;
-import bols.tals.TalDynamic;
+import bols.tals.Tal;
 import bolscript.Reader;
 import bolscript.config.Config;
 import bolscript.filters.StringArrayFilter;
 import bolscript.filters.VisibleCompositionDonator;
+import bolscript.packets.types.PacketTypeFactory;
 
 public class CompositionBase implements VisibleCompositionDonator{
 	BolBaseGeneral bolBase = null;
-	TalBase talBase = null;
+	//TalBase talBase = null;
 	private ArrayList<CompositionBaseListener> listeners;
 	
 	private ArrayList<Composition> compositions, visibles, filtered;
@@ -46,8 +45,8 @@ public class CompositionBase implements VisibleCompositionDonator{
 		listeners = new ArrayList<CompositionBaseListener>();
 		
 		bolBase = BolBase.standard();
-		talBase = new TalBase(bolBase);
-		TalBase.setStandard(talBase);
+		//talBase = new TalBase(bolBase);
+		//TalBase.setStandard(talBase);
 		
 		
 	}
@@ -64,7 +63,7 @@ public class CompositionBase implements VisibleCompositionDonator{
 		if (existing == null ) {
 			
 			Composition comp = new Composition(file);
-			if (comp.isTal()) comp = new TalDynamic(comp);
+			//if (comp.isTal()) comp = new TalDynamic(comp);
 			
 			addComposition(comp);
 			comp.getDataState().connect(comp);
@@ -81,19 +80,32 @@ public class CompositionBase implements VisibleCompositionDonator{
 
 			compositions.add(comp);
 			
-			/*for (CompositionBaseListener listener: listeners) {
-				if (listener.getClass().isInstance(CompositionChangedListener.class)) {
-					comp.addChangeListener((CompositionChangedListener) listener);
-				}
-			}*/
-			
-			if (comp.isTal()) {
+			/*if (comp.isTal()) {
 				talBase.addTal(comp);
 			} else Debug.debug(this, "added Composition " + comp.getName());
-			
+			*/
 			fireCompositionBaseChanged(this, CompositionBaseChangeEvent.DATA);
 		}
 
+	}
+	
+	/**
+	 * Returns a Tal Object if a Tal with the given Name was found in the composition base.
+	 * If none is found null is returned.
+	 * <p>Details:<br/>
+	 * When comparing names the case is ignored.
+	 * Gathers all compositions that implement the Tal interface.</p>
+	 */
+	public Tal getTalFromName(String name) {
+		for (Composition comp: compositions) {
+			if (comp.isTal()) { 
+				Tal tal = comp.getTalInfo();
+				if (name.equalsIgnoreCase(tal.getName())) {
+					return tal;
+				}
+			}
+		}
+		return null;
 	}
 	
 	/**
@@ -112,7 +124,7 @@ public class CompositionBase implements VisibleCompositionDonator{
 	 */
 	public void removeComposition(Composition comp, boolean andDelete) {
 		compositions.remove(comp); //remove from composition base
-		if (comp.isTal()) talBase.removeTal(comp); //and talbase
+		//if (comp.isTal()) talBase.removeTal(comp); //and talbase
 		
 		comp.getDataState().remove(comp);
 		
@@ -190,9 +202,9 @@ public class CompositionBase implements VisibleCompositionDonator{
 		}
 		
 		
-		if (comp.isTal()) {
+		/*if (comp.isTal()) {
 			talBase.addTal(comp);
-		}
+		}*/
 		
 		fireCompositionBaseChanged(this, CompositionBaseChangeEvent.DATA);
 		
@@ -309,15 +321,7 @@ public class CompositionBase implements VisibleCompositionDonator{
 	public void addChangeListener(CompositionBaseListener c) {
 		if (!listeners.contains(c)) {
 			listeners.add(c);
-			/*if (c.getClass().isInstance(CompositionChangedListener.class)) {
-				Debug.debug(this, " passing listener on");
-				for (Composition comp: compositions) {
-					comp.addChangeListener((CompositionChangedListener) c);
-				}
-			}*/
 		}
-		
-		
 	}
 	
 	public void removeChangeListener(CompositionBaseListener c) {
@@ -336,14 +340,18 @@ public class CompositionBase implements VisibleCompositionDonator{
 		StringBuilder s = new StringBuilder();
 		s.append(Config.pathToCompositions);
 		String seperator = " - ";
-		if (comp.getTals().size() != 0) {
-			s.append(Tools.toString(comp.getTals()));
+		
+		MetaValues metaValues = comp.getMetaValues();
+		
+		if (metaValues.getList(PacketTypeFactory.TAL).size() != 0) {
+			s.append(metaValues.makeString(PacketTypeFactory.TAL));
 		} else {
 			s.append("unknown tal");
 		}
-		if (comp.getTypes() != null) {
-			if (comp.getTypes().size() != 0) {
-				s.append(seperator + Tools.toString(comp.getTypes()));
+		ArrayList<String> types = metaValues.getList(PacketTypeFactory.TYPE);
+		if ( types != null) {
+			if (types.size() != 0) {
+				s.append(seperator + metaValues.makeString(PacketTypeFactory.TYPE));
 			}
 		} else s.append(seperator + "unknown type");
 		if (!comp.getName().equals("")) {
