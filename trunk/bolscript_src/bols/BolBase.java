@@ -161,7 +161,6 @@ public class BolBase extends BolBaseGeneral {
 								newBolName.setDescription(description);
 								newBolName.setHandType(handType);
 								addBolName(newBolName);
-								
 							} else {
 								//check if it is combined bol or a bundle
 								

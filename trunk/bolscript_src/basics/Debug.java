@@ -18,7 +18,7 @@ import java.util.HashMap;
  */
 public class Debug {
 	
-	public static HashMap<Class, Boolean> classMap = new HashMap<Class,Boolean>();
+	public static HashMap<Class<? extends Object>, Boolean> classMap = new HashMap<Class<? extends Object>,Boolean>();
 	public static HashMap<Debugcodes, Boolean> codeMap = new HashMap<Debugcodes,Boolean>();
 	
 	public static ErrorConsole console;
@@ -28,7 +28,7 @@ public class Debug {
 	private static boolean consoleShowing = false;
 	private static boolean initialised = false;
 	
-	private Class owner;
+	private Class<? extends Object> owner;
 	
 	static {
 		if (!initialised) {
@@ -43,12 +43,12 @@ public class Debug {
 	 * @param visible
 	 * @param invisible
 	 */
-	public static void initClassMaps(Class[] visible, Class[] invisible) {
+	public static void initClassMaps(Class<? extends Object>[] visible, Class<? extends Object>[] invisible) {
 		classMap.clear();
-		for (Class c: visible) {
+		for (Class<? extends Object> c: visible) {
 			classMap.put(c, true);
 		}
-		for (Class c: invisible) {
+		for (Class<? extends Object> c: invisible) {
 			classMap.put(c, false);
 		}
 	}
@@ -65,7 +65,7 @@ public class Debug {
 	
 
 	
-	public Debug (Class c) {
+	public Debug (Class<? extends Object> c) {
 		this.owner = c;
 	}
 	
@@ -79,7 +79,7 @@ public class Debug {
 	public static void critical (Object caller, Object message) {
 		out(caller.getClass(), Debugcodes.CRITICAL, message);
 	}
-	public static void critical (Class caller, Object message) {
+	public static void critical (Class<? extends Object> caller, Object message) {
 		out(caller, Debugcodes.CRITICAL, message);
 	}
 	
@@ -90,7 +90,7 @@ public class Debug {
 	public static void temporary (Object caller, Object message) {
 		out(caller.getClass(), Debugcodes.TEMPORARY, message);
 	}
-	public static void temporary (Class caller, Object message) {
+	public static void temporary (Class<? extends Object> caller, Object message) {
 		out(caller, Debugcodes.TEMPORARY, message);
 	}
 	
@@ -100,7 +100,7 @@ public class Debug {
 	public static void debug (Object caller, Object message) {
 		out(caller.getClass(), Debugcodes.DEBUG, message);
 	}
-	public static void debug (Class caller, Object message) {
+	public static void debug (Class<? extends Object> caller, Object message) {
 		out(caller, Debugcodes.DEBUG, message);
 	}
 	
@@ -110,7 +110,7 @@ public class Debug {
 	public static void user (Object caller, Object message) {
 		out(caller.getClass(), Debugcodes.USER, message);
 	}
-	public static void user (Class caller, Object message) {
+	public static void user (Class<? extends Object> caller, Object message) {
 		out(caller, Debugcodes.USER, message);
 	}
 	
@@ -157,7 +157,7 @@ public class Debug {
 	 * @param d the debug code
 	 * @param message the message
 	 */
-	public static void out (Class c, Debugcodes d, Object message) {
+	public static void out (Class<? extends Object> c, Debugcodes d, Object message) {
 		
 		String classname = c.getSimpleName();
 		if (d == Debugcodes.CRITICAL || d == Debugcodes.TEMPORARY) {
@@ -209,7 +209,7 @@ public class Debug {
 	 * 
 	 * @param c the class to exclusively show
 	 */
-	public static void exclusivelyShowClass(Class c) {
+	public static void exclusivelyShowClass(Class<? extends Object> c) {
 		setExclusivelyMapped(true);
 		classMap.clear();
 		classMap.put(c, true);

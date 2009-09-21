@@ -19,7 +19,7 @@ public class TihaiTest extends TestCase {
 		
 		Variation var1 = new Variation("Dha Ti Ge Na, Dha Ti Ge Na, Dha Ti Ge Na, Dha Ti Ge Na", bb);
 
-		TihaiComposer composer = new TihaiComposer(BolBase.getStandard(), new Teental(BolBase.getStandard()), var1);
+		TihaiComposer composer = new TihaiComposer(BolBase.getStandard(), new Teental(), var1);
 
 		Variation tihai = composer.composeTihai(var1);
 		System.out.println("tihai: " + tihai);

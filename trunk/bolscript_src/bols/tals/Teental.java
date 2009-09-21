@@ -1,25 +1,16 @@
 package bols.tals;
 
-import java.util.ArrayList;
-
-import bols.BolBase;
-import bols.BolBaseGeneral;
-import bolscript.Reader;
-import bolscript.packets.Packets;
-import bolscript.sequences.RepresentableSequence;
 
 public class Teental extends bols.tals.TalDynamic implements Tal {
 
-	
 	public static TalDynamic defaultTeental = null;
 	
-	
-	public Teental(BolBaseGeneral bolBase) {
-		super(TEENTAL);
+	public Teental() {
+		super(TEENTAL, TalBaseDefault.getStandard());
 	}
 	
 	public static Tal getDefaultTeental() {
-		if (defaultTeental == null) defaultTeental = new Teental(BolBase.getStandard());
+		if (defaultTeental == null) defaultTeental = new Teental();
 		return defaultTeental;
 	}
 	

@@ -6,7 +6,6 @@ import java.awt.Dimension;
 
 import org.junit.Test;
 
-import bols.BolBase;
 import bols.tals.LayoutChooser;
 import bols.tals.LayoutCycle;
 import bols.tals.Tal;
@@ -17,7 +16,7 @@ public class LayoutChooserTest {
 
 	@Test
 	public void getLayoutCyclesFromTeental () throws Exception {
-		Tal teental = new Teental(new BolBase());
+		Tal teental = new Teental();
 		
 		LayoutChooser lc = teental.getLayoutChooser();
 		LayoutCycle c = lc.getLayoutCycle(10, 100);

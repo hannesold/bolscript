@@ -1,17 +1,9 @@
 package bols.tals;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import basics.FileReadException;
-import bols.BolBaseGeneral;
-import bolscript.Reader;
 import bolscript.compositions.Composition;
-import bolscript.compositions.State;
-import bolscript.packets.Packet;
-import bolscript.packets.Packets;
 import bolscript.packets.types.PacketTypeFactory;
 import bolscript.sequences.RepresentableSequence;
 
@@ -22,8 +14,8 @@ public class TalDynamic extends Composition implements Tal {
 	 * RawData has to be given in bolscript format.
 	 * @param rawData A String in bolscript format.
 	 */
-	public TalDynamic(String rawData) {
-		super(rawData);
+	public TalDynamic(String rawData, TalBase talBase) {
+		super(rawData, talBase);
 	}
 	
 	/**
@@ -36,8 +28,8 @@ public class TalDynamic extends Composition implements Tal {
 	 * @param file
 	 * @throws FileReadException
 	 */
-	public TalDynamic(File file) throws FileReadException {
-		super(file);
+	public TalDynamic(File file, TalBase talBase) throws FileReadException {
+		super(file, talBase);
 	}
 	
 	public int getLength() {

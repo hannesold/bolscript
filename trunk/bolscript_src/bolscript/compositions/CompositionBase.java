@@ -16,39 +16,25 @@ import basics.SuffixFilter;
 import bols.BolBase;
 import bols.BolBaseGeneral;
 import bols.tals.Tal;
+import bols.tals.TalBase;
 import bolscript.Reader;
 import bolscript.config.Config;
-import bolscript.filters.StringArrayFilter;
 import bolscript.filters.VisibleCompositionDonator;
 import bolscript.packets.types.PacketTypeFactory;
 
-public class CompositionBase implements VisibleCompositionDonator{
+public class CompositionBase implements VisibleCompositionDonator, TalBase{
 	BolBaseGeneral bolBase = null;
 	//TalBase talBase = null;
 	private ArrayList<CompositionBaseListener> listeners;
 	
-	private ArrayList<Composition> compositions, visibles, filtered;
+	private ArrayList<Composition> compositions;
 	
-	private ArrayList<String> visibleGharanas;
-	private ArrayList<String> visibleSpeeds;
-	private ArrayList<String> visibleTals;
-	private ArrayList<String> visibleTypes;
-	
-	private ArrayList<StringArrayFilter> filters;
 	private FilterPanel filterGUI = null;
 	
 	public CompositionBase() {
 		compositions = new ArrayList<Composition>();
-		visibles = new ArrayList<Composition>();
-		filtered = new ArrayList<Composition>();
-		
 		listeners = new ArrayList<CompositionBaseListener>();
-		
 		bolBase = BolBase.standard();
-		//talBase = new TalBase(bolBase);
-		//TalBase.setStandard(talBase);
-		
-		
 	}
 	
 	/**
@@ -61,12 +47,8 @@ public class CompositionBase implements VisibleCompositionDonator{
 	public Composition addFile(File file) throws FileReadException{
 		Composition existing = this.getCompositionByLinkLocal(file.getAbsolutePath());
 		if (existing == null ) {
-			
-			Composition comp = new Composition(file);
-			//if (comp.isTal()) comp = new TalDynamic(comp);
-			
+			Composition comp = new Composition(file, this);
 			addComposition(comp);
-			comp.getDataState().connect(comp);
 			return comp;
 		} else {
 			Debug.debug(this, "The file was already added: " + file);
@@ -77,13 +59,7 @@ public class CompositionBase implements VisibleCompositionDonator{
 	public void addComposition(Composition comp) {
 		//use better test using equals!
 		if (!compositions.contains(comp)) {
-
 			compositions.add(comp);
-			
-			/*if (comp.isTal()) {
-				talBase.addTal(comp);
-			} else Debug.debug(this, "added Composition " + comp.getName());
-			*/
 			fireCompositionBaseChanged(this, CompositionBaseChangeEvent.DATA);
 		}
 
@@ -310,7 +286,7 @@ public class CompositionBase implements VisibleCompositionDonator{
 
 	/**
 	 * Returns the Compositions which are available for viewing.
-	 * This can be restricted if a playlist is selected.
+	 * This can be restricted if a playlist (not implemented) is selected.
 	 * Currently all compositions are visible
 	 * @return
 	 */
@@ -335,7 +311,19 @@ public class CompositionBase implements VisibleCompositionDonator{
 		}
 	}
 	
+
+	public void setFilterGUI(FilterPanel filterGUI) {
+		this.filterGUI = filterGUI;
+	}
 	
+	public String toString() {
+		String s = "";
+		for (int i=0; i < compositions.size(); i++) {
+			s += i + ": " + compositions.get(i).toString() + "\n" + compositions.get(i).getLinkLocal() + "\n\n";
+		}
+		return s;
+	}
+
 	public static String generateFilename(Composition comp, String suffix) {
 		StringBuilder s = new StringBuilder();
 		s.append(Config.pathToCompositions);
@@ -373,20 +361,6 @@ public class CompositionBase implements VisibleCompositionDonator{
 		
 		return filename;
 	}
-
-	public void setFilterGUI(FilterPanel filterGUI) {
-		this.filterGUI = filterGUI;
-	}
-	
-	public String toString() {
-		String s = "";
-		for (int i=0; i < compositions.size(); i++) {
-			s += i + ": " + compositions.get(i).toString() + "\n" + compositions.get(i).getLinkLocal() + "\n\n";
-		}
-		return s;
-	}
-
-
 	
 
 }

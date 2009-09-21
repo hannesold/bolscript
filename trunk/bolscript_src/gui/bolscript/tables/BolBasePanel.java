@@ -7,6 +7,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.TableColumnModel;
 
+import basics.Debug;
 import bols.BolBase;
 import bols.BolName;
 
@@ -21,7 +22,7 @@ public class BolBasePanel extends JPanel {
 		super();
 		this.setLayout(new BorderLayout());
 
-		BolBaseTableModel model = new BolBaseTableModel(BolBase.getStandard());
+		model = new BolBaseTableModel(BolBase.getStandard());
 		table = new JTable(model);
 		table.setDefaultRenderer(Object.class, new CellRenderer());
 		
@@ -57,5 +58,20 @@ private void initColumnWidths () {
 		columnModel.getColumn(BolBaseTableModel.detailsColumn).setMaxWidth(120);
 		
 	}
+
+public void selectBol(BolName bolName) {
+	Debug.temporary(this, "attempting to select " + bolName);
+	String toFind = bolName.getName(BolName.EXACT);
+	for (int i=0; i < model.getRowCount(); i++) {
+		if (model.getValueAt(i, BolName.EXACT).equals(toFind)) {
+			Debug.temporary(this, "setting selection to " +toFind + ", at row " + i);
+			table.getSelectionModel().setSelectionInterval(i, i);
+			break;
+		}
+	}
+	
+	
+	
+}
 	
 }

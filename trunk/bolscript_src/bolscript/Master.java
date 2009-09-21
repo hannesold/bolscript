@@ -70,12 +70,11 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 		 * Sets the class visibilities in the Debug class.
 		 * @param mute
 		 */
+		@SuppressWarnings("unchecked")
 		public void initDebug() {
 			Debug.init();
 			Debug.initClassMaps(new Class[]{
-				
 				Config.class,
-				
 				ZipTools.class
 			}, new Class[]{
 					Master.class,
@@ -290,7 +289,7 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
        		 
        			 comp.getDataState().open(comp);
        			 
-       			 CompositionFrame compositionFrame = new CompositionFrame(comp, new Dimension(600,700));
+       			 CompositionFrame compositionFrame = new CompositionFrame(comp, new Dimension(600,700), compositionBase);
        			 
        			 EditorFrame editor = new EditorFrame(comp, new Dimension(410,700));
        			
@@ -373,9 +372,9 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 		public void openNewComposition() {
 			String template = "Editor: Unknown\nGharana: Punjab\nType: Unknown\n\nTal: Teental\n";
 
-			Composition comp = new Composition(template);
+			Composition comp = new Composition(template, compositionBase);
 			comp.setDataState(State.NEW);
-			comp.setLinkLocal(compositionBase.generateFilename(comp, Config.bolscriptSuffix));
+			comp.setLinkLocal(CompositionBase.generateFilename(comp, Config.bolscriptSuffix));
 			compositionBase.addComposition(comp);
 			
 			openEditor(comp);

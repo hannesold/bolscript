@@ -19,6 +19,7 @@ import javax.swing.JScrollPane;
 import basics.GUI;
 import bols.BolBase;
 import bols.BolBaseGeneral;
+import bols.tals.TalBase;
 import bolscript.compositions.Composition;
 import bolscript.compositions.CompositionChangeEvent;
 import bolscript.compositions.CompositionChangedListener;
@@ -31,27 +32,30 @@ import bolscript.config.Config;
  */
 public class CompositionFrame extends JFrame implements WindowListener, CompositionChangedListener {
 
-
+		private static final long serialVersionUID = -977721216043612327L;
+		
 		BolBaseGeneral bolBase;
 		CompositionPanel compositionPanel;
 		JScrollPane scrollPane;
 		EditorFrame editor = null;
-		
+		TalBase talBase;
 	
-		public CompositionFrame(Composition comp, Dimension size) {
-			this(size);
+		public CompositionFrame(Composition comp, Dimension size, TalBase talBase) {
+			this(size, talBase);
 			this.setTitle(comp.getName());
 			compositionPanel.renderComposition(comp);
 			comp.addChangeListener(this);
 		}
 		
-		public CompositionFrame(Dimension size) {
+		public CompositionFrame(Dimension size, TalBase talBase) {
 			super();
 			GUI.setAllSizes(this, size);
 			
+			this.talBase = talBase;
+			
 			this.setTitle("");
 			bolBase = BolBase.standard();
-			compositionPanel = new CompositionPanel(size, Config.standardLanguage);
+			compositionPanel = new CompositionPanel(size, Config.standardLanguage, talBase);
 			
 			JPanel p = new JPanel();
 			scrollPane = new JScrollPane(p);
