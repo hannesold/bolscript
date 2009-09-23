@@ -636,12 +636,12 @@ public class CompositionPanel extends JLayeredPane {
 	}
 	
 	private void setBundlingDepth(int newDepth) {
-		Debug.temporary(this, "attempted to set bundling depth to : " + newDepth);
+		//Debug.debug(this, "attempted to set bundling depth to : " + newDepth);
 		bundlingDepth = Math.max(0,Math.min(newDepth, bundlingMap.getMaxDepth()));
 		
-		Debug.temporary(this, "bundlingMap: " + bundlingMap);
-		Debug.temporary(this, "resulting bundling depth: " + bundlingDepth);
-		Debug.temporary(this, "resulting bundling speed: " + bundlingMap.getBundlingSpeed(bundlingDepth));
+		//Debug.temporary(this, "bundlingMap: " + bundlingMap);
+		//Debug.temporary(this, "resulting bundling depth: " + bundlingDepth);
+		//Debug.temporary(this, "resulting bundling speed: " + bundlingMap.getBundlingSpeed(bundlingDepth));
 	}
 	
 	public void increaseFontSize() {

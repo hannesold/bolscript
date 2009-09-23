@@ -100,7 +100,7 @@ public class EditorFrame extends JFrame implements WindowListener, CompositionCh
 		document.addUndoableEditListener(undoManager); 
 		renderWorker = new SkippingWorker(new CompositionPanelRendererFactory(this));
 		renderWorker.begin();
-		bolBaseSearchWorker = new SkippingWorker(new BolBaseSearcher(textPane, bolBasePanel));
+		bolBaseSearchWorker = new SkippingWorker(new BolBaseSearcher(composition, textPane, bolBasePanel));
 		bolBaseSearchWorker.begin();
 		document.updateStyles(composition.getPackets());
 	}
@@ -226,6 +226,7 @@ public class EditorFrame extends JFrame implements WindowListener, CompositionCh
 	}
 	
 	public void caretUpdate(CaretEvent e) {
+		
 		if (bolBaseSearchWorker != null) bolBaseSearchWorker.addUpdate();
 	}
 

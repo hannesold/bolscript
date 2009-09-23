@@ -353,4 +353,45 @@ public class BolBase extends BolBaseGeneral {
 		addKaliMap("Dhin", "Tin");
 	}
 
+	public BolName getResemblingBol(String input) {
+
+		Debug.temporary(this, "checking out " + input);
+		
+		char[] inputChars = input.toLowerCase().toCharArray();
+		
+		//int[] resemblence = new int[bolNames.size()];
+		int maxResemblence = -1;
+		int bestBol = 0;
+		
+		for (int i=0; i<bolNames.size();i++) {
+			BolName bolName = bolNames.get(i);
+			if (!bolName.isWellDefinedInBolBase()) continue;
+			char[] exact = bolNames.get(i).getName(BolName.EXACT).toLowerCase().toCharArray();
+			
+			//Debug.temporary(this, "comparing " + input.toLowerCase() + " to " + bolNames.get(i).getName(BolName.EXACT).toLowerCase());
+			
+			for (int j = 0 ;j < Math.min(inputChars.length,exact.length);j++) {
+				//Debug.temporary(this,"comparing " + inputChars[j] + " to " + exact[j]); 
+				if (exact[j]==inputChars[j]) {
+					//Debug.temporary(this,"match");	
+					if (j > maxResemblence) {
+						bestBol = i;
+						//Debug.temporary(this, " setting best bol to " + bolNames.get(i).getName(BolName.EXACT));
+						maxResemblence = j;
+						//Debug.temporary(this, " setting maximum resemblence to " + maxResemblence);
+					}
+				} else break;
+			}
+			
+			if (bestBol == i && maxResemblence == (inputChars.length-1)) {
+				break;
+			}
+		}	
+		if (maxResemblence == -1) {
+			return null;
+		} else {
+			Debug.temporary(this, "chose best bol: " + bolNames.get(bestBol) + ", with resemblence " +maxResemblence );
+			return bolNames.get(bestBol); 
+		}
+	}
 }

@@ -2,11 +2,11 @@ package bols;
 
 import junit.framework.TestCase;
 
-public class BolBaseTest extends TestCase {
+public class BolBaseOldTests extends TestCase {
 
 
 
-	public BolBaseTest(String name) {
+	public BolBaseOldTests(String name) {
 		super(name);
 	}
 

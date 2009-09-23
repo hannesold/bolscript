@@ -69,9 +69,16 @@ public void selectBol(BolName bolName) {
 			
 			Debug.temporary(this, "setting selection to " +toFind + ", at row " + i);
 			table.getSelectionModel().setSelectionInterval(i, i);
-			Rectangle r = table.getCellRect(i, BolName.EXACT, false);
-			Debug.temporary(this, "attempting to scroll to " + r);
-			table.scrollRectToVisible(r);
+			
+			
+			Rectangle bolRowRectangle = table.getCellRect(i, BolName.EXACT, false);
+			Rectangle currentView = table.getVisibleRect();
+			
+			int y = Math.max(0,bolRowRectangle.y - ((currentView.height - bolRowRectangle.height)/2));
+			Rectangle viewCenteredAroundSelectedBolRow = new Rectangle(currentView.x, y,currentView.width,currentView.height);
+			
+			Debug.temporary(this, "attempting to scroll to " + viewCenteredAroundSelectedBolRow);
+			table.scrollRectToVisible(viewCenteredAroundSelectedBolRow);
 			//scrollPane.set
 			break;
 		}
