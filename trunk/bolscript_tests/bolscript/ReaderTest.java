@@ -23,6 +23,7 @@ public class ReaderTest {
 	
 	@Before
 	public void setUp() throws Exception {
+		Debug.init();
 		Config.init();
 		BolBase.init(this.getClass());
 		bolBase = BolBase.getStandard();
@@ -63,7 +64,7 @@ public class ReaderTest {
 		Debug.out(packets);	
 	}
 	
-	@Test
+	@Ignore
 	public void testSplitIntoPackets() {
 		Packets packets = Reader.splitIntoPackets(Teental.TEENTAL);
 	}
@@ -80,6 +81,47 @@ public class ReaderTest {
 	}
 	
 	//public void te
+	@Test
+	public void testGetBolStringAroundCaret() {
+		String testChars = "abcdefghijklmnop(){}//\\<4+!?\n";
+		
+		String input = "";
+		for (int i=0; i<100;i++) {
+			input += testChars.charAt((int)Math.round(Math.random()*((double)testChars.length()-1)));
+		}
+		assertEquals(100, input.length());
+		int currentPosition = input.length();
+		
+		//currentPosition = input.length()-1;
+		input += "  Dha Ge! Na (T ?!//&&%¤) DhaGe";
+		assertEquals('D', input.charAt(currentPosition+2));
+		
+		int[]carretPositions 	= new int[]
+		                     	          {2,3,4,5,	
+											6,7,8,	
+											10,11,12,
+											14,15,
+											22,
+											30,31};
+		String[]expectedResults = new String[]{"Dha","Dha","Dha","Dha",
+											"Ge","Ge","Ge",
+											"Na","Na","Na",
+											"T","T",
+											null,
+											"DhaGe", "DhaGe"};
+		int maxExperiments = 100;
+		for (int i=0; i < Math.min(carretPositions.length,maxExperiments); i++) {
+			int caretPosition =currentPosition+carretPositions[i];
+			//Debug.temporary(this,"input at caretPosition is: " + input.charAt(caretPosition));
+			String result = Reader.determineBolStringAroundCaret(input, caretPosition);
+			assertEquals(expectedResults[i],result);
+		}
+		
+		
+		
+		
+		
+	}
 	
 	@Ignore
 	public void testRepresentableSequence() throws Exception {

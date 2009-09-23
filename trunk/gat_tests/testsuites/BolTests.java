@@ -2,7 +2,7 @@ package testsuites;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import bols.BolBaseTest;
+import bols.BolBaseOldTests;
 import bols.BolSequenceAdvancedTest;
 import bols.BolSequenceTest;
 import bols.SubSequenceAdvancedTest;
@@ -14,7 +14,7 @@ public class BolTests {
 	public static Test suite() {
 		TestSuite suite = new TestSuite("Bol related Tests");
 		//$JUnit-BEGIN$
-		suite.addTestSuite(BolBaseTest.class);
+		suite.addTestSuite(BolBaseOldTests.class);
 		suite.addTestSuite(BolSequenceTest.class);
 		suite.addTestSuite(SubSequenceAtomicTest.class);
 		suite.addTestSuite(SubSequenceAdvancedTest.class);

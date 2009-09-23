@@ -61,6 +61,10 @@ public class Reader {
 	public static final String S = "\\s";
 
 	/**
+	 * this has 
+	 */
+	public static final String BOL = "[A-Za-z\\-]+(\\d)*(\\?)?!?";
+	/**
 	 * Regex: Whitespaces or newlines at beginning or end of sequence.
 	 */
 	public static final String SNatBeginningOrEnd = "^("+SN + ")*|("+SN+"*(?:$|\\z))";
@@ -617,7 +621,7 @@ public class Reader {
 					debug.debug("Footnote will be ignored.");
 				}
 
-			} else if (all[i].matches("[A-Za-z\\-]+(\\d)*(\\?)?!?")){
+			} else if (all[i].matches(BOL)){
 				//debug.debug("Bolcandidate " + all[i]);
 				String candidate = new String(all[i]);
 
@@ -655,7 +659,46 @@ public class Reader {
 
 		return seq;
 	}
-
+	
+	public static String determineBolStringAroundCaret(String input, int caretPosition) {
+		int RANGE = 20;
+		int leftBorder = Math.max(0, caretPosition-RANGE);
+		int rightBorder = Math.min(input.length(), caretPosition+RANGE);
+		
+		//debug.temporary("char after(?) caretPosition: " + input.charAt(caretPosition));
+		String leftOfCaret = "(?<=\\(|\\)|"+Reader.SN+"|^)("+Reader.BOL+")?$";
+		String rightOfCaret = "^"+ Reader.BOL + "(?>=\\(|\\)|"+Reader.SN+"|$)";
+		String leftSubstring = input.substring(leftBorder, caretPosition);
+		//debug.temporary("left substring = " + leftSubstring);
+		String rightSubstring = input.substring(caretPosition, rightBorder);
+		//debug.temporary("left substring = " + rightSubstring);
+		
+		Matcher mLeft = Pattern.compile(leftOfCaret).matcher(leftSubstring);
+		Matcher mRight = Pattern.compile(rightOfCaret).matcher(rightSubstring);
+		
+		String leftSnippet;
+		String rightSnippet;
+		if (mLeft.find()) {
+			
+			leftSnippet = mLeft.group();
+			//debug.temporary("found leftsnippet " + leftSnippet);
+		} else leftSnippet = "";
+		if (mRight.find()) {
+			rightSnippet = mRight.group();
+			//debug.temporary("found rightsnippet " + rightSnippet);
+		} else rightSnippet = "";
+		String candidate = leftSnippet + rightSnippet;
+		
+		Matcher m = Pattern.compile(Reader.BOL).matcher(candidate);
+		if (m.find()) {
+			candidate = m.group(0);
+			if (candidate.charAt(candidate.length()-1) == '!') {
+				candidate = candidate.substring(0, candidate.length()-1);
+			}
+			//candidate is now the textsnippet to be searched for 
+			return candidate;
+		} else return null;
+	}
 
 
 	/**

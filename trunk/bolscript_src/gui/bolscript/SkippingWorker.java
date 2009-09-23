@@ -50,8 +50,10 @@ public class SkippingWorker implements Runnable {
 					workers.clear();
 				} 
 			}
-
-			workers.add(new Thread(taskFactory.getNewTask()));
+			Runnable task = taskFactory.getNewTask();
+			if (task != null) {
+				workers.add(new Thread(task));
+			}
 		}
 
 		synchronized (thread) {

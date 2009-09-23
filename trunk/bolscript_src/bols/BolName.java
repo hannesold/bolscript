@@ -12,8 +12,8 @@ import basics.Debug;
  * @author Hannes
  */
 public class BolName implements NamedInLanguages {
-	public static final int SIMPLE = 0;
-	public static final int EXACT = 1;
+	public static final int EXACT = 0;
+	public static final int SIMPLE = 1;
 	public static final int DEVANAGERI = 2;
 	public static final int TRANSLITERATION = 3;
 	public static final int INITIALS = 4;
@@ -26,7 +26,7 @@ public class BolName implements NamedInLanguages {
 	public static final int OTHER = 3;
 	public static final int UNKNOWN = 4;
 	
-	public static final String[] languageNames = {"Simple", "Exact", "Devanagari", "Transliteration", "Initials"};
+	public static final String[] languageNames = {"Exact","Simple", "Devanagari", "Transliteration", "Initials"};
 	public static final String[] handTypes = {"Left", "Right", "Combined", "Other" , "Unknown"};
 	
 	public boolean wellDefinedInBolBase = true;

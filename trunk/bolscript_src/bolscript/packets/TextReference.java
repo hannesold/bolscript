@@ -8,6 +8,11 @@ package bolscript.packets;
  *
  */
 public class TextReference {
+	
+	/*public enum ReferenceType{
+		PACKET, KEY, VALUE, OTHER
+	}*/
+	
 	private int startIndex;
 	private int endIndex;
 	private int length;
@@ -50,5 +55,9 @@ public class TextReference {
 	
 	public TextReference clone() {
 		return new TextReference(startIndex, endIndex, line);
+	}
+
+	public boolean contains(int caretPosition) {
+		return (startIndex<=caretPosition) && (caretPosition <= endIndex);
 	}
 }
