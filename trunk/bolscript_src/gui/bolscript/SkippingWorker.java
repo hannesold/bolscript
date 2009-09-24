@@ -90,7 +90,10 @@ public class SkippingWorker implements Runnable {
 
 	public void stop() {
 		stop = true;
-		thread.interrupt();
+		workers.clear();
+		synchronized (thread) {
+			if (thread.getState().equals(Thread.State.TIMED_WAITING)) thread.interrupt();
+		}
 	}
 
 	public void run () {
