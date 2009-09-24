@@ -59,6 +59,8 @@ public class CompositionFrame extends JFrame implements WindowListener, Composit
 			
 			JPanel p = new JPanel();
 			scrollPane = new JScrollPane(p);
+			scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+
 			this.setContentPane(scrollPane);
 			p.add(compositionPanel);
 			addWindowListener(this);
