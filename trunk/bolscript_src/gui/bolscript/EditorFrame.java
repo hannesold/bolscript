@@ -98,9 +98,9 @@ public class EditorFrame extends JFrame implements WindowListener, CompositionCh
 		this.setText(comp.getRawData());
 		
 		document.addUndoableEditListener(undoManager); 
-		renderWorker = new SkippingWorker(new CompositionPanelRendererFactory(this));
+		renderWorker = new SkippingWorker(new CompositionPanelRendererFactory(this), 100, false);
 		renderWorker.begin();
-		bolBaseSearchWorker = new SkippingWorker(new BolBaseSearcher(composition, textPane, bolBasePanel));
+		bolBaseSearchWorker = new SkippingWorker(new BolBaseSearcher(composition, textPane, bolBasePanel), 100, false);
 		bolBaseSearchWorker.begin();
 		document.updateStyles(composition.getPackets());
 	}

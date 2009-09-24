@@ -15,8 +15,6 @@ import bolscript.compositions.Composition;
  */
 public class SkippingWorker implements Runnable {
 
-
-	//	private EditorFrame editor;
 	private boolean stop = false;
 
 	private TaskFactory taskFactory;
@@ -29,8 +27,22 @@ public class SkippingWorker implements Runnable {
 	 */
 	public Thread thread;
 
-	public SkippingWorker (TaskFactory taskFactory) {
+	long minimumUpdateIntervall = 10;
+
+	long updateIntervall;
+
+	boolean instantUpdates;
+	/**
+	 * 
+	 * @param taskFactory The source to acquire new tasks from when addUpdate() is called.
+	 * @param updateIntervallMillis The Intervall that the worker Thread waits before checking again for existing tasks (updates) (and processing them).
+	 * @param instantUpdates If set to true the addUpdate method interrupts the sleeping Intervall, so the new update is executed instantly.
+	 */
+	public SkippingWorker (TaskFactory taskFactory, long updateIntervallMillis, boolean instantUpdates) {
 		this.taskFactory = taskFactory;
+		this.updateIntervall = Math.max(minimumUpdateIntervall, updateIntervallMillis);
+		this.instantUpdates = instantUpdates;
+
 		workers = Collections.synchronizedList(new ArrayList<Thread>());
 		thread = new Thread(this);
 		thread.setDaemon(true);
@@ -42,23 +54,30 @@ public class SkippingWorker implements Runnable {
 	}
 
 	public void addUpdate () {
+		Runnable task = taskFactory.getNewTask();
+		if (task != null) {
 
-		synchronized(workers) {
-			if (workers.size()>0) {
-				if ((workers.get(workers.size()-1).getState() == Thread.State.NEW) ||
-						(workers.get(workers.size()-1).getState() == Thread.State.TERMINATED)) {
-					workers.clear();
-				} 
-			}
-			Runnable task = taskFactory.getNewTask();
-			if (task != null) {
+			synchronized(workers) {
+				/**
+				 * Skip all not yet processed workers
+				 * remove any workers that have not been executed or are terminated
+				 * 
+				 */
+				if (workers.size()>0) {
+					if (workers.get(workers.size()-1).getState() == Thread.State.NEW) {
+						workers.clear();
+						Debug.temporary(this, "REMOVED SKIPPED WORKER");
+					} 
+				}
 				workers.add(new Thread(task));
 			}
-		}
 
-		synchronized (thread) {
-			if (thread.getState().equals(Thread.State.TIMED_WAITING)) {
-				thread.interrupt();
+			if (instantUpdates) {
+				synchronized (thread) {
+					if (thread.getState().equals(Thread.State.TIMED_WAITING)) {
+						thread.interrupt();
+					}
+				}
 			}
 		}
 	}
@@ -78,9 +97,7 @@ public class SkippingWorker implements Runnable {
 		Debug.debug(this, "running");
 		while (stop == false) {
 			try {
-				//Debug.debug(this, "Starting to wait now.");
-				Thread.sleep(60000); //pause the renderthread, wait for the next update.
-
+				Thread.sleep(updateIntervall); //pause the renderthread, wait until the next update.
 			} catch (InterruptedException e) {
 			}
 
