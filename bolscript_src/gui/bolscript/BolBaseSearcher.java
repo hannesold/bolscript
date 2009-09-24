@@ -35,7 +35,7 @@ public class BolBaseSearcher implements TaskFactory {
 			selection = null;
 		}
 		if (selection != null) {
-			Debug.temporary(this, "selection is not null");
+			//Debug.temporary(this, "selection is not null");
 			return new SearchSelectionTask(selection);
 		} else {
 			int caretPosition = textPane.getCaretPosition();
@@ -66,7 +66,7 @@ public class BolBaseSearcher implements TaskFactory {
 		//Packets packets;
 		
 		public CaretGuessTask (String text, int caretPosition) {
-			Debug.temporary(this, "caret task constructor");
+			//Debug.temporary(this, "caret task constructor");
 			this.caretPosition = caretPosition;
 			this.text = text;
 		}
@@ -74,21 +74,21 @@ public class BolBaseSearcher implements TaskFactory {
 		public void run() {
 			Debug.temporary(this, "running caretguesstask");
 			if (text != null) {
-				Debug.temporary(this, this.caretPosition +" in " + text.length()  +" ");
+				//Debug.temporary(this, this.caretPosition +" in " + text.length()  +" ");
 				if (caretPosition <= text.length()) {
-					Debug.temporary(this, "caret is IN the text");
+					//Debug.temporary(this, "caret is IN the text");
 					String input = Reader.determineBolStringAroundCaret(text, caretPosition);
 					if (input != null) {
-						Debug.temporary(this, "bolstring around caret " + input);
+						//Debug.temporary(this, "bolstring around caret " + input);
 						BolName bolName = BolBase.getStandard().getResemblingBol(input);
 						if (bolName != null) {
-							Debug.temporary(this, "found bol: " + bolName);
+							//Debug.temporary(this, "found bol: " + bolName);
 							EventQueue.invokeLater(new SelectTask(bolName));
 						}
 					}
 				}
 			} else {
-				Debug.temporary(this, "caretPosition is " + caretPosition +", but text length " + text.length());
+				//Debug.temporary(this, "caretPosition is " + caretPosition +", but text length " + text.length());
 			}
 		}
 
