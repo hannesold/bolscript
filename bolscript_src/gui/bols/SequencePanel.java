@@ -1,6 +1,6 @@
 package gui.bols;
 
-import gui.playlist.PlayablePanel;
+import gui.playlist.HighlightablePanel;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -29,7 +29,7 @@ import bolscript.sequences.FootnoteUnit;
 import bolscript.sequences.Representable;
 import bolscript.sequences.RepresentableSequence;
 
-public class SequencePanel extends PlayablePanel  {
+public class SequencePanel extends HighlightablePanel  {
 
 	public static Color cBackground = Color.WHITE;
 	public static Color cDistinctBackground = new Color(200,220,200);
@@ -63,7 +63,7 @@ public class SequencePanel extends PlayablePanel  {
 	protected float fontSize = Config.bolFontSizeStd[BolName.SIMPLE];
 	
 	protected Dimension vibhagSize;
-	protected boolean playing;
+	protected boolean highlighted;
 	protected ArrayList<CellPanel> cells;
 	protected CellPanel cellHighlightedlastTime;
 	protected int fixedMaxSpeed;
@@ -87,7 +87,7 @@ public class SequencePanel extends PlayablePanel  {
 		
 		lineBreaks = new ArrayList<Float>();
 		cells = new ArrayList<CellPanel>();
-		playing = false;
+		highlighted = false;
 		cellHighlightedlastTime = null;
 		
 		this.sequence = sequence;
@@ -110,17 +110,17 @@ public class SequencePanel extends PlayablePanel  {
 		render();
 	}
 
-	public boolean isPlaying() {
-		return playing;
+	public boolean isHighlighted() {
+		return highlighted;
 	}
 
-	public void setPlaying(boolean playing) {
-		if (playing!=this.playing) {
-			this.playing = playing;
-			if (playing ){
-				//this.setBorder(BorderFactory.createLineBorder(Color.RED, 1));
+	public void setHighlighted(boolean highlighted) {
+		if (highlighted!=this.highlighted) {
+			this.highlighted = highlighted;
+			if (highlighted ){
+				this.setBorder(BorderFactory.createLineBorder(Color.GREEN, 5));
 			} else {
-				//this.setBorder(BorderFactory.createLineBorder(cBackground, 1));
+				this.setBorder(BorderFactory.createLineBorder(cBackground, 1));
 			}
 		}
 		

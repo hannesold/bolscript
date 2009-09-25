@@ -16,7 +16,7 @@ import algorithm.composers.kaida.Individual;
 import basics.GUI;
 import bols.tals.Tal;
 
-public class IndividualPanel extends PlayablePanel{
+public class IndividualPanel extends HighlightablePanel{
 	private Individual individual;
 	private Tal tal;
 	private VariationPanel variationPanel;
@@ -111,10 +111,10 @@ public class IndividualPanel extends PlayablePanel{
 		GUI.setAllSizes(this, niceSize);
 	}
 	
-	public void setPlaying(boolean playing) {
+	public void setHighlighted(boolean playing) {
 		if (playing!=this.playing) {
 			this.playing = playing;
-			variationPanel.setPlaying(playing);
+			variationPanel.setHighlighted(playing);
 			if (playing ){
 				this.setBorder(BorderFactory.createLineBorder(cBorderPlaying, borderPlaying));
 			} else {
@@ -124,7 +124,7 @@ public class IndividualPanel extends PlayablePanel{
 		}
 	}
 	
-	public boolean isPlaying() {
+	public boolean isHighlighted() {
 		return playing;
 	}
 	

@@ -20,14 +20,17 @@ public class BolBaseSearcher implements TaskFactory {
 	JTextPane textPane;
 	BolBasePanel bolBasePanel;
 	Composition composition;
+	CompositionPanel compPanel;
+	
 	BolscriptDocument document;
 	static Packet previouslyHighlightedPacket;
 
-	public BolBaseSearcher(Composition composition, JTextPane textPane, BolBasePanel bolBasePanel, BolscriptDocument document) {
+	public BolBaseSearcher(Composition composition, JTextPane textPane, BolBasePanel bolBasePanel, BolscriptDocument document, CompositionPanel compPanel) {
 		this.textPane = textPane;
 		this.bolBasePanel = bolBasePanel;
 		this.composition = composition;
 		this.document = document;
+		this.compPanel = compPanel;
 	}
 
 	public Runnable getNewTask() {
@@ -57,12 +60,17 @@ public class BolBaseSearcher implements TaskFactory {
 	public String getTaskName() {
 		return "BolBase Searcher";
 	}
+	
+	public void setCompositionPanel(CompositionPanel compositionPanel) {
+		this.compPanel = compositionPanel;		
+	}
+	
 
 	public class CaretGuessTask implements Runnable {
 
 		String text;
 		static final int RANGE = 20;
-		Packet p;
+		Packet packet;
 
 		int caretPosition;
 		//Packets packets;
@@ -71,12 +79,17 @@ public class BolBaseSearcher implements TaskFactory {
 			//Debug.temporary(this, "caret task constructor");
 			this.caretPosition = caretPosition;
 			this.text = text;
-			this.p = packet;
+			this.packet = packet;
 		}
 
 		public void run() {
 			Debug.temporary(this, "running caretguesstask");
-
+			
+			
+			if (packet != null && compPanel!=null)  {
+				EventQueue.invokeLater(new HighlightInCompositionPanel(packet));
+			}
+			
 			if (previouslyHighlightedPacket !=null) {
 				previouslyHighlightedPacket.setHighlighted(false);
 			}
@@ -88,10 +101,9 @@ public class BolBaseSearcher implements TaskFactory {
 					//Debug.temporary(this, "caret is IN the text");
 					String input = Reader.determineBolStringAroundCaret(text, caretPosition);
 
-
 					if (input != null) {
 						Packets packets = composition.getPackets();
-						int packetIndex = packets.indexOf(p);
+						int packetIndex = packets.indexOf(packet);
 
 						for (int i= packetIndex-1; i>0; i--) {
 							if (packets.get(i).getKey().equalsIgnoreCase(input)) {
@@ -121,6 +133,19 @@ public class BolBaseSearcher implements TaskFactory {
 			}
 			document.updateStylesLater(composition.getPackets());
 		}
+		
+		private class HighlightInCompositionPanel implements Runnable {
+			Packet p;
+			public HighlightInCompositionPanel(Packet p) {
+				this.p = p;
+			}
+			public void run() {
+				Debug.temporary(this,"attempting to highlight packet " + p.getKey());
+				if (compPanel != null) {
+					compPanel.highlightPacketNow(p);
+				} else Debug.temporary(this,"compPanel was null");
+			}
+		}
 	}
 
 	/**
@@ -139,6 +164,9 @@ public class BolBaseSearcher implements TaskFactory {
 			bolBasePanel.selectBol(bolName);
 		}
 	}
+
+
+
 
 
 

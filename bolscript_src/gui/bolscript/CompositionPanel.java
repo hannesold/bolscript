@@ -12,6 +12,7 @@ import gui.bolscript.composition.CommentText;
 import gui.bolscript.composition.FootnoteText;
 import gui.bolscript.composition.PageBreakPanel;
 import gui.menus.ViewerActions;
+import gui.playlist.HighlightablePanel;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -22,6 +23,7 @@ import java.awt.event.KeyEvent;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
@@ -94,6 +96,7 @@ public class CompositionPanel extends JLayeredPane {
 	 */
 	private float fontSizeIncrease = 0;
 	
+	private HashMap<Packet, HighlightablePanel> packetMap;
 	/**
 	 * The List of Swing components which will eventually be displayed.
 	 */
@@ -118,13 +121,15 @@ public class CompositionPanel extends JLayeredPane {
 	 * The Panel which contains the composition.
 	 */
 	private JPanel contentPanel;
+
+	private Packet packetAtCaretPosition;
 	
 	public CompositionPanel (Dimension size, int language, TalBase talBase) {
 		super();
 		this.language = language;
 		this.talBase = talBase;
+		packetMap = new HashMap<Packet, HighlightablePanel>();
 		init(size);
-		
 	}
 	
 	public void init(Dimension size) {
@@ -157,9 +162,25 @@ public class CompositionPanel extends JLayeredPane {
 		this.composition = null;
 		setVisible(true);
 		
-		initActions();
-		
+		initActions();	
 	}
+	
+	public void highlightPacketNow(Packet packet) {
+		Debug.temporary(this, "attempting to highlight ");
+		HighlightablePanel panel = packetMap.get(packet);
+		Debug.temporary(this, "determined panel " + panel);
+		for (Packet p: packetMap.keySet()) {
+			packetMap.get(p).setHighlighted(false);
+		}
+		
+		if (panel != null) {
+			panel.setHighlighted(true);
+			//Rectangle panelBounds = ;
+			this.scrollRectToVisible(panel.getBounds());
+			Debug.temporary(this, "highlighting Panel: " + panel);
+		}
+	}
+	
 	
 	/**
 	 * <p>Initializes the actions that are attached to this composition panel.</p>
@@ -332,6 +353,7 @@ public class CompositionPanel extends JLayeredPane {
 		components = new ArrayList<JComponent> ();
 		pageBreaksFloat.clear();
 		pageBreakPanels.clear();
+		packetMap.clear();
 		
 		if (packets != null) {
 		Tal tal = Teental.getDefaultTeental();
@@ -394,6 +416,11 @@ public class CompositionPanel extends JLayeredPane {
 						addLineBreak(vLineBreaks.get(j)+newHeight, PageBreakPanel.LOW);
 					}
 					
+					packetMap.put(p,sequencePanel);
+					
+					if (p==packetAtCaretPosition) {
+						sequencePanel.setHighlighted(true);
+					}
 					//}
 					newHeight += components.get(components.size()-1).getPreferredSize().height;
 					
@@ -674,6 +701,11 @@ public class CompositionPanel extends JLayeredPane {
 		fontSizeIncrease = 0;
 		updateActionEnabling();
 		render();
+	}
+
+	public void setHighlightedPaket(Packet packetAtCaretPosition) {
+		this.packetAtCaretPosition = packetAtCaretPosition; 
+		
 	}
 	
 	

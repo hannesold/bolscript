@@ -58,9 +58,9 @@ public class PlaylistBoxLayout extends JPanel {
 			IndividualPanel lastIndividual = individuals.get(individuals.size()-1);
 			if (currentlyPlaying != lastIndividual) {
 				if (currentlyPlaying!=null) {
-					currentlyPlaying.setPlaying(false);
+					currentlyPlaying.setHighlighted(false);
 				}
-				lastIndividual.setPlaying(true);
+				lastIndividual.setHighlighted(true);
 				currentlyPlaying = lastIndividual;				
 			}
 		}

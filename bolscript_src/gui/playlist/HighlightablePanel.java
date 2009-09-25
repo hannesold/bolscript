@@ -2,20 +2,21 @@ package gui.playlist;
 
 import javax.swing.JLayeredPane;
 
-public abstract class PlayablePanel extends JLayeredPane{
+public abstract class HighlightablePanel extends JLayeredPane{
 	
 	/**
-	 * Inform the panel that it is not currently played.
-	 * @param playing
+	 * Inform the panel that it is not currently highlighted.
+	 * @param highlighted
 	 */
-	public abstract void setPlaying(boolean playing);
+	public abstract void setHighlighted(boolean highlighted);
+	
 	
 	
 	/**
 	 * 
 	 * @return 
 	 */
-	public abstract boolean isPlaying();
+	public abstract boolean isHighlighted();
 	
 	/**
 	 * Unhighlight all cells

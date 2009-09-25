@@ -18,26 +18,30 @@ public class CompositionPanelRendererFactory implements TaskFactory {
 	}
 
 	public Runnable getNewTask() {
-		return new Task(editor.getComposition(), editor.getCompositionPanel(), editor.getText());
+		return new UpdateRawData(editor.getComposition(), editor.getCompositionPanel(), editor.getText(), editor.getCaretPosition());
 	}
 	
-	private class Task implements Runnable {
+	private class UpdateRawData implements Runnable {
 		private String text;
 		private Composition comp;
 		private CompositionPanel compPanel;
+		private int caretPosition;
 		
-		public Task (Composition comp, CompositionPanel compPanel, String s) {
+		public UpdateRawData (Composition comp, CompositionPanel compPanel, String s, int caretPosition) {
 			this.text = s;
 			this.comp = comp;
 			this.compPanel = compPanel;
+			this.caretPosition = caretPosition;
 		}
 		
 		public void run() {
 			comp.setRawData(text);
 			comp.extractInfoFromRawData();
+			compPanel.setHighlightedPaket(comp.getPackets().getPacketAtCaretPosition(caretPosition));
 			compPanel.renderComposition(comp);
 			
-			if (alsoAddUpdateTo != null) alsoAddUpdateTo.addUpdate();		
+			if (alsoAddUpdateTo != null) alsoAddUpdateTo.addUpdate();	
+			//alsoAddUpdateTo.
 			//editor.getDocument().updateStylesLater(comp.getPackets());
 		}
 	}
