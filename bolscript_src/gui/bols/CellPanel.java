@@ -26,7 +26,7 @@ public class CellPanel extends JPanel {
 		super(null, false);
 		
 		this.setBounds(x,y,size.width,size.height);
-		this.setBorder(new CellBorder(cBorder,1));
+		this.setBorder(CellBorder.getStandard(cBorder,1, SequencePanel.cellBorderPadding));
 		this.setVisible(true);
 		
 		if (GUI.showLayoutStructure) {

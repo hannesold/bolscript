@@ -37,10 +37,23 @@ public class SequencePanel extends PlayablePanel  {
 	protected static int cellLayer = 2;
 	protected static int bolLayer = 3;
 	protected static int vibhagLayer = 4;
-	protected static int cellMargin = 16; //vormals 16
+	
+	/**
+	 * The margin between two cells
+	 */
+	protected static int cellMargin = 12; 
+	protected static int maxCellMargin = 14;
+	protected static int minCellMargin = 4;
+	protected static int minVibhagPadding = 4;
+	public static int cellBorderPadding = 0;
+	
+	/**
+	 * The margin between two rows
+	 */
 	protected static int rowMargin = 16;
 	
 	protected static Insets insets = new Insets(10,20,10,20);
+	
 	
 	protected RepresentableSequence sequence;
 	
@@ -140,6 +153,9 @@ public class SequencePanel extends PlayablePanel  {
 		nrOfCells = (int) Math.ceil(sequence.getDuration());
 		
 		cellSize = determinCellSize();
+		cellMargin = Math.max(minCellMargin, Math.min(maxCellMargin,cellSize.width/8));
+		Debug.temporary(this,"cellMargin: " + cellMargin);
+		
 		cellWidthPlusMargin = cellSize.width + cellMargin;
 		rowHeight = cellSize.height + rowMargin;
 		
@@ -383,7 +399,7 @@ public class SequencePanel extends PlayablePanel  {
 			
 			Vibhag vibhag = vibhags[vibhagIndex % vibhags.length] ;
 			
-			int vX = getCellCoords(i).x - cellMargin/2;
+			int vX = getCellCoords(i).x - Math.max(minVibhagPadding, cellMargin/2);
 			int vY = getCellCoords(i).y;
 			
 			// Add vibhagPanel
