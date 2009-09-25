@@ -5,9 +5,12 @@ import bolscript.compositions.Composition;
 public class CompositionPanelRendererFactory implements TaskFactory {
 
 	private EditorFrame editor;
-		
-	public CompositionPanelRendererFactory (EditorFrame editor) {
+	
+	private SkippingWorker alsoAddUpdateTo;
+	
+	public CompositionPanelRendererFactory (EditorFrame editor, SkippingWorker alsoAddUpdateTo) {
 		this.editor = editor;
+		this.alsoAddUpdateTo = alsoAddUpdateTo;
 	}
 	
 	public String getTaskName() {
@@ -33,7 +36,9 @@ public class CompositionPanelRendererFactory implements TaskFactory {
 			comp.setRawData(text);
 			comp.extractInfoFromRawData();
 			compPanel.renderComposition(comp);
-			editor.getDocument().updateStyles(comp.getPackets());
+			
+			if (alsoAddUpdateTo != null) alsoAddUpdateTo.addUpdate();		
+			//editor.getDocument().updateStylesLater(comp.getPackets());
 		}
 	}
 }

@@ -68,18 +68,19 @@ public class Packet {
 	private TextReference textRefPacket;
 	private TextReference textRefKey;
 	private TextReference textRefValue;
-	
+	private boolean highlighted;
 	public Packet(String key, String value, int type, boolean visible) {
 		super();
 		this.key = key;
 		this.value = value;
-		//this.type = type;
+		setType(type);
 		this.visible = visible;
 		this.object = null;
 		this.textRefPacket = null;
 		this.textRefKey = null;
 		this.textRefValue = null;
-		setType(type);
+		this.highlighted = false;
+		
 	}
 	
 	public Packet(String key, String value, PacketType type, boolean visible) {
@@ -92,6 +93,7 @@ public class Packet {
 		this.textRefPacket = null;
 		this.textRefKey = null;
 		this.textRefValue = null;
+		this.highlighted = false;
 	}
 
 
@@ -212,6 +214,13 @@ public class Packet {
 	 */
 	public Packet cloneClearObjAndTextRef() {
 		return new Packet(new String(this.key), new String(this.value), this.packetType.getId(), this.visible);
+	}
+
+	public void setHighlighted(boolean highlighted) {
+		this.highlighted = highlighted;
+	}
+	public boolean isHighlighted() {
+		return highlighted;
 	}
 	
 	

@@ -154,7 +154,7 @@ public class SequencePanel extends PlayablePanel  {
 		
 		cellSize = determinCellSize();
 		cellMargin = Math.max(minCellMargin, Math.min(maxCellMargin,cellSize.width/8));
-		Debug.temporary(this,"cellMargin: " + cellMargin);
+		//Debug.temporary(this,"cellMargin: " + cellMargin);
 		
 		cellWidthPlusMargin = cellSize.width + cellMargin;
 		rowHeight = cellSize.height + rowMargin;
