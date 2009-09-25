@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.EventQueue;
 import java.util.HashMap;
 
+import javax.swing.JTextPane;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.UndoableEditListener;
 import javax.swing.text.AttributeSet;
@@ -13,6 +14,7 @@ import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 
 import basics.Debug;
+import bolscript.config.Config;
 import bolscript.packets.Packet;
 import bolscript.packets.Packets;
 import bolscript.packets.types.PacketType;
@@ -24,6 +26,8 @@ public class BolscriptDocument extends DefaultStyledDocument{
 		static Color bolKeyColor = Color.BLACK;
 		static Color failedKeyColor = bolKeyColor;
 		static Color failedValueColor = Color.red;
+		static Color highlightedBolBackground;
+		
 	      //final Matcher matcher =
 	        //    Pattern.compile("sneach").matcher("");
 	 
@@ -32,9 +36,14 @@ public class BolscriptDocument extends DefaultStyledDocument{
 		
 	       Style styleMetaKey;
 	       Style styleMetaValue;
+	       
 	       Style rootStyle;
 	       Style styleBolKey;
 	       Style styleBolValue;
+	       
+	       Style styleHighlightedBolKey;
+	       Style styleHighlightedBolVal;
+	       
 	       Style parseError;
 	    
 	      
@@ -48,6 +57,8 @@ public class BolscriptDocument extends DefaultStyledDocument{
 	      
 	      public  void initStylesAndMaps(){
 	    	  rootStyle = addStyle("root", null);
+	          StyleConstants.setForeground(rootStyle, Color.BLACK);
+	          StyleConstants.setBackground(rootStyle, Color.WHITE);
 	          
 	    	  styleMetaKey = addStyle("key", rootStyle);
 	          StyleConstants.setBold(styleMetaKey, true);
@@ -62,10 +73,19 @@ public class BolscriptDocument extends DefaultStyledDocument{
 	          StyleConstants.setForeground(styleFailedValue, failedValueColor);
 	          StyleConstants.setItalic(styleFailedValue, true);
 	          
+	          
 	          styleMetaValue = addStyle("metavalue", rootStyle);
 	          styleBolValue = addStyle("bolvalue", styleMetaValue);
 	          
-	    	 
+	          highlightedBolBackground = (new JTextPane()).getSelectionColor();
+	          highlightedBolBackground = new Color(highlightedBolBackground.getRed(), highlightedBolBackground.getGreen(), highlightedBolBackground.getBlue(), highlightedBolBackground.getAlpha() /2);
+	          styleHighlightedBolKey = addStyle("highlightedBolKey", styleBolKey);
+	          styleHighlightedBolVal = addStyle("highlightedBolKey", styleBolValue);
+	          StyleConstants.setForeground(styleHighlightedBolKey, Color.BLACK);
+	          StyleConstants.setBackground(styleHighlightedBolKey, highlightedBolBackground);
+	          StyleConstants.setForeground(styleHighlightedBolVal, Color.BLACK);
+	          StyleConstants.setBackground(styleHighlightedBolVal, highlightedBolBackground);	          
+	          
 	          keyStyleMaps = new HashMap<Integer, Style>();
 	          valueStyleMaps = new HashMap<Integer, Style>();
 	          PacketType[] metaTypes = PacketTypeFactory.getMetaTypes();
@@ -162,6 +182,10 @@ public class BolscriptDocument extends DefaultStyledDocument{
 	    			  Style valStyle = valueStyleMaps.get(p.getType());
 	    			  if (keyStyle == null) keyStyle = styleBolKey;
 	    			  if (valStyle == null) valStyle = styleBolValue;
+	    			  if (p.isHighlighted()) {
+	    				  keyStyle = styleHighlightedBolKey;
+	    				  valStyle = styleHighlightedBolVal;
+	    			  }
 	    			  //Debug.temporary(getClass(), "key: " + p.getTextRefKey());
 	    			  //Debug.temporary(getClass(), "val: " + p.getTextRefValue());
 	    			  setCharacterAttributes(p.getTextRefKey().start(), p.getTextReference().length(), keyStyle, true);
@@ -188,7 +212,7 @@ public class BolscriptDocument extends DefaultStyledDocument{
 	    	  }
 	      }
 	      
-	      public void updateStyles(Packets packets) {
+	      public void updateStylesLater(Packets packets) {
 	    	  EventQueue.invokeLater(new StyleUpdater(packets));
 	      }
 

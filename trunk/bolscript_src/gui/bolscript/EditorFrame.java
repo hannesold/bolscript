@@ -52,6 +52,7 @@ public class EditorFrame extends JFrame implements WindowListener, CompositionCh
 	final UndoManager undoManager;
 	private BolscriptDocument document;
 	
+	private int lastCaretPosition = -1;
 	private BolBasePanel bolBasePanel;
 	
 	private EditorFrame(Dimension size) {
@@ -98,11 +99,14 @@ public class EditorFrame extends JFrame implements WindowListener, CompositionCh
 		this.setText(comp.getRawData());
 		
 		document.addUndoableEditListener(undoManager); 
-		renderWorker = new SkippingWorker(new CompositionPanelRendererFactory(this), 100, false);
-		renderWorker.begin();
-		bolBaseSearchWorker = new SkippingWorker(new BolBaseSearcher(composition, textPane, bolBasePanel), 100, false);
+		
+		bolBaseSearchWorker = new SkippingWorker(new BolBaseSearcher(composition, textPane, bolBasePanel, document), 100, false);
 		bolBaseSearchWorker.begin();
-		document.updateStyles(composition.getPackets());
+		
+		renderWorker = new SkippingWorker(new CompositionPanelRendererFactory(this, bolBaseSearchWorker), 100, false);
+		renderWorker.begin();
+		
+		document.updateStylesLater(composition.getPackets());
 	}
 	
 
@@ -219,15 +223,18 @@ public class EditorFrame extends JFrame implements WindowListener, CompositionCh
 	 */
 	public void compile() {
 		if (compositionPanel != null) {
+			
 			renderWorker.addUpdate();
-			bolBaseSearchWorker.addUpdate();
+		//	bolBaseSearchWorker.addUpdate();
 		}
 		
 	}
 	
 	public void caretUpdate(CaretEvent e) {
-		
-		if (bolBaseSearchWorker != null) bolBaseSearchWorker.addUpdate();
+		if (textPane.getCaretPosition() != lastCaretPosition) {
+			if (bolBaseSearchWorker != null) bolBaseSearchWorker.addUpdate();
+			lastCaretPosition = textPane.getCaretPosition();
+		}
 	}
 
 

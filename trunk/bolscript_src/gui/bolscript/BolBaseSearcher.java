@@ -12,6 +12,7 @@ import bols.BolName;
 import bolscript.Reader;
 import bolscript.compositions.Composition;
 import bolscript.packets.Packet;
+import bolscript.packets.Packets;
 import bolscript.packets.types.PacketTypeFactory;
 
 public class BolBaseSearcher implements TaskFactory {
@@ -19,38 +20,37 @@ public class BolBaseSearcher implements TaskFactory {
 	JTextPane textPane;
 	BolBasePanel bolBasePanel;
 	Composition composition;
-	
-	public BolBaseSearcher(Composition composition, JTextPane textPane, BolBasePanel bolBasePanel) {
+	BolscriptDocument document;
+	static Packet previouslyHighlightedPacket;
+
+	public BolBaseSearcher(Composition composition, JTextPane textPane, BolBasePanel bolBasePanel, BolscriptDocument document) {
 		this.textPane = textPane;
 		this.bolBasePanel = bolBasePanel;
 		this.composition = composition;
+		this.document = document;
 	}
 
 	public Runnable getNewTask() {
-		String selection;
+		int caretPosition = textPane.getCaretPosition();
+		Packet p = composition.getPackets().getPacketAtCaretPosition(caretPosition);
 
-		try {
-			selection = textPane.getSelectedText();	
-		} catch (IllegalArgumentException ex) {
-			selection = null;
-		}
-		if (selection != null) {
-			//Debug.temporary(this, "selection is not null");
-			return new SearchSelectionTask(selection);
-		} else {
-			int caretPosition = textPane.getCaretPosition();
-			Packet p = composition.getPackets().getPacketAtCaretPosition(caretPosition);
-			
-			if (p != null) {
-				if (p.getType() == PacketTypeFactory.BOLS) {
-					Debug.temporary(this, "caret is in a bol packet");
-					if (p.getTextRefValue().contains(caretPosition)) {
-						Debug.temporary(this, "new caret task");
-						return new CaretGuessTask(textPane.getText(),textPane.getCaretPosition());	
-					}
+		if (p != null) {
+			if (p.getType() == PacketTypeFactory.BOLS) {
+				Debug.temporary(this, "caret is in a bol packet");
+				if (p.getTextRefValue().contains(caretPosition)) {
+					Debug.temporary(this, "new caret task");
+					return new CaretGuessTask(textPane.getText(),textPane.getCaretPosition(), p);	
 				}
 			}
 		}
+		//update document to clear away past selections
+		if (previouslyHighlightedPacket != null) {
+			if (previouslyHighlightedPacket !=null)	previouslyHighlightedPacket.setHighlighted(false);
+			previouslyHighlightedPacket = null;
+			document.updateStylesLater(composition.getPackets());
+		}
+		
+
 		return null;
 	}
 
@@ -59,66 +59,68 @@ public class BolBaseSearcher implements TaskFactory {
 	}
 
 	public class CaretGuessTask implements Runnable {
+
 		String text;
 		static final int RANGE = 20;
+		Packet p;
 
 		int caretPosition;
 		//Packets packets;
-		
-		public CaretGuessTask (String text, int caretPosition) {
+
+		public CaretGuessTask (String text, int caretPosition, Packet packet) {
 			//Debug.temporary(this, "caret task constructor");
 			this.caretPosition = caretPosition;
 			this.text = text;
+			this.p = packet;
 		}
 
 		public void run() {
 			Debug.temporary(this, "running caretguesstask");
+
+			if (previouslyHighlightedPacket !=null) {
+				previouslyHighlightedPacket.setHighlighted(false);
+			}
+			boolean highlightedAPacket = false;
+
 			if (text != null) {
 				//Debug.temporary(this, this.caretPosition +" in " + text.length()  +" ");
 				if (caretPosition <= text.length()) {
 					//Debug.temporary(this, "caret is IN the text");
 					String input = Reader.determineBolStringAroundCaret(text, caretPosition);
+
+
 					if (input != null) {
-						//Debug.temporary(this, "bolstring around caret " + input);
-						BolName bolName = BolBase.getStandard().getResemblingBol(input);
-						if (bolName != null) {
-							//Debug.temporary(this, "found bol: " + bolName);
-							EventQueue.invokeLater(new SelectTask(bolName));
+						Packets packets = composition.getPackets();
+						int packetIndex = packets.indexOf(p);
+
+						for (int i= packetIndex-1; i>0; i--) {
+							if (packets.get(i).getKey().equalsIgnoreCase(input)) {
+								packets.get(i).setHighlighted(true);
+								highlightedAPacket = true;
+								previouslyHighlightedPacket = packets.get(i);
+								break;
+							}
 						}
-					}
-				}
-			} else {
-				//Debug.temporary(this, "caretPosition is " + caretPosition +", but text length " + text.length());
+
+						//no packet was matched, try to find a fitting bol
+						if (highlightedAPacket == false) {
+
+							//Debug.temporary(this, "bolstring around caret " + input);
+							BolName bolName = BolBase.getStandard().getResemblingBol(input);
+							if (bolName != null) {
+								//Debug.temporary(this, "found bol: " + bolName);
+								EventQueue.invokeLater(new SelectBolInBolBaseTableTask(bolName));
+							}
+						} //highlightedAPacket
+					} //input != null 
+				} //caretPos <= text.length
+			} //text == null
+			
+			if (!highlightedAPacket) {
+				if (previouslyHighlightedPacket !=null)	previouslyHighlightedPacket.setHighlighted(false);
 			}
+			document.updateStylesLater(composition.getPackets());
 		}
-
-	}
-
-
-	private class SearchSelectionTask implements Runnable{
-
-		String selection;
-
-		public SearchSelectionTask(String selection) {
-			this.selection = selection;
-		}
-
-		public void run() {
-
-			Debug.temporary(this, "selected text "+ selection);
-			if (selection != null) {
-
-				BolName bolName = BolBase.getStandard().getBolName(selection);
-				if (bolName != null) {
-					Debug.temporary(this, "found bol: " + bolName);
-					EventQueue.invokeLater(new SelectTask(bolName));
-				}
-
-			}
-
-		}	
-
-
 	}
 
 	/**
@@ -126,10 +128,10 @@ public class BolBaseSearcher implements TaskFactory {
 	 * it should only be run in the eventqueue, because it accesses gui elements.
 	 * @author hannes
 	 */
-	private class SelectTask implements Runnable {
+	private class SelectBolInBolBaseTableTask implements Runnable {
 		private BolName bolName;
 
-		SelectTask(BolName bolName) {
+		SelectBolInBolBaseTableTask(BolName bolName) {
 			this.bolName = bolName;
 		}
 
