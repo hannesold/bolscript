@@ -19,8 +19,8 @@ import algorithm.composers.kaida.Individual;
 import bols.tals.Tal;
 
 public class Playlist extends JPanel {
-	private ArrayList<PlayablePanel> playablePanels;
-	private PlayablePanel currentlyPlaying, lastAdded;
+	private ArrayList<HighlightablePanel> playablePanels;
+	private HighlightablePanel currentlyPlaying, lastAdded;
 	private boolean viewFollowing;
 	public static Color cBackground = new Color(220,220,210);
 	private static int marginIndividuals = 15;
@@ -36,7 +36,7 @@ public class Playlist extends JPanel {
 		lastAdded = null;
 		lastIndividualAdded = null;
 		
-		playablePanels = new ArrayList<PlayablePanel>(1000);
+		playablePanels = new ArrayList<HighlightablePanel>(1000);
 		setOpaque(true);
 		viewFollowing = true;
 		
@@ -78,12 +78,12 @@ public class Playlist extends JPanel {
 	
 	public void setPlayingLast() {
 		if (playablePanels.size()>0) {
-			PlayablePanel lastPlayable = playablePanels.get(playablePanels.size()-1);
+			HighlightablePanel lastPlayable = playablePanels.get(playablePanels.size()-1);
 			if (currentlyPlaying != lastPlayable) {
 				if (currentlyPlaying!=null) {
-					currentlyPlaying.setPlaying(false);
+					currentlyPlaying.setHighlighted(false);
 				}
-				lastPlayable.setPlaying(true);
+				lastPlayable.setHighlighted(true);
 				currentlyPlaying = lastPlayable;				
 			}
 		}

@@ -55,6 +55,8 @@ public class EditorFrame extends JFrame implements WindowListener, CompositionCh
 	private int lastCaretPosition = -1;
 	private BolBasePanel bolBasePanel;
 	
+	private BolBaseSearcher bolBaseSearcher;
+	
 	private EditorFrame(Dimension size) {
 		super("Composition editor");
 		undoManager = new UndoManager();
@@ -100,7 +102,8 @@ public class EditorFrame extends JFrame implements WindowListener, CompositionCh
 		
 		document.addUndoableEditListener(undoManager); 
 		
-		bolBaseSearchWorker = new SkippingWorker(new BolBaseSearcher(composition, textPane, bolBasePanel, document), 100, false);
+		bolBaseSearcher = new BolBaseSearcher(composition, textPane, bolBasePanel, document, null);
+		bolBaseSearchWorker = new SkippingWorker(bolBaseSearcher, 100, false);
 		bolBaseSearchWorker.begin();
 		
 		renderWorker = new SkippingWorker(new CompositionPanelRendererFactory(this, bolBaseSearchWorker), 100, false);
@@ -137,8 +140,13 @@ public class EditorFrame extends JFrame implements WindowListener, CompositionCh
 
 	public void setCompositionPanel(CompositionPanel compositionPanel) {
 		this.compositionPanel = compositionPanel;
+		bolBaseSearcher.setCompositionPanel(compositionPanel);
 	}
 
+	public int getCaretPosition() {
+		return lastCaretPosition;
+	}
+	
 	public void setText(String contents) {
 		textPane.setText(contents);
 	}
