@@ -1,5 +1,7 @@
 package gui.bolscript.sequences;
 
+import gui.bolscript.packets.SequencePanel;
+
 import java.awt.Color;
 import java.awt.Dimension;
 

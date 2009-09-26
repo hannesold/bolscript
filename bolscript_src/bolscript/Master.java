@@ -13,7 +13,7 @@ import gui.bolscript.composition.CompositionPanel;
 import gui.bolscript.dialogs.CouldNotBeRemovedDialog;
 import gui.bolscript.dialogs.PreferencesDialog;
 import gui.bolscript.dialogs.SaveChangesDialog;
-import gui.bolscript.sequences.SequencePanel;
+import gui.bolscript.packets.SequencePanel;
 import gui.bolscript.tables.CompositionTableModel;
 
 import java.awt.Dimension;

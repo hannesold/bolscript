@@ -1,4 +1,4 @@
-package gui.bolscript.sequences;
+package gui.bolscript.packets;
 
 import java.awt.Color;
 import java.awt.Dimension;
