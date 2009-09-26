@@ -1,4 +1,4 @@
-package gui.bolscript;
+package gui.bolscript.tasks;
 
 public interface TaskFactory {
 

@@ -1,5 +1,7 @@
-package gui.bolscript;
+package gui.bolscript.tasks;
 
+import gui.bolscript.BolscriptDocument;
+import gui.bolscript.composition.CompositionPanel;
 import gui.bolscript.tables.BolBasePanel;
 
 import java.awt.EventQueue;

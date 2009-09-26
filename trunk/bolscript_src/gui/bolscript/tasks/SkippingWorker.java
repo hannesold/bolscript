@@ -1,4 +1,4 @@
-package gui.bolscript;
+package gui.bolscript.tasks;
 
 import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
