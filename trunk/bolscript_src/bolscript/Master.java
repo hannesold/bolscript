@@ -1,19 +1,19 @@
 package bolscript;
 	
-import gui.bols.SequencePanel;
 import gui.bolscript.BolBaseFrame;
 import gui.bolscript.BrowserFrame;
 import gui.bolscript.CompositionFrame;
-import gui.bolscript.CompositionPanel;
 import gui.bolscript.EditorFrame;
 import gui.bolscript.FilterPanel;
 import gui.bolscript.SearchPanel;
 import gui.bolscript.actions.CloseEditor;
 import gui.bolscript.actions.OmmitChangesAndClose;
 import gui.bolscript.actions.SaveChanges;
+import gui.bolscript.composition.CompositionPanel;
 import gui.bolscript.dialogs.CouldNotBeRemovedDialog;
 import gui.bolscript.dialogs.PreferencesDialog;
 import gui.bolscript.dialogs.SaveChangesDialog;
+import gui.bolscript.sequences.SequencePanel;
 import gui.bolscript.tables.CompositionTableModel;
 
 import java.awt.Dimension;
