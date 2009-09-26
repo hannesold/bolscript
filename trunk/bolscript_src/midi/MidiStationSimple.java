@@ -1,6 +1,6 @@
 package midi;
 
-import gui.bols.BolPanel;
+import gui.bolscript.sequences.BolPanel;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
