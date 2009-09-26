@@ -1,5 +1,7 @@
-package gui.bolscript;
+package gui.bolscript.tasks;
 
+import gui.bolscript.EditorFrame;
+import gui.bolscript.composition.CompositionPanel;
 import bolscript.compositions.Composition;
 
 public class CompositionPanelRendererFactory implements TaskFactory {

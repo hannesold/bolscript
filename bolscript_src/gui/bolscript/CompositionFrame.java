@@ -2,6 +2,7 @@ package gui.bolscript;
 
 
 import gui.bolscript.actions.CloseEditor;
+import gui.bolscript.composition.CompositionPanel;
 import gui.menus.EditMenu;
 import gui.menus.FileMenu;
 import gui.menus.LanguageMenu;

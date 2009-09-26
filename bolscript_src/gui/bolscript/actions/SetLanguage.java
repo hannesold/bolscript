@@ -1,6 +1,6 @@
 package gui.bolscript.actions;
 
-import gui.bolscript.CompositionPanel;
+import gui.bolscript.composition.CompositionPanel;
 
 import java.awt.event.ActionEvent;
 

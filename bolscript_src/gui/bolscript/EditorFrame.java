@@ -1,8 +1,12 @@
 package gui.bolscript;
 
 import gui.bolscript.actions.CloseEditor;
+import gui.bolscript.composition.CompositionPanel;
 import gui.bolscript.dialogs.SaveChangesDialog;
 import gui.bolscript.tables.BolBasePanel;
+import gui.bolscript.tasks.BolBaseSearcher;
+import gui.bolscript.tasks.CompositionPanelRendererFactory;
+import gui.bolscript.tasks.SkippingWorker;
 import gui.menus.EditMenu;
 import gui.menus.FileMenu;
 import gui.menus.LanguageMenu;
