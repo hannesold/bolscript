@@ -6,8 +6,10 @@ import gui.bolscript.actions.IncreaseBundling;
 import gui.bolscript.actions.IncreaseFontSize;
 import gui.bolscript.actions.ResetFontSize;
 import gui.bolscript.actions.SetLanguage;
-import gui.bolscript.sequences.SequencePanel;
-import gui.bolscript.sequences.SequenceTitlePanel;
+import gui.bolscript.packets.CommentText;
+import gui.bolscript.packets.FootnoteText;
+import gui.bolscript.packets.SequencePanel;
+import gui.bolscript.packets.SequenceTitlePanel;
 import gui.menus.ViewerActions;
 import gui.playlist.HighlightablePanel;
 

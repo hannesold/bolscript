@@ -1,6 +1,6 @@
 package gui.bols;
 
-import gui.bolscript.sequences.SequencePanel;
+import gui.bolscript.packets.SequencePanel;
 
 import java.awt.Dimension;
 

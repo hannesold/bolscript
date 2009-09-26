@@ -1,5 +1,11 @@
-package gui.bolscript.sequences;
+package gui.bolscript.packets;
 
+import gui.bolscript.sequences.BolBundlePanel;
+import gui.bolscript.sequences.BolPanel;
+import gui.bolscript.sequences.BolPanelGeneral;
+import gui.bolscript.sequences.CellPanel;
+import gui.bolscript.sequences.FootnotePanel;
+import gui.bolscript.sequences.VibhagPanel;
 import gui.playlist.HighlightablePanel;
 
 import java.awt.Color;
