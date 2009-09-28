@@ -38,7 +38,7 @@ public class Rational implements Comparable<Rational> {
     /**
      * Regex Pattern: for parsing nonnegative rationals.
      */
-    private static Pattern nonNegativeRationalPattern = Pattern.compile(NONNEG_RATIONAL);
+    public static Pattern nonNegativeRationalPattern = Pattern.compile(NONNEG_RATIONAL);
 	
     private int num;   // the numerator
     private int den;   // the denominator

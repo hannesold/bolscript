@@ -3,7 +3,9 @@
  */
 package bols;
 
+import bolscript.packets.TextReference;
 import bolscript.sequences.Representable;
+import bolscript.sequences.RepresentableSequence;
 
 
 /**
@@ -14,6 +16,7 @@ public class Bol implements Representable, HasPlayingStyle {
 	protected BolName bolName;
 	protected PlayingStyle style; //speedindex?
 	protected boolean emphasized = false;
+	protected TextReference textReference;
 	
 	public Bol (BolName bolName, PlayingStyle style) {
 		this.bolName = bolName;
@@ -67,5 +70,23 @@ public class Bol implements Representable, HasPlayingStyle {
 	public void setEmphasized(boolean emphasized) {
 		this.emphasized = emphasized;
 	}
+
+	@Override
+	public TextReference getTextReference() {
+		return textReference;
+	}
+
+	@Override
+	public void setTextReference(TextReference textReference) {
+		this.textReference = textReference;
+	}
+	
+
+	@Override
+	public void addFlattenedToSequence(RepresentableSequence seq) {
+		seq.add(this);
+		
+	}
+	
 	
 }

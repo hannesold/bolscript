@@ -2,6 +2,8 @@ package bolscript.packets;
 
 import java.util.ArrayList;
 
+import bolscript.packets.types.PacketTypeFactory;
+
 /**
  * Wraps an Arraylist of Packet objects.
  * @author hannes
@@ -27,6 +29,21 @@ public class Packets extends ArrayList<Packet> {
 			}
 		}
 		return null;
+	}
+	
+	public Packet findReferencedBolPacket(Packet caller, String bolCandidate) {
+		int callerIndex = this.indexOf(caller);
+		if (callerIndex > 0) {
+			for (int i= callerIndex-1; i>=0; i--) {
+				Packet p = get(i);
+				if (p.getType() == PacketTypeFactory.BOLS &&
+						p.getKey().equalsIgnoreCase(bolCandidate)) {
+					return p;	
+				}
+			}
+		} 
+		return null;
+		
 	}
 	
 	
