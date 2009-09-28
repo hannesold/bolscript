@@ -34,7 +34,7 @@
 		<format property="TODAY" pattern="yyyy-MM-dd HH:mm:ss" />
 	</tstamp>
 
-	
+<taskdef classname="JFlex.anttask.JFlexTask" name="jflex" />
 <taskdef name="jarbundler" 
 	         classname="net.sourceforge.jarbundler.JarBundler" />
 	
@@ -43,6 +43,20 @@
 	classname="net.sf.launch4j.ant.Launch4jTask" 
 	classpath="${launch4j.dir}/launch4j.jar :${launch4j.dir}/lib/xstream.jar" />
 
+<target name="build_scanner">
+	<jflex
+		file="bolscript_src/bolscript/scanner/SequenceScanner.flex"
+		destdir="bolscript_src"
+		
+		verbose="true"
+		nobak="true"
+	/>
+	<javac
+	    srcdir="bolscript_src/bolscript/scanner/"
+	    destdir="bin"
+	/>
+
+</target>
 
 <target name="clean_all">
 	<delete file="${jar.completepath.mac}"/>

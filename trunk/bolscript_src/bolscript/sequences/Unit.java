@@ -1,31 +1,39 @@
 package bolscript.sequences;
 
+import static bolscript.sequences.Representable.BOL;
+import static bolscript.sequences.Representable.REFERENCED_BOL_PACKET;
+import static bolscript.sequences.Representable.SEQUENCE;
+import bolscript.packets.TextReference;
+
 public class Unit implements Representable {
 
-	private int type;
-	private Object contents;
+	protected int type;
+	protected Object obj;
+	protected TextReference textReference = null;
 	
-	public Unit(int type, Object contents) {
+
+	public Unit(int type, Object obj, TextReference textReference) {
 		super();
 		this.type = type;
-		this.contents = contents;
+		this.obj = obj;
+		this.textReference = textReference;
 	}
 	
 	public Unit() {
-		this.type = Representable.OTHER;
-		this.contents = "undetermined";
+		this.type = Representable.UNDEFINED;
+		this.obj = "undetermined";
 	}
 
-	public Object getContents() {
-		return contents;
+	public TextReference getTextReference() {
+		return textReference;
 	}
 
-	public void setContents(String Object) {
-		this.contents = contents;
+	public void setTextReference(TextReference textReference) {
+		this.textReference = textReference;
 	}
 
-	public void setType(int type) {
-		this.type = type;
+	public Object getObject() {
+		return obj;
 	}
 
 	public int getType() {
@@ -33,7 +41,32 @@ public class Unit implements Representable {
 	}
 	
 	public String toString() {
-		return contents.toString();
+		return obj.toString();
 	}
-
+	
+	public RepresentableSequence flatten(){
+		RepresentableSequence rep = new RepresentableSequence();
+		rep.add(this);
+		return rep;
+	}
+	/*
+	public boolean isComplex() {
+		return isComplex(type);
+	}
+	public static boolean isComplex(int type) {
+		
+		switch (type) {
+		case BOL:
+			return false;
+		case SEQUENCE:
+			return true;
+		case REFERENCED_BOL_PACKET:
+			return true;
+		}
+		return false;
+	}*/
+	
+	public void addFlattenedToSequence(RepresentableSequence seq) {
+		seq.add(this);
+	}
 }

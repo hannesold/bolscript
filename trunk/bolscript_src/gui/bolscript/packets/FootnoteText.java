@@ -34,7 +34,7 @@ public class FootnoteText extends JPanel {
 		
 		this.packet = p;
 		try {
-			commentUnit = new FootnoteUnit(p.getKey());
+			commentUnit = new FootnoteUnit(p.getKey(), null, "");
 		} catch (Exception e) {
 			commentUnit = null;
 		}

@@ -1,0 +1,103 @@
+package bolscript.scanner;
+
+//import java_cup.runtime.*;
+import static bolscript.sequences.Representable.*;
+
+/**
+ * This class is a simple example lexer.
+ */
+%%
+
+
+%class SequenceScanner
+%type SequenceToken
+%function nextToken
+%unicode
+%char
+%line
+
+%{
+  public SequenceScanner (String input) {
+  	this(new java.io.StringReader(input));
+  }
+  
+  private SequenceToken token(int type, String value) {
+    return new SequenceToken(type, value, yychar, yyline);
+  }
+%}
+
+LineTerminator = \r|\n|\r\n|\u2028|\u2029|\u000B|\u000C|\u0085
+InputCharacter = [^\r\n]
+Space = [\t\f\s]
+WhiteSpace     = {LineTerminator} | [ \t\f\s]
+
+/* comments */
+Comment = {TraditionalComment} | {EndOfLineComment} | {DocumentationComment}
+
+TraditionalComment   = "/*" [^*] ~"*/" | "/*" "*"+ "/"
+EndOfLineComment     = "//" {InputCharacter}* {LineTerminator}
+DocumentationComment = "/**" {CommentContent} "*"+ "/"
+CommentContent       = ( [^*] | \*+ [^/*] )*
+
+Identifier = [:jletter:] [:jletterdigit:]*
+
+DecIntegerLiteral = 0 | [1-9][0-9]*
+PosInteger = [1-9][0-9]*
+
+/* bolscript preUnits */
+ 
+
+BolCandidate = [A-WY-Za-wy-z]+ {Numeration}? ({WhiteSpace}* {Questioned})? ({WhiteSpace}* {Emphasized})?
+Numeration = [0-9]+ 
+Questioned = "?"+
+Emphasized = "!"+
+
+Footnote = "\"" [^\"]* "\""
+
+BracketOpen = "("
+
+BracketClosed = ")"
+
+Comma = "," ( {WhiteSpace} | "," )*
+
+RationalSpeed =  {Numerator} ( {WhiteSpace}* "/" {WhiteSpace}* {Denominator} )? ({WhiteSpace}* "!")?
+Numerator = {PosInteger}*
+Denominator = {PosInteger}*
+
+KardinalityModifier = {Multiplication} ( {WhiteSpace}* {Truncation} )* | {Truncation}
+Multiplication = "x" {WhiteSpace}* {PosInteger}
+Truncation = "<" {WhiteSpace}* {PosInteger}
+
+
+LineBreak = {LineTerminator} ({WhiteSpace} | {LineTerminator})*
+%state STRING
+
+%%
+
+/* keywords */
+<YYINITIAL> {
+
+  {Footnote}					{return token(FOOTNOTE, yytext());}
+    
+  {KardinalityModifier} 		{return token(KARDINALITY_MODIFIER, yytext());}
+  
+  {BolCandidate}                {return token(BOL_CANDIDATE, yytext());}
+  
+  {RationalSpeed}				{return token(SPEED,yytext());}
+  
+  {BracketOpen} 				{return token(BRACKET_OPEN,yytext());}
+  
+  {BracketClosed} 				{return token(BRACKET_CLOSED, yytext());}
+  
+  {Comma} 						{return token(COMMA, yytext());}
+  
+  {LineBreak}					{return token(LINE_BREAK, yytext());}
+  
+  /* whitespace */
+  {WhiteSpace}                   { /* ignore */ }
+}
+
+
+
+/* error fallback */
+.|\n                             { /* ignore */ }

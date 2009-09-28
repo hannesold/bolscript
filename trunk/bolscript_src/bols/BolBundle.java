@@ -1,6 +1,7 @@
 package bols;
 
 import basics.Rational;
+import bolscript.packets.TextReference;
 import bolscript.sequences.Representable;
 import bolscript.sequences.RepresentableSequence;
 
@@ -13,6 +14,7 @@ public class BolBundle implements Representable, HasPlayingStyle {
 	private RepresentableSequence sequence;
 	private BolNameBundle name;
 	private PlayingStyle style;
+	protected TextReference textReference;
 	
 	/**
 	 * Uses a copy of the given style.
@@ -61,4 +63,17 @@ public class BolBundle implements Representable, HasPlayingStyle {
 		return "style: " + this.style + ", name: " + this.name.toStringComplete();
 	}
 
+	public TextReference getTextReference() {
+		return textReference;
+	}
+
+	public void setTextReference(TextReference textReference) {
+		this.textReference = textReference;
+	}
+
+	@Override
+	public void addFlattenedToSequence(RepresentableSequence seq) {
+		seq.add(this);
+		
+	}
 }

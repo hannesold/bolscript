@@ -13,7 +13,7 @@ public class CommentUnitTest {
 	public void testCommentUnitString() throws Exception {
 		
 		String s = Reader.getFootnoteCode(0, 1, 2);
-		FootnoteUnit c = new FootnoteUnit(s);
+		FootnoteUnit c = new FootnoteUnit(s, null, "");
 		assertEquals(c.packetNr, 0);
 		assertEquals(c.footnoteNrInPacket, 1);
 		assertEquals(c.footnoteNrGlobal, 2);

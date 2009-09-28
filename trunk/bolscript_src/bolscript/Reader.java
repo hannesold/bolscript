@@ -374,7 +374,7 @@ public class Reader {
 	 * found in the input.
 	 * @see Packet, Packets
 	 */
-	protected static Packets splitIntoPackets(String input) {
+	public static Packets splitIntoPackets(String input) {
 
 		String lineBreaks = "[:\n\r\f]+";
 		input.replaceAll(lineBreaks, "\n");
@@ -553,7 +553,7 @@ public class Reader {
 
 		int i = 0;
 		Rational currentSpeed = new Rational(basicSpeed);
-		boolean colonAddedAlready = true;
+		boolean commaAddedAlready = true;
 
 		//seq.add(new Unit(Representable.SPEED, currentSpeed));
 
@@ -567,7 +567,7 @@ public class Reader {
 						currentSpeed = speedCandidate;
 					}
 
-					seq.add(new Unit(Representable.SPEED, currentSpeed));
+					seq.add(new Unit(Representable.SPEED, currentSpeed, null));
 				} catch (Exception e) {
 					debug.debug("Speed could not be read out of: '" + all[i]+"'");
 					e.printStackTrace();
@@ -591,30 +591,30 @@ public class Reader {
 					k--;
 				}
 			} else if (all[i].matches("\\[")) {
-				seq.add(new Unit(Representable.BRACKET_OPEN,all[i]));
-				if (!colonAddedAlready) {
-					seq.add(new Unit(Representable.COMMA,","));
-					colonAddedAlready = true;
+				seq.add(new Unit(Representable.BRACKET_OPEN,all[i], null));
+				if (!commaAddedAlready) {
+					seq.add(new Unit(Representable.COMMA,",", null));
+					commaAddedAlready = true;
 				}
 
 			} else if (all[i].matches("\\]")) {
-				seq.add(new Unit(Representable.BRACKET_CLOSED,all[i]));
-				if (!colonAddedAlready) {
-					seq.add(new Unit(Representable.COMMA,","));
-					colonAddedAlready = true;
+				seq.add(new Unit(Representable.BRACKET_CLOSED,all[i], null));
+				if (!commaAddedAlready) {
+					seq.add(new Unit(Representable.COMMA,",", null));
+					commaAddedAlready = true;
 				}
 
 			} else if (all[i].matches(",")) {
-				Representable c = new Unit(Unit.COMMA, ","); 
-				if (!colonAddedAlready) {
-					seq.add(new Unit(Representable.COMMA,","));
-					colonAddedAlready = true;
+				Representable c = new Unit(Unit.COMMA, ",", null); 
+				if (!commaAddedAlready) {
+					seq.add(new Unit(Representable.COMMA,",", null));
+					commaAddedAlready = true;
 				}				
 			}
 			else if (all[i].matches("FOOTNOTE_.*")) {
 
 				try {
-					Representable c = new FootnoteUnit(all[i]);
+					Representable c = new FootnoteUnit(all[i], null, "");
 					seq.add(c);	
 				} catch (Exception e) {
 					debug.debug(e.getMessage());
@@ -651,7 +651,7 @@ public class Reader {
 
 				seq.add(bol);
 
-				colonAddedAlready = false;
+				commaAddedAlready = false;
 
 			}
 			i++;
