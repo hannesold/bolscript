@@ -3,6 +3,7 @@ package bolscript.sequences;
 import static bolscript.sequences.Representable.BOL;
 import static bolscript.sequences.Representable.REFERENCED_BOL_PACKET;
 import static bolscript.sequences.Representable.SEQUENCE;
+import basics.Rational;
 import bolscript.packets.TextReference;
 
 public class Unit implements Representable {
@@ -49,24 +50,9 @@ public class Unit implements Representable {
 		rep.add(this);
 		return rep;
 	}
-	/*
-	public boolean isComplex() {
-		return isComplex(type);
-	}
-	public static boolean isComplex(int type) {
-		
-		switch (type) {
-		case BOL:
-			return false;
-		case SEQUENCE:
-			return true;
-		case REFERENCED_BOL_PACKET:
-			return true;
-		}
-		return false;
-	}*/
 	
-	public void addFlattenedToSequence(RepresentableSequence seq) {
+	public SpeedUnit addFlattenedToSequence(RepresentableSequence seq, SpeedUnit basicSpeedUnit, int currentDepth) {
 		seq.add(this);
+		return basicSpeedUnit;
 	}
 }

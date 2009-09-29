@@ -1,5 +1,6 @@
 package bolscript.sequences;
 
+import basics.Rational;
 import bolscript.packets.Packet;
 import bolscript.packets.TextReference;
 
@@ -20,8 +21,9 @@ public class ReferencedBolPacketUnit extends Unit implements Representable {
 		return "Packet_Reference{"+((Packet) obj).getKey()+"}";
 	}
 
-	public RepresentableSequence flatten() {
-		RepresentableSequence rep = ((RepresentableSequence) ((Packet) obj).getObject()).flatten();
-		return rep;
+	@Override
+	public SpeedUnit addFlattenedToSequence(RepresentableSequence seq, SpeedUnit basicSpeedUnit, int currentDepth) {
+		return ((RepresentableSequence) ((Packet) obj).getObject()).addFlattenedToSequence(seq, basicSpeedUnit, currentDepth);
 	}
+	
 }

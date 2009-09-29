@@ -40,6 +40,8 @@ public class Rational implements Comparable<Rational> {
      */
     public static Pattern nonNegativeRationalPattern = Pattern.compile(NONNEG_RATIONAL);
 	
+    public static Rational ONE = new Rational(1,1);
+    
     private int num;   // the numerator
     private int den;   // the denominator
 
@@ -68,6 +70,10 @@ public class Rational implements Comparable<Rational> {
     	this(integer, 1);
     }
     
+    /**
+     * Copy constructor.
+     * @param r
+     */
     public Rational(Rational r) {
     	this(r.num, r.den);
     }

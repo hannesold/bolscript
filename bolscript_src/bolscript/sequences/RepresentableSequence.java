@@ -3,6 +3,7 @@ package bolscript.sequences;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import basics.Debug;
 import basics.Rational;
 import bols.Bol;
 import bols.BolBase;
@@ -494,35 +495,93 @@ public class RepresentableSequence extends ArrayList<Representable> implements R
 		return s;
 	}
 
-	public RepresentableSequence flatten() {
+	
+	//public RepresentableSequence flatten(SpeedUnit basicSpeedUnit) {
+		//RepresentableSequen;
+	//}
+
+	public RepresentableSequence flatten(SpeedUnit basicSpeedUnit) {
+		return flatten(basicSpeedUnit, 0);
+	}
+	
+	public RepresentableSequence flatten(SpeedUnit basicSpeedUnit, int currentDepth) {
 		if (size()==0) return this;
 
-		int j=0;
+		SpeedUnit currentSpeedUnit = basicSpeedUnit;
+		//Rational currentSpeed = basicSpeedUnit.getSpeed();
+		
+		//the flattened version of this sequence
 		RepresentableSequence flat = new RepresentableSequence();
-
+		if (currentDepth == 0) {
+			flat.add(currentSpeedUnit);
+			Debug.temporary(this, "adding initial speed unit " + basicSpeedUnit);
+		}
+		currentDepth++;
+		
+		
+		
 		Representable current = this.get(0);
 		Representable next;
+		
 		for (int i=1; i < size(); i++) {
 			next = this.get(i);
-			if (current.getType() != Representable.KARDINALITY_MODIFIER) {
-				if (next.getType() != Representable.KARDINALITY_MODIFIER) {
-					current.addFlattenedToSequence(flat);
+			//Debug.temporary(this, "flat: " + flat.toStringAll());
+			Debug.temporary(this, "current: " + current + ", next: " + next);
+			if (current.getType() == Representable.SPEED) {
+				SpeedUnit s = (SpeedUnit) current;
+				
+				if (s.isAbsolute() &! currentSpeedUnit.getSpeed().equals(s.getSpeed())) {
+					//add new absolute speeds directly
+					Debug.temporary(this, "adding abs speed " + s);
+					flat.add(s);
+					currentSpeedUnit = s;
 				} else {
+					//add relative speeds by multiplying with base speed
+					Rational speedCandidate = s.getSpeed().times(basicSpeedUnit.getSpeed());
+					if (!currentSpeedUnit.getSpeed().equals(speedCandidate)) {
+						//only add if it differs from the current speed
+						SpeedUnit newSpeedUnit = new SpeedUnit(speedCandidate,true,s.getTextReference());
+						flat.add(newSpeedUnit);
+						Debug.temporary(this, "adding (multiplied rel) speed " + s);
+						currentSpeedUnit = newSpeedUnit;
+					}
+				}
+				
+			} else 	if (current.getType() != Representable.KARDINALITY_MODIFIER) {
+				if (next.getType() != Representable.KARDINALITY_MODIFIER) {
+					//add the flattened current representable to the flat sequence
+					current.addFlattenedToSequence(flat, currentSpeedUnit, currentDepth);
+				} else { 
+					//the current representable is affected by the upcoming kardinality modifier
 					KardinalityModifierUnit kard = (KardinalityModifierUnit) next;
 
+					//insert flattened as often as multiplication is wanted
 					for (int k=1; k <= kard.getMultiplication();k++) {
-						current.addFlattenedToSequence(flat);
+						current.addFlattenedToSequence(flat, currentSpeedUnit, currentDepth);
 					}
+					//truncate
 					if (kard.getTruncation()>0) {
 						flat.truncateFromEnd(kard.getTruncation());
-					}
-
+					}		
+				}
+				
+				if (!flat.lastAbsoluteSpeedUnit(basicSpeedUnit).getSpeed()
+						.equals(currentSpeedUnit.getSpeed())) {
+					Debug.temporary(this, "After adding " +current+" last abs speed in flat is " + flat.lastAbsoluteSpeedUnit(basicSpeedUnit) +
+							", currentSpeed before was " + currentSpeedUnit);
+					
+					//if the last absolute speed occurring in the new
+					//version of the flat sequence differs from the speed before
+					//add the previous speed
+					//this can only happen, when the inserted flat element is
+					//complex enough to contain speeds
+					flat.add(currentSpeedUnit);
 				}
 			}
 			current = next;	
 		}
 		if (current.getType() != Representable.KARDINALITY_MODIFIER) {
-			current.addFlattenedToSequence(flat);
+			current.addFlattenedToSequence(flat, currentSpeedUnit, currentDepth);
 		}
 
 		return flat;
@@ -581,8 +640,27 @@ public class RepresentableSequence extends ArrayList<Representable> implements R
 	}
 
 	@Override
-	public void addFlattenedToSequence(RepresentableSequence seq) {
-		seq.addAll(this.flatten());
+	public SpeedUnit addFlattenedToSequence(RepresentableSequence seq, SpeedUnit basicSpeedUnit, int currentDepth) {
+		RepresentableSequence flat = this.flatten(basicSpeedUnit, currentDepth);
+		seq.addAll(flat);
+		return flat.lastAbsoluteSpeedUnit(basicSpeedUnit);
+	}
+	
+	/**
+	 * This is intended for use on flat sequences with absolute speeds ONLY !
+	 * @param basicSpeed
+	 * @return The last detected absolute speed. If none was found the given basicSpeed.
+	 */
+	public SpeedUnit lastAbsoluteSpeedUnit(SpeedUnit basicSpeedUnit) {
+		for (int i=size()-1; i >= 0; i--) {
+			if (get(i).getType() == Representable.SPEED) {
+				SpeedUnit s = (SpeedUnit) get(i);
+				if (s.isAbsolute()) {
+					return s;
+				} 
+			}
+		}
+		return basicSpeedUnit;
 	}
 
 

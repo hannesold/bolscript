@@ -38,7 +38,7 @@ public class KardinalityModifierUnit extends Unit implements Representable {
 		Matcher m = pattern.matcher(input.text);
 		if (m.find()) {
 			int mult = 1;
-			int trunc = 2;
+			int trunc = 0;
 			if (m.group(1) != null) {
 				mult = Integer.parseInt(m.group(1));
 			}
