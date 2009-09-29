@@ -22,7 +22,7 @@ public class SpeedUnit extends Unit implements Representable{
     private static Pattern nonNegativeRationalPattern = Pattern.compile(NONNEG_RATIONAL_WITH_SPACES);
     
 	private boolean absolute;
-	
+		
 	public SpeedUnit(Rational r, boolean absolute, TextReference textReference) {
 		super(Representable.SPEED, r, textReference);
 		this.absolute = absolute;
@@ -36,6 +36,10 @@ public class SpeedUnit extends Unit implements Representable{
 		return obj.toString() + ((absolute)?"!":"");
 	}
 		
+	public Rational getSpeed() {
+		return (Rational) obj;
+	}
+	
 	public static Representable parseToken(SequenceToken input) {
 		Matcher m = nonNegativeRationalPattern.matcher(input.text);
     	if (m.find()) {
@@ -53,5 +57,7 @@ public class SpeedUnit extends Unit implements Representable{
     		return new FailedUnit(input, "");
     	}
 	}
+
+
 	
 }

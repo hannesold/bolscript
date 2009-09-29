@@ -4,6 +4,7 @@ import basics.Rational;
 import bolscript.packets.TextReference;
 import bolscript.sequences.Representable;
 import bolscript.sequences.RepresentableSequence;
+import bolscript.sequences.SpeedUnit;
 
 /**
  * BolBundle is a short subsequence with a name in each language (stored in a bolNameBundle)
@@ -72,8 +73,9 @@ public class BolBundle implements Representable, HasPlayingStyle {
 	}
 
 	@Override
-	public void addFlattenedToSequence(RepresentableSequence seq) {
+	public SpeedUnit addFlattenedToSequence(RepresentableSequence seq, SpeedUnit basicSpeedUnit, int currentDepth) {
 		seq.add(this);
+		return basicSpeedUnit;
 		
 	}
 }

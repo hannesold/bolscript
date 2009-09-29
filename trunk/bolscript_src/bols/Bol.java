@@ -3,9 +3,11 @@
  */
 package bols;
 
+import basics.Rational;
 import bolscript.packets.TextReference;
 import bolscript.sequences.Representable;
 import bolscript.sequences.RepresentableSequence;
+import bolscript.sequences.SpeedUnit;
 
 
 /**
@@ -83,8 +85,9 @@ public class Bol implements Representable, HasPlayingStyle {
 	
 
 	@Override
-	public void addFlattenedToSequence(RepresentableSequence seq) {
+	public SpeedUnit addFlattenedToSequence(RepresentableSequence seq, SpeedUnit basicSpeedUnit, int currentDepth) {
 		seq.add(this);
+		return basicSpeedUnit;
 		
 	}
 	

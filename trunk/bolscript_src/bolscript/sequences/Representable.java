@@ -1,5 +1,6 @@
 package bolscript.sequences;
 
+import basics.Rational;
 import bolscript.packets.TextReference;
 
 public interface Representable {
@@ -26,9 +27,14 @@ public interface Representable {
 	void setTextReference(TextReference textReference);
 	
 	/**
-	 * Add a flat version of this Representable to the end of the given sequence.
-	 * @param seq The Representable Sequence.
+	 * Add a flat version of this Representable to the end of the given sequence,
+	 * internal relative speeds are made absolute by multiplying with the given basicSpeed 
+	 * @param seq The Representable Sequence to which the flattened Representable[Sequence] shall be added.
+	 * @param basicSpeedUnit the basic speed before this representable
+	 * @param currentDepth TODO
+	 * @return TODO
+	 * @return Returns the speedUnit active at the end of the flattened Representable[Sequence]Ê
 	 */
-	void addFlattenedToSequence(RepresentableSequence seq);
+	SpeedUnit addFlattenedToSequence(RepresentableSequence seq, SpeedUnit basicSpeedUnit, int currentDepth);
 	
 }

@@ -60,16 +60,23 @@ public class RepresentableSequenceTest {
 	
 	@Test
 	public void testFlattening() {
-		String input = "Dha Ge ( Dhin Na )x2<2";
+		String input = "Dha Ge ( 2 Dhin (2Dha Ge)x2 Na )x2<1";
 		SequenceParser parser = new SequenceParser(0, null);
 		RepresentableSequence seq = parser.parseSequence(null, input);
 		Debug.temporary(this, "before flattening: " + seq.toStringAll());
-		RepresentableSequence flat = seq.flatten();
+		RepresentableSequence flat = seq.flatten(new SpeedUnit(new Rational(2),true,null), 0);
 		Debug.temporary(this, "after flattening: " + flat.toStringAll());
+		
+		input = "Dha 2! x3<1 \n Ge ( 2 Dhin 3! Na )x2<2";
+		seq = parser.parseSequence(null, input);
+		Debug.temporary(this, "before flattening: " + seq.toStringAll());
+		flat = seq.flatten(new SpeedUnit(Rational.ONE,true,null));
+		Debug.temporary(this, "after flattening: " + flat.toStringAll());
+		//add relative speeds
 		
 	}
 	
-	@Test 
+	@Ignore 
 	public void testTruncating() {
 		String input = "Dha , Ge ( Dhin Na ) Dha Dha Tun Na ";
 		SequenceParser parser = new SequenceParser(0, null);
@@ -91,13 +98,30 @@ public class RepresentableSequenceTest {
 		expected = new int []{1,2,3,4,5,6};
 		
 		for (int i=0; i < tried.length; i++) {
-			RepresentableSequence seq = parser.parseSequence(null, input).flatten();
+			RepresentableSequence seq = parser.parseSequence(null, input).flatten(new SpeedUnit(Rational.ONE,true, null), 0);
 			//Debug.temporary(this, "before truncating: " + seq.toStringAll());
 			int trunced = seq.truncateFromEnd(tried[i]);
 			//Debug.temporary(this, "after truncating ("+trunced+"/"+tried[i]+"): " + seq.toStringAll());
 			assertEquals(expected[i],trunced);
 		}
+	}
+	
+	@Ignore
+	public void testLastAbsSpeedUnit() {
+		String[] input = new String[]{"Dha , Ge ( Dhin Na ) Dha Dha Tun Na ",
+				"Dha Ne Dha 4!",
+				"Dha 2! Ne Dha",
+				"Dha 3!, 4! Ge "};
+		SequenceParser parser = new SequenceParser(0, null);
+		int[] externalSpeeds= new int[] {1,1,1,1};
 		
+		int[] expectedLastSpeeds = new int []{1,4,2,4};
+		
+		for (int i=0; i < input.length; i++) {
+			RepresentableSequence seq = parser.parseSequence(null, input[i]);
+			SpeedUnit last = seq.lastAbsoluteSpeedUnit(new SpeedUnit(new Rational(externalSpeeds[i]),true,null));
+			assertEquals(new Rational(expectedLastSpeeds[i]), last.getSpeed());
+		}
 	}
 
 }

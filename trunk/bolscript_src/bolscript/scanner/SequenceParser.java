@@ -49,32 +49,32 @@ public class SequenceParser {
 	public RepresentableSequence parseSequence(Packet currentPacket, String input) {
 		RepresentableSequence seq = parseUnits(currentPacket, input);
 		buildSubsequences(seq);
-
+		packWohleLinesWithKardinalityModifier(seq);
 		return seq;
 	}
 
-	public void buildSubsequences(RepresentableSequence seq) {
-
+	public int buildSubsequences(RepresentableSequence seq) {
 		RepresentableSequence result = buildInnermostSubsequence(seq);
-		int endlessProhibitor = 0;
+		int counter = 0;
 
-		while (result != null && endlessProhibitor < 1000) {
-			endlessProhibitor++;
+		while (result != null && counter < 1000) {
+			counter++;
 			result = buildInnermostSubsequence(seq);
 
 		}
+		return counter;
 	}
 
 
-	public void packWohleLinesWithKardinalityModifier(RepresentableSequence seq) {
-		RepresentableSequence result = null;
-		int endlessProhibitor = 0;
+	public int packWohleLinesWithKardinalityModifier(RepresentableSequence seq) {
+		RepresentableSequence result = packOneWholeLineWithKardinalityModifier(seq);
+		int counter = 0;
 		
-		
-		while (result != null && endlessProhibitor < 1000) {
-			endlessProhibitor++;
+		while (result != null && counter < 1000) {
+			counter++;
 			result = packOneWholeLineWithKardinalityModifier(seq);
 		}
+		return counter;
 	}
 	
 	public RepresentableSequence packOneWholeLineWithKardinalityModifier(RepresentableSequence seq) {
