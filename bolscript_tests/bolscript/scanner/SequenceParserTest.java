@@ -179,15 +179,9 @@ public class SequenceParserTest {
 		case 8:
 			return r.getType() == LINE_BREAK;
 		case 9:
-			return r.getType() == BOL;
+			RepresentableSequence seq7 = (RepresentableSequence) r;
+			return seq7.size() == 4;
 		case 10:
-			return r.getType() == BOL;
-		case 11:
-			RepresentableSequence seq8 = (RepresentableSequence) r;
-			return seq8.size() == 6;
-		case 12:
-			return r.getType() == BOL;
-		case 13:
 			return r.getType() == KARDINALITY_MODIFIER;
 		default:
 			return false;

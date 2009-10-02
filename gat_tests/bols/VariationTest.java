@@ -147,10 +147,10 @@ public class VariationTest extends TestCase {
 	
 	public void testNewVariationFromRepresentableSeq () {
 		RepresentableSequence r = new RepresentableSequence();
-		r.add(new Bol(bb.getBolName("Dha"), new PlayingStyle(1d)));
-		r.add(new Bol(bb.getBolName("Dhin"), new PlayingStyle(1d)));
-		r.add(new Bol(bb.getBolName("Dhin"), new PlayingStyle(1d)));
-		r.add(new Bol(bb.getBolName("Dha"), new PlayingStyle(1d)));
+		r.add(new Bol(bb.getBolName("Dha"), new PlayingStyle(1d), null, false));
+		r.add(new Bol(bb.getBolName("Dhin"), new PlayingStyle(1d), null, false));
+		r.add(new Bol(bb.getBolName("Dhin"), new PlayingStyle(1d), null, false));
+		r.add(new Bol(bb.getBolName("Dha"), new PlayingStyle(1d), null, false));
 		
 		Variation var = new Variation(r);
 		var.addSubSequence(0, 4);

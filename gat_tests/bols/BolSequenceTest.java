@@ -23,33 +23,33 @@ public class BolSequenceTest extends TestCase {
 	public void testDurationStuff () throws Exception{
 
 		BolSequence seq1 = new BolSequence();
-		seq1.addBol(new Bol(bb.getBolName("Dha"), new PlayingStyle(1,1)));
-		seq1.addBol(new Bol(bb.getBolName("Ge"), new PlayingStyle(1,1)));
-		seq1.addBol(new Bol(bb.getBolName("Dha"), new PlayingStyle(1,1)));
-		seq1.addBol(new Bol(bb.getBolName("-"), new PlayingStyle(1,1)));
+		seq1.addBol(new Bol(bb.getBolName("Dha"), new PlayingStyle(1,1), null, false));
+		seq1.addBol(new Bol(bb.getBolName("Ge"), new PlayingStyle(1,1), null, false));
+		seq1.addBol(new Bol(bb.getBolName("Dha"), new PlayingStyle(1,1), null, false));
+		seq1.addBol(new Bol(bb.getBolName("-"), new PlayingStyle(1,1), null, false));
 		
 		assertEquals("duration of seq1 should be 4", 4.0d, seq1.getDuration());
 		
 		
 		seq1 = new BolSequence();
-		seq1.addBol(new Bol(bb.getBolName("Dha"), new PlayingStyle(1,1)));
-		seq1.addBol(new Bol(bb.getBolName("Ge"), new PlayingStyle(1,1)));
-		seq1.addBol(new Bol(bb.getBolName("Dha"), new PlayingStyle(1,1)));
+		seq1.addBol(new Bol(bb.getBolName("Dha"), new PlayingStyle(1,1), null, false));
+		seq1.addBol(new Bol(bb.getBolName("Ge"), new PlayingStyle(1,1), null, false));
+		seq1.addBol(new Bol(bb.getBolName("Dha"), new PlayingStyle(1,1), null, false));
 		
 		assertEquals("duration should be 3", 3.0d, seq1.getDuration());
 		
 		seq1 = new BolSequence();
-		seq1.addBol(new Bol(bb.getBolName("Dha"), new PlayingStyle(2,1)));
-		seq1.addBol(new Bol(bb.getBolName("Ge"), new PlayingStyle(2,1)));
-		seq1.addBol(new Bol(bb.getBolName("Dha"), new PlayingStyle(2,1)));
-		seq1.addBol(new Bol(bb.getBolName("-"), new PlayingStyle(2,1)));		
+		seq1.addBol(new Bol(bb.getBolName("Dha"), new PlayingStyle(2,1), null, false));
+		seq1.addBol(new Bol(bb.getBolName("Ge"), new PlayingStyle(2,1), null, false));
+		seq1.addBol(new Bol(bb.getBolName("Dha"), new PlayingStyle(2,1), null, false));
+		seq1.addBol(new Bol(bb.getBolName("-"), new PlayingStyle(2,1), null, false));		
 		
 		assertEquals("duration should be 2.0f", 2.0d, seq1.getDuration());		
 		
 		seq1 = new BolSequence();
-		seq1.addBol(new Bol(bb.getBolName("Dha"), new PlayingStyle(2,1)));
-		seq1.addBol(new Bol(bb.getBolName("Ge"), new PlayingStyle(2,1)));
-		seq1.addBol(new Bol(bb.getBolName("Dha"), new PlayingStyle(2,1)));
+		seq1.addBol(new Bol(bb.getBolName("Dha"), new PlayingStyle(2,1), null, false));
+		seq1.addBol(new Bol(bb.getBolName("Ge"), new PlayingStyle(2,1), null, false));
+		seq1.addBol(new Bol(bb.getBolName("Dha"), new PlayingStyle(2,1), null, false));
 		
 		assertEquals("duration should be 1.5f", 1.5d, seq1.getDuration());				
 		
@@ -57,18 +57,18 @@ public class BolSequenceTest extends TestCase {
 	@Test	
 	public void testCopyPausesMerged() throws Exception {
 		BolSequence seq1 = new BolSequence();
-		seq1.addBol(new Bol(bb.getBolName("Dha"), new PlayingStyle(1,1)));
-		seq1.addBol(new Bol(bb.getBolName("Ge"), new PlayingStyle(1,1)));
-		seq1.addBol(new Bol(bb.getBolName("Dha"), new PlayingStyle(1,1)));
-		seq1.addBol(new Bol(bb.getBolName("-"), new PlayingStyle(1,1)));
+		seq1.addBol(new Bol(bb.getBolName("Dha"), new PlayingStyle(1,1), null, false));
+		seq1.addBol(new Bol(bb.getBolName("Ge"), new PlayingStyle(1,1), null, false));
+		seq1.addBol(new Bol(bb.getBolName("Dha"), new PlayingStyle(1,1), null, false));
+		seq1.addBol(new Bol(bb.getBolName("-"), new PlayingStyle(1,1), null, false));
 		
 		BolSequence seq2 = new BolSequence();
-		seq2.addBol(new Bol(bb.getBolName("-"), new PlayingStyle(1,1)));		
-		seq2.addBol(new Bol(bb.getBolName("Dha"), new PlayingStyle(1,1)));
-		seq2.addBol(new Bol(bb.getBolName("-"), new PlayingStyle(2,1)));
-		seq2.addBol(new Bol(bb.getBolName("-"), new PlayingStyle(2,1)));
-		seq2.addBol(new Bol(bb.getBolName("Dha"), new PlayingStyle(1,1)));
-		seq2.addBol(new Bol(bb.getBolName("-"), new PlayingStyle(1,1)));		
+		seq2.addBol(new Bol(bb.getBolName("-"), new PlayingStyle(1,1), null, false));		
+		seq2.addBol(new Bol(bb.getBolName("Dha"), new PlayingStyle(1,1), null, false));
+		seq2.addBol(new Bol(bb.getBolName("-"), new PlayingStyle(2,1), null, false));
+		seq2.addBol(new Bol(bb.getBolName("-"), new PlayingStyle(2,1), null, false));
+		seq2.addBol(new Bol(bb.getBolName("Dha"), new PlayingStyle(1,1), null, false));
+		seq2.addBol(new Bol(bb.getBolName("-"), new PlayingStyle(1,1), null, false));		
 		
 		BolSequence seq3 = seq1.getCopyWithMergedPauses(bb);
 		assertEquals("duration of seq3 should be same as of seq1", seq3.getDuration(), seq1.getDuration());	
@@ -99,10 +99,10 @@ public class BolSequenceTest extends TestCase {
 	@Test
 	public void testBolSequenceFromRepresentableSeq() {
 		RepresentableSequence r = new RepresentableSequence();
-		r.add(new Bol(bb.getBolName("Dha"), new PlayingStyle(1d)));
-		r.add(new Bol(bb.getBolName("Dhin"), new PlayingStyle(1d)));
-		r.add(new Bol(bb.getBolName("Dhin"), new PlayingStyle(1d)));
-		r.add(new Bol(bb.getBolName("Dha"), new PlayingStyle(1d)));
+		r.add(new Bol(bb.getBolName("Dha"), new PlayingStyle(1d), null, false));
+		r.add(new Bol(bb.getBolName("Dhin"), new PlayingStyle(1d), null, false));
+		r.add(new Bol(bb.getBolName("Dhin"), new PlayingStyle(1d), null, false));
+		r.add(new Bol(bb.getBolName("Dha"), new PlayingStyle(1d), null, false));
 		
 		BolSequence bs = new BolSequence(r);
 		assertEquals(4, bs.getLength());

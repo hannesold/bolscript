@@ -6,7 +6,7 @@ import static bolscript.sequences.Representable.SEQUENCE;
 import basics.Rational;
 import bolscript.packets.TextReference;
 
-public class Unit implements Representable {
+public abstract class Unit implements Representable {
 
 	protected int type;
 	protected Object obj;

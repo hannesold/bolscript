@@ -17,7 +17,6 @@ import java.util.Collections;
 import basics.Debug;
 import basics.FileReadException;
 import basics.Rational;
-import bols.BolBase;
 import bols.BolName;
 import bols.tals.Tal;
 import bols.tals.TalBase;
@@ -174,8 +173,8 @@ public class Composition implements DataStatePosessor{
 				if (p.getType() == PacketTypeFactory.BOLS) {
 					if (p.getObject() != null) {
 						RepresentableSequence compact = ((RepresentableSequence) p.getObject()).getCompact();
-						addSearchString(compact.toString(true, false, false, false, false, false, BolName.EXACT));
-						addSearchString(compact.toString(true, false, false, false, false, false, BolName.SIMPLE));
+						addSearchString(compact.toString(RepresentableSequence.SHOW_ALL, BolName.EXACT));
+						addSearchString(compact.toString(RepresentableSequence.SHOW_ALL, BolName.SIMPLE));
 					}
 				}
 
@@ -239,7 +238,7 @@ public class Composition implements DataStatePosessor{
 
 	public void extractInfoFromRawData() {
 		if (rawData != null) {
-			this.packets = Reader.compilePacketsFromString(rawData, BolBase.standard());
+			this.packets = Reader.compilePacketsFromString(rawData);
 			extractInfoFromPackets(this.packets);
 		} else {
 			Debug.critical(this, "the rawdata is empty, will not be processed");

@@ -83,7 +83,7 @@
 </target>
 	
 <target name="zip_resources" depends="generate_default_tablafolder_from_my_tablafolder">
-<!-- zip alll resources that shall be bundled in the distributed jar as resources.zip -->
+<!-- zip all resources that shall be bundled in the distributed jar as resources.zip -->
 	<zip destfile="${resources.zip.completepath}" 
 		basedir="${dir.resources}" excludes="**/*.icns">
 	</zip>

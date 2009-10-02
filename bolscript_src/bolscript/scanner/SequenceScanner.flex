@@ -47,7 +47,7 @@ PosInteger = [1-9][0-9]*
 /* bolscript preUnits */
  
 
-BolCandidate = [A-WY-Za-wy-z]+ {Numeration}? ({WhiteSpace}* {Questioned})? ({WhiteSpace}* {Emphasized})?
+BolCandidate = {Pause} | ( [A-WY-Za-wy-z]+ {Numeration}? ({WhiteSpace}* {Questioned})? ({WhiteSpace}* {Emphasized})? )
 Numeration = [0-9]+ 
 Questioned = "?"+
 Emphasized = "!"+
@@ -59,6 +59,8 @@ BracketOpen = "("
 BracketClosed = ")"
 
 Comma = "," ( {WhiteSpace} | "," )*
+
+Pause = "-"
 
 RationalSpeed =  {Numerator} ( {WhiteSpace}* "/" {WhiteSpace}* {Denominator} )? ({WhiteSpace}* "!")?
 Numerator = {PosInteger}*

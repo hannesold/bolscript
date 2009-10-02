@@ -1,6 +1,15 @@
 package bolscript.scanner;
 
-import static bolscript.sequences.Representable.*;
+import static bolscript.sequences.Representable.BOL_CANDIDATE;
+import static bolscript.sequences.Representable.BRACKET_CLOSED;
+import static bolscript.sequences.Representable.BRACKET_OPEN;
+import static bolscript.sequences.Representable.COMMA;
+import static bolscript.sequences.Representable.FOOTNOTE;
+import static bolscript.sequences.Representable.KARDINALITY_MODIFIER;
+import static bolscript.sequences.Representable.LINE_BREAK;
+import static bolscript.sequences.Representable.REFERENCED_BOL_PACKET;
+import static bolscript.sequences.Representable.SEQUENCE;
+import static bolscript.sequences.Representable.SPEED;
 
 import java.io.IOException;
 import java.util.regex.Matcher;
@@ -14,14 +23,17 @@ import bolscript.packets.Packet;
 import bolscript.packets.Packets;
 import bolscript.packets.TextReference;
 import bolscript.sequences.BolCandidateUnit;
+import bolscript.sequences.BracketClosedUnit;
+import bolscript.sequences.BracketOpenUnit;
+import bolscript.sequences.CommaUnit;
 import bolscript.sequences.FailedUnit;
 import bolscript.sequences.FootnoteUnit;
 import bolscript.sequences.KardinalityModifierUnit;
+import bolscript.sequences.LineBreakUnit;
 import bolscript.sequences.ReferencedBolPacketUnit;
 import bolscript.sequences.Representable;
 import bolscript.sequences.RepresentableSequence;
 import bolscript.sequences.SpeedUnit;
-import bolscript.sequences.Unit;
 
 /**
  * Generates Real representables from a Scanners Tokens
@@ -219,15 +231,15 @@ public class SequenceParser {
 				break;
 
 			case COMMA:
-				seq.add(new Unit(token.type, ",", token.textReference));
+				seq.add(new CommaUnit(token.textReference));
 				break;				
 
 			case BRACKET_OPEN:
-				seq.add(new Unit(token.type, "(", token.textReference));
+				seq.add(new BracketOpenUnit(token.textReference));
 				break;
 
 			case BRACKET_CLOSED:
-				seq.add(new Unit(token.type, ")", token.textReference));
+				seq.add(new BracketClosedUnit(token.textReference));
 				break;
 
 			case KARDINALITY_MODIFIER:
@@ -235,11 +247,11 @@ public class SequenceParser {
 				break;
 
 			case LINE_BREAK:
-				seq.add(new Unit(token.type, "\n", token.textReference));
+				seq.add(new LineBreakUnit(token.textReference));
 				break;
 
 			default:
-				seq.add(new Unit(token.type,token.text,token.textReference));
+				seq.add(new FailedUnit(token, "Could not be parsed."));
 			}
 
 			try {
@@ -288,7 +300,7 @@ public class SequenceParser {
 
 				double velocity = (emphasized) ? 1.2 : 1;
 
-				Bol bol = new Bol(bolName, new PlayingStyle(1, velocity));
+				Bol bol = new Bol(bolName, new PlayingStyle(1, velocity), null, emphasized);
 				bol.setEmphasized(emphasized);
 				bol.setTextReference(token.textReference);
 

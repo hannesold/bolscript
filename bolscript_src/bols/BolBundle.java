@@ -35,6 +35,10 @@ public class BolBundle implements Representable, HasPlayingStyle {
 		return name;
 	}
 	
+	public BolBundle getCopy() {
+		return new BolBundle(sequence, name, style.getCopy());
+	}
+	
 	public int getType() {
 		return BUNDLE;
 	}
