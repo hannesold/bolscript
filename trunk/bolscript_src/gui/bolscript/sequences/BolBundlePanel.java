@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.event.MouseListener;
 
 import bols.BolBundle;
+import bolscript.sequences.RepresentableSequence;
 
 public class BolBundlePanel extends BolPanelGeneral implements MouseListener{
 
@@ -19,7 +20,7 @@ public BolBundlePanel(BolBundle bundle, Dimension size, boolean isEmphasized, in
 		tip.append("Played at " + bundle.getPlayingStyle().getSpeed() + " bols per beat.<br>");
 		tip.append("Bundle : ");
 		
-		tip.append(bundle.getSequence().toString(true, false, false, true, false, false, language));
+		tip.append(bundle.getSequence().toString(RepresentableSequence.SHOW_ALL, language));
 		tip.append("<br>Speed within this bundle: " + bundle.getSequence().getMaxSpeedByCheckingBols());
 		tip.append("</html>");
 		this.setToolTipText(tip.toString());

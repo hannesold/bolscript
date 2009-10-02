@@ -30,7 +30,7 @@ public class BolTester extends basics.Basic{
 			BolName bolName = bolBase.getBolName(sequenceAsArray[i]);
 			//out("looked for " + bolName);
 			if (bolName != null) {
-				bol = new Bol(bolName, new PlayingStyle(1,1)); 
+				bol = new Bol(bolName, new PlayingStyle(1,1), null, false); 
 				bolSeq1.addBol(bol);
 				System.out.println(bol.toString() + " added");
 			} else {
@@ -76,7 +76,7 @@ public class BolTester extends basics.Basic{
 				if (allBolNames.get(j).toString().equals((String)sequenceAsArray[i])) {
 					
 					//make Bol with speed = 1
-					currentBol = new Bol((BolName)allBolNames.get(j), new PlayingStyle(1,1));
+					currentBol = new Bol((BolName)allBolNames.get(j), new PlayingStyle(1,1), null, false);
 					found = true;
 					//break;
 				}

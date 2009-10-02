@@ -40,6 +40,7 @@ public class SequencePanel extends HighlightablePanel  {
 	public static Color cBackground = Color.WHITE;
 	public static Color cDistinctBackground = new Color(200,220,200);
 	public static Color cBorder = (new JPanel()).getBackground().darker();
+	public static Color cHighlight = new Color (68, 117, 207);
 	protected static int cellLayer = 2;
 	protected static int bolLayer = 3;
 	protected static int vibhagLayer = 4;
@@ -124,9 +125,9 @@ public class SequencePanel extends HighlightablePanel  {
 		if (highlighted!=this.highlighted) {
 			this.highlighted = highlighted;
 			if (highlighted ){
-				this.setBorder(BorderFactory.createLineBorder(Color.GREEN, 5));
+				this.setBorder(BorderFactory.createLineBorder(cHighlight, 5));
 			} else {
-				this.setBorder(BorderFactory.createLineBorder(cBackground, 2));
+				this.setBorder(BorderFactory.createLineBorder(cBorder, 2));
 			}
 		}
 		

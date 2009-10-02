@@ -38,17 +38,20 @@ import javax.swing.border.LineBorder;
 
 import basics.Debug;
 import basics.GUI;
+import basics.Rational;
 import bols.BolName;
 import bols.BundlingDepthToSpeedMap;
 import bols.tals.Tal;
 import bols.tals.TalBase;
 import bols.tals.Teental;
+import bolscript.Reader;
 import bolscript.compositions.Composition;
 import bolscript.config.Config;
 import bolscript.packets.Packet;
 import bolscript.packets.Packets;
 import bolscript.packets.types.PacketTypeFactory;
 import bolscript.sequences.RepresentableSequence;
+import bolscript.sequences.SpeedUnit;
 
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
@@ -364,11 +367,17 @@ public class CompositionPanel extends JLayeredPane {
 		pageBreakPanels.clear();
 		packetMap.clear();
 
+		Packet currentSpeedPacket = new Packet("Speed","1",PacketTypeFactory.SPEED, false);
+		currentSpeedPacket.setObject(new Rational(1));		
+		Rational currentSpeed = (Rational) currentSpeedPacket.getObject();
+		
 		if (packets != null) {
 			Tal tal = Teental.getDefaultTeental();
 			for (Packet p : packets) {
-				//System.out.println("checking p");
-				if (p.getType() == PacketTypeFactory.TAL) {
+				if (p.getType() == PacketTypeFactory.SPEED) {
+					currentSpeedPacket = p;
+					currentSpeed = (Rational) p.getObject();
+				} else if (p.getType() == PacketTypeFactory.TAL) {
 					//tal = (Tal) p.getObject();
 					tal = talBase.getTalFromName((String) p.getObject());
 
@@ -412,8 +421,15 @@ public class CompositionPanel extends JLayeredPane {
 
 						Dimension variationDim = new Dimension(renderingWidth, this.getSize().height);			
 
-
-						RepresentableSequence seq = ((RepresentableSequence) p.getObject()).getBundled(bundlingMap,bundlingDepth, true);
+						RepresentableSequence seq;
+						if (Reader.NEWPARSEMODE) {
+						 seq = ((RepresentableSequence) p.getObject())
+								.flatten(new SpeedUnit(currentSpeed, true, currentSpeedPacket.getTextReference()))
+								.getBundled(bundlingMap,bundlingDepth, true);
+						}else {
+							seq = ((RepresentableSequence) p.getObject()).getBundled(bundlingMap,bundlingDepth, true);
+						}
+						
 						//Debug.temporary(this, "showing seq:" + seq);
 						SequencePanel sequencePanel = new SequencePanel(seq, tal, variationDim, 0,"",0, language, Config.bolFontSizeStd[language] + fontSizeIncrease);
 

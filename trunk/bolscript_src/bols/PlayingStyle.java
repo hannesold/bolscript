@@ -109,6 +109,10 @@ public class PlayingStyle {
 	public void setSpeedValue(double speed) {
 		this.rspeed = new Rational(speed);
 	}
+	
+	public void setSpeed(Rational speed) {
+		this.rspeed = speed;
+	}
 
 	public double getSpeedValue() {
 		return rspeed.toDouble();

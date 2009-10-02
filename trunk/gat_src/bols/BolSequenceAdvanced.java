@@ -39,7 +39,7 @@ public class BolSequenceAdvanced extends basics.Basic {
 			BolName bolName = bolBase.getBolName(sequenceAsArray[i]);
 
 			if (bolName != null) {
-				bol = new Bol(bolName, new PlayingStyle(1,1)); 
+				bol = new Bol(bolName, new PlayingStyle(1,1), null, false); 
 				appendBol(bol);
 			} else {
 				System.out.println(sequenceAsArray[i] + " not found in bolNames");
@@ -317,7 +317,7 @@ public class BolSequenceAdvanced extends basics.Basic {
 					//merge bol with pauses
 					double duration = (1.0f / bol.getSpeed()) + pauseDurationBuffer;
 					newBol = bol.getCopy();
-					newBol.setSpeed(1.0f / duration);
+					newBol.setSpeedValue(1.0f / duration);
 					pauseDurationBuffer=0;
 				} else {
 					//just copy bol

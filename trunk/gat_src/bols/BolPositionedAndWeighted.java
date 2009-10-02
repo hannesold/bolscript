@@ -6,16 +6,16 @@ public class BolPositionedAndWeighted extends Bol {
 	public double weight = 0f;
 	
 	public BolPositionedAndWeighted(BolName bolName, PlayingStyle style) {
-		super(bolName, style);
+		super(bolName, style, null, false);
 	}
 	
 	public BolPositionedAndWeighted(BolName bolName, PlayingStyle style, double position) {
-		super(bolName, style);
+		super(bolName, style, null, false);
 		this.position = position;
 	}
 	
 	public BolPositionedAndWeighted(BolName bolName, PlayingStyle style, double position, double weight) {
-		super(bolName, style);
+		super(bolName, style, null, false);
 		this.position = position;
 		this.weight = weight;
 	}

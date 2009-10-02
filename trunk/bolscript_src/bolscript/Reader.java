@@ -30,10 +30,14 @@ import bolscript.packets.TextReference;
 import bolscript.packets.types.PacketType;
 import bolscript.packets.types.PacketTypeFactory;
 import bolscript.packets.types.PacketType.ParseMode;
+import bolscript.scanner.SequenceParser;
+import bolscript.sequences.BracketClosedUnit;
+import bolscript.sequences.BracketOpenUnit;
+import bolscript.sequences.CommaUnit;
 import bolscript.sequences.FootnoteUnit;
 import bolscript.sequences.Representable;
 import bolscript.sequences.RepresentableSequence;
-import bolscript.sequences.Unit;
+import bolscript.sequences.SpeedUnit;
 
 /**
  * This class contains the essential methods for reading and parsing bolscript files,
@@ -80,7 +84,60 @@ public class Reader {
 
 	public static Debug debug = new Debug(Reader.class);
 
-	public static Packets compilePacketsFromString(String input, BolBaseGeneral bolBase) {
+	public static boolean NEWPARSEMODE = false;
+
+	public static Packets compilePacketsFromStringNew(String input) {
+
+
+		Packets packets = splitIntoPackets(input);
+		
+		packets.addAll(0, BolBase.getStandard().getReplacementPacketClones());
+
+
+		processMetaPackets(packets);
+		
+		Packet currentSpeedPacket = new Packet("Speed","1",PacketTypeFactory.SPEED, false);
+		currentSpeedPacket.setObject(new Rational(1));		
+		Rational currentSpeed = (Rational) currentSpeedPacket.getObject(); 
+		
+		SequenceParser parser = new SequenceParser(1, packets);
+		int i = 0;
+		
+		while (i <packets.size()) {	
+			Packet p = packets.get(i);
+		
+			if (p.getType() == PacketTypeFactory.BOLS) {
+				RepresentableSequence seq = parser.parseSequence(p, p.getValue());
+				p.setObject(seq);
+				for (int j = 0; j < seq.size(); j++) {
+					Representable r = seq.get(j);
+					if (r.getType()==Representable.FOOTNOTE) {
+						FootnoteUnit fu = (FootnoteUnit) r;
+						fu.getFootnoteNrGlobal();
+						Packet fp = new Packet(getFootnoteCode(i,0, fu.getFootnoteNrGlobal()),fu.getFootnoteText(),PacketTypeFactory.FOOTNOTE, true);
+						//TODO clean up
+						packets.add(i+1,fp);i++;
+					}
+				}
+			} else if (p.getType() == PacketTypeFactory.SPEED) {
+				currentSpeedPacket = p;
+				currentSpeed = (Rational) p.getObject();
+			}
+			i++;
+		}
+
+		debug.temporary(packets.toString());
+		return packets;
+	}
+
+	public static Packets compilePacketsFromString(String input) {
+		if (NEWPARSEMODE) {
+			return compilePacketsFromStringNew(input);
+		} else {
+			return compilePacketsFromStringOld(input);
+		}
+	}
+	public static Packets compilePacketsFromStringOld(String input) {
 
 
 		Packets rawPackets = splitIntoPackets(input);
@@ -104,12 +161,12 @@ public class Reader {
 		}
 		debug.debug(packets);
 
-		addSequencesToBolPackets(packets, bolBase);
+		addSequencesToBolPackets(packets, BolBase.getStandard());
 
 
 		return packets;
 	}
-
+	
 	protected static void solveMultiplesAndBrackets(Packets packets) {
 		Matcher m;
 		for(int k=0; k < packets.size(); k++) {
@@ -567,7 +624,8 @@ public class Reader {
 						currentSpeed = speedCandidate;
 					}
 
-					seq.add(new Unit(Representable.SPEED, currentSpeed, null));
+					//seq.add(new Unit(Representable.SPEED, currentSpeed, null));
+					seq.add(new SpeedUnit(currentSpeed, true, null));
 				} catch (Exception e) {
 					debug.debug("Speed could not be read out of: '" + all[i]+"'");
 					e.printStackTrace();
@@ -591,23 +649,23 @@ public class Reader {
 					k--;
 				}
 			} else if (all[i].matches("\\[")) {
-				seq.add(new Unit(Representable.BRACKET_OPEN,all[i], null));
+				seq.add(new BracketOpenUnit(null));
 				if (!commaAddedAlready) {
-					seq.add(new Unit(Representable.COMMA,",", null));
+					seq.add(new CommaUnit(null));
 					commaAddedAlready = true;
 				}
 
 			} else if (all[i].matches("\\]")) {
-				seq.add(new Unit(Representable.BRACKET_CLOSED,all[i], null));
+				seq.add(new BracketClosedUnit(null));
 				if (!commaAddedAlready) {
-					seq.add(new Unit(Representable.COMMA,",", null));
+					seq.add(new CommaUnit(null));
 					commaAddedAlready = true;
 				}
 
 			} else if (all[i].matches(",")) {
-				Representable c = new Unit(Unit.COMMA, ",", null); 
+				Representable c = new CommaUnit(null);
 				if (!commaAddedAlready) {
-					seq.add(new Unit(Representable.COMMA,",", null));
+					seq.add(new CommaUnit(null));
 					commaAddedAlready = true;
 				}				
 			}
@@ -646,7 +704,7 @@ public class Reader {
 					bolBase.addBolName(bolName);
 				}
 
-				Bol bol = new Bol(bolName, new PlayingStyle(currentSpeed,velocity));
+				Bol bol = new Bol(bolName, new PlayingStyle(currentSpeed,velocity), null, emphasized);
 				bol.setEmphasized(emphasized);
 
 				seq.add(bol);
@@ -657,7 +715,7 @@ public class Reader {
 			i++;
 		}
 
-		return seq;
+		return seq.flatten(new SpeedUnit(Rational.ONE, true, null));
 	}
 	
 	public static String determineBolStringAroundCaret(String input, int caretPosition) {

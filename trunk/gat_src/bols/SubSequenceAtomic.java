@@ -73,7 +73,7 @@ public class SubSequenceAtomic implements SubSequence{
 				//take bol from base sequence, and adjust speed to subsequence speed
 				Debug.out("getting Bol nr " + i + " from basicbolseq.");
 				Bol b = new Bol (basicBolSequence.getBol(i).getBolName(), 
-						style.getProduct(basicBolSequence.getBol(i).getPlayingStyle()));
+						style.getProduct(basicBolSequence.getBol(i).getPlayingStyle()), null, false);
 				
 				asBolSequence.addBol(b);
 			}
@@ -91,7 +91,7 @@ public class SubSequenceAtomic implements SubSequence{
 			for (int i=start; i < (start+length); i++) {
 				//take bol from base sequence, and adjust speed to subsequence speed
 				Bol currentBol  = new Bol (basicBolSequence.getBol(i).getBolName(), 
-						style.getProduct(basicBolSequence.getBol(i).getPlayingStyle()));
+						style.getProduct(basicBolSequence.getBol(i).getPlayingStyle()), null, false);
 				asRepresentableSequence.add(currentBol);
 
 			} 

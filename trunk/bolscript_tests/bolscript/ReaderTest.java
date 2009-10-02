@@ -60,7 +60,7 @@ public class ReaderTest {
 	
 	@Ignore
 	public void testInsertingOfBolBaseStandardReplacements() {
-		Packets packets = Reader.compilePacketsFromString(" Theme: Dha tIr kit tir kit Dha ", bolBase);
+		Packets packets = Reader.compilePacketsFromString(" Theme: Dha tIr kit tir kit Dha ");
 		Debug.out(packets);	
 	}
 	
@@ -69,10 +69,10 @@ public class ReaderTest {
 		Packets packets = Reader.splitIntoPackets(Teental.TEENTAL);
 	}
 	
-	@Test
+	@Ignore
 	public void testFootNotes() {
 		String s = "A: Dha ge ti re ki te\n B: Dhin Na Ge \"Footnote A for test\" Na";
-		Packets packets = Reader.compilePacketsFromString(s, bolBase);
+		Packets packets = Reader.compilePacketsFromString(s);
 		for (Packet p:packets) {
 			if (p.getType() == PacketTypeFactory.FOOTNOTE) {
 				assertEquals("A should remain and not be inserted", "Footnote A for test", p.getValue());
@@ -123,6 +123,16 @@ public class ReaderTest {
 		
 	}
 	
+	@Test
+	public void testNewCompiler() {
+		String s = "Speed: 1\n" +
+				"A: Dha Ge Ti Re Ki Te, Dha - Dha - Dha Ge Ti Re Ki Te\n" +
+				"Speed: 2\n" +
+				"B: A A Ge Dhin Na Ge Na x2\n";
+		Packets packets = Reader.compilePacketsFromString(s);
+		
+	}
+	
 	@Ignore
 	public void testRepresentableSequence() throws Exception {
 		BolBase b = new BolBase();
@@ -145,7 +155,7 @@ public class ReaderTest {
 		input = Reader.makeSpeedsAbsolute(s, new Rational(2));
 		//System.out.println(input);
 		RepresentableSequence seq = Reader.getRepresentableSequence(input, new Rational(1), b);
-		System.out.println(seq.toString(true,true,true,true, true, true, BolName.EXACT));
+		System.out.println(seq.toString(RepresentableSequence.SHOW_ALL,BolName.EXACT));
 		
 		
 		

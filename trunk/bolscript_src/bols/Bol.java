@@ -21,8 +21,16 @@ public class Bol implements Representable, HasPlayingStyle {
 	protected TextReference textReference;
 	
 	public Bol (BolName bolName, PlayingStyle style) {
+		this(bolName, style, null, false);
+	}
+
+
+
+	public Bol (BolName bolName, PlayingStyle style, TextReference textReference, boolean emphasized) {
 		this.bolName = bolName;
 		this.style = style;
+		this.textReference = textReference;
+		this.emphasized = emphasized;
 	}
 	
 	public String toString(){
@@ -41,9 +49,10 @@ public class Bol implements Representable, HasPlayingStyle {
 		return style.getSpeedValue();
 	}
 
-	public void setSpeed(double d) {
+	public void setSpeedValue(double d) {
 		style.setSpeedValue(d);
 	}
+	
 	
 	public PlayingStyle getPlayingStyle() {
 		return style;
@@ -53,8 +62,11 @@ public class Bol implements Representable, HasPlayingStyle {
 		this.style = style;
 	}
 	
+	/**
+	 * Same bolName, independent copy of styke, same textReference
+	 */
 	public Bol getCopy() {
-		return new Bol(bolName, style.getCopy());
+		return new Bol(bolName, style.getCopy(), textReference, emphasized);
 	}
 	
 	public boolean equals(Bol bol) {

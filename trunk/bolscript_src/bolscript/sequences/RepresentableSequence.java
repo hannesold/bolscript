@@ -16,10 +16,50 @@ import bols.PlayingStyle;
 import bolscript.Reader;
 import bolscript.packets.TextReference;
 
+
 public class RepresentableSequence extends ArrayList<Representable> implements Representable {
 
+
+	public static boolean[] SHOW_ALL = new boolean[Representable.nrOfTypes];
+	public static boolean[] SNIPPET = 
+		getToStringPattern(new int[]{
+			Representable.BOL, 
+			Representable.BOL_CANDIDATE, 
+			Representable.BUNDLE});
+	public static boolean[] SHORT_SNIPPET = 
+		getToStringPattern(new int[]{
+				Representable.BOL,
+				Representable.BUNDLE,
+				Representable.BRACKET_CLOSED, 
+				Representable.BRACKET_OPEN, 
+				Representable.BOL_CANDIDATE,
+				Representable.COMMA, 
+				Representable.LINE_BREAK});
+
+	static {
+		for (int i=0; i < Representable.nrOfTypes; i++) {
+			SHOW_ALL[i] = true;
+		}
+
+	}
+	/**
+	 * Returns an boolean array which can be used in toStringByPattern(..),
+	 * storing true or false the display of each representable type.
+	 * @param visibleTypeNumbers The type nrs of the representable types which shall be shown by toStringByPattern
+	 */
+	public static boolean [] getToStringPattern(int[] visibleTypeNumbers) {
+		boolean[] pattern = new boolean[Representable.nrOfTypes];
+		for (int v : visibleTypeNumbers) {
+			pattern[v] = true;
+		}
+		return pattern;
+	}
+
+	private boolean flattened = false;
+	
 	private TextReference textReference;
 
+	
 	public void setTextReference(TextReference textReference) {
 		this.textReference = textReference;
 	}
@@ -38,6 +78,16 @@ public class RepresentableSequence extends ArrayList<Representable> implements R
 
 	public RepresentableSequence(int initialCapacity) {
 		super(initialCapacity);
+	}
+	
+	/**
+	 * This is the only way of creating a sequence which is marked as flat.
+	 * This should only be called in flatten(...)
+	 * @param isFlattened
+	 */
+	public RepresentableSequence(boolean isFlattened) {
+		super();
+		this.flattened = isFlattened;
 	}
 
 	private double duration;
@@ -229,7 +279,7 @@ public class RepresentableSequence extends ArrayList<Representable> implements R
 						//Debug.temporary(this, "completed bundle with : " + r);
 						currentBundle.add(r);
 						currentlyBundling = false;
-						String exactName = currentBundle.toString(true, false,false,false,false,false, BolName.EXACT);
+						String exactName = currentBundle.toString(RepresentableSequence.SHOW_ALL, BolName.EXACT);
 
 						BolNameBundle name = BolBase.getStandard().getBolNameBundle(exactName);
 						if (name == null) {
@@ -237,14 +287,14 @@ public class RepresentableSequence extends ArrayList<Representable> implements R
 							BolBase.getStandard().addBolNameBundle(name);
 						}
 						//Debug.temporary(this, "bundle name: " + name.toStringComplete());
-						
+
 						//TODO add TextReferencing 
 						BolBundle bundle = new BolBundle(currentBundle, name, new PlayingStyle(targetSpeed,1));
-						
+
 						//Debug.temporary(this, "bundle: " + bundle.toStringComplete());
 						//bundled.add();
 
-						bundled.add(new Unit(Representable.SPEED, targetSpeed, null));
+						bundled.add(new SpeedUnit(targetSpeed, true, null));
 						bundled.add(bundle);
 						bundled.addAll(currentBundlesFootnotes);
 
@@ -326,10 +376,10 @@ public class RepresentableSequence extends ArrayList<Representable> implements R
 					int nrOfPauses = missingDurationToCompleteBundle.dividedBy(currentBundleDuration).integerPortion();
 
 					for (int i=0; i < nrOfPauses; i++) {
-						Bol pause = new Bol(BolBase.standard().getEmptyBol(), new PlayingStyle(pauseSpeed,1));
+						Bol pause = new Bol(BolBase.standard().getEmptyBol(), new PlayingStyle(pauseSpeed,1), null, false);
 						currentBundle.add(pause);
 					}
-					String exactName = currentBundle.toString(true, false,false,false,false,false, BolName.EXACT);
+					String exactName = currentBundle.toString(RepresentableSequence.SHOW_ALL, BolName.EXACT);
 					BolNameBundle name = BolBase.getStandard().getBolNameBundle(exactName);
 					if (name == null) {
 						name = BolNameBundle.getDefault(currentBundle);
@@ -337,7 +387,7 @@ public class RepresentableSequence extends ArrayList<Representable> implements R
 					}
 					BolBundle bundle = new BolBundle(currentBundle, name, new PlayingStyle(targetSpeed,1));
 					//Debug.temporary(this, "bundle: " + bundle.toStringComplete());
-					bundled.add(new Unit(Representable.SPEED, targetSpeed, null));
+					bundled.add(new SpeedUnit(targetSpeed, true ,null));
 					bundled.add(bundle);
 					bundled.addAll(currentBundlesFootnotes);
 
@@ -387,69 +437,68 @@ public class RepresentableSequence extends ArrayList<Representable> implements R
 	}
 
 	public String toString () {
-		return getCompact().toString(true, true, true, true, true, true, BolName.EXACT, 10000);
+		return toString(RepresentableSequence.SHOW_ALL,BolName.EXACT,10000);
+		//getCompact().toString(true, true, true, true, true, true, BolName.EXACT, 10000);
 	}
 
-	public String toString(boolean bols, boolean brackets, boolean colons, boolean footnotes, boolean speed, boolean other, int language) {
-		return toString(bols,brackets,colons,footnotes,speed,other,language,10000);
+	public String toString(boolean[] displayPattern, int language) {
+		return toString(displayPattern,language,10000);
 	}
 
 	public String toStringAll() {
-		return toString(true,true,true,true,true,true,BolName.EXACT,10000);
+		return toString(RepresentableSequence.SHOW_ALL,BolName.EXACT,10000);
 	}
 
-
-	public String toString(boolean bols, boolean brackets, boolean commas, boolean footnotes, boolean speed, boolean other, int language, int maxBols) {
+	public String toString(boolean[] displayPattern, int language, int maxBols) {
 		StringBuilder s = new StringBuilder();
 		//int a = 0; int b = 0;
 		int nrOfBols = 0;
 
 		for (int i=0; i < size(); i++) {
-			switch (get(i).getType()) {
+			int type = get(i).getType();
+			if (displayPattern[type]) {
+				switch (type) {
 
-			case Representable.BOL:
-				if (bols) {
+				case Representable.BOL:
 					s.append(((Bol)get(i)).getBolName().getName(language)+ " ");
 					nrOfBols++;
 					if (nrOfBols > maxBols) return s.toString();
-				}
-				break;
-			case Representable.BUNDLE:
-				if (bols) {
+					break;
+				case Representable.BUNDLE:
 					s.append(((BolBundle)get(i)).getBolNameBundle().getName(language)+ " ");
 					nrOfBols++;
 					if (nrOfBols > maxBols) return s.toString();					
-				}
-				break;
-			case Representable.FOOTNOTE:
-				if (footnotes) {
+					break;
+				case Representable.FOOTNOTE:
 					s.append((((FootnoteUnit) get(i)).getFootnoteNrGlobal()+1) + ") ");
-				}
-				break;
-			case Representable.BRACKET_CLOSED:
-				if (brackets) s.append(get(i).toString() + " ");
-				break;
-			case Representable.BRACKET_OPEN:
-				if (brackets) s.append(get(i).toString() + " ");
-				break;
-			case Representable.SPEED:
-				if (speed) s.append(get(i).toString() + " ");
-				break;
-			case Representable.COMMA:
-				if (commas) {
-					if ((s.length() > 0) && (s.charAt(s.length()-1) != '\n')) s.deleteCharAt(s.length()-1);
+					break;
+				case Representable.BRACKET_CLOSED:
+					s.append(get(i).toString() + " ");
+					break;
+				case Representable.BRACKET_OPEN:
+					s.append(get(i).toString() + " ");
+					break;
+				case Representable.SPEED:
+					s.append(get(i).toString() + " ");
+					break;
+				case Representable.COMMA:
 
+					if ((s.length() > 0) && (s.charAt(s.length()-1) != '\n')) s.deleteCharAt(s.length()-1);
+					s.append(get(i).toString() + " ");
+
+					break;
+				case Representable.BOL_CANDIDATE:
+					s.append(get(i).toString());
+					break;
+				case Representable.SEQUENCE:
+					s.append("subsequence{"+((RepresentableSequence) get(i)).toString(displayPattern,language,maxBols)+"} ");
+					break;
+				case Representable.LINE_BREAK:
+					s.append(get(i).toString());
+					break;
+				default:
 					s.append(get(i).toString() + " ");
 				}
-				break;
-			case Representable.SEQUENCE:
-				s.append("subsequence{"+((RepresentableSequence) get(i)).toString(bols,brackets,commas, footnotes, speed, other, language, maxBols)+"} ");
-				break;
-			case Representable.LINE_BREAK:
-				s.append("[linebreak]\n");
-				break;
-			default:
-				if (other) s.append(get(i).toString() + " ");
 			}
 
 			/*b = s.length() - a;
@@ -482,54 +531,48 @@ public class RepresentableSequence extends ArrayList<Representable> implements R
 		}
 		return bols;
 	}
-
+	
 	public String generateSnippet() {
-		return toString(true, false, true, false, false, false, BolName.SIMPLE, 20);
+		return toString(RepresentableSequence.SNIPPET, BolName.SIMPLE, 20);
 	}
 
 	public String generateShortSnippet() {
-		String s = toString(true, false, true, false, false, false, BolName.INITIALS, 20);
-		//s = s.replaceAll("[^A-Z\\-,]", "");
+		String s = toString(RepresentableSequence.SHORT_SNIPPET, BolName.INITIALS, 20);
 		s = s.replaceAll(" ", "");
-		s = s.replaceAll(",+", " ");
+		s = s.replaceAll("[,|\\(|\\)]+", " ");
 		return s;
 	}
-
-	
-	//public RepresentableSequence flatten(SpeedUnit basicSpeedUnit) {
-		//RepresentableSequen;
-	//}
 
 	public RepresentableSequence flatten(SpeedUnit basicSpeedUnit) {
 		return flatten(basicSpeedUnit, 0);
 	}
-	
+
 	public RepresentableSequence flatten(SpeedUnit basicSpeedUnit, int currentDepth) {
-		if (size()==0) return this;
+		if (size()==0) return new RepresentableSequence(true);
 
 		SpeedUnit currentSpeedUnit = basicSpeedUnit;
 		//Rational currentSpeed = basicSpeedUnit.getSpeed();
-		
+
 		//the flattened version of this sequence
-		RepresentableSequence flat = new RepresentableSequence();
+		RepresentableSequence flat = new RepresentableSequence(true);
 		if (currentDepth == 0) {
 			flat.add(currentSpeedUnit);
 			Debug.temporary(this, "adding initial speed unit " + basicSpeedUnit);
 		}
 		currentDepth++;
-		
-		
-		
+
+
+
 		Representable current = this.get(0);
 		Representable next;
-		
+
 		for (int i=1; i < size(); i++) {
 			next = this.get(i);
 			//Debug.temporary(this, "flat: " + flat.toStringAll());
 			Debug.temporary(this, "current: " + current + ", next: " + next);
 			if (current.getType() == Representable.SPEED) {
 				SpeedUnit s = (SpeedUnit) current;
-				
+
 				if (s.isAbsolute() &! currentSpeedUnit.getSpeed().equals(s.getSpeed())) {
 					//add new absolute speeds directly
 					Debug.temporary(this, "adding abs speed " + s);
@@ -546,7 +589,7 @@ public class RepresentableSequence extends ArrayList<Representable> implements R
 						currentSpeedUnit = newSpeedUnit;
 					}
 				}
-				
+
 			} else 	if (current.getType() != Representable.KARDINALITY_MODIFIER) {
 				if (next.getType() != Representable.KARDINALITY_MODIFIER) {
 					//add the flattened current representable to the flat sequence
@@ -564,12 +607,12 @@ public class RepresentableSequence extends ArrayList<Representable> implements R
 						flat.truncateFromEnd(kard.getTruncation());
 					}		
 				}
-				
+
 				if (!flat.lastAbsoluteSpeedUnit(basicSpeedUnit).getSpeed()
 						.equals(currentSpeedUnit.getSpeed())) {
 					Debug.temporary(this, "After adding " +current+" last abs speed in flat is " + flat.lastAbsoluteSpeedUnit(basicSpeedUnit) +
 							", currentSpeed before was " + currentSpeedUnit);
-					
+
 					//if the last absolute speed occurring in the new
 					//version of the flat sequence differs from the speed before
 					//add the previous speed
@@ -584,8 +627,56 @@ public class RepresentableSequence extends ArrayList<Representable> implements R
 			current.addFlattenedToSequence(flat, currentSpeedUnit, currentDepth);
 		}
 
-		return flat;
+		return flat.getSpeedCompiledCopy(basicSpeedUnit.getSpeed()); //sure?
 	}
+
+
+	/**
+	 * Determines if a sequence is already flat or not.
+	 * Currently it can only be flat if it has been built in the flatten method.
+	 * Flat sequences should not contain any of the following:
+	 * - subsequences
+	 * - sequences of referenced packets
+	 * - relative speeds
+	 */
+	public boolean isFlattened() {
+		return flattened;
+	}
+
+	/**
+	 * Expects a flattened Sequence with absolute speeds only
+	 * @return
+	 */
+	private RepresentableSequence getSpeedCompiledCopy(Rational baseSpeed) {
+		RepresentableSequence seq = new RepresentableSequence(this.size());
+		Rational currentSpeed = baseSpeed;
+		for (int i=0; i < this.size(); i++) {
+			Representable r = get(i);
+			switch (r.getType()) {
+			case BOL:
+				Bol bol = ((Bol) r).getCopy();
+				bol.getPlayingStyle().setSpeed(currentSpeed);
+				seq.add(bol);
+				break;
+			case BUNDLE:
+				BolBundle bundle = ((BolBundle) r).getCopy();
+				bundle.getPlayingStyle().setSpeed(currentSpeed);
+				seq.add(bundle);
+				break;
+			case SPEED:
+				SpeedUnit s = (SpeedUnit) r;
+				if (s.isAbsolute()) {
+					currentSpeed = s.getSpeed();
+				} else {
+					Debug.critical(this, "getSpeedCompiledCopy does not expect relative speeds!!");
+				}
+			default:
+				seq.add(r);
+			}
+		}
+		return seq;
+	}
+
 
 	/**
 	 * Attention, this is a destructive operation.
@@ -605,7 +696,7 @@ public class RepresentableSequence extends ArrayList<Representable> implements R
 				this.remove(i);
 				bolsTruncated++;
 			} else if (type == Representable.REFERENCED_BOL_PACKET ||
-						type == Representable.SEQUENCE) {
+					type == Representable.SEQUENCE) {
 				hitBoundary = true;
 			}
 			i--;
@@ -645,7 +736,7 @@ public class RepresentableSequence extends ArrayList<Representable> implements R
 		seq.addAll(flat);
 		return flat.lastAbsoluteSpeedUnit(basicSpeedUnit);
 	}
-	
+
 	/**
 	 * This is intended for use on flat sequences with absolute speeds ONLY !
 	 * @param basicSpeed
