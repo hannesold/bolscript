@@ -3,21 +3,13 @@ package bolscript.sequences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import bolscript.Reader;
+import bolscript.packets.Packet;
 import bolscript.packets.TextReference;
 import bolscript.scanner.SequenceToken;
 
 public class FootnoteUnit extends Unit implements Representable {
 	
-	/**
-	 * the number of the packet in which the footnote was defined first
-	 */
-	public int packetNr;
-	
-	/**
-	 * the number of the footnote within its defining packet
-	 */
-	public int footnoteNrInPacket;
+	private Packet packet;
 	
 	/**
 	 * the number of the footnote
@@ -35,32 +27,10 @@ public class FootnoteUnit extends Unit implements Representable {
 		return Representable.FOOTNOTE;
 	}
 	
-	public FootnoteUnit(int packetNr, int commentNrInPacket, int commentNrGlobal, TextReference textReference, String footnoteText) {
-		this.packetNr = packetNr;
-		this.footnoteNrInPacket = commentNrInPacket;
-		this.footnoteNrGlobal = commentNrGlobal;
-		this.footnoteCode = Reader.getFootnoteCode(packetNr, commentNrInPacket, commentNrGlobal);
+	public FootnoteUnit(String footnoteText, TextReference textReference, Packet containingPacket){
+		super(Representable.FOOTNOTE, footnoteText, textReference);
 		this.footnoteText = footnoteText;
-	}
-	
-	public FootnoteUnit(String footnoteText, TextReference textReference){
-		this.footnoteText = footnoteText;
-		this.textReference = textReference;
-		this.type = Representable.FOOTNOTE;
-	}
-	
-	public FootnoteUnit(String footnoteCode, TextReference textReference, String footnoteText) throws Exception{
-		this.footnoteCode = footnoteCode;
-		Matcher m = Pattern.compile(".*(\\d+)[^0-9]+(\\d+)[^0-9]+(\\d+).*").matcher(footnoteCode);
-		if (m.find()) {
-			
-			this.footnoteNrInPacket = Integer.parseInt(m.group(3));
-			this.packetNr = Integer.parseInt(m.group(2));
-			this.footnoteNrGlobal = Integer.parseInt(m.group(1));
-			this.footnoteText = footnoteText;
-		} else {
-			throw new Exception("Footnotecode " + footnoteCode + " could not be parsed!");
-		}
+		this.packet = containingPacket;
 	}
 
 	public int getFootnoteNrGlobal() {
@@ -74,24 +44,24 @@ public class FootnoteUnit extends Unit implements Representable {
 	public String getFootnoteText() {
 		return footnoteText;
 	}
-
-	public String toString() {
-		return footnoteCode;
-	}
 	
 	public Object getObject() {
 		return footnoteText;
 	}
 	
+	public Packet getContainingPacket() {
+		return packet;
+	}
+	
 	/**
-	 * !Expects token text of the Form "text"
+	 * !Expects token.text of the Form "text"
 	 * @param token
 	 * @return
 	 */
-	public static Representable parseToken(SequenceToken token) {
+	public static Representable parseToken(SequenceToken token, Packet containingPacket) {
 		Matcher m = pattern.matcher(token.text);
 		if (m.matches()) {
-			return new FootnoteUnit(m.group(1), token.textReference);
+			return new FootnoteUnit(m.group(1), token.textReference, containingPacket);
 		}
 		
 		return new FailedUnit(token, "");

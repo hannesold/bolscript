@@ -3,8 +3,8 @@ package bolscript.sequences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import bolscript.Reader;
 import bolscript.packets.TextReference;
+import bolscript.scanner.Parser;
 import bolscript.scanner.SequenceToken;
 
 public class KardinalityModifierUnit extends Unit implements Representable {
@@ -13,14 +13,13 @@ public class KardinalityModifierUnit extends Unit implements Representable {
 	private int truncation;
 
 	private static String KARDINALITY_MODIFIER_UNIT = 
-		"(?:x"+Reader.SN+"*(\\d+))?(?:"+Reader.SN+"*<"+Reader.SN+"*(\\d+))?";
+		"(?:x"+Parser.SN+"*(\\d+))?(?:"+Parser.SN+"*<"+Parser.SN+"*(\\d+))?";
 	private static Pattern pattern = Pattern.compile(KARDINALITY_MODIFIER_UNIT);
 	
 	public KardinalityModifierUnit(int multiplication, int truncation, TextReference textReference) {
+		super(Representable.KARDINALITY_MODIFIER, "[x"+multiplication+"<"+truncation+"]", textReference);
 		this.multiplication = multiplication;
 		this.truncation = truncation;
-		this.textReference = textReference;
-		this.type = Representable.KARDINALITY_MODIFIER;
 	}
 
 	public int getMultiplication() {
@@ -31,9 +30,6 @@ public class KardinalityModifierUnit extends Unit implements Representable {
 		return truncation;
 	} 
 	
-	public String toString() {
-		return "[x"+multiplication+"<"+truncation+"]";
-	}
 	public static Representable parseToken(SequenceToken input) {
 		Matcher m = pattern.matcher(input.text);
 		if (m.find()) {

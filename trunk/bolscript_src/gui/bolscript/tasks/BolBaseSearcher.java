@@ -11,11 +11,11 @@ import javax.swing.JTextPane;
 import basics.Debug;
 import bols.BolBase;
 import bols.BolName;
-import bolscript.Reader;
 import bolscript.compositions.Composition;
 import bolscript.packets.Packet;
 import bolscript.packets.Packets;
 import bolscript.packets.types.PacketTypeFactory;
+import bolscript.scanner.Parser;
 
 public class BolBaseSearcher implements TaskFactory {
 
@@ -101,7 +101,7 @@ public class BolBaseSearcher implements TaskFactory {
 				//Debug.temporary(this, this.caretPosition +" in " + text.length()  +" ");
 				if (caretPosition <= text.length()) {
 					//Debug.temporary(this, "caret is IN the text");
-					String input = Reader.determineBolStringAroundCaret(text, caretPosition);
+					String input = Parser.determineBolStringAroundCaret(text, caretPosition);
 
 					if (input != null) {
 						Packets packets = composition.getPackets();

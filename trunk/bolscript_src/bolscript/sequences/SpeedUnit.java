@@ -4,8 +4,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import basics.Rational;
-import bolscript.Reader;
 import bolscript.packets.TextReference;
+import bolscript.scanner.Parser;
 import bolscript.scanner.SequenceToken;
 
 public class SpeedUnit extends Unit implements Representable{
@@ -15,7 +15,7 @@ public class SpeedUnit extends Unit implements Representable{
      * As in SequenceScanner.flex
      * {Numerator} ( {WhiteSpace}* "/" {WhiteSpace}* {Denominator} )? {WhiteSpace}* "!"?
      */
-    private static String NONNEG_RATIONAL_WITH_SPACES = "(\\d+)"+Reader.SN+"*(?:/"+Reader.SN+"*(\\d+))?(?:"+Reader.SN+"*(!)?)";
+    private static String NONNEG_RATIONAL_WITH_SPACES = "(\\d+)"+Parser.SN+"*(?:/"+Parser.SN+"*(\\d+))?(?:"+Parser.SN+"*(!)?)";
     /**
      * Regex Pattern: for parsing nonnegative rationals.
      */
@@ -23,6 +23,8 @@ public class SpeedUnit extends Unit implements Representable{
     
 	private boolean absolute;
 		
+	private static SpeedUnit defaultSpeedUnit = new SpeedUnit(Rational.ONE, true, null);
+	
 	public SpeedUnit(Rational r, boolean absolute, TextReference textReference) {
 		super(Representable.SPEED, r, textReference);
 		this.absolute = absolute;
@@ -56,6 +58,14 @@ public class SpeedUnit extends Unit implements Representable{
     	} else {
     		return new FailedUnit(input, "");
     	}
+	}
+	
+	/**
+	 * Returns a default Speed Unit with absolute Speed = Rational.ONE, and no text reference.
+	 * @return
+	 */
+	public static SpeedUnit getDefaultSpeedUnit() {
+		return defaultSpeedUnit;
 	}
 
 

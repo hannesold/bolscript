@@ -21,7 +21,7 @@ import bols.BolName;
 import bols.tals.Tal;
 import bols.tals.TalBase;
 import bolscript.Master;
-import bolscript.Reader;
+import bolscript.FileManager;
 import bolscript.config.Config;
 import bolscript.packets.Packet;
 import bolscript.packets.Packets;
@@ -29,7 +29,9 @@ import bolscript.packets.types.PacketType;
 import bolscript.packets.types.PacketTypeFactory;
 import bolscript.packets.types.PacketType.ParseMode;
 import bolscript.packets.types.PacketType.StorageType;
+import bolscript.scanner.Parser;
 import bolscript.sequences.RepresentableSequence;
+import bolscript.sequences.SpeedUnit;
 
 public class Composition implements DataStatePosessor{
 
@@ -100,7 +102,7 @@ public class Composition implements DataStatePosessor{
 	 * @throws FileReadException
 	 */
 	public Composition(File file, TalBase talBase) throws FileReadException{
-		this(Reader.getContents(file, Config.maxBolscriptFileSize, Config.compositionEncoding), talBase);
+		this(FileManager.getContents(file, Config.maxBolscriptFileSize, Config.compositionEncoding), talBase);
 		setLinkLocal(file.getAbsolutePath());
 		setDataState(State.CONNECTED);
 		backUpRawData();
@@ -238,7 +240,7 @@ public class Composition implements DataStatePosessor{
 
 	public void extractInfoFromRawData() {
 		if (rawData != null) {
-			this.packets = Reader.compilePacketsFromString(rawData);
+			this.packets = Parser.compilePacketsFromString(rawData);
 			extractInfoFromPackets(this.packets);
 		} else {
 			Debug.critical(this, "the rawdata is empty, will not be processed");
@@ -246,7 +248,8 @@ public class Composition implements DataStatePosessor{
 	}
 
 	/**
-	 * Expects the packets to be preprocessed by reader.
+	 * This extracts the metaData from the packets.
+	 * Expects the packets to be preprocessed by Parser.
 	 * Calls rebuildFulltextSearch and fireCompositionChanged.
 	 * @param packets
 	 */
@@ -289,8 +292,9 @@ public class Composition implements DataStatePosessor{
 					break;
 
 				case PacketTypeFactory.BOLS:		
-					RepresentableSequence compact = ((RepresentableSequence) obj).getCompact();
-					maxSpeed = Rational.max(maxSpeed, compact.getMaxSpeed());
+					RepresentableSequence flat = ((RepresentableSequence) obj).flatten(SpeedUnit.getDefaultSpeedUnit());
+					
+					maxSpeed = Rational.max(maxSpeed, flat.getMaxSpeed());
 					if (metaValues.getString(SNIPPET).equals("")) {
 						if (firstBolPacket == null && p.isVisible()) firstBolPacket = p;
 						if ((key.equalsIgnoreCase("Snippet") 
@@ -298,8 +302,10 @@ public class Composition implements DataStatePosessor{
 								|| key.equalsIgnoreCase("Tukra") 
 								|| key.equalsIgnoreCase("Theka"))) {
 
-							metaValues.setString(SNIPPET,compact.generateSnippet());
-							if (metaValues.getString(NAME).equals("")) metaValues.setString(NAME, compact.generateShortSnippet());
+							metaValues.setString(SNIPPET,flat.generateSnippet());
+							if (metaValues.getString(NAME).equals("")) {
+								metaValues.setString(NAME, flat.generateShortSnippet());
+							}
 						}
 					} 
 					break;
@@ -351,7 +357,7 @@ public class Composition implements DataStatePosessor{
 		
 		if (metaValues.getString(SNIPPET).equals("") && firstBolPacket != null ){
 			if (firstBolPacket.getObject() != null) {
-				RepresentableSequence compact = ((RepresentableSequence) firstBolPacket.getObject()).getCompact();
+				RepresentableSequence compact = ((RepresentableSequence) firstBolPacket.getObject()).flatten(SpeedUnit.getDefaultSpeedUnit()); //the speed unit does not influence the appearance of the snippet!
 				metaValues.setString(SNIPPET,compact.generateSnippet());
 
 				if (name.equals("")) {
@@ -375,7 +381,7 @@ public class Composition implements DataStatePosessor{
 		if (dataState == State.NEW) return true;
 
 		try {
-			rawData = Reader.getContents(new File(this.linkLocal), Config.maxBolscriptFileSize, Config.compositionEncoding);
+			rawData = FileManager.getContents(new File(this.linkLocal), Config.maxBolscriptFileSize, Config.compositionEncoding);
 			dataState.connect(this);
 			return true;
 		} 

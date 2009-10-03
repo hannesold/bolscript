@@ -26,7 +26,7 @@ import bols.Variation;
 import bols.tals.Jhaptal;
 import bols.tals.Tal;
 import bols.tals.Teental;
-import bolscript.Reader;
+import bolscript.FileManager;
 import bolscript.config.Config;
 import bolscript.packets.Packet;
 import bolscript.packets.Packets;

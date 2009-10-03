@@ -11,7 +11,7 @@ import basics.Debug;
 import basics.Rational;
 import bols.BolBase;
 import bols.BundlingDepthToSpeedMap;
-import bolscript.Reader;
+import bolscript.FileManager;
 import bolscript.config.Config;
 import bolscript.scanner.SequenceParser;
 
@@ -24,7 +24,7 @@ public class RepresentableSequenceTest {
 		BolBase.init(RepresentableSequenceTest.class);
 	}
 	
-	@Ignore
+	/*
 	public void testGetBundled() {
 		//TODO ADAPT BUNDLING TO WORK WITH NEW ENCODING!!!
 		BolBase bb = BolBase.getStandard();
@@ -40,7 +40,7 @@ public class RepresentableSequenceTest {
 		Debug.out("\nbundled directly to targsp 1: " + seq2.getBundled(new Rational(1), true));
 		Debug.out("\nbundled to maxDepth: " + seq2.getBundled(map, map.getMaxDepth(), true));
 		
-	}
+	}*/
 	
 	@Test
 	public void testWrapSubsequence() {

@@ -11,7 +11,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import basics.Debug;
-import bolscript.Reader;
 import bolscript.compositions.Composition;
 import bolscript.compositions.CompositionBase;
 import bolscript.compositions.CompositionBaseChangeEvent;
@@ -23,6 +22,7 @@ import bolscript.filters.MetaValueFilter;
 import bolscript.filters.SpeedFilter;
 import bolscript.filters.StringArrayFilter;
 import bolscript.packets.types.PacketTypeFactory;
+import bolscript.scanner.Parser;
 
 /**
  * This class contains the filter gui, mapping of filters as well as the filter logics
@@ -148,7 +148,7 @@ public class FilterPanel extends JPanel implements ListSelectionListener, KeyLis
 			//code for the searchPanel has changed
 			String searchKey = searchPanel.getSearchField().getText();
 			
-			if (searchKey.replaceAll(Reader.SN, "").equals("")) {
+			if (searchKey.replaceAll(Parser.SN, "").equals("")) {
 				searchFilter.setAcceptAll(true);	
 				searchFilter.runBypass();
 			} else {
