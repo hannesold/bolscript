@@ -571,6 +571,12 @@ public class RepresentableSequence implements Representable, Collection<Represen
 				case Representable.LINE_BREAK:
 					s.append(get(i).toString());
 					break;
+				case Representable.WHITESPACES:
+					s.append("whitespace{"+get(i).toString()+"}");
+					break;
+				case Representable.FAILED:
+					s.append("failed{"+get(i).toString()+"}");
+					break;
 				default:
 					s.append(get(i).toString() + " ");
 				}

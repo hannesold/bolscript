@@ -15,6 +15,7 @@ import org.junit.Test;
 import basics.Debug;
 import bols.Bol;
 import bolscript.packets.Packets;
+import bolscript.sequences.FailedUnit;
 import bolscript.sequences.FootnoteUnit;
 import bolscript.sequences.Representable;
 import bolscript.sequences.RepresentableSequence;
@@ -48,6 +49,49 @@ public class SequenceParserTest {
 		}
 	}
 
+	@Test
+	public void testParsingWithResultingSubsequences() {
+		SequenceParser parser = new SequenceParser(0,null);
+
+		//first input
+		String input = "Dha Ge";
+		RepresentableSequence seq = parser.parseUnits(null, input);
+		assertEquals(2, seq.size());
+
+		
+		input = "# Dha _## Ge";
+		seq = parser.parseUnits(null, input);
+		assertEquals(Representable.FAILED, seq.get(0).getType());
+		assertEquals(0, seq.get(0).getTextReference().start());
+		assertEquals(1, seq.get(0).getTextReference().end());
+		
+		assertEquals(Representable.FAILED, seq.get(2).getType());
+		assertEquals("_##", ((FailedUnit)seq.get(2)).getObject());
+		assertEquals(6, seq.get(2).getTextReference().start());
+		assertEquals(9, seq.get(2).getTextReference().end());
+		
+		input = "### Ge";
+		seq = parser.parseUnits(null, input);
+		assertEquals(Representable.FAILED, seq.get(0).getType());
+		
+		input = " Dha Ge";
+		seq = parser.parseUnits(null, input);
+		Debug.temporary(this, seq.toStringAll());
+		for (int i=0; i < seq.size(); i++) {
+			Debug.temporary(this, "'"+ seq.get(i) + "': "+seq.get(i).getTextReference().start()+"-" +seq.get(i).getTextReference().end());
+		}
+		assertEquals(2, seq.size());
+		
+		
+		input = " Dha ### Ge";
+		seq = parser.parseUnits(null, input);
+		assertEquals(3, seq.size());
+		assertEquals(Representable.FAILED, seq.get(1).getType());
+		
+
+		
+	}
+	
 	@Test
 	public void simpleSubsequenceParsing () {
 
@@ -196,6 +240,8 @@ public class SequenceParserTest {
 
 	@Test
 	public void testErrorHandling() {
+		String input = "### dha ###";
+		
 		/*SequenceParser parser = new SequenceParser(0,null);
 
 		//first input

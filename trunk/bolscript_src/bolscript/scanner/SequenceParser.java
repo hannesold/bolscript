@@ -191,6 +191,8 @@ public class SequenceParser {
 
 		scanner = new SequenceScanner(input);
 
+		int assumedTokenStartPosition = 0;
+		
 		SequenceToken token = null;
 		try {
 			token = scanner.nextToken();
@@ -200,8 +202,23 @@ public class SequenceParser {
 			return null;
 		}
 
+		
 		while (token != null) {
 
+			if (token.textReference.start() > assumedTokenStartPosition) {
+				//String candidate = input.substring(assumedTokenStartPosition, token.textReference.start());
+				//if (!candidate.matches("[\\t\\s\\f]+")) {
+				SequenceToken failedToken = new SequenceToken(Representable.FAILED, 
+						input.substring(assumedTokenStartPosition, 
+										token.textReference.start()), 
+									assumedTokenStartPosition, 
+								token.textReference.line());
+				seq.add(new FailedUnit(failedToken, "Could not be parsed."));
+				//}
+				
+			} 
+			assumedTokenStartPosition = token.textReference.end();
+			
 			switch (token.type) {
 			case BOL_CANDIDATE:
 				seq.add(parseBolCandidate(currentPacket, token));
@@ -216,7 +233,7 @@ public class SequenceParser {
 				if (f.getType() != Representable.FAILED) {
 					((FootnoteUnit) f).setFootnoteNrGlobal(getAndIncreaseGlobalFootnoteNr());
 				}
-				Debug.temporary(this, "footnote nr: " + ((FootnoteUnit) f).getFootnoteNrGlobal());
+				//Debug.temporary(this, "footnote nr: " + ((FootnoteUnit) f).getFootnoteNrGlobal());
 				seq.add(f);
 				break;
 
@@ -244,9 +261,14 @@ public class SequenceParser {
 				seq.add(new FailedUnit(token, "Could not be parsed."));
 				break;
 				
+			case WHITESPACES:
+				//Debug.temporary(this, "added whitespace");
+				break;
+				
 			default:
 				seq.add(new FailedUnit(token, "Could not be parsed."));
 			}
+
 
 			try {
 				token = scanner.nextToken();
