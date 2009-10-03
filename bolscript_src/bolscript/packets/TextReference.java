@@ -18,10 +18,16 @@ public class TextReference {
 	private int length;
 	private int line;
 	
+	/**
+	 * 
+	 * @param startIndex the index of the first character of this reference
+	 * @param endIndex the index of the first character AFTER this reference
+	 * @param line
+	 */
 	public TextReference (int startIndex, int endIndex, int line) {
 		this.setStart(startIndex);
 		this.setEnd(endIndex);
-		this.length = endIndex-startIndex;
+		this.length = endIndex - startIndex;
 		this.line = line;
 	}
 	
@@ -45,6 +51,10 @@ public class TextReference {
 		this.endIndex = endIndex;
 	}
 
+	/**
+	 * the index of the first character AFTER this reference
+	 * @return
+	 */
 	public int end() {
 		return endIndex;
 	}
@@ -59,5 +69,9 @@ public class TextReference {
 
 	public boolean contains(int caretPosition) {
 		return (startIndex<=caretPosition) && (caretPosition <= endIndex);
+	}
+	
+	public TextReference translateBy(TextReference other) {
+		return new TextReference(startIndex+other.startIndex, endIndex+other.startIndex,line+other.line);
 	}
 }

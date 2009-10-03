@@ -17,6 +17,7 @@ import javax.swing.text.StyleConstants;
 import basics.Debug;
 import bolscript.packets.Packet;
 import bolscript.packets.Packets;
+import bolscript.packets.TextReference;
 import bolscript.packets.types.PacketType;
 import bolscript.packets.types.PacketTypeFactory;
 import bolscript.sequences.Representable;
@@ -63,6 +64,8 @@ public class BolscriptDocument extends DefaultStyledDocument{
 	DocumentListener[] documentListeners;
 	UndoableEditListener[] undoListeners;
 
+	private int caretPosition=0;
+	
 	public  void initStylesAndMaps(){
 		rootStyle = addStyle("root", null);
 		StyleConstants.setForeground(rootStyle, Color.BLACK);
@@ -80,7 +83,7 @@ public class BolscriptDocument extends DefaultStyledDocument{
 		StyleConstants.setForeground(styleFailedKey, failedKeyColor);
 		StyleConstants.setForeground(styleFailedValue, failedValueColor);
 		StyleConstants.setItalic(styleFailedValue, true);
-
+		StyleConstants.setBackground(styleFailedValue, new Color(255,230,230));
 
 		styleMetaValue = addStyle("metavalue", rootStyle);
 		styleBolValue = addStyle("bolvalue", styleMetaValue);
@@ -176,11 +179,15 @@ public class BolscriptDocument extends DefaultStyledDocument{
 
 					 if (p.getType() == PacketTypeFactory.BOLS) {
 						 ArrayList<Representable> failedUnits = ((RepresentableSequence) p.getObject()).getFailedUnits();
-
+						 
 						 for (Representable r : failedUnits) {
+							 TextReference absoluteReference = r.getTextReference().translateBy(p.getTextRefValue());
+							 if (!absoluteReference.contains(caretPosition)) {
 							 setCharacterAttributes(
-									 r.getTextReference().start()+p.getTextRefValue().start(), 
-									 r.getTextReference().length(), styleFailedValue, true);
+									 absoluteReference.start(), 
+									 absoluteReference.length(), styleFailedValue, true);
+							 Debug.temporary(this, "highlighting failed " + r);
+							 }
 						 }
 					 }
 
@@ -210,5 +217,9 @@ public class BolscriptDocument extends DefaultStyledDocument{
 	 public void updateStylesLater(Packets packets) {
 		 EventQueue.invokeLater(new StyleUpdater(packets));
 	 }
+
+	public void setCaretPosition(int caretPosition) {
+		this.caretPosition = caretPosition;
+	}
 
 }

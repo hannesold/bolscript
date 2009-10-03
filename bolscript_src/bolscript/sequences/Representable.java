@@ -20,7 +20,8 @@ public interface Representable {
 	public static final int FAILED = 12;
 	public static final int UNDEFINED = 13;
 	public static final int BOL_CANDIDATE = 14;
-	public static final int nrOfTypes = 15;
+	public static final int WHITESPACES = 15;
+	public static final int nrOfTypes = 16;
 	
 	int getType();
 	

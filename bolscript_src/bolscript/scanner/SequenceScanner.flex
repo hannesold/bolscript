@@ -28,7 +28,7 @@ import static bolscript.sequences.Representable.*;
 
 LineTerminator = \r|\n|\r\n|\u2028|\u2029|\u000B|\u000C|\u0085
 InputCharacter = [^\r\n]
-Space = [\t\f\s]
+Space = [ \t\f\s]
 WhiteSpace     = {LineTerminator} | [ \t\f\s]
 
 /* comments */
@@ -47,7 +47,7 @@ PosInteger = [1-9][0-9]*
 /* bolscript preUnits */
  
 
-BolCandidate = {Pause} | ( [A-WY-Za-wy-z]+ {Numeration}? ({WhiteSpace}* {Questioned})? ({WhiteSpace}* {Emphasized})? )
+BolCandidate = {Pause}|([A-WY-Za-wy-z]+{Numeration}?({WhiteSpace}*{Questioned})?({WhiteSpace}*{Emphasized})?)
 Numeration = [0-9]+ 
 Questioned = "?"+
 Emphasized = "!"+
@@ -62,14 +62,14 @@ Comma = "," ( {WhiteSpace} | "," )*
 
 Pause = "-"
 
-RationalSpeed =  {Numerator} ( {WhiteSpace}* "/" {WhiteSpace}* {Denominator} )? ({WhiteSpace}* "!")?
+RationalSpeed = {Numerator}({WhiteSpace}*"/"{WhiteSpace}*{Denominator})?({WhiteSpace}*"!")?
 Numerator = {PosInteger}*
 Denominator = {PosInteger}*
 
 KardinalityModifier = {Multiplication} ( {WhiteSpace}* {Truncation} )* | {Truncation}
 Multiplication = "x" {WhiteSpace}* {PosInteger}
 Truncation = "<" {WhiteSpace}* {PosInteger}
-
+Spaces = {Space}+
 
 LineBreak = {LineTerminator} ({WhiteSpace} | {LineTerminator})*
 %state STRING
@@ -95,8 +95,7 @@ LineBreak = {LineTerminator} ({WhiteSpace} | {LineTerminator})*
   
   {LineBreak}					{return token(LINE_BREAK, yytext());}
   
-    /* whitespace */
-  {WhiteSpace}                   { /* ignore */ }
+  {Spaces}                   	{return token(WHITESPACES, yytext());}
 
 }
 

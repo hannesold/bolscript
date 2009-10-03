@@ -43,8 +43,6 @@ public class CompositionPanelRendererFactory implements TaskFactory {
 			compPanel.renderComposition(comp);
 			
 			if (alsoAddUpdateTo != null) alsoAddUpdateTo.addUpdate();	
-			//alsoAddUpdateTo.
-			//editor.getDocument().updateStylesLater(comp.getPackets());
 		}
 	}
 }

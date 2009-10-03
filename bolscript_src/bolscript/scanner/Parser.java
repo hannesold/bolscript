@@ -230,7 +230,7 @@ public class Parser {
 		String lineBreaks = "[:\n\r\f]+";
 		input.replaceAll(lineBreaks, "\n");
 		String regex = "(\\$)?((?:[^:\n\r\f])+):" + //Key
-		"((?:[^:]|[\n\r\f])*)" +  //Value
+		"([^:]*)" +  //Value
 		"(?=$|[\n\r\f]+(?:(?:(?:(?:[^:\n\r\f]*):)|(?:[\n\r\f]*\\s)*\\z)))" //following Key or End of Input (not captured)
 		;
 	

@@ -37,6 +37,9 @@ public class BolBaseSearcher implements TaskFactory {
 
 	public Runnable getNewTask() {
 		int caretPosition = textPane.getCaretPosition();
+		
+		document.setCaretPosition(caretPosition); //is this the right place?
+		
 		Packet p = composition.getPackets().getPacketAtCaretPosition(caretPosition);
 
 		if (p != null) {
@@ -52,6 +55,7 @@ public class BolBaseSearcher implements TaskFactory {
 		if (previouslyHighlightedPacket != null) {
 			if (previouslyHighlightedPacket !=null)	previouslyHighlightedPacket.setHighlighted(false);
 			previouslyHighlightedPacket = null;
+			
 			document.updateStylesLater(composition.getPackets());
 		}
 		
@@ -84,6 +88,7 @@ public class BolBaseSearcher implements TaskFactory {
 			this.packet = packet;
 		}
 
+		
 		public void run() {
 			Debug.temporary(this, "running caretguesstask");
 			
