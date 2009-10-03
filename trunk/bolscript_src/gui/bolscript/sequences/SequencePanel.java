@@ -1,11 +1,5 @@
-package gui.bolscript.packets;
+package gui.bolscript.sequences;
 
-import gui.bolscript.sequences.BolBundlePanel;
-import gui.bolscript.sequences.BolPanel;
-import gui.bolscript.sequences.BolPanelGeneral;
-import gui.bolscript.sequences.CellPanel;
-import gui.bolscript.sequences.FootnotePanel;
-import gui.bolscript.sequences.VibhagPanel;
 import gui.playlist.HighlightablePanel;
 
 import java.awt.Color;
@@ -16,7 +10,6 @@ import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 
 import basics.Debug;
 import basics.GUI;
@@ -31,20 +24,20 @@ import bols.tals.Tal;
 import bols.tals.Teental;
 import bols.tals.Vibhag;
 import bolscript.config.Config;
+import bolscript.config.GuiConfig;
+import bolscript.packets.Packet;
 import bolscript.sequences.FootnoteUnit;
 import bolscript.sequences.Representable;
 import bolscript.sequences.RepresentableSequence;
 
 public class SequencePanel extends HighlightablePanel  {
 
-	public static Color cBackground = Color.WHITE;
 	public static Color cDistinctBackground = new Color(200,220,200);
-	public static Color cBorder = (new JPanel()).getBackground().darker();
-	public static Color cHighlight = new Color (68, 117, 207);
+
 	protected static int cellLayer = 2;
 	protected static int bolLayer = 3;
 	protected static int vibhagLayer = 4;
-	
+
 	/**
 	 * The margin between two cells
 	 */
@@ -53,22 +46,22 @@ public class SequencePanel extends HighlightablePanel  {
 	protected static int minCellMargin = 4;
 	protected static int minVibhagPadding = 4;
 	public static int cellBorderPadding = 0;
-	
+
 	/**
 	 * The margin between two rows
 	 */
 	protected static int rowMargin = 16;
-	
+
 	protected static Insets insets = new Insets(10,20,10,20);
-	
-	
+
+
 	protected RepresentableSequence sequence;
-	
+
 	//private Variation variation; 
 	protected Tal tal;
 	protected int language = BolName.SIMPLE;
 	protected float fontSize = Config.bolFontSizeStd[BolName.SIMPLE];
-	
+
 	protected Dimension vibhagSize;
 	protected boolean highlighted;
 	protected ArrayList<CellPanel> cells;
@@ -83,29 +76,31 @@ public class SequencePanel extends HighlightablePanel  {
 
 	protected Dimension cellSize;
 	protected LayoutCycle layoutCycle;
-	
+
 	protected ArrayList<Float> lineBreaks;
-	
-	
-	public SequencePanel(RepresentableSequence sequence, Tal tal, Dimension size, int minRows, String fixedLargestWidthBol, int fixedMaxSpeed, int language, float fontSize) {
+
+	protected Packet containingPacket = null;
+
+	public SequencePanel(RepresentableSequence sequence, Tal tal, Dimension size, int minRows, String fixedLargestWidthBol, int fixedMaxSpeed, int language, float fontSize, Packet containingPacket) {
 		super();
 		this.setLayout(null);
-		this.setBorder(BorderFactory.createLineBorder(cBorder,2));
-		
+		this.setBorder(BorderFactory.createLineBorder(GuiConfig.sequencePanelBorderColor,2));
+
+		this.containingPacket = containingPacket;
 		lineBreaks = new ArrayList<Float>();
 		cells = new ArrayList<CellPanel>();
 		highlighted = false;
 		cellHighlightedlastTime = null;
-		
+
 		this.sequence = sequence;
 		//Debug.temporary(this, sequence.toString(true, false, true, false, true, false, BolName.EXACT, 10000));
-		
+
 		if (tal == null) {
 			this.tal = Teental.getDefaultTeental();
 		} else {
 			this.tal = tal;
 		}
-		
+
 		this.fixedLargestWidthBol = fixedLargestWidthBol;
 		this.minRows = minRows;
 		this.fixedMaxSpeed = fixedMaxSpeed;
@@ -113,7 +108,7 @@ public class SequencePanel extends HighlightablePanel  {
 		this.language = language;
 		this.fontSize = fontSize;
 		//Debug.debug(this, "new vp, language is " + language);
-		
+
 		render();
 	}
 
@@ -125,14 +120,14 @@ public class SequencePanel extends HighlightablePanel  {
 		if (highlighted!=this.highlighted) {
 			this.highlighted = highlighted;
 			if (highlighted ){
-				this.setBorder(BorderFactory.createLineBorder(cHighlight, 5));
+				this.setBorder(BorderFactory.createLineBorder(GuiConfig.sequencePanelHighlightColor, 5));
 			} else {
-				this.setBorder(BorderFactory.createLineBorder(cBorder, 2));
+				this.setBorder(BorderFactory.createLineBorder(GuiConfig.sequencePanelBorderColor, 2));
 			}
 		}
-		
+
 	}
-	
+
 	public void highlightCell(int i) {
 		//System.out.println("variationpanel shall highlight cell " + i);
 		int theIndex = i % cells.size();
@@ -155,37 +150,37 @@ public class SequencePanel extends HighlightablePanel  {
 			cellHighlightedlastTime.revalidate();
 		}
 	}
-	
+
 	protected void render() {
 		nrOfCells = (int) Math.ceil(sequence.getDuration());
-		
+
 		cellSize = determinCellSize();
 		cellMargin = Math.max(minCellMargin, Math.min(maxCellMargin,cellSize.width/8));
 		//Debug.temporary(this,"cellMargin: " + cellMargin);
-		
+
 		cellWidthPlusMargin = cellSize.width + cellMargin;
 		rowHeight = cellSize.height + rowMargin;
-		
+
 		// establish layoutCycle
 		// which gives us the row lengths and cell coordinates etc.
 		int maxDisplayableCellsPerRow = (wantedSize.width - insets.left - insets.right) 
 		/ cellWidthPlusMargin;
 		layoutCycle = tal.getLayoutChooser().getLayoutCycle(maxDisplayableCellsPerRow,100);
 		if (layoutCycle == null) Debug.critical(this, "no layoutCycle found ! in chooser \n" + tal.getLayoutChooser());
-		
+
 		// remove everything
 		this.removeAll();
-		
+
 		// add cells
 		renderCells();
-		
+
 		// add vibhags
 		renderVibhags();
-		
+
 		// add bols
 		renderBols();
-		
-		
+
+
 		// adjust size
 		int widthWithoutInsets = (cellWidthPlusMargin) * (layoutCycle.getExactDimensions(nrOfCells).width) - cellMargin;
 		int heightWithoutInsets = (layoutCycle.getExactDimensions(nrOfCells).height)*rowHeight;
@@ -194,16 +189,16 @@ public class SequencePanel extends HighlightablePanel  {
 		this.setPreferredSize(newSize);	
 		this.setMaximumSize(newSize);
 		this.setMinimumSize(newSize);
-		
+
 		//adjust color
 		if (GUI.showLayoutStructure) {
 			this.setBackground(cDistinctBackground);
 		}else {
-			this.setBackground(cBackground);
+			this.setBackground(GuiConfig.sequencePanelBackgroundColor);
 		}
 		this.setOpaque(true);
 
-		
+
 		this.revalidate();
 	}
 
@@ -218,20 +213,20 @@ public class SequencePanel extends HighlightablePanel  {
 		int maxBolLabelHeight=0;
 		int maxCellWidth = 0;
 		Dimension tempSize = new Dimension(0,0);
-		
+
 		// Establish maximum dimensions
 		if ((fixedLargestWidthBol == "")&&(fixedMaxSpeed==0)) {
-			
+
 			//get largest bol and highest speed
-			
+
 			for (int i = 0; i < sequence.size(); i++) {
 				Representable rep = sequence.get(i);
 				int type = sequence.get(i).getType();
-				
+
 				if (type == Representable.BOL || type == Representable.BUNDLE) {
 					NamedInLanguages nameGiver;
 					double speed;
-					
+
 					if (type == Representable.BOL) {
 						nameGiver = ((Bol) rep).getBolName();
 						speed = ((Bol) rep).getSpeed();
@@ -239,7 +234,7 @@ public class SequencePanel extends HighlightablePanel  {
 						nameGiver = ((BolBundle)rep).getBolNameBundle();
 						speed = ((BolBundle) rep).getPlayingStyle().getSpeedValue();
 					}
-					
+
 					label.setText(nameGiver.getName(language));
 					tempSize = GUI.getPrefferedSize(label, 100);
 					maxBolLabelHeight 	= Math.max(tempSize.height, maxBolLabelHeight);
@@ -247,22 +242,22 @@ public class SequencePanel extends HighlightablePanel  {
 					maxCellWidth = (int) Math.max(width, maxCellWidth);
 				} 
 			}
-			
+
 		} else {
 			label.setText(fixedLargestWidthBol);
 			tempSize = GUI.getPrefferedSize(label, 100);
 			maxBolLabelHeight 	= Math.max(tempSize.height, maxBolLabelHeight);
 			int width = (int) (fixedMaxSpeed*( (double) (BolPanel.marginLeft + BolPanel.marginRight + tempSize.width)));
 			maxCellWidth = width;
-			
+
 		}
 		//Debug.temporary(this, "determined maxCellwidth: " + maxCellWidth);
 		//Debug.temporary(this, "determined maxBolLabelHeight: " + maxBolLabelHeight);
-		
+
 		// cell sizes and resulting dimensions of cells and vibhags
 		int cellWidth = maxCellWidth;//(int) (maxBolDimension.width * maxSpeed);
 		int cellHeight = maxBolLabelHeight + BolPanel.marginBottom 	+ BolPanel.marginTop;
-		
+
 		return new Dimension(cellWidth, cellHeight);
 	}
 
@@ -276,10 +271,10 @@ public class SequencePanel extends HighlightablePanel  {
 		int y = 0;
 		int x = 0;
 		int cellNr;
-		
+
 		Rational currentPos = new Rational(0);
 		Rational lastPos = new Rational(0);
-		
+
 		BolPanelGeneral lastBolPanel = null;
 		//ArrayList<JPanel> bolPanels = new ArrayList<JPanel>();
 		//ArrayList<Bol> bols = new ArrayList<Bol> ();
@@ -288,61 +283,68 @@ public class SequencePanel extends HighlightablePanel  {
 			int type = rep.getType();
 			if ( type == Representable.BOL || type == Representable.BUNDLE) {
 				HasPlayingStyle b = (HasPlayingStyle) rep;
-				
+
 				// the number of the cell in which the bol will be put
 				cellNr = currentPos.integerPortion();
-				
+
 				// the relative position in the cell
 				double posOffset = (currentPos.toDouble() % 1.0);
 				int xOffSet = (int) ((double)cellWidth * posOffset);
 				x = getCellCoords(cellNr).x + xOffSet;
 				y = getCellCoords(cellNr).y;
-				
+
 				int width = (int)((double)cellWidth / (double) b.getPlayingStyle().getSpeedValue());
 				int height = cellHeight;
-				
+
 				BolPanelGeneral bp;
-				
+
 				if (type == Representable.BOL) {
 					bp = new BolPanel((Bol) b,new Dimension(width,height),((Bol) b).isEmphasized(), language, fontSize);
 				} else {
 					//is of type bundle!
 					bp = new BolBundlePanel((BolBundle) b, new Dimension(width,height), false, language, fontSize);
 				}
-					
+
 				lastBolPanel = bp;
-				
+
 				bp.setBounds(x,y,width,height);
 				this.add(bp);
 				//bolPanels.add(bp);
 				this.setLayer(bp, bolLayer);
-				
+
 				lastPos = currentPos;
 				currentPos = currentPos.plus(b.getPlayingStyle().getSpeed().reciprocal());
 			} else switch (type) {
-			
+
 			case Representable.FOOTNOTE:
-				FootnotePanel cp = new FootnotePanel((FootnoteUnit) rep, FootnotePanel.maxSize);
-				if (lastBolPanel != null) {
-					x = lastBolPanel.getBounds().x + lastBolPanel.getBounds().width-FootnotePanel.maxSize.width;
-				} else {
-					x = 0;
+				FootnoteUnit footnoteUnit = (FootnoteUnit) rep;
+				boolean showFootnote = true;
+				if (containingPacket!=null && footnoteUnit.getContainingPacket() != null) {
+					showFootnote = (footnoteUnit.getContainingPacket() == containingPacket);
 				}
-				cellNr = lastPos.integerPortion();
-				y = getCellCoords(cellNr).y;
-				cp.setBounds(x,y,FootnotePanel.maxSize.width,FootnotePanel.maxSize.height);
-				this.add(cp);
-				this.setLayer(cp, vibhagLayer);
+				if (showFootnote) {
+					FootnotePanel cp = new FootnotePanel(footnoteUnit, FootnotePanel.maxSize);
+					if (lastBolPanel != null) {
+						x = lastBolPanel.getBounds().x + lastBolPanel.getBounds().width-FootnotePanel.maxSize.width;
+					} else {
+						x = 0;
+					}
+					cellNr = lastPos.integerPortion();
+					y = getCellCoords(cellNr).y;
+					cp.setBounds(x,y,FootnotePanel.maxSize.width,FootnotePanel.maxSize.height);
+					this.add(cp);
+					this.setLayer(cp, vibhagLayer);
+				}
 				break;
 			case Representable.COMMA:
 				/* if (lastBolPanel != null) {
 					x = lastBolPanel.getBounds().x + lastBolPanel.getBounds().width-ColonPanel.maxSize.width;	
 				} else x =0;
-				
+
 				cellNr = currentPos.integerPortion();
 				y = getCellCoords(cellNr).y;
-				
-				
+
+
 				ColonPanel c = new ColonPanel((Unit) rep, new Dimension(ColonPanel.maxSize.width, cellHeight));
 				c.setBounds(x,y,CommentPanel.maxSize.width,cellHeight);
 				this.add(c);
@@ -353,7 +355,7 @@ public class SequencePanel extends HighlightablePanel  {
 			}
 		}	
 	}
-	
+
 	/**
 	 * Renders the cells and adds linebreaks
 	 * 
@@ -368,13 +370,13 @@ public class SequencePanel extends HighlightablePanel  {
 			}
 			// add Cell
 			CellPanel newCell = new CellPanel(getCellCoords(i).x, getCellCoords(i).y, cellSize);
-			
+
 			cells.add(newCell);
 			this.add(newCell);
 			this.setLayer(newCell, cellLayer);
 		}
 	}
-	
+
 	/**
 	 * Get the pixel coordinates of the upper left corner of a cell.
 	 * Expects layoutCyle, cellWidthPlusMargin and rowHeight to be set
@@ -383,7 +385,7 @@ public class SequencePanel extends HighlightablePanel  {
 	 */
 	protected Point getCellCoords(int cellNr) {
 		Point c = layoutCycle.getCoordinates(cellNr);
-		
+
 		return new Point(
 				insets.left + (cellWidthPlusMargin * c.x),
 				insets.top + c.y * rowHeight);
@@ -397,27 +399,27 @@ public class SequencePanel extends HighlightablePanel  {
 	protected void renderVibhags() {
 
 		vibhagSize = new Dimension(20, cellSize.height);
-		
+
 		int vibhagIndex = 0;
 		Vibhag[] vibhags = tal.getVibhags();
 		int i = 0;
-		
+
 		while (i < nrOfCells) {
-			
+
 			Vibhag vibhag = vibhags[vibhagIndex % vibhags.length] ;
-			
+
 			int vX = getCellCoords(i).x - Math.max(minVibhagPadding, cellMargin/2);
 			int vY = getCellCoords(i).y;
-			
+
 			// Add vibhagPanel
 			VibhagPanel vp = new VibhagPanel(vX,vY, vibhagSize, vibhag);
 			this.add(vp);
 			this.setLayer(vp,vibhagLayer);
-			
+
 			i += vibhag.getLength();
 			vibhagIndex++;
 		}
-		
+
 	}
 
 	public void setContents(RepresentableSequence seq, Tal tal) {

@@ -48,15 +48,13 @@ public class Config {
 	
 	public static String pathToBolBase = "";// = pathToCompositions + "bolbase.bolbase";
 
+	public static final double BOLSCRIPT_MINIMUM_SPEED = 1d/128d;
 	public static final int BOLSCRIPT_MAXIMUM_SPEED = 128;
-	public static final int BOLSCRIPT_MAXIMUM_REPETITIONS = 20;
+	public static final int BOLSCRIPT_MAXIMUM_REPETITIONS = 100;
+	public static final int BOLSCRIPT_MAXIMUM_TRUNCATION = 100;
 	public static final Rational BOLSCRIPT_MAXIMUM_SPEED_R = new Rational(BOLSCRIPT_MAXIMUM_SPEED);
 
 	public static int standardLanguage = BolName.SIMPLE;
-
-	public static Color colorUnvenRows;
-	public static Color colorEvenRows;
-	public static Color tableBG;
 
 	public static Font[] bolFonts = new Font[BolName.languagesCount];
 	public static Font[] bolFontsBold = new Font[BolName.languagesCount];
@@ -102,7 +100,6 @@ public class Config {
 	public static String compositionEncoding = "UTF-8";
 	public static String bolBaseEncoding = "UTF-16";
 	public static Object lineSeperator ="\n";
-
 	static {
 		if (!initialised) {
 			init();
@@ -134,10 +131,10 @@ public class Config {
 	
 	private static void initColors() {
 		JTable table = new JTable();
-		colorUnvenRows = table.getBackground();
+		GuiConfig.colorUnvenRows = table.getBackground();
 		Color selBG = table.getSelectionBackground();
-		colorEvenRows = new Color (241,245,250);//selBG.brighter().brighter().brighter().brighter();
-		tableBG = new Color(217,217,217);
+		GuiConfig.colorEvenRows = new Color (241,245,250);//selBG.brighter().brighter().brighter().brighter();
+		GuiConfig.tableBG = new Color(217,217,217);
 	}
 	
 	/**

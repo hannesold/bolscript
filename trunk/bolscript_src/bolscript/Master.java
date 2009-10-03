@@ -13,7 +13,7 @@ import gui.bolscript.composition.CompositionPanel;
 import gui.bolscript.dialogs.CouldNotBeRemovedDialog;
 import gui.bolscript.dialogs.PreferencesDialog;
 import gui.bolscript.dialogs.SaveChangesDialog;
-import gui.bolscript.packets.SequencePanel;
+import gui.bolscript.sequences.SequencePanel;
 import gui.bolscript.tables.CompositionTableModel;
 
 import java.awt.Dimension;
@@ -25,6 +25,7 @@ import javax.swing.JTable;
 
 import midi.MidiStationSimple;
 import basics.Debug;
+import basics.FileManager;
 import basics.FileWriteException;
 import basics.GUI;
 import basics.ZipTools;
@@ -32,7 +33,7 @@ import bols.BolBase;
 import bols.tals.TalDynamic;
 import bolscript.compositions.Composition;
 import bolscript.compositions.CompositionBase;
-import bolscript.compositions.State;
+import bolscript.compositions.DataState;
 import bolscript.config.Config;
 import bolscript.config.ConfigChangeEvent;
 import bolscript.config.ConfigChangeListener;
@@ -189,7 +190,7 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 			ArrayList<Composition> outdated = 
 				compositionBase.addFolderRecursivelyAndGetOutdated(Config.pathToCompositions);
 			for (Composition c: outdated) {
-				if (c.getDataState() != State.NEW) {
+				if (c.getDataState() != DataState.NEW) {
 					compositionBase.removeComposition(c);
 				}
 			}
@@ -231,7 +232,7 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 				
 				Composition c = editors.get(i).getComposition();
 				
-				if (c.getDataState() == State.NEW) { //if it has not been saved!
+				if (c.getDataState() == DataState.NEW) { //if it has not been saved!
 					compositionBase.removeComposition(c);
 				}
 				
@@ -282,7 +283,7 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 		 */
 		public void openEditor(Composition comp) {
 			debug.debug("Opening comp: " + comp);
-       	 if (comp.getDataState() != State.EDITING) {
+       	 if (comp.getDataState() != DataState.EDITING) {
        		 comp.establishRawData();
        		 if (comp.establishRawData()) {
        			 comp.backUpRawData();
@@ -314,7 +315,7 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
        			 compositionFrame.setVisible(true);
     			}
   
-		} else if (comp.getDataState() == State.EDITING){
+		} else if (comp.getDataState() == DataState.EDITING){
 			getEditors(comp).get(0).setVisible(true);
 		}
 		}
@@ -350,7 +351,7 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 			ArrayList<Composition> failed = new ArrayList<Composition>();
 			for (Composition comp: comps) {
 				
-				if (comp.getDataState() != State.EDITING) {
+				if (comp.getDataState() != DataState.EDITING) {
 					compositionBase.removeComposition(comp, andDelete);
 				} else {
 					failed.add(comp);
@@ -373,7 +374,7 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 			String template = "Editor: Unknown\nGharana: Punjab\nType: Unknown\n\nTal: Teental\n";
 
 			Composition comp = new Composition(template, compositionBase);
-			comp.setDataState(State.NEW);
+			comp.setDataState(DataState.NEW);
 			comp.setLinkLocal(CompositionBase.generateFilename(comp, Config.bolscriptSuffix));
 			compositionBase.addComposition(comp);
 			
@@ -393,7 +394,7 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 				Composition c = e.getComposition();
 				CloseEditor closer = new CloseEditor(e);
 				closer.actionPerformed(null);
-				if (c.getDataState() == State.EDITING || c.getDataState() == State.NEW) {
+				if (c.getDataState() == DataState.EDITING || c.getDataState() == DataState.NEW) {
 					//the composition was not closed, exit has been cancelled!
 					closeInterrupted = true;
 				}

@@ -9,7 +9,7 @@ import javax.swing.AbstractAction;
 
 import bolscript.Master;
 import bolscript.compositions.Composition;
-import bolscript.compositions.State;
+import bolscript.compositions.DataState;
 
 public class SaveChanges extends AbstractAction {
 	EditorFrame editor;
@@ -23,7 +23,7 @@ public class SaveChanges extends AbstractAction {
 	}
 	
 	public void actionPerformed(ActionEvent e) {
-		if (editor.getComposition().getDataState() == State.NEW) {
+		if (editor.getComposition().getDataState() == DataState.NEW) {
 			new SaveAs(editor).actionPerformed(null);
 		} else {
 			Master.master.saveEditor(editor);

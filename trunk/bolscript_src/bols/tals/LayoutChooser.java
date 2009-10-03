@@ -8,7 +8,7 @@ import basics.Debug;
 import bolscript.scanner.Parser;
 
 /**
- * Stores a number of layoutCylces, which gan be retrieved according to
+ * Stores a number of layoutCylces, which can be retrieved according to
  * the number of cells per row and a wanted limit.
  * @see getLayoutCycle(int, int)
  * @author hannes

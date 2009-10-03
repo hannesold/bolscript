@@ -8,8 +8,8 @@ import gui.bolscript.actions.ResetFontSize;
 import gui.bolscript.actions.SetLanguage;
 import gui.bolscript.packets.CommentText;
 import gui.bolscript.packets.FootnoteText;
-import gui.bolscript.packets.SequencePanel;
-import gui.bolscript.packets.SequenceTitlePanel;
+import gui.bolscript.sequences.SequencePanel;
+import gui.bolscript.sequences.SequenceTitlePanel;
 import gui.menus.ViewerActions;
 import gui.playlist.HighlightablePanel;
 
@@ -396,15 +396,10 @@ public class CompositionPanel extends JLayeredPane {
 						addLineBreak(new Float(newHeight), PageBreakPanel.LOW);
 						components.add(ft);
 						newHeight += components.get(components.size()-1).getPreferredSize().height;
-
-
-
 					} else {
 						components.add((JComponent) Box.createRigidArea(new Dimension(10,40)));
 						addLineBreak(new Float(newHeight), PageBreakPanel.LOW);
 						newHeight += components.get(components.size()-1).getPreferredSize().height;
-
-
 					} 
 					if ((p.getType()==PacketTypeFactory.COMMENT)) {
 						CommentText ct = new CommentText(p);
@@ -423,16 +418,14 @@ public class CompositionPanel extends JLayeredPane {
 						Dimension variationDim = new Dimension(renderingWidth, this.getSize().height);			
 
 						RepresentableSequence seq;
-						//if (Reader.NEWPARSEMODE) {
 						 seq = ((RepresentableSequence) p.getObject())
 								.flatten(new SpeedUnit(currentSpeed, true, currentSpeedPacket.getTextReference()))
 								.getBundled(bundlingMap,bundlingDepth, true);
-						/*}else {
+						/*}old parsemode: {
 							seq = ((RepresentableSequence) p.getObject()).getBundled(bundlingMap,bundlingDepth, true);
 						}*/
 						
-						//Debug.temporary(this, "showing seq:" + seq);
-						SequencePanel sequencePanel = new SequencePanel(seq, tal, variationDim, 0,"",0, language, Config.bolFontSizeStd[language] + fontSizeIncrease);
+						SequencePanel sequencePanel = new SequencePanel(seq, tal, variationDim, 0,"",0, language, Config.bolFontSizeStd[language] + fontSizeIncrease, p);
 
 						addLineBreak(new Float(newHeight), PageBreakPanel.LOW);
 						components.add(sequencePanel);
@@ -447,12 +440,10 @@ public class CompositionPanel extends JLayeredPane {
 						if (p==packetAtCaretPosition) {
 							sequencePanel.setHighlighted(true);
 						}
-						//}
-						newHeight += components.get(components.size()-1).getPreferredSize().height;
 
+						newHeight += components.get(components.size()-1).getPreferredSize().height;
 					}
 				}
-
 			}
 			components.add((JComponent) Box.createRigidArea(new Dimension(10,40)));
 			addLineBreak(new Float(newHeight), PageBreakPanel.LOW);
@@ -460,7 +451,7 @@ public class CompositionPanel extends JLayeredPane {
 
 		}
 
-		Dimension newSize = new Dimension(newWidth, newHeight);//+components.size()*10);//newHeight+120);//+components.size()*20);
+		Dimension newSize = new Dimension(newWidth, newHeight);
 
 		addLineBreak(new Float(newSize.height), PageBreakPanel.LOW);
 

@@ -12,7 +12,7 @@ import basics.Debug;
 import basics.SuffixFilter;
 import bolscript.Master;
 import bolscript.compositions.CompositionBase;
-import bolscript.compositions.State;
+import bolscript.compositions.DataState;
 import bolscript.config.Config;
 
 public class SaveAs extends AbstractAction {
@@ -30,7 +30,7 @@ public class SaveAs extends AbstractAction {
 
 	public void actionPerformed(ActionEvent e) {
 		String path;
-		if (editor.getComposition().getDataState() == State.NEW) {
+		if (editor.getComposition().getDataState() == DataState.NEW) {
 			path = CompositionBase.generateFilename(editor.getComposition(), Config.bolscriptSuffix);
 		} else path = editor.getComposition().getLinkLocal();
 		

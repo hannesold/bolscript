@@ -6,6 +6,7 @@ import java.awt.event.MouseListener;
 import midi.MidiStationSimple;
 import bols.Bol;
 import bols.BolName;
+import bolscript.config.GuiConfig;
 
 public class BolPanel extends BolPanelGeneral implements MouseListener {
 	
@@ -25,14 +26,14 @@ public class BolPanel extends BolPanelGeneral implements MouseListener {
 		
 		init(bn, size, isEmphasized, language, fontSize);
 		
-		label.setForeground(bn.isWellDefinedInBolBase() ? bolFontColor : nonWellDefinedColor);
+		label.setForeground(bn.isWellDefinedInBolBase() ? GuiConfig.bolFontColor : GuiConfig.bolNonWellDefinedColor);
 		String tip = bn.isWellDefinedInBolBase()?bn.toStringForToolTip():"Attention: This Bol is not known to the program.";
 		this.setToolTipText("<html>" + tip + "<br>Played at " + bol.getPlayingStyle().getSpeed() + " bols per beat</html>");
 		
 		if (MidiStationSimple.getStandard() != null) {
 			this.addMouseListener(MidiStationSimple.getStandard().getSingleBolClickListener());
 		}
-
+		
 		
 	}
 	

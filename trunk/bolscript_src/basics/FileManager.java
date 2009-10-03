@@ -1,4 +1,4 @@
-package bolscript;
+package basics;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -9,9 +9,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 
-import basics.Debug;
-import basics.FileReadException;
-import basics.FileWriteException;
 import bols.Bol;
 import bols.BolBaseGeneral;
 import bols.BolName;

@@ -10,8 +10,8 @@ import javax.swing.border.Border;
 import javax.swing.table.TableCellRenderer;
 
 
-import bolscript.compositions.State;
-import bolscript.config.Config;
+import bolscript.compositions.DataState;
+import bolscript.config.GuiConfig;
 
 public class StateRenderer extends JLabel implements TableCellRenderer {
 	Border unselectedBorder = null;
@@ -28,20 +28,20 @@ public class StateRenderer extends JLabel implements TableCellRenderer {
 			boolean isSelected, boolean hasFocus,
 			int row, int column) {
 		//Color newColor = (Color)color;
-		if ((State) dataState == State.EDITING) {
+		if ((DataState) dataState == DataState.EDITING) {
 				this.setText("*");
 				setToolTipText("Editing");
-		} else if ((State) dataState == State.MISSING) {
+		} else if ((DataState) dataState == DataState.MISSING) {
 				this.setText("?");
 				setToolTipText("Missing");
-		} else if ((State) dataState == State.NEW){
+		} else if ((DataState) dataState == DataState.NEW){
 			this.setText("*");
 			setToolTipText("New");			
 		} else {
 				this.setText(" ");
 		}
 		this.setOpaque(true);
-		Color bgRows = (row%2==0) ? Config.colorEvenRows : Config.colorUnvenRows;
+		Color bgRows = (row%2==0) ? GuiConfig.colorEvenRows : GuiConfig.colorUnvenRows;
 
 		if (isSelected) {
 			this.setBackground(table.getSelectionBackground());

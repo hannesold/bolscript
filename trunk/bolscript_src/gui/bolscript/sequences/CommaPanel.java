@@ -2,28 +2,26 @@ package gui.bolscript.sequences;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import basics.GUI;
+import bolscript.config.GuiConfig;
 import bolscript.sequences.FootnoteUnit;
 import bolscript.sequences.Unit;
 
 public class CommaPanel extends JPanel{
-	public static int fontSize = 9;
-	public static Font commentFont= new Font("Arial", Font.BOLD, fontSize);
 	public static int marginBottom = 2;
 	public static int marginLeft = 0;
 	public static int marginTop = 10;
 	public static int marginRight = 5;
 	
-	
 	public static Dimension maxSize = new Dimension();
+	
 	static {
 		JLabel l = new JLabel(",)");
-		l.setFont(commentFont);
+		l.setFont(GuiConfig.commaFont);
 		maxSize = GUI.getPrefferedSize(l, 100);
 	}
 	
@@ -36,8 +34,8 @@ public class CommaPanel extends JPanel{
 		this.colonUnit = colonUnit;
 		
 		label = new JLabel(colonUnit.toString());
-		label.setFont(commentFont);
-		label.setForeground(Color.getHSBColor(0.5f, 0.7f, 0.1f));
+		label.setFont(GuiConfig.commaFont);
+		label.setForeground(GuiConfig.commaColor);
 
 		int width = maxSize.width; //label.getPreferredSize().width;
 		int height = maxSize.height;//label.getPreferredSize().height;

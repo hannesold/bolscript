@@ -8,9 +8,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import basics.Debug;
+import basics.FileManager;
 import basics.Rational;
 import bols.BolBase;
-import bolscript.FileManager;
 import bolscript.packets.Packet;
 import bolscript.packets.Packets;
 import bolscript.packets.TextReference;

@@ -2,7 +2,7 @@ package bolscript.compositions;
 
 import java.util.HashMap;
 
-public enum State implements DataStateTransition{
+public enum DataState implements DataStateTransition{
 	NEW {
 		public int id() { return 0;}
 		public void close(DataStatePosessor d) {
