@@ -13,7 +13,7 @@ import javax.swing.table.TableRowSorter;
 
 import basics.GUI;
 import bolscript.Master;
-import bolscript.config.Config;
+import bolscript.config.GuiConfig;
 
 public class CompositionListPanel extends JScrollPane {
 
@@ -35,7 +35,7 @@ public class CompositionListPanel extends JScrollPane {
 		compositionTable.getColumnModel().getColumn(5).setWidth(90);
 		compositionTable.addMouseListener(GUI.proxyClickListener(Master.master, "clickOnCompositionList"));
 		//compositionTable.setShowGrid(false);
-		compositionTable.setGridColor(Config.tableBG);
+		compositionTable.setGridColor(GuiConfig.tableBG);
 		compositionTable.setShowGrid(false);
 		compositionTable.setShowHorizontalLines(false);
 		compositionTable.setShowVerticalLines(true);

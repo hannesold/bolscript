@@ -12,7 +12,7 @@ import bolscript.compositions.CompositionBaseChangeEvent;
 import bolscript.compositions.CompositionBaseListener;
 import bolscript.compositions.CompositionChangeEvent;
 import bolscript.compositions.CompositionChangedListener;
-import bolscript.compositions.State;
+import bolscript.compositions.DataState;
 import bolscript.packets.types.PacketType;
 import bolscript.packets.types.PacketTypeFactory;
 
@@ -87,7 +87,7 @@ public class CompositionTableModel extends AbstractTableModel implements Composi
 		
 		Composition c = compositions.get(rowIndex);
 		if (columnIndex==0) {
-			return (State) c.getDataState();
+			return (DataState) c.getDataState();
 		} else {
 			int typeIndex = metaColumns.get(columnIndex-1).getId();
 			return c.getMetaValues().makeString(typeIndex);

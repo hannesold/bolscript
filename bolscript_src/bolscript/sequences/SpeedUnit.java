@@ -4,6 +4,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import basics.Rational;
+import bolscript.config.Config;
 import bolscript.packets.TextReference;
 import bolscript.scanner.Parser;
 import bolscript.scanner.SequenceToken;
@@ -54,9 +55,14 @@ public class SpeedUnit extends Unit implements Representable{
     		}
     		boolean absolute = (m.group(3) != null);
     		
-    		return new SpeedUnit(new Rational(num,den),absolute, input.textReference);
+    		Rational speed = new Rational(num,den);
+    		if (speed.toDouble() >= Config.BOLSCRIPT_MINIMUM_SPEED && speed.toDouble() <= Config.BOLSCRIPT_MAXIMUM_SPEED) {
+    			return new SpeedUnit(speed,absolute, input.textReference);
+    		} else {
+    			return new FailedUnit(input, "Speed is to large.");
+    		}
     	} else {
-    		return new FailedUnit(input, "");
+    		return new FailedUnit(input, "Speed could not be parsed");
     	}
 	}
 	

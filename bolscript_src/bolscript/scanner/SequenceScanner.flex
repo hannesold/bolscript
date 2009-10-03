@@ -95,8 +95,9 @@ LineBreak = {LineTerminator} ({WhiteSpace} | {LineTerminator})*
   
   {LineBreak}					{return token(LINE_BREAK, yytext());}
   
-  /* whitespace */
+    /* whitespace */
   {WhiteSpace}                   { /* ignore */ }
+
 }
 
 

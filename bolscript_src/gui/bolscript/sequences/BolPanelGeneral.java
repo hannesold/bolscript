@@ -13,6 +13,7 @@ import javax.swing.border.LineBorder;
 import basics.GUI;
 import bols.NamedInLanguages;
 import bolscript.config.Config;
+import bolscript.config.GuiConfig;
 
 public abstract class BolPanelGeneral extends JPanel implements MouseListener{
 	
@@ -23,13 +24,6 @@ public abstract class BolPanelGeneral extends JPanel implements MouseListener{
 	public static float fontSize;
 	
 	public static BolPanel representative;
-	
-	//public static MidiStation midiStation = MidiStation.getGlobalMidiStation();
-	public static Color nonWellDefinedColor = new Color(200,50,50);
-	public static Color bolFontColor = Color.black;
-	public static Color cHighlight = Config.colorEvenRows;
-	public static Color cNeighbour = new Color (240,240,255);
-	public static Color cFontHighlight = new Color(50,50,255);
 	
 	protected JLabel label;
 
@@ -119,16 +113,16 @@ public abstract class BolPanelGeneral extends JPanel implements MouseListener{
 	
 	public void normalDisplay() {
 		this.setOpaque(false);
-		label.setForeground(bolFontColor);
+		label.setForeground(GuiConfig.bolFontColor);
 		this.setBorder(null);
 	}	
 
 	
 	public void highLight(int strength) {
 		if (strength == THIS) {
-			this.setBackground(cHighlight);
+			this.setBackground(GuiConfig.bolHighlightedColor);
 			this.setOpaque(true);
-			label.setForeground(cFontHighlight);
+			label.setForeground(GuiConfig.bolFontHighlightColor);
 			this.setBorder(new LineBorder(Color.black,1,true));				
 		} else if (strength == DIRECTNEIGHBOURS){
 			/*this.setBackground(cNeighbour);

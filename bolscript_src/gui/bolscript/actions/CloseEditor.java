@@ -10,7 +10,7 @@ import javax.swing.JOptionPane;
 
 import bolscript.Master;
 import bolscript.compositions.Composition;
-import bolscript.compositions.State;
+import bolscript.compositions.DataState;
 
 public class CloseEditor extends AbstractAction {
 	EditorFrame editor;
@@ -30,7 +30,7 @@ public class CloseEditor extends AbstractAction {
 		//if (comp.getDataState() == Composition.CHANGED) {
 		
 		//check if a comps file was deleted outside or is missing somehow
-		if (comp.getDataState() == State.EDITING) {
+		if (comp.getDataState() == DataState.EDITING) {
 			if (comp.getLinkLocal() != null) {
 				File f = new File(comp.getLinkLocal());
 				if (!f.exists()) {
@@ -41,7 +41,7 @@ public class CloseEditor extends AbstractAction {
 		}
 		
 		//the actual procedure
-		if (comp.hasChangedSinceBackup() || (comp.getDataState() == State.NEW)) {
+		if (comp.hasChangedSinceBackup() || (comp.getDataState() == DataState.NEW)) {
 			Master.master.showSaveChangesDialog(editor);
 		} else Master.master.closeEditor(editor);
 	}

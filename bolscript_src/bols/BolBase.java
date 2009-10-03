@@ -8,10 +8,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import basics.Debug;
+import basics.FileManager;
 import basics.FileReadException;
 import basics.Rational;
 import basics.Tools;
-import bolscript.FileManager;
 import bolscript.config.Config;
 import bolscript.scanner.Parser;
 

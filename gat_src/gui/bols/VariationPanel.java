@@ -1,6 +1,6 @@
 package gui.bols;
 
-import gui.bolscript.packets.SequencePanel;
+import gui.bolscript.sequences.SequencePanel;
 
 import java.awt.Dimension;
 
@@ -27,7 +27,7 @@ public class VariationPanel extends SequencePanel {
 			Dimension size, int minRows, String fixedLargestWidthBol,
 			int fixedMaxSpeed, int language, float fontSize) {
 		super(sequence, tal, size, minRows, fixedLargestWidthBol, fixedMaxSpeed,
-				language, fontSize);
+				language, fontSize, null);
 	}
 
 	public VariationPanel() {
@@ -37,21 +37,21 @@ public class VariationPanel extends SequencePanel {
 	}
 	
 	public VariationPanel(RepresentableSequence sequence, Tal tal, Dimension size) {
-		super(sequence,tal,size,1, "Dhin", 4, bols.BolName.SIMPLE, Config.bolFontSizeStd[BolName.SIMPLE]);
+		super(sequence,tal,size,1, "Dhin", 4, bols.BolName.SIMPLE, Config.bolFontSizeStd[BolName.SIMPLE], null);
 	}
 	public VariationPanel(Variation variation, Tal tal, Dimension size) {
 		this(variation,tal,size,1, "Dhin", 4);
 	}
 	
 	public VariationPanel(Variation variation, Tal tal, Dimension size, int minRows, String fixedLargestWidthBol, int fixedMaxSpeed) {
-		super( variation.getAsRepresentableSequence(), tal, size, minRows, fixedLargestWidthBol, fixedMaxSpeed, BolName.SIMPLE, Config.bolFontSizeStd[BolName.SIMPLE]);
+		super( variation.getAsRepresentableSequence(), tal, size, minRows, fixedLargestWidthBol, fixedMaxSpeed, BolName.SIMPLE, Config.bolFontSizeStd[BolName.SIMPLE], null);
 	}
 	/**
 	 * @deprecated Use {@link #VariationPanel(RepresentableSequence,Tal,Dimension,int,String,int,int, float)} instead
 	 */
 	public VariationPanel(RepresentableSequence sequence, Tal tal, Dimension size, int minRows, String fixedLargestWidthBol, int fixedMaxSpeed) {
 		super(sequence, tal, size, minRows, fixedLargestWidthBol, fixedMaxSpeed,
-				BolName.SIMPLE, Config.bolFontSizeStd[BolName.SIMPLE]);
+				BolName.SIMPLE, Config.bolFontSizeStd[BolName.SIMPLE], null);
 	}
 
 	

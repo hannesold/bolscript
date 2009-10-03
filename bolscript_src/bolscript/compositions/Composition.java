@@ -15,13 +15,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import basics.Debug;
+import basics.FileManager;
 import basics.FileReadException;
 import basics.Rational;
 import bols.BolName;
 import bols.tals.Tal;
 import bols.tals.TalBase;
 import bolscript.Master;
-import bolscript.FileManager;
 import bolscript.config.Config;
 import bolscript.packets.Packet;
 import bolscript.packets.Packets;
@@ -49,7 +49,7 @@ public class Composition implements DataStatePosessor{
 
 	protected ArrayList<CompositionChangedListener> changeListeners;
 
-	protected State dataState = State.NOT_CHECKED; //not connected, missing, connected, loaded
+	protected DataState dataState = DataState.NOT_CHECKED; //not connected, missing, connected, loaded
 
 	protected String linkLocal = null;
 	protected String linkServer = null;
@@ -104,7 +104,7 @@ public class Composition implements DataStatePosessor{
 	public Composition(File file, TalBase talBase) throws FileReadException{
 		this(FileManager.getContents(file, Config.maxBolscriptFileSize, Config.compositionEncoding), talBase);
 		setLinkLocal(file.getAbsolutePath());
-		setDataState(State.CONNECTED);
+		setDataState(DataState.CONNECTED);
 		backUpRawData();
 	}
 
@@ -193,10 +193,10 @@ public class Composition implements DataStatePosessor{
 		updateSpeedStringsFromRationals();	
 	}
 
-	public State getDataState() {
+	public DataState getDataState() {
 		return dataState;
 	}
-	public void setDataState(State s) {
+	public void setDataState(DataState s) {
 		Debug.debug(this, "setting state from " + dataState + " to " + s);
 		this.dataState = s;
 	}
@@ -380,7 +380,7 @@ public class Composition implements DataStatePosessor{
 	}
 
 	public boolean establishRawData() {
-		if (dataState == State.NEW) return true;
+		if (dataState == DataState.NEW) return true;
 
 		try {
 			rawData = FileManager.getContents(new File(this.linkLocal), Config.maxBolscriptFileSize, Config.compositionEncoding);

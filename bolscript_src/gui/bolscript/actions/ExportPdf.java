@@ -13,7 +13,7 @@ import basics.SuffixFilter;
 import bolscript.Master;
 import bolscript.compositions.Composition;
 import bolscript.compositions.CompositionBase;
-import bolscript.compositions.State;
+import bolscript.compositions.DataState;
 import bolscript.config.Config;
 
 public class ExportPdf extends AbstractAction {

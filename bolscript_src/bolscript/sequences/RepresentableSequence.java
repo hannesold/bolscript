@@ -67,7 +67,7 @@ public class RepresentableSequence implements Representable, Collection<Represen
 	private Rational cachedDuration = null;
 	private HashMap<Rational, RepresentableSequence> cachedFlattened = new HashMap<Rational, RepresentableSequence>();
 
-
+	private ArrayList<Representable> cachedFailedUnits = null;
 
 	private TextReference textReference;
 
@@ -116,11 +116,11 @@ public class RepresentableSequence implements Representable, Collection<Represen
 	 */
 	private void clearCache() {
 		if (someThingsAreCurrnetlyCached) {
-			this.cachedDuration = null;
-			this.cachedShortSnippet = null;
-			this.cachedSnippet = null;
-			this.cachedFlattened.clear();
-			
+			cachedDuration = null;
+			cachedShortSnippet = null;
+			cachedSnippet = null;
+			cachedFlattened.clear();
+			cachedFailedUnits = null;
 			this.someThingsAreCurrnetlyCached = false;
 		}
 	}
@@ -133,7 +133,38 @@ public class RepresentableSequence implements Representable, Collection<Represen
 	private void setCacheEstablished(){
 		this.someThingsAreCurrnetlyCached = true;
 	}
-
+	
+	/**
+	 * Returns all failed units and bols that were not in the bolbase.
+	 * The entries are gathered from the sequence and its subsequences,
+	 * but not in its referenced packets sequences.
+	 */
+	public ArrayList<Representable> getFailedUnits() {
+		if (cachedFailedUnits == null) {
+			cachedFailedUnits = new ArrayList<Representable>();
+			
+			for (int i=0; i < size(); i++) {
+				Representable r = get(i);
+				switch (r.getType()) {
+				case Representable.FAILED:
+					cachedFailedUnits.add(r);
+					break;
+				case Representable.BOL:
+					if (!((Bol) r).getBolName().isWellDefinedInBolBase()) {
+						cachedFailedUnits.add(r);
+					}
+					break;
+				case Representable.SEQUENCE:
+					cachedFailedUnits.addAll(((RepresentableSequence) r).getFailedUnits());
+					break;
+				}	
+			}
+			
+			setCacheEstablished();
+		}
+		
+		return cachedFailedUnits;
+	}
 
 	/**
 	 * Strips brackets, removes double commas, double speeds, linebreaks, footnoes

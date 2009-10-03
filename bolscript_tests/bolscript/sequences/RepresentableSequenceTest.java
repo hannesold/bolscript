@@ -8,10 +8,10 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import basics.Debug;
+import basics.FileManager;
 import basics.Rational;
 import bols.BolBase;
 import bols.BundlingDepthToSpeedMap;
-import bolscript.FileManager;
 import bolscript.config.Config;
 import bolscript.scanner.SequenceParser;
 

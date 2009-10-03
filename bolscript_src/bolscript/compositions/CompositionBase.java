@@ -9,6 +9,7 @@ import java.io.FilenameFilter;
 import java.util.ArrayList;
 
 import basics.Debug;
+import basics.FileManager;
 import basics.FileReadException;
 import basics.FileWriteException;
 import basics.FolderFilter;
@@ -17,7 +18,6 @@ import bols.BolBase;
 import bols.BolBaseGeneral;
 import bols.tals.Tal;
 import bols.tals.TalBase;
-import bolscript.FileManager;
 import bolscript.config.Config;
 import bolscript.filters.VisibleCompositionDonator;
 import bolscript.packets.types.PacketTypeFactory;

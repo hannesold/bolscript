@@ -9,7 +9,7 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import basics.GUI;
-import bolscript.config.Config;
+import bolscript.config.GuiConfig;
 
 public class CellRenderer extends DefaultTableCellRenderer {
 
@@ -27,7 +27,7 @@ public class CellRenderer extends DefaultTableCellRenderer {
 		Dimension size = GUI.getPrefferedSize(c, 50);
 		size = new Dimension(size.width + 10, size.height+10);
 		
-		Color bgRows = (row%2==0) ? Config.colorEvenRows : Config.colorUnvenRows;
+		Color bgRows = (row%2==0) ? GuiConfig.colorEvenRows : GuiConfig.colorUnvenRows;
 
 		if (isSelected) {
 			c.setBackground(table.getSelectionBackground());

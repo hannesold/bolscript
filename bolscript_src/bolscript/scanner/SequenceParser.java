@@ -1,15 +1,6 @@
 package bolscript.scanner;
 
-import static bolscript.sequences.Representable.BOL_CANDIDATE;
-import static bolscript.sequences.Representable.BRACKET_CLOSED;
-import static bolscript.sequences.Representable.BRACKET_OPEN;
-import static bolscript.sequences.Representable.COMMA;
-import static bolscript.sequences.Representable.FOOTNOTE;
-import static bolscript.sequences.Representable.KARDINALITY_MODIFIER;
-import static bolscript.sequences.Representable.LINE_BREAK;
-import static bolscript.sequences.Representable.REFERENCED_BOL_PACKET;
-import static bolscript.sequences.Representable.SEQUENCE;
-import static bolscript.sequences.Representable.SPEED;
+import static bolscript.sequences.Representable.*;
 
 import java.io.IOException;
 import java.util.regex.Matcher;
@@ -48,8 +39,6 @@ public class SequenceParser {
 	private Packets packets;
 	//private Packet packet;
 	private BolBase bolBase;
-
-
 
 	public SequenceParser(int footnoteNrGlobal, Packets packets) {
 		super();
@@ -251,6 +240,10 @@ public class SequenceParser {
 				seq.add(new LineBreakUnit(token.textReference));
 				break;
 
+			case FAILED:
+				seq.add(new FailedUnit(token, "Could not be parsed."));
+				break;
+				
 			default:
 				seq.add(new FailedUnit(token, "Could not be parsed."));
 			}
@@ -264,7 +257,6 @@ public class SequenceParser {
 			}
 
 		}
-
 
 		return seq;
 	}
