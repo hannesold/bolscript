@@ -173,10 +173,12 @@ public class Composition implements DataStatePosessor{
 			//add bols to searchstring
 			for (Packet p: packets) {
 				if (p.getType() == PacketTypeFactory.BOLS) {
+					
 					if (p.getObject() != null) {
-						RepresentableSequence compact = ((RepresentableSequence) p.getObject()).getCompact();
-						addSearchString(compact.toString(RepresentableSequence.SHOW_ALL, BolName.EXACT));
-						addSearchString(compact.toString(RepresentableSequence.SHOW_ALL, BolName.SIMPLE));
+						RepresentableSequence r = (RepresentableSequence) p.getObject();
+						r = r.flatten(SpeedUnit.getDefaultSpeedUnit());						
+						addSearchString(r.toString(RepresentableSequence.FOR_SEARCH_STRING, BolName.EXACT));
+						addSearchString(r.toString(RepresentableSequence.FOR_SEARCH_STRING, BolName.SIMPLE));
 					}
 				}
 

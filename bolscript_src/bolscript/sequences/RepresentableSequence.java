@@ -2,6 +2,10 @@ package bolscript.sequences;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
 
 import basics.Debug;
 import basics.Rational;
@@ -17,23 +21,24 @@ import bolscript.packets.TextReference;
 import bolscript.scanner.Parser;
 
 
-public class RepresentableSequence extends ArrayList<Representable> implements Representable {
-
+public class RepresentableSequence implements Representable, Collection<Representable>, List<Representable> {
 
 	public static boolean[] SHOW_ALL = new boolean[Representable.nrOfTypes];
 	public static boolean[] SNIPPET = 
 		getToStringPattern(new int[]{
-			Representable.BOL, 
-			Representable.BOL_CANDIDATE, 
-			Representable.BUNDLE});
+				Representable.BOL, 
+				Representable.BUNDLE});
 	public static boolean[] SHORT_SNIPPET = 
 		getToStringPattern(new int[]{
 				Representable.BOL,
 				Representable.BUNDLE,
 				Representable.BRACKET_CLOSED, 
 				Representable.BRACKET_OPEN, 
-				Representable.BOL_CANDIDATE,
 				Representable.COMMA});
+	public static boolean[] FOR_SEARCH_STRING = 
+		getToStringPattern (new int[]{
+				Representable.BOL, 
+				Representable.BUNDLE});
 
 	static {
 		for (int i=0; i < Representable.nrOfTypes; i++) {
@@ -55,10 +60,19 @@ public class RepresentableSequence extends ArrayList<Representable> implements R
 	}
 
 	private boolean flattened = false;
-	
+
+	private boolean someThingsAreCurrnetlyCached = false; 
+	private String cachedSnippet = null;
+	private String cachedShortSnippet = null;
+	private Rational cachedDuration = null;
+	private HashMap<Rational, RepresentableSequence> cachedFlattened = new HashMap<Rational, RepresentableSequence>();
+
+
+
 	private TextReference textReference;
 
-	
+	private ArrayList<Representable> sequence;
+
 	public void setTextReference(TextReference textReference) {
 		this.textReference = textReference;
 	}
@@ -68,40 +82,65 @@ public class RepresentableSequence extends ArrayList<Representable> implements R
 	}
 
 	public RepresentableSequence() {
-		super();
+		sequence = new ArrayList<Representable>();
 	}
 
 	public RepresentableSequence(Collection<? extends Representable> c) {
-		super(c);
+		sequence = new ArrayList<Representable>(c);
 	}
 
 	public RepresentableSequence(int initialCapacity) {
-		super(initialCapacity);
+		sequence = new ArrayList<Representable>(initialCapacity);
 	}
-	
+
 	/**
 	 * This is the only way of creating a sequence which is marked as flat.
 	 * This should only be called in flatten(...)
 	 * @param isFlattened
 	 */
 	public RepresentableSequence(boolean isFlattened) {
-		super();
+		this();
 		this.flattened = isFlattened;
 	}
 
-	private double duration;
 
 	public int getType() {
 		return Representable.SEQUENCE;
 	}
 
 	/**
-	 * Strips brackets, removes double collons and double speeds
+	 * Empties all caches, including Duration, Snippets.
+	 * Caches are only emptied however if setCacheEstablished
+	 * was called previously at some point. 
+	 * 
+	 */
+	private void clearCache() {
+		if (someThingsAreCurrnetlyCached) {
+			this.cachedDuration = null;
+			this.cachedShortSnippet = null;
+			this.cachedSnippet = null;
+			this.cachedFlattened.clear();
+			
+			this.someThingsAreCurrnetlyCached = false;
+		}
+	}
+
+	/**
+	 * Notifies that at least one cache object exists.
+	 * This is used by clearCache() to determine quickly 
+	 * if there is any cache to clear at all. 
+	 */
+	private void setCacheEstablished(){
+		this.someThingsAreCurrnetlyCached = true;
+	}
+
+
+	/**
+	 * Strips brackets, removes double commas, double speeds, linebreaks, footnoes
 	 * @return
 	 */
 	public RepresentableSequence getCompact() {
 		RepresentableSequence compactSeq = new RepresentableSequence();
-
 		Rational currentSpeed = new Rational(1);
 
 		boolean commaAlreadyInserted = false;
@@ -220,7 +259,7 @@ public class RepresentableSequence extends ArrayList<Representable> implements R
 	public RepresentableSequence getBundled(BundlingDepthToSpeedMap map, int depth, boolean allowedToFillLastBeat) {
 		//		Debug.temporary(this, "getbundled with depth: " + depth);
 		if (depth <= 0) {
-			return this.getCompact();
+			return this;
 		} else {
 			//			Debug.temporary(this, "before bundling: " + this);
 			RepresentableSequence seq = getBundled(map.getBundlingSpeed(depth), allowedToFillLastBeat);
@@ -406,17 +445,23 @@ public class RepresentableSequence extends ArrayList<Representable> implements R
 
 		// TODO check out last bol if it is a single bol marking a new beat
 
-		return bundled.getCompact();
+		return bundled;
 	}
 
 	public Rational getDurationR() {
-		Rational sum = new Rational(0);
-		for (Representable r : this) {
-			if (r.getType() == Representable.BOL || r.getType() == Representable.BUNDLE)  {
-				sum = sum.plus(((Rational) ((HasPlayingStyle)r).getPlayingStyle().getSpeed()).reciprocal());				
+
+		if (cachedDuration == null) {
+			cachedDuration = new Rational(0);
+			setCacheEstablished();
+			for (Representable r : this) {
+				if (r.getType() == Representable.BOL || r.getType() == Representable.BUNDLE)  {
+					cachedDuration = cachedDuration.plus(((Rational) ((HasPlayingStyle)r).getPlayingStyle().getSpeed()).reciprocal());				
+				}
 			}
+			setCacheEstablished();
 		}
-		return sum;
+
+		return cachedDuration;
 	}
 
 
@@ -530,19 +575,26 @@ public class RepresentableSequence extends ArrayList<Representable> implements R
 		}
 		return bols;
 	}
-	
+
 	public String generateSnippet() {
-		
-		return flatten(SpeedUnit.getDefaultSpeedUnit())
-					.toString(RepresentableSequence.SNIPPET, BolName.SIMPLE, 20);
+		if (cachedSnippet==null) {
+			cachedSnippet = flatten(SpeedUnit.getDefaultSpeedUnit())
+			.toString(RepresentableSequence.SNIPPET, BolName.SIMPLE, 20);
+			setCacheEstablished();
+		}
+		return cachedSnippet;
 	}
 
 	public String generateShortSnippet() {
-		String s = flatten(SpeedUnit.getDefaultSpeedUnit())
-		.toString(RepresentableSequence.SHORT_SNIPPET, BolName.INITIALS, 20);
-		s = s.replaceAll(" ", "");
-		s = s.replaceAll("(,|\\(|\\))+", " ");
-		return s;
+		if (cachedShortSnippet == null) {
+			cachedShortSnippet = flatten(SpeedUnit.getDefaultSpeedUnit())
+			.toString(RepresentableSequence.SHORT_SNIPPET, BolName.INITIALS, 20);
+			cachedShortSnippet = cachedShortSnippet.replaceAll(" ", "");
+			cachedShortSnippet = cachedShortSnippet.replaceAll("(,|\\(|\\))+", " ");
+			setCacheEstablished();
+		}
+
+		return cachedShortSnippet;
 	}
 
 	public RepresentableSequence flatten(SpeedUnit basicSpeedUnit) {
@@ -550,86 +602,96 @@ public class RepresentableSequence extends ArrayList<Representable> implements R
 	}
 
 	public RepresentableSequence flatten(SpeedUnit basicSpeedUnit, int currentDepth) {
-		if (size()==0) return new RepresentableSequence(true);
 
-		SpeedUnit currentSpeedUnit = basicSpeedUnit;
-		//Rational currentSpeed = basicSpeedUnit.getSpeed();
+		RepresentableSequence fromCache = cachedFlattened.get(basicSpeedUnit.getSpeed());
 
-		//the flattened version of this sequence
-		RepresentableSequence flat = new RepresentableSequence(true);
-		if (currentDepth == 0) {
-			flat.add(currentSpeedUnit);
-			Debug.temporary(this, "adding initial speed unit " + basicSpeedUnit);
-		}
-		currentDepth++;
+		if (fromCache != null)  {
+			return fromCache;
+		} else {
+			//else 
 
+			if (size()==0) return new RepresentableSequence(true);
 
+			//the flattened version of this sequence
+			RepresentableSequence flat = new RepresentableSequence(true);
+			SpeedUnit currentSpeedUnit = basicSpeedUnit;
 
-		Representable current = this.get(0);
-		Representable next;
-
-		for (int i=1; i < size(); i++) {
-			next = this.get(i);
-			//Debug.temporary(this, "flat: " + flat.toStringAll());
-			Debug.temporary(this, "current: " + current + ", next: " + next);
-			if (current.getType() == Representable.SPEED) {
-				SpeedUnit s = (SpeedUnit) current;
-
-				if (s.isAbsolute() &! currentSpeedUnit.getSpeed().equals(s.getSpeed())) {
-					//add new absolute speeds directly
-					Debug.temporary(this, "adding abs speed " + s);
-					flat.add(s);
-					currentSpeedUnit = s;
-				} else {
-					//add relative speeds by multiplying with base speed
-					Rational speedCandidate = s.getSpeed().times(basicSpeedUnit.getSpeed());
-					if (!currentSpeedUnit.getSpeed().equals(speedCandidate)) {
-						//only add if it differs from the current speed
-						SpeedUnit newSpeedUnit = new SpeedUnit(speedCandidate,true,s.getTextReference());
-						flat.add(newSpeedUnit);
-						Debug.temporary(this, "adding (multiplied rel) speed " + s);
-						currentSpeedUnit = newSpeedUnit;
-					}
-				}
-
-			} else 	if (current.getType() != Representable.KARDINALITY_MODIFIER) {
-				if (next.getType() != Representable.KARDINALITY_MODIFIER) {
-					//add the flattened current representable to the flat sequence
-					current.addFlattenedToSequence(flat, currentSpeedUnit, currentDepth);
-				} else { 
-					//the current representable is affected by the upcoming kardinality modifier
-					KardinalityModifierUnit kard = (KardinalityModifierUnit) next;
-
-					//insert flattened as often as multiplication is wanted
-					for (int k=1; k <= kard.getMultiplication();k++) {
-						current.addFlattenedToSequence(flat, currentSpeedUnit, currentDepth);
-					}
-					//truncate
-					if (kard.getTruncation()>0) {
-						flat.truncateFromEnd(kard.getTruncation());
-					}		
-				}
-
-				if (!flat.lastAbsoluteSpeedUnit(basicSpeedUnit).getSpeed()
-						.equals(currentSpeedUnit.getSpeed())) {
-					Debug.temporary(this, "After adding " +current+" last abs speed in flat is " + flat.lastAbsoluteSpeedUnit(basicSpeedUnit) +
-							", currentSpeed before was " + currentSpeedUnit);
-
-					//if the last absolute speed occurring in the new
-					//version of the flat sequence differs from the speed before
-					//add the previous speed
-					//this can only happen, when the inserted flat element is
-					//complex enough to contain speeds
-					flat.add(currentSpeedUnit);
-				}
+			if (currentDepth == 0) {
+				flat.add(currentSpeedUnit);
+//				Debug.temporary(this, "adding initial speed unit " + basicSpeedUnit);
 			}
-			current = next;	
-		}
-		if (current.getType() != Representable.KARDINALITY_MODIFIER) {
-			current.addFlattenedToSequence(flat, currentSpeedUnit, currentDepth);
-		}
+			currentDepth++;
 
-		return flat.getSpeedCompiledCopy(basicSpeedUnit.getSpeed()); //sure?
+			Representable current = this.get(0);
+			Representable next;
+
+			for (int i=1; i < size(); i++) {
+				next = this.get(i);
+				//Debug.temporary(this, "flat: " + flat.toStringAll());
+				//Debug.temporary(this, "current: " + current + ", next: " + next);
+				if (current.getType() == Representable.SPEED) {
+					SpeedUnit s = (SpeedUnit) current;
+
+					if (s.isAbsolute() &! currentSpeedUnit.getSpeed().equals(s.getSpeed())) {
+						//add new absolute speeds directly
+//						Debug.temporary(this, "adding abs speed " + s);
+						flat.add(s);
+						currentSpeedUnit = s;
+					} else {
+						//add relative speeds by multiplying with base speed
+						Rational speedCandidate = s.getSpeed().times(basicSpeedUnit.getSpeed());
+						if (!currentSpeedUnit.getSpeed().equals(speedCandidate)) {
+							//only add if it differs from the current speed
+							SpeedUnit newSpeedUnit = new SpeedUnit(speedCandidate,true,s.getTextReference());
+							flat.add(newSpeedUnit);
+//							Debug.temporary(this, "adding (multiplied rel) speed " + s);
+							currentSpeedUnit = newSpeedUnit;
+						}
+					}
+
+				} else 	if (current.getType() != Representable.KARDINALITY_MODIFIER) {
+					if (next.getType() != Representable.KARDINALITY_MODIFIER) {
+						//add the flattened current representable to the flat sequence
+						current.addFlattenedToSequence(flat, currentSpeedUnit, currentDepth);
+					} else { 
+						//the current representable is affected by the upcoming kardinality modifier
+						KardinalityModifierUnit kard = (KardinalityModifierUnit) next;
+
+						//insert flattened as often as multiplication is wanted
+						for (int k=1; k <= kard.getMultiplication();k++) {
+							current.addFlattenedToSequence(flat, currentSpeedUnit, currentDepth);
+						}
+						//truncate
+						if (kard.getTruncation()>0) {
+							flat.truncateFromEnd(kard.getTruncation());
+						}		
+					}
+
+					if (!flat.lastAbsoluteSpeedUnit(basicSpeedUnit).getSpeed()
+							.equals(currentSpeedUnit.getSpeed())) {
+//						Debug.temporary(this, "After adding " +current+" last abs speed in flat is " + flat.lastAbsoluteSpeedUnit(basicSpeedUnit) +
+//								", currentSpeed before was " + currentSpeedUnit);
+
+						//if the last absolute speed occurring in the new
+						//version of the flat sequence differs from the speed before
+						//add the previous speed
+						//this can only happen, when the inserted flat element is
+						//complex enough to contain speeds
+						flat.add(currentSpeedUnit);
+					}
+				}
+				current = next;	
+			}
+			if (current.getType() != Representable.KARDINALITY_MODIFIER) {
+				current.addFlattenedToSequence(flat, currentSpeedUnit, currentDepth);
+			}
+
+			flat = flat.getSpeedCompiledCopy(basicSpeedUnit.getSpeed()); ////sure to fix speeds at this point? 
+			cachedFlattened.put(basicSpeedUnit.getSpeed(), flat);
+			setCacheEstablished();
+
+			return flat;
+		} //(fromCache != null) ELSE
 	}
 
 
@@ -756,6 +818,130 @@ public class RepresentableSequence extends ArrayList<Representable> implements R
 		return basicSpeedUnit;
 	}
 
+	@Override
+	public boolean add(Representable e) {
+		clearCache();
+		return sequence.add(e);
+	}
 
+	@Override
+	public boolean addAll(Collection<? extends Representable> c) {
+		clearCache();
+		return sequence.addAll(c);
+	}
+
+	@Override
+	public void clear() {
+		clearCache();
+		sequence.clear();
+	}
+
+	@Override
+	public boolean contains(Object o) {
+		return sequence.contains(o);
+	}
+
+	@Override
+	public boolean containsAll(Collection<?> c) {
+		return sequence.containsAll(c);
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return sequence.isEmpty();
+	}
+
+	@Override
+	public Iterator<Representable> iterator() {
+		return sequence.iterator();
+	}
+
+	@Override
+	public boolean remove(Object o) {
+		clearCache();
+		return sequence.remove(o);
+	}
+
+	@Override
+	public boolean removeAll(Collection<?> c) {
+		clearCache();
+		return sequence.removeAll(c);
+	}
+
+	@Override
+	public boolean retainAll(Collection<?> c) {
+		clearCache();
+		return sequence.retainAll(c);
+	}
+
+	@Override
+	public int size() {
+		return sequence.size();
+	}
+
+	@Override
+	public Object[] toArray() {
+		return sequence.toArray();
+	}
+
+	@Override
+	public <T> T[] toArray(T[] a) {
+		return sequence.toArray(a);
+	}
+
+	@Override
+	public void add(int index, Representable element) {
+		clearCache();
+		sequence.add(index,element);
+
+	}
+
+	@Override
+	public boolean addAll(int index, Collection<? extends Representable> c) {
+		clearCache();
+		return addAll(index, c);
+	}
+
+	@Override
+	public Representable get(int index) {
+		return sequence.get(index);
+	}
+
+	@Override
+	public int indexOf(Object o) {
+		return sequence.indexOf(o);
+	}
+
+	@Override
+	public int lastIndexOf(Object o) {
+		return sequence.lastIndexOf(o);
+	}
+
+	@Override
+	public ListIterator<Representable> listIterator() {
+		return sequence.listIterator();
+	}
+
+	@Override
+	public ListIterator<Representable> listIterator(int index) {
+		return sequence.listIterator(index);
+	}
+
+	@Override
+	public Representable remove(int index) {
+		clearCache();
+		return sequence.remove(index);
+	}
+
+	@Override
+	public Representable set(int index, Representable element) {
+		clearCache();
+		return sequence.set(index, element);
+	}
+
+	@Override
+	public List<Representable> subList(int fromIndex, int toIndex) {
+		return sequence.subList(fromIndex,toIndex);
+	}
 
 }

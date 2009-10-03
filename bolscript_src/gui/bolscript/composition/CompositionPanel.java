@@ -391,6 +391,7 @@ public class CompositionPanel extends JLayeredPane {
 				}
 				if (p.isVisible()) {
 					if (p.getType()==PacketTypeFactory.FOOTNOTE) {
+						Debug.temporary(this, "found footnotepacket with obj: " + p.getObject());
 						FootnoteText ft = new FootnoteText((FootnoteUnit) p.getObject());
 						addLineBreak(new Float(newHeight), PageBreakPanel.LOW);
 						components.add(ft);
