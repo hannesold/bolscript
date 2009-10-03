@@ -11,7 +11,6 @@ import org.junit.Test;
 
 import basics.Debug;
 import bols.Bol;
-import bolscript.Reader;
 import bolscript.packets.Packets;
 import bolscript.sequences.Representable;
 import bolscript.sequences.RepresentableSequence;
@@ -25,7 +24,7 @@ public class SequenceParserTest {
 			"A: dha dha ti te\n"+
 			"B: dha dha tun na\n"+
 			"C: A B ";
-		Packets packets = Reader.splitIntoPackets(input);
+		Packets packets = Parser.splitIntoPackets(input);
 		SequenceParser parser = new SequenceParser(0,packets);
 		RepresentableSequence seq = parser.parseUnits(null, "3 A (dha 2! dha) x2<1 tix2 te");
 		Debug.temporary(this, seq.toStringAll());

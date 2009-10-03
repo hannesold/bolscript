@@ -11,8 +11,13 @@ public class ReferencedBolPacketUnit extends Unit implements Representable {
 	public ReferencedBolPacketUnit(Packet referencedPacket,
 			TextReference textReference) {
 		super(Representable.REFERENCED_BOL_PACKET, referencedPacket, textReference);
+		this.referencedPacket = referencedPacket;
 	}
 	
+	public Packet getReferencedPacket() {
+		return referencedPacket;
+	}
+
 	public RepresentableSequence getSequence() {
 		return (RepresentableSequence) ((Packet) obj).getObject();
 	}

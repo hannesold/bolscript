@@ -5,7 +5,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import basics.Debug;
-import bolscript.Reader;
+import bolscript.scanner.Parser;
 
 /**
  * Stores a number of layoutCylces, which gan be retrieved according to
@@ -62,7 +62,7 @@ public class LayoutChooser {
 			layoutCycles.add(null);
 		}
 		
-		String regex = Reader.SN + "*(\\d+)\\s*" +
+		String regex = Parser.SN + "*(\\d+)\\s*" +
 		"((?:\\d+\\s*,\\s*)*\\d+\\s*)";
 		Matcher m = Pattern.compile(regex).matcher(input);
 		

@@ -78,7 +78,7 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 				ZipTools.class
 			}, new Class[]{
 					Master.class,
-				Reader.class,
+				FileManager.class,
 				CompositionBase.class,
 				FilterPanel.class,
 				Composition.class,

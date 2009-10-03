@@ -16,9 +16,9 @@ public class FootnoteText extends JPanel {
 
 	public JLabel text = null;
 	public Packet packet = null;
-	private FootnoteUnit commentUnit = null;
+	private FootnoteUnit footnoteUnit = null;
 	public static int fontSize = 12;
-	public static Font commentFont = new Font("Arial", Font.PLAIN, fontSize);
+	public static Font footnoteFont = new Font("Arial", Font.PLAIN, fontSize);
 	private static Color cDistinctBackground = new Color(250,250,220);
 	private static Color cDistinctBackgroundLabel = new Color(220,220,250);
 	
@@ -29,28 +29,20 @@ public class FootnoteText extends JPanel {
 		init();
 	}
 	
-	public FootnoteText (Packet p) {
+	public FootnoteText (FootnoteUnit footenoteUnit) {
 		super();
-		
-		this.packet = p;
-		try {
-			commentUnit = new FootnoteUnit(p.getKey(), null, "");
-		} catch (Exception e) {
-			commentUnit = null;
-		}
+		this.footnoteUnit = footnoteUnit;
 		init();
 	}
 	
 	public void init() {
 	
 		text = new JLabel("Sorry, Comment could not be read!");
-		text.setFont(commentFont);
+		text.setFont(footnoteFont);
 		
-		if ((commentUnit != null)&&(packet != null)) {
-			text.setText((commentUnit.footnoteNrGlobal+1) + ")  " + packet.getValue() +" ");
+		if ((footnoteUnit != null)&&(packet != null)) {
+			text.setText((footnoteUnit.footnoteNrGlobal+1) + ")  " + footnoteUnit.getFootnoteText() +" ");
 		}
-		//text.setBounds(0, 0, text.getPreferredSize().width+30, text.getPreferredSize().height);
-		//GUI.setAllSizes(this, new Dimension(text.getPreferredSize().width+60, text.getPreferredSize().height+20));
 		
 		if (GUI.showLayoutStructure) {
 			this.setBackground(cDistinctBackground);

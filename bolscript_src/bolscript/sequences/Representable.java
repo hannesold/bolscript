@@ -22,8 +22,6 @@ public interface Representable {
 	public static final int BOL_CANDIDATE = 14;
 	public static final int nrOfTypes = 15;
 	
-	
-	
 	int getType();
 	
 	TextReference getTextReference();

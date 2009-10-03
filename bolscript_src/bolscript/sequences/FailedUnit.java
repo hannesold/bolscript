@@ -9,17 +9,13 @@ public class FailedUnit extends Unit {
 	private String message;
 	
 	public FailedUnit(SequenceToken input, String message) {
-		this.textReference = input.textReference;
-		this.obj = input.text;
-		this.type = Representable.FAILED;
+		super(Representable.FAILED, input.text, input.textReference);
 		this.intendedType = input.type;
 		this.message = message;
 	}
 
 	public FailedUnit(Representable r, String message) {
-		this.textReference = r.getTextReference();
-		this.obj = r;
-		this.type = Representable.FAILED;
+		super(Representable.FAILED, r, r.getTextReference());
 		this.intendedType = r.getType();
 		this.message = message;
 	}

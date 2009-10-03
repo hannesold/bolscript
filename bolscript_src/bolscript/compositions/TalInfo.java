@@ -7,10 +7,10 @@ import java.util.regex.Pattern;
 import bols.tals.LayoutChooser;
 import bols.tals.Tal;
 import bols.tals.Vibhag;
-import bolscript.Reader;
 import bolscript.packets.Packet;
 import bolscript.packets.Packets;
 import bolscript.packets.types.PacketTypeFactory;
+import bolscript.scanner.Parser;
 import bolscript.sequences.RepresentableSequence;
 
 public class TalInfo implements Tal {
@@ -40,7 +40,7 @@ public class TalInfo implements Tal {
 		for (int i=0; i<packets.size(); i++) {
 			Packet p = packets.get(i);
 			if (p.getType() == PacketTypeFactory.LENGTH)  {
-				String s = p.getValue().replaceAll(Reader.SN, "");
+				String s = p.getValue().replaceAll(Parser.SN, "");
 				int length = Integer.parseInt(s);
 				this.setLength(length);
 			} else if  ((p.getType() == PacketTypeFactory.BOLS) && 
@@ -51,7 +51,7 @@ public class TalInfo implements Tal {
 				// do this after length!! So we postpone it and do it after the for loop
 				layoutPacket = p;
 			} else if (p.getType() == PacketTypeFactory.VIBHAGS) {
-				Matcher m = Pattern.compile(Reader.SN +"*(\\d+)\\s*([kK]|Kali|Khali|kali|khali)?").matcher(p.getValue());
+				Matcher m = Pattern.compile(Parser.SN +"*(\\d+)\\s*([kK]|Kali|Khali|kali|khali)?").matcher(p.getValue());
 
 				int k = 0;
 				int position = 0;

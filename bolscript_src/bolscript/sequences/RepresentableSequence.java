@@ -13,8 +13,8 @@ import bols.BolNameBundle;
 import bols.BundlingDepthToSpeedMap;
 import bols.HasPlayingStyle;
 import bols.PlayingStyle;
-import bolscript.Reader;
 import bolscript.packets.TextReference;
+import bolscript.scanner.Parser;
 
 
 public class RepresentableSequence extends ArrayList<Representable> implements Representable {
@@ -33,8 +33,7 @@ public class RepresentableSequence extends ArrayList<Representable> implements R
 				Representable.BRACKET_CLOSED, 
 				Representable.BRACKET_OPEN, 
 				Representable.BOL_CANDIDATE,
-				Representable.COMMA, 
-				Representable.LINE_BREAK});
+				Representable.COMMA});
 
 	static {
 		for (int i=0; i < Representable.nrOfTypes; i++) {
@@ -510,7 +509,7 @@ public class RepresentableSequence extends ArrayList<Representable> implements R
 
 		}
 
-		return s.toString().replaceAll(Reader.SN + "$", ""); 
+		return s.toString().replaceAll(Parser.SN + "$", ""); 
 
 	}
 
@@ -533,13 +532,16 @@ public class RepresentableSequence extends ArrayList<Representable> implements R
 	}
 	
 	public String generateSnippet() {
-		return toString(RepresentableSequence.SNIPPET, BolName.SIMPLE, 20);
+		
+		return flatten(SpeedUnit.getDefaultSpeedUnit())
+					.toString(RepresentableSequence.SNIPPET, BolName.SIMPLE, 20);
 	}
 
 	public String generateShortSnippet() {
-		String s = toString(RepresentableSequence.SHORT_SNIPPET, BolName.INITIALS, 20);
+		String s = flatten(SpeedUnit.getDefaultSpeedUnit())
+		.toString(RepresentableSequence.SHORT_SNIPPET, BolName.INITIALS, 20);
 		s = s.replaceAll(" ", "");
-		s = s.replaceAll("[,|\\(|\\)]+", " ");
+		s = s.replaceAll("(,|\\(|\\))+", " ");
 		return s;
 	}
 

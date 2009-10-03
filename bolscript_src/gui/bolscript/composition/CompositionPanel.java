@@ -44,12 +44,12 @@ import bols.BundlingDepthToSpeedMap;
 import bols.tals.Tal;
 import bols.tals.TalBase;
 import bols.tals.Teental;
-import bolscript.Reader;
 import bolscript.compositions.Composition;
 import bolscript.config.Config;
 import bolscript.packets.Packet;
 import bolscript.packets.Packets;
 import bolscript.packets.types.PacketTypeFactory;
+import bolscript.sequences.FootnoteUnit;
 import bolscript.sequences.RepresentableSequence;
 import bolscript.sequences.SpeedUnit;
 
@@ -391,7 +391,7 @@ public class CompositionPanel extends JLayeredPane {
 				}
 				if (p.isVisible()) {
 					if (p.getType()==PacketTypeFactory.FOOTNOTE) {
-						FootnoteText ft = new FootnoteText(p);
+						FootnoteText ft = new FootnoteText((FootnoteUnit) p.getObject());
 						addLineBreak(new Float(newHeight), PageBreakPanel.LOW);
 						components.add(ft);
 						newHeight += components.get(components.size()-1).getPreferredSize().height;
@@ -422,13 +422,13 @@ public class CompositionPanel extends JLayeredPane {
 						Dimension variationDim = new Dimension(renderingWidth, this.getSize().height);			
 
 						RepresentableSequence seq;
-						if (Reader.NEWPARSEMODE) {
+						//if (Reader.NEWPARSEMODE) {
 						 seq = ((RepresentableSequence) p.getObject())
 								.flatten(new SpeedUnit(currentSpeed, true, currentSpeedPacket.getTextReference()))
 								.getBundled(bundlingMap,bundlingDepth, true);
-						}else {
+						/*}else {
 							seq = ((RepresentableSequence) p.getObject()).getBundled(bundlingMap,bundlingDepth, true);
-						}
+						}*/
 						
 						//Debug.temporary(this, "showing seq:" + seq);
 						SequencePanel sequencePanel = new SequencePanel(seq, tal, variationDim, 0,"",0, language, Config.bolFontSizeStd[language] + fontSizeIncrease);

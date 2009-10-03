@@ -17,7 +17,7 @@ import bols.BolBase;
 import bols.BolBaseGeneral;
 import bols.tals.Tal;
 import bols.tals.TalBase;
-import bolscript.Reader;
+import bolscript.FileManager;
 import bolscript.config.Config;
 import bolscript.filters.VisibleCompositionDonator;
 import bolscript.packets.types.PacketTypeFactory;
@@ -136,7 +136,7 @@ public class CompositionBase implements VisibleCompositionDonator, TalBase{
 		if (compToOverwrite == comp) {
 			Debug.debug(this, "Composition is saved:");
 			//comp is saved
-			Reader.writeFile(filename, comp.getRawData(), Config.compositionEncoding);
+			FileManager.writeFile(filename, comp.getRawData(), Config.compositionEncoding);
 			Debug.debug(this, "...is saved");
 			comp.getDataState().save(comp);
 			
@@ -151,7 +151,7 @@ public class CompositionBase implements VisibleCompositionDonator, TalBase{
 			
 			Debug.debug(this, "Composition is overwritten:");
 			//comp is saved
-			Reader.writeFile(filename, comp.getRawData(), Config.compositionEncoding);
+			FileManager.writeFile(filename, comp.getRawData(), Config.compositionEncoding);
 			Debug.debug(this, "...is saved");
 			comp.getDataState().save(comp);
 			
@@ -161,7 +161,7 @@ public class CompositionBase implements VisibleCompositionDonator, TalBase{
 				String oldFileName = comp.getLinkLocal();
 				
 				//comp is saved under new filename
-				Reader.writeFile(filename, comp.getRawData(), Config.compositionEncoding);
+				FileManager.writeFile(filename, comp.getRawData(), Config.compositionEncoding);
 				Debug.debug(this, "...is saved to new filename.");
 				comp.setLinkLocal(filename);
 				comp.rebuildFulltextSearch();

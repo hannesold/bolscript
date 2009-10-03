@@ -223,7 +223,7 @@ public class SequenceParser {
 				break;
 
 			case FOOTNOTE:
-				Representable f = FootnoteUnit.parseToken(token);
+				Representable f = FootnoteUnit.parseToken(token, currentPacket);
 				if (f.getType() != Representable.FAILED) {
 					((FootnoteUnit) f).setFootnoteNrGlobal(getAndIncreaseGlobalFootnoteNr());
 				}

@@ -11,8 +11,9 @@ import basics.Debug;
 import basics.FileReadException;
 import basics.Rational;
 import basics.Tools;
-import bolscript.Reader;
+import bolscript.FileManager;
 import bolscript.config.Config;
+import bolscript.scanner.Parser;
 
 
 public class BolBase extends BolBaseGeneral {
@@ -123,7 +124,7 @@ public class BolBase extends BolBaseGeneral {
 		ArrayList<PotentialCombinedBolName> potentialCombined = new ArrayList<PotentialCombinedBolName>();
 		ArrayList<PotentialBundle> potentialBundles = new ArrayList<PotentialBundle>();
 		
-		Scanner scanner = new Scanner(Reader.getContents(new File(filename), Config.bolBaseEncoding));
+		Scanner scanner = new Scanner(FileManager.getContents(new File(filename), Config.bolBaseEncoding));
 		
 		String seperator = "\\s*;\\s*";
 		
@@ -141,18 +142,18 @@ public class BolBase extends BolBaseGeneral {
 					String[] labels = new String[BolName.languagesCount];
 					for (int i = 0; i < labels.length; i++) {
 						if (i != BolName.DEVANAGERI) {
-							labels[i] = Tools.formatFirstCapital(entries[i].replaceAll(Reader.SNatBeginningOrEnd, ""));
+							labels[i] = Tools.formatFirstCapital(entries[i].replaceAll(Parser.SNatBeginningOrEnd, ""));
 						} else {
-							labels[i] = entries[i].replaceAll(Reader.SNatBeginningOrEnd, "");
+							labels[i] = entries[i].replaceAll(Parser.SNatBeginningOrEnd, "");
 						}
 					}
 					//Debug.temporary(this, "exact name scanned: '" + labels[BolName.EXACT]+"'");
 
 					if (entries.length >= BolName.languagesCount+1) {
-						description = entries[BolName.languagesCount].replaceAll(Reader.SNatBeginningOrEnd,"");
+						description = entries[BolName.languagesCount].replaceAll(Parser.SNatBeginningOrEnd,"");
 						
 						if (entries.length >= BolName.languagesCount+2) {
-							String typeField = entries[BolName.languagesCount+1].replaceAll(Reader.SNatBeginningOrEnd,"");
+							String typeField = entries[BolName.languagesCount+1].replaceAll(Parser.SNatBeginningOrEnd,"");
 							Integer handType = handMap.get(typeField.toUpperCase());
 
 							if (handType != null) {
