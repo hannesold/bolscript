@@ -34,7 +34,7 @@ public class FootnotePanel extends JPanel{
 		super(null, true);
 		this.footnoteUnit = footenoteUnit;
 		
-		label = new JLabel("" + (footenoteUnit.footnoteNrGlobal+1) + ")");
+		label = new JLabel("" + (footenoteUnit.footnoteNrGlobal) + ")");
 //		Font f = new Font()
 		label.setFont(commentFont);
 		label.setForeground(Color.getHSBColor(0.5f, 0.7f, 0.1f));

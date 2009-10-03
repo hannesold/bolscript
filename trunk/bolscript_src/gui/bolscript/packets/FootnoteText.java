@@ -8,6 +8,7 @@ import java.awt.LayoutManager;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import basics.Debug;
 import basics.GUI;
 import bolscript.packets.Packet;
 import bolscript.sequences.FootnoteUnit;
@@ -29,19 +30,20 @@ public class FootnoteText extends JPanel {
 		init();
 	}
 	
-	public FootnoteText (FootnoteUnit footenoteUnit) {
+	public FootnoteText (FootnoteUnit footnoteUnit) {
 		super();
 		this.footnoteUnit = footnoteUnit;
+		Debug.temporary(this, "building footnotetext for display " + footnoteUnit);
 		init();
 	}
 	
 	public void init() {
 	
-		text = new JLabel("Sorry, Comment could not be read!");
+		text = new JLabel("Sorry, Footnote could not be read!");
 		text.setFont(footnoteFont);
 		
-		if ((footnoteUnit != null)&&(packet != null)) {
-			text.setText((footnoteUnit.footnoteNrGlobal+1) + ")  " + footnoteUnit.getFootnoteText() +" ");
+		if (footnoteUnit != null) {
+			text.setText((footnoteUnit.footnoteNrGlobal) + ")  " + footnoteUnit.getFootnoteText() +" ");
 		}
 		
 		if (GUI.showLayoutStructure) {

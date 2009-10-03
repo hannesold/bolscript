@@ -227,6 +227,7 @@ public class SequenceParser {
 				if (f.getType() != Representable.FAILED) {
 					((FootnoteUnit) f).setFootnoteNrGlobal(getAndIncreaseGlobalFootnoteNr());
 				}
+				Debug.temporary(this, "footnote nr: " + ((FootnoteUnit) f).getFootnoteNrGlobal());
 				seq.add(f);
 				break;
 
@@ -268,6 +269,7 @@ public class SequenceParser {
 		return seq;
 	}
 	private int getAndIncreaseGlobalFootnoteNr() {
+		//footnoteNrGlobal++;
 		return footnoteNrGlobal++;
 	}
 

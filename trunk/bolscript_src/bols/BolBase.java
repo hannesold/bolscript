@@ -260,7 +260,7 @@ public class BolBase extends BolBaseGeneral {
 					BolNameBundle bundle = new BolNameBundle(currentArray, potBundle.labels);
 					bundle.setDescription(potBundle.description);
 					
-					addBolNameBundle(bundle);
+					//addBolNameBundle(bundle);
 					//Debug.temporary(this, "setting replacement bundle name to '" + bundle.getName(BolName.EXACT).replaceAll(Reader.SNatBeginningOrEnd,"") +"'");
 					addReplacementPacket(bundle.getName(BolName.EXACT), 
 							" ( " + bundleSpeed + " " + bundle.getExactBolNames() + " ) ", bundle);

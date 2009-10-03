@@ -17,6 +17,7 @@ import bolscript.packets.TextReference;
 import bolscript.packets.types.PacketType;
 import bolscript.packets.types.PacketTypeFactory;
 import bolscript.packets.types.PacketType.ParseMode;
+import bolscript.sequences.BolCandidateUnit;
 import bolscript.sequences.FootnoteUnit;
 import bolscript.sequences.Representable;
 import bolscript.sequences.RepresentableSequence;
@@ -86,8 +87,13 @@ public class Parser {
 					Representable r = seq.get(j);
 					if (r.getType() == Representable.FOOTNOTE) {
 						FootnoteUnit fu = (FootnoteUnit) r;
+						//if (fu.getContainingPacket())
 						fu.getFootnoteNrGlobal();
 						Packet fp = new Packet("Footnote "+ fu.getFootnoteNrGlobal(), fu.getFootnoteText(), PacketTypeFactory.FOOTNOTE, true);
+						fp.setObject(fu);
+						debug.temporary("setting footnote packet '" + fp + "'");
+						debug.temporary("with unit " + fp.getObject());
+						debug.temporary("with footnotetext " + fu.getFootnoteText());
 						packets.add(i+1,fp);
 						i++;
 					}
@@ -247,6 +253,7 @@ public class Parser {
 			MatchResult result = m.toMatchResult();
 	
 			String key = m.group(2).replaceAll(SNatBeginningOrEnd, "");
+			
 			if (key.length()>0) { //ignore packets with empty keys
 				packetReference = new TextReference(result.start(0),result.end(0), 0);
 				keyReference = new TextReference(result.start(2),result.end(2), 0);
@@ -297,14 +304,12 @@ public class Parser {
 			rightSnippet = mRight.group();
 			//debug.temporary("found rightsnippet " + rightSnippet);
 		} else rightSnippet = "";
+		
 		String candidate = leftSnippet + rightSnippet;
 	
-		Matcher m = Pattern.compile(BOL).matcher(candidate);
+		Matcher m = BolCandidateUnit.pattern.matcher(candidate);
 		if (m.find()) {
-			candidate = m.group(0);
-			if (candidate.charAt(candidate.length()-1) == '!') {
-				candidate = candidate.substring(0, candidate.length()-1);
-			}
+			candidate = m.group(1);
 			//candidate is now the textsnippet to be searched for 
 			return candidate;
 		} else return null;

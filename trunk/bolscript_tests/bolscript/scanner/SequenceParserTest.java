@@ -1,17 +1,21 @@
 package bolscript.scanner;
 
-import static bolscript.sequences.Representable.*;
-import static org.junit.Assert.*;
+import static bolscript.sequences.Representable.BOL;
+import static bolscript.sequences.Representable.FOOTNOTE;
+import static bolscript.sequences.Representable.KARDINALITY_MODIFIER;
+import static bolscript.sequences.Representable.LINE_BREAK;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
 import basics.Debug;
 import bols.Bol;
 import bolscript.packets.Packets;
+import bolscript.sequences.FootnoteUnit;
 import bolscript.sequences.Representable;
 import bolscript.sequences.RepresentableSequence;
 import bolscript.sequences.SpeedUnit;
@@ -169,7 +173,10 @@ public class SequenceParserTest {
 		case 4:
 			return r.getType() == BOL;
 		case 5:
-			return r.getType() == FOOTNOTE;
+			if (r.getType() != FOOTNOTE) return false;
+			FootnoteUnit f= (FootnoteUnit) r;
+			if (!f.getFootnoteText().equals("pronounced tirket!")) return false;
+			return true;
 		case 6:
 			RepresentableSequence seq6 = (RepresentableSequence) r;
 			return seq6.size() == 7;
