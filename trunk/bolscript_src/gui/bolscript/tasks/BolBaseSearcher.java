@@ -138,7 +138,9 @@ public class BolBaseSearcher implements TaskFactory {
 			if (!highlightedAPacket) {
 				if (previouslyHighlightedPacket !=null)	previouslyHighlightedPacket.setHighlighted(false);
 			}
+			
 			document.updateStylesLater(composition.getPackets());
+		
 		}
 		
 		private class HighlightInCompositionPanel implements Runnable {

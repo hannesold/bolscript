@@ -242,7 +242,11 @@ public class Composition implements DataStatePosessor{
 
 	public void extractInfoFromRawData() {
 		if (rawData != null) {
-			this.packets = Parser.compilePacketsFromString(rawData);
+			if (this.packets == null) {
+				this.packets = Parser.compilePacketsFromString(rawData);
+			} else {
+				this.packets = Parser.updatePacketsFromString(packets, rawData);
+			}
 			extractInfoFromPackets(this.packets);
 		} else {
 			Debug.critical(this, "the rawdata is empty, will not be processed");

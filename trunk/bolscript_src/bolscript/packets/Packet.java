@@ -18,6 +18,7 @@ import bolscript.packets.types.PacketTypeFactory;
  */
 public class Packet {
 	
+	private static long packetId = 0;
 	/**
 	 * Maps packet Keys to their types.
 	 */
@@ -64,6 +65,8 @@ public class Packet {
 	private String value;
 	private boolean visible;
 	private Object object;
+	private long id;
+	
 	private PacketType packetType;
 	private TextReference textRefPacket;
 	private TextReference textRefKey;
@@ -80,6 +83,7 @@ public class Packet {
 		this.textRefKey = null;
 		this.textRefValue = null;
 		this.highlighted = false;
+		this.id = packetId++;
 		
 	}
 	
@@ -94,6 +98,7 @@ public class Packet {
 		this.textRefKey = null;
 		this.textRefValue = null;
 		this.highlighted = false;
+		this.id = packetId++;
 	}
 
 
@@ -120,17 +125,22 @@ public class Packet {
 	
 	public String toString() {
 		StringBuilder s = new StringBuilder();
-		
-		if (object != null){
+		s.append("\n\n[p:"+id+" " +packetType +", Key: " + key+", "+s.append(textRefPacket)+"]\n");
+		s.append ("Obj: " + object + "\n");
+		/*if (object != null){
 			s.append(key + ":: " + object.toString() + "\n");
 		} else s.append(key + ": " + value+ "\n");//+value.split(" ").length;
-		s.append("type: " + packetType + "\n");
-		if (textRefPacket!=null) {
-			s.append(textRefPacket + "\n");
-		}
+		*/
+//		if (textRefPacket!=null) {
+//			s.append(textRefPacket + "\n");
+//		}
 		return s.toString();
 		
 	}
+	public long getId() {
+		return id;
+	}
+
 	public int getType() {
 		if (packetType == null) {
 			Debug.critical(this, "type is null: " + this.toString());
