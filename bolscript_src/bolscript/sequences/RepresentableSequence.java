@@ -17,6 +17,7 @@ import bols.BolNameBundle;
 import bols.BundlingDepthToSpeedMap;
 import bols.HasPlayingStyle;
 import bols.PlayingStyle;
+import bolscript.packets.Packet;
 import bolscript.packets.TextReference;
 import bolscript.scanner.Parser;
 
@@ -68,11 +69,18 @@ public class RepresentableSequence implements Representable, Collection<Represen
 	private HashMap<Rational, RepresentableSequence> cachedFlattened = new HashMap<Rational, RepresentableSequence>();
 
 	private ArrayList<Representable> cachedFailedUnits = null;
+	private ArrayList<ReferencedBolPacketUnit> cachedReferencedBolPacketUnits = null;
+	private ArrayList<FootnoteUnit> cachedFootnoteUnits = null;
 
 	private TextReference textReference;
 
 	private ArrayList<Representable> sequence;
 
+	
+	
+	private Packet determiningSpeedUnitPacket = null;
+	
+	
 	public void setTextReference(TextReference textReference) {
 		this.textReference = textReference;
 	}
@@ -114,13 +122,15 @@ public class RepresentableSequence implements Representable, Collection<Represen
 	 * was called previously at some point. 
 	 * 
 	 */
-	private void clearCache() {
+	public void clearCache() {
 		if (someThingsAreCurrnetlyCached) {
 			cachedDuration = null;
 			cachedShortSnippet = null;
 			cachedSnippet = null;
 			cachedFlattened.clear();
 			cachedFailedUnits = null;
+			cachedReferencedBolPacketUnits = null;
+			
 			this.someThingsAreCurrnetlyCached = false;
 		}
 	}
@@ -135,35 +145,83 @@ public class RepresentableSequence implements Representable, Collection<Represen
 	}
 	
 	/**
+	 * Rebuilds cache of 
+	 * - failed units
+	 * - referenced Bol packet units
+	 * - footnote units
+	 */
+	private void rebuildUnitCache() {
+		cachedFailedUnits = new ArrayList<Representable>();
+		cachedReferencedBolPacketUnits = new ArrayList<ReferencedBolPacketUnit>();
+		cachedFootnoteUnits = new ArrayList<FootnoteUnit>();
+		
+		for (int i=0; i < size(); i++) {
+			Representable r = get(i);
+			switch (r.getType()) {
+			case Representable.BOL:
+				if (!((Bol) r).getBolName().isWellDefinedInBolBase()) {
+					cachedFailedUnits.add(r);
+				}
+				break;
+			case Representable.FAILED:
+				cachedFailedUnits.add(r);
+				break;
+			case Representable.SEQUENCE:
+				cachedFailedUnits.addAll(((RepresentableSequence) r).getFailedUnits());
+				cachedReferencedBolPacketUnits.addAll(((RepresentableSequence) r).getReferencedBolPacketUnits());
+				cachedFootnoteUnits.addAll(((RepresentableSequence) r).getFootnoteUnits());
+				break;
+			case Representable.REFERENCED_BOL_PACKET:
+				cachedReferencedBolPacketUnits.add((ReferencedBolPacketUnit) r);
+				break;
+			case Representable.FOOTNOTE:
+				cachedFootnoteUnits.add((FootnoteUnit) r);
+				break;
+			}	
+		}
+		
+		setCacheEstablished();
+	}
+	
+	
+	public void setReferencedSpeedPacket(Packet speedPacket) {
+		this.determiningSpeedUnitPacket = speedPacket;		
+	}
+	
+	public Packet getReferencedSpeedPacket() {
+		return determiningSpeedUnitPacket;
+	}
+	
+	/**
+	 * Returns all referenced bol packet units.
+	 * The entries are gathered from the sequence and its subsequences,
+	 * but not in its referenced packets sequences.
+	 */
+	public ArrayList<ReferencedBolPacketUnit> getReferencedBolPacketUnits() {
+		if (cachedReferencedBolPacketUnits == null) {
+			rebuildUnitCache();
+		}
+		return cachedReferencedBolPacketUnits;
+	}
+	
+	
+	/**
 	 * Returns all failed units and bols that were not in the bolbase.
 	 * The entries are gathered from the sequence and its subsequences,
 	 * but not in its referenced packets sequences.
 	 */
 	public ArrayList<Representable> getFailedUnits() {
 		if (cachedFailedUnits == null) {
-			cachedFailedUnits = new ArrayList<Representable>();
-			
-			for (int i=0; i < size(); i++) {
-				Representable r = get(i);
-				switch (r.getType()) {
-				case Representable.FAILED:
-					cachedFailedUnits.add(r);
-					break;
-				case Representable.BOL:
-					if (!((Bol) r).getBolName().isWellDefinedInBolBase()) {
-						cachedFailedUnits.add(r);
-					}
-					break;
-				case Representable.SEQUENCE:
-					cachedFailedUnits.addAll(((RepresentableSequence) r).getFailedUnits());
-					break;
-				}	
-			}
-			
-			setCacheEstablished();
+			rebuildUnitCache();
 		}
-		
 		return cachedFailedUnits;
+	}
+	
+	public ArrayList<FootnoteUnit> getFootnoteUnits() {
+		if (cachedFootnoteUnits == null) {
+			rebuildUnitCache();
+		}
+		return cachedFootnoteUnits ;
 	}
 
 	/**

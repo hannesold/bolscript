@@ -17,6 +17,11 @@ public class ReferencedBolPacketUnit extends Unit implements Representable {
 	public Packet getReferencedPacket() {
 		return referencedPacket;
 	}
+	
+	public void setReferencedPacket(Packet p) {
+		this.referencedPacket = p;
+		this.obj = p;
+	}
 
 	public RepresentableSequence getSequence() {
 		return (RepresentableSequence) ((Packet) obj).getObject();

@@ -83,7 +83,7 @@ public class BolscriptDocument extends DefaultStyledDocument{
 		StyleConstants.setForeground(styleFailedKey, failedKeyColor);
 		StyleConstants.setForeground(styleFailedValue, failedValueColor);
 		StyleConstants.setItalic(styleFailedValue, true);
-		StyleConstants.setBackground(styleFailedValue, new Color(255,230,230));
+		//StyleConstants.setBackground(styleFailedValue, new Color(255,230,230));
 
 		styleMetaValue = addStyle("metavalue", rootStyle);
 		styleBolValue = addStyle("bolvalue", styleMetaValue);

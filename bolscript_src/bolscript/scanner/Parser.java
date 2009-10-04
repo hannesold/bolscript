@@ -19,6 +19,7 @@ import bolscript.packets.types.PacketTypeFactory;
 import bolscript.packets.types.PacketType.ParseMode;
 import bolscript.sequences.BolCandidateUnit;
 import bolscript.sequences.FootnoteUnit;
+import bolscript.sequences.ReferencedBolPacketUnit;
 import bolscript.sequences.Representable;
 import bolscript.sequences.RepresentableSequence;
 
@@ -62,11 +63,139 @@ public class Parser {
 	public static String RATIONAL = "\\d{1,2}+(?:/\\d{1,2}+)?";
 	
 
+	public static Packet defaultSpeedPacket = new Packet("Speed", "1",PacketTypeFactory.SPEED,false);
+	
+	public static Packets updatePacketsFromString(Packets oldPackets, String input) {
+		//Packets oldoldPackets = oldPackets.clone();
+		//oldoldPackets.addAll(oldPackets);
+		
+		Packets newPackets = splitIntoPackets(input);
+		
+		newPackets.add(0,defaultSpeedPacket);
+		newPackets.addAll(1,BolBase.getStandard().getReplacementPackets());
+		
+		Packet currentSpeedPacket = defaultSpeedPacket;
+		
+		SequenceParser sequenceParser = new SequenceParser(1, newPackets);
+		
+		int lastUsedOldPacket = -1;
+		
+		int i = 0;
+		
+		while (i<newPackets.size()) {
+			Packet current = newPackets.get(i);
+			String currentKey = current.getKey();
+			String currentValue = current.getValue();
+			Packet added = null;
+			
+			Packet correspondingOldPacket = null;
+			for (int j=lastUsedOldPacket+1; j < oldPackets.size();j++) {
+				Packet old = oldPackets.get(j);
+				
+				if (currentKey.equalsIgnoreCase(old.getKey())) {
+					if (currentValue.equalsIgnoreCase(old.getValue())) {
+						//this is like the old packet
+						lastUsedOldPacket = j;
+						correspondingOldPacket = old;
+						break;
+					}
+				}
+			}
+			
+			if (correspondingOldPacket != null) {
+				//Packet correspondingOldPacket = correspondingOldPacket;
+				//update exact content (key/value) and textreferences
+				correspondingOldPacket.setKey(currentKey);
+				correspondingOldPacket.setValue(currentValue);
+				correspondingOldPacket.setTextReferencePacket(current.getTextReference());
+				correspondingOldPacket.setTextRefKey(current.getTextRefKey());
+				correspondingOldPacket.setTextRefValue(current.getTextRefValue());
+				
+				//set the old packet in favor of the new packet.
+				newPackets.set(i, correspondingOldPacket);
+				
+				added = correspondingOldPacket;
+				
+				if (correspondingOldPacket.getType() == PacketTypeFactory.BOLS) {
+					RepresentableSequence seq = (RepresentableSequence) correspondingOldPacket.getObject();
+					// check for references
+					ArrayList<ReferencedBolPacketUnit> referencedPacketUnits = seq.getReferencedBolPacketUnits();
+					for (ReferencedBolPacketUnit unit: referencedPacketUnits) {
+						//if (newPackets.conunit.getReferencedPacket())
+						
+						Packet referencedPacket = newPackets.findReferencedBolPacket(correspondingOldPacket, unit.getReferencedPacket().getKey());
+						if (referencedPacket == null) {
+							//needs to be reparsed, since the reference seems to be gone
+							RepresentableSequence newSeq = sequenceParser.parseSequence(correspondingOldPacket, currentValue);
+							correspondingOldPacket.setObject(newSeq);
+						} else {
+							unit.setReferencedPacket(referencedPacket);
+							seq.clearCache();
+						}
+					}
+					
+					if (seq.getReferencedSpeedPacket() != currentSpeedPacket) {
+						seq.setReferencedSpeedPacket(currentSpeedPacket);
+						seq.clearCache();
+					}
+					
+
+				} //== BOLS
+				
+				
+			} // correspondingOldPacket != null
+			else { //correspondingOldPacket == null
+				//this is a new packet!
+				if (current.getType() == PacketTypeFactory.BOLS) {
+					//add a bol packet
+					RepresentableSequence seq = sequenceParser.parseSequence(current, current.getValue());
+					current.setObject(seq);
+					added = current;
+				} else {
+					//add a meta packet
+					processMetaPacket(current);
+					added = current;
+				}
+			}
+			
+			
+			if (added != null) {
+				if (added.getType() == PacketTypeFactory.SPEED) {
+				
+					currentSpeedPacket = added;
+				
+				} else if (added.getType() == PacketTypeFactory.BOLS) {
+					
+					//add footnote packets
+					RepresentableSequence seq = (RepresentableSequence) added.getObject();
+					ArrayList<FootnoteUnit> footnotes = seq.getFootnoteUnits();
+					for (int j = 0; j < footnotes.size(); j++) {
+						FootnoteUnit fu = footnotes.get(j);
+						Packet fp = new Packet("Footnote "+ fu.getFootnoteNrGlobal(), fu.getFootnoteText(), PacketTypeFactory.FOOTNOTE, true);
+						fp.setObject(fu);
+						newPackets.add(i+1,fp);
+						i++;
+					}
+				}
+			}
+			
+			i++;
+			
+		} //while i < newpackets.size()
+
+		debug.temporary(newPackets.toString());
+		
+		return newPackets;
+		
+	}
+	
+	
 	public static Packets compilePacketsFromString(String input) {
 	
 		Packets packets = splitIntoPackets(input);
-	
-		packets.addAll(0, BolBase.getStandard().getReplacementPacketClones());
+
+		packets.add(0,defaultSpeedPacket);
+		packets.addAll(1, BolBase.getStandard().getReplacementPackets());
 	
 		Parser.processMetaPackets(packets);
 	
@@ -82,21 +211,14 @@ public class Parser {
 			if (p.getType() == PacketTypeFactory.BOLS) {
 				RepresentableSequence seq = parser.parseSequence(p, p.getValue());
 				p.setObject(seq);
+				ArrayList<FootnoteUnit> footnotes = seq.getFootnoteUnits();
 				
-				for (int j = 0; j < seq.size(); j++) {
-					Representable r = seq.get(j);
-					if (r.getType() == Representable.FOOTNOTE) {
-						FootnoteUnit fu = (FootnoteUnit) r;
-						//if (fu.getContainingPacket())
-						fu.getFootnoteNrGlobal();
-						Packet fp = new Packet("Footnote "+ fu.getFootnoteNrGlobal(), fu.getFootnoteText(), PacketTypeFactory.FOOTNOTE, true);
-						fp.setObject(fu);
-						debug.temporary("setting footnote packet '" + fp + "'");
-						debug.temporary("with unit " + fp.getObject());
-						debug.temporary("with footnotetext " + fu.getFootnoteText());
-						packets.add(i+1,fp);
-						i++;
-					}
+				for (int j = 0; j < footnotes.size(); j++) {
+					FootnoteUnit fu = footnotes.get(j);
+					Packet fp = new Packet("Footnote "+ fu.getFootnoteNrGlobal(), fu.getFootnoteText(), PacketTypeFactory.FOOTNOTE, true);
+					fp.setObject(fu);
+					packets.add(i+1,fp);
+					i++;
 				}
 				
 			}
@@ -130,39 +252,36 @@ public class Parser {
 	 * @see Packet Packet, for a description of the meta-types.
 	 */
 	public static void processMetaPackets(Packets packets) {
-	
 		Iterator<Packet> i = packets.listIterator();
-		Packet p;
-	
 		while (i.hasNext()) {
-			p = i.next();
-	
-			int type = p.getType();
-			//debug.temporary(p.getKey() + " => " + p.getValue() + ", type: " + p.getPType());
-			ParseMode parseMode = p.getPType().getParseMode();
-	
-			if (parseMode == ParseMode.STRING) {
-				setObjFromString(p);
-			} else if (parseMode == ParseMode.COMMASEPERATED) {
-				setObjFromCommaSeperated(p);
-			} else if (parseMode == ParseMode.OTHER) switch (type) {
-	
-			case PacketTypeFactory.SPEED:
-				String input = p.getValue().replaceAll(Parser.SN +"*", "");
-				try {
-					Rational speed = Rational.parseNonNegRational(input);
-					p.setObject(speed);
-					debug.debug("read speed " + speed);
-				} catch (Exception e) {
-					debug.debug("failed to parse Speed, will be ignored!");
-					p.setType(PacketTypeFactory.FAILED);
-				}
-				break;
-	
-	
-			} // switch	
+			processMetaPacket(i.next());
 		} //while
+	}
 	
+	private static void processMetaPacket(Packet p) {
+		int type = p.getType();
+		//debug.temporary(p.getKey() + " => " + p.getValue() + ", type: " + p.getPType());
+		ParseMode parseMode = p.getPType().getParseMode();
+
+		if (parseMode == ParseMode.STRING) {
+			setObjFromString(p);
+		} else if (parseMode == ParseMode.COMMASEPERATED) {
+			setObjFromCommaSeperated(p);
+		} else if (parseMode == ParseMode.OTHER) switch (type) {
+
+		case PacketTypeFactory.SPEED:
+			String input = p.getValue().replaceAll(Parser.SN +"*", "");
+			try {
+				Rational speed = Rational.parseNonNegRational(input);
+				p.setObject(speed);
+				debug.debug("read speed " + speed);
+			} catch (Exception e) {
+				debug.debug("failed to parse Speed, will be ignored!");
+				p.setType(PacketTypeFactory.FAILED);
+			}
+			break;
+
+		} // switch	
 	}
 	
 	/**
@@ -176,6 +295,8 @@ public class Parser {
 			p.setObject(entries);
 		} else p.setType(PacketTypeFactory.FAILED);	
 	}
+	
+	
 
 	/**
 	 * Sets a packet's object under the assumption, that its value is non-empty string.

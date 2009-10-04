@@ -14,6 +14,17 @@ public class Packets extends ArrayList<Packet> {
 	private static final long serialVersionUID = 2675512803109497706L;
 	
 	/**
+	 * Copy constructor. The elements are not "copied".
+	 * @param packets
+	 */
+	private Packets(Packets packets) {
+		super(packets);
+	}
+	
+	public Packets() {
+		super();
+	}
+	/**
 	 * Returns the Paket in which the given CaretPosition was found, or null
 	 * if no paket was found.
 	 * @param caretPosition
@@ -46,6 +57,9 @@ public class Packets extends ArrayList<Packet> {
 		
 	}
 	
-	
+	public Packets clone() {
+		Packets clone = (Packets) (new Packets(this));
+		return clone;
+	}
 
 }

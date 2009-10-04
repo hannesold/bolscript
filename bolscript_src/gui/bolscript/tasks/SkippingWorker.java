@@ -27,7 +27,7 @@ public class SkippingWorker implements Runnable {
 	 */
 	public Thread thread;
 
-	long minimumUpdateIntervall = 10;
+	long minimumUpdateIntervall = 100;
 
 	long updateIntervall;
 
