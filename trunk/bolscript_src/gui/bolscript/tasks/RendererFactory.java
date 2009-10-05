@@ -1,18 +1,20 @@
 package gui.bolscript.tasks;
 
+import java.awt.EventQueue;
+
 import gui.bolscript.EditorFrame;
 import gui.bolscript.composition.CompositionPanel;
 import bolscript.compositions.Composition;
 
-public class CompositionPanelRendererFactory implements TaskFactory {
+public class RendererFactory implements TaskFactory {
 
 	private EditorFrame editor;
+	private TaskFactory appendedTaskFactory;
 	
-	private SkippingWorker alsoAddUpdateTo;
 	
-	public CompositionPanelRendererFactory (EditorFrame editor, SkippingWorker alsoAddUpdateTo) {
+	public RendererFactory (EditorFrame editor, TaskFactory appendedTaskFactory) {
 		this.editor = editor;
-		this.alsoAddUpdateTo = alsoAddUpdateTo;
+		this.appendedTaskFactory = appendedTaskFactory;
 	}
 	
 	public String getTaskName() {
@@ -39,10 +41,18 @@ public class CompositionPanelRendererFactory implements TaskFactory {
 		public void run() {
 			comp.setRawData(text);
 			comp.extractInfoFromRawData();
+			
+			Runnable appendedTask = appendedTaskFactory.getNewTask();
+			if (appendedTask != null) {
+				EventQueue.invokeLater(appendedTask);
+			}
+			
 			compPanel.setHighlightedPaket(comp.getPackets().getPacketAtCaretPosition(caretPosition));
 			compPanel.renderComposition(comp);
 			
-			if (alsoAddUpdateTo != null) alsoAddUpdateTo.addUpdate();	
+			
+			//if (appendedCaretRelatedWorker != null) appendedCaretRelatedWorker.addUpdate();
+			
 		}
 	}
 }

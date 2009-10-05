@@ -5,6 +5,7 @@ import gui.bolscript.composition.CompositionPanel;
 import gui.bolscript.tables.BolBasePanel;
 
 import java.awt.EventQueue;
+import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.JTextPane;
 
@@ -17,7 +18,7 @@ import bolscript.packets.Packets;
 import bolscript.packets.types.PacketTypeFactory;
 import bolscript.scanner.Parser;
 
-public class BolBaseSearcher implements TaskFactory {
+public class CaretRelatedFactory implements TaskFactory {
 
 	JTextPane textPane;
 	BolBasePanel bolBasePanel;
@@ -25,9 +26,12 @@ public class BolBaseSearcher implements TaskFactory {
 	CompositionPanel compPanel;
 	
 	BolscriptDocument document;
+	
+	int caretPosition;
+	
 	static Packet previouslyHighlightedPacket;
 
-	public BolBaseSearcher(Composition composition, JTextPane textPane, BolBasePanel bolBasePanel, BolscriptDocument document, CompositionPanel compPanel) {
+	public CaretRelatedFactory(Composition composition, JTextPane textPane, BolBasePanel bolBasePanel, BolscriptDocument document, CompositionPanel compPanel) {
 		this.textPane = textPane;
 		this.bolBasePanel = bolBasePanel;
 		this.composition = composition;
@@ -36,7 +40,21 @@ public class BolBaseSearcher implements TaskFactory {
 	}
 
 	public Runnable getNewTask() {
-		int caretPosition = textPane.getCaretPosition();
+
+		caretPosition = textPane.getCaretPosition();
+		
+		/*try {
+			EventQueue.invokeAndWait(new Runnable() {public void run() {
+				caretPosition = textPane.getCaretPosition();
+			}});
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
+		
 		
 		document.setCaretPosition(caretPosition); //is this the right place?
 		
@@ -47,7 +65,7 @@ public class BolBaseSearcher implements TaskFactory {
 				Debug.temporary(this, "caret is in a bol packet");
 				if (p.getTextRefValue().contains(caretPosition)) {
 					Debug.temporary(this, "new caret task");
-					return new CaretGuessTask(textPane.getText(),textPane.getCaretPosition(), p);	
+					return new CaretGuessTask(textPane, textPane.getText(),textPane.getCaretPosition(), p);	
 				}
 			}
 		}
@@ -72,16 +90,18 @@ public class BolBaseSearcher implements TaskFactory {
 	}
 	
 
-	public class CaretGuessTask implements Runnable {
+	private final class CaretGuessTask implements Runnable {
 
 		String text;
 		static final int RANGE = 20;
 		Packet packet;
-
+		JTextPane textPane;
+		
 		int caretPosition;
 		//Packets packets;
 
-		public CaretGuessTask (String text, int caretPosition, Packet packet) {
+		public CaretGuessTask (JTextPane textPane, String text, int caretPosition, Packet packet) {
+			this.textPane = textPane;
 			//Debug.temporary(this, "caret task constructor");
 			this.caretPosition = caretPosition;
 			this.text = text;

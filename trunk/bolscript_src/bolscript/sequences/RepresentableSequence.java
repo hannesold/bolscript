@@ -62,7 +62,7 @@ public class RepresentableSequence implements Representable, Collection<Represen
 
 	private boolean flattened = false;
 
-	private boolean someThingsAreCurrnetlyCached = false; 
+	private boolean someThingsAreCurrentlyCached = false; 
 	private String cachedSnippet = null;
 	private String cachedShortSnippet = null;
 	private Rational cachedDuration = null;
@@ -120,10 +120,12 @@ public class RepresentableSequence implements Representable, Collection<Represen
 	 * Empties all caches, including Duration, Snippets.
 	 * Caches are only emptied however if setCacheEstablished
 	 * was called previously at some point. 
+	 * Also calls clearCache in all subsequences.
 	 * 
 	 */
 	public void clearCache() {
-		if (someThingsAreCurrnetlyCached) {
+		if (someThingsAreCurrentlyCached) {
+			
 			cachedDuration = null;
 			cachedShortSnippet = null;
 			cachedSnippet = null;
@@ -131,7 +133,13 @@ public class RepresentableSequence implements Representable, Collection<Represen
 			cachedFailedUnits = null;
 			cachedReferencedBolPacketUnits = null;
 			
-			this.someThingsAreCurrnetlyCached = false;
+			for (Representable r: sequence) {
+				if (r.getType() == Representable.SEQUENCE) {
+					((RepresentableSequence) r).clearCache();
+				}
+			}
+			
+			this.someThingsAreCurrentlyCached = false;
 		}
 	}
 
@@ -141,7 +149,7 @@ public class RepresentableSequence implements Representable, Collection<Represen
 	 * if there is any cache to clear at all. 
 	 */
 	private void setCacheEstablished(){
-		this.someThingsAreCurrnetlyCached = true;
+		this.someThingsAreCurrentlyCached = true;
 	}
 	
 	/**

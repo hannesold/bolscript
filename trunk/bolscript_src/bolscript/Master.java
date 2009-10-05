@@ -311,8 +311,8 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
        			 editors.add(editor);
        			 
        			 
-       			 editor.setVisible(true);
-       			 compositionFrame.setVisible(true);
+       			 editor.showLater();
+       			 compositionFrame.showLater();
     			}
   
 		} else if (comp.getDataState() == DataState.EDITING){

@@ -14,9 +14,21 @@ import bolscript.sequences.RepresentableSequence;
  */
 public class BolNameBundle implements NamedInLanguages {
 	
+	/**
+	 * The displayable String version of this bundle in the different languages set in BolName
+	 */
 	private String[] labels;
+	
+	/**
+	 * The bolnames which build the sequence of this bundle
+	 */
 	private BolName[] bolNames;
+	
+	/**
+	 * A String built of the EXACT bolnames, which gives us a unique identifier
+	 */
 	private String exactBolNames;
+	
 	private String description;
 	
 	/**
@@ -29,8 +41,6 @@ public class BolNameBundle implements NamedInLanguages {
 		description = "";
 		generateExactBolNames();
 	}
-	
-
 	
 	/**
 	 * Generates a unique representation of the contained bolNames as a String by

@@ -134,8 +134,17 @@ public class Parser {
 						}
 					}
 					
-					if (seq.getReferencedSpeedPacket() != currentSpeedPacket) {
-						seq.setReferencedSpeedPacket(currentSpeedPacket);
+					
+					Rational newSpeed = ((Rational) currentSpeedPacket.getObject());
+					Rational oldSpeed = null;
+					if (seq.getReferencedSpeedPacket() != null) {
+						if (seq.getReferencedSpeedPacket() != currentSpeedPacket) {
+							oldSpeed = ((Rational) seq.getReferencedSpeedPacket().getObject());
+						}
+					}
+					
+					seq.setReferencedSpeedPacket(currentSpeedPacket);
+					if (!newSpeed.equals(oldSpeed)) {
 						seq.clearCache();
 					}
 					

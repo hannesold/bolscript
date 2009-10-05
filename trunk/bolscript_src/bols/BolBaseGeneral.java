@@ -16,7 +16,10 @@ public abstract class BolBaseGeneral {
 	protected ArrayList<BolMap> bolMaps;
 	protected ArrayList<MidiMap> midiMaps;
 	protected HashMap<BolName,BolName> kaliMaps;
+	
 	protected Packets standardReplacements;
+	protected ArrayList<BolNameBundle> standardBolNameBundles;
+	
 	
 	protected int generalNoteOffset;
 	
@@ -35,6 +38,8 @@ public abstract class BolBaseGeneral {
 		kaliMaps = new HashMap<BolName,BolName>();
 		bundleMap = new HashMap<String,BolNameBundle>();
 		standardReplacements = new Packets();
+		standardBolNameBundles = new ArrayList<BolNameBundle>();
+		
 		generalNoteOffset = 0;
 	}
 	
@@ -165,6 +170,10 @@ public abstract class BolBaseGeneral {
 		return r;
 	}
 	
+	public ArrayList<BolNameBundle> getStandardBolNameBundles() {
+		return standardBolNameBundles;
+	}
+
 	public BolMap getBolMap(BolName bolName) {
 		
 		boolean found=false;
