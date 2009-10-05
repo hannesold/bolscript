@@ -12,7 +12,7 @@ import bolscript.packets.types.PacketTypeFactory;
 public class Packets extends ArrayList<Packet> {
 
 	private static final long serialVersionUID = 2675512803109497706L;
-	
+
 	/**
 	 * Copy constructor. The elements are not "copied".
 	 * @param packets
@@ -20,7 +20,7 @@ public class Packets extends ArrayList<Packet> {
 	private Packets(Packets packets) {
 		super(packets);
 	}
-	
+
 	public Packets() {
 		super();
 	}
@@ -31,7 +31,7 @@ public class Packets extends ArrayList<Packet> {
 	 * @return
 	 */
 	public Packet getPacketAtCaretPosition(int caretPosition) {
-		
+
 		for (Packet p: this) {
 			if (p.hasTextReferences()) {
 				if (p.getTextReference().contains(caretPosition)) {
@@ -41,22 +41,24 @@ public class Packets extends ArrayList<Packet> {
 		}
 		return null;
 	}
+
 	
 	public Packet findReferencedBolPacket(Packet caller, String bolCandidate) {
 		int callerIndex = this.indexOf(caller);
-		if (callerIndex > 0) {
-			for (int i= callerIndex-1; i>=0; i--) {
-				Packet p = get(i);
-				if (p.getType() == PacketTypeFactory.BOLS &&
-						p.getKey().equalsIgnoreCase(bolCandidate)) {
-					return p;	
-				}
-			}
-		} 
-		return null;
+		if (callerIndex < 0) callerIndex = size();
 		
+		for (int i= callerIndex-1; i>=0; i--) {
+			Packet p = get(i);
+			if (p.getType() == PacketTypeFactory.BOLS &&
+					p.getKey().equalsIgnoreCase(bolCandidate)) {
+				return p;	
+			}
+		}
+
+		return null;
+
 	}
-	
+
 	public Packets clone() {
 		Packets clone = (Packets) (new Packets(this));
 		return clone;

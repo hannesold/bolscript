@@ -13,7 +13,7 @@ public class BolBaseTableModel extends AbstractTableModel {
 	public static int descriptionColumn = BolName.languagesCount;
 	public static int detailsColumn = descriptionColumn+1;
 	public static int nrOfColumns = detailsColumn+1;
-	
+
 	@Override
 	public String getColumnName(int column) {
 		if (column < BolName.languagesCount) {
@@ -28,20 +28,20 @@ public class BolBaseTableModel extends AbstractTableModel {
 	public BolBaseTableModel(BolBase bolBase) {
 		this.bolBase = bolBase;
 	}
-	
+
 	public int getColumnCount() {
 		return nrOfColumns;
 	}
 
 	public int getRowCount() {
-		return bolBase.getWellDefinedBolNames().size() + bolBase.getReplacementPackets().size();
+		return bolBase.getWellDefinedBolNames().size() + bolBase.getStandardBolNameBundles().size();
 	}
 
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		if (rowIndex < bolBase.getWellDefinedBolNames().size()) {
-			
+
 			BolName bolName = bolBase.getWellDefinedBolNames().get(rowIndex);
-			
+
 			if (columnIndex < BolName.languagesCount) {
 				return bolName.getName(columnIndex);
 			} else if (columnIndex == descriptionColumn) {
@@ -49,23 +49,27 @@ public class BolBaseTableModel extends AbstractTableModel {
 			} else if (columnIndex == detailsColumn) {
 				return (bolName.getHandType() == BolName.COMBINED)? bolName.getLeftHand() + " + " + bolName.getRightHand(): BolName.handTypes[bolName.getHandType()];
 			} else return null;
-			
+
 		} else {
 			int index = rowIndex-bolBase.getWellDefinedBolNames().size();
 
-			Packet packet = bolBase.getReplacementPackets().get(index);
-			BolNameBundle bolNameBundle = (BolNameBundle) packet.getObject();
+			BolNameBundle bolNameBundle = bolBase.getStandardBolNameBundles().get(index);
+			Packet replacementPacket = bolBase.getReplacementPackets().findReferencedBolPacket(null, bolNameBundle.getName(BolName.EXACT));
+			String value = "sorry, could not load value";
+			if (replacementPacket != null) value = replacementPacket.getValue();
+
+			//BolNameBundle bolNameBundle = (BolNameBundle) packet.getObject();
 			if (bolNameBundle != null) {
-			if (columnIndex < BolName.languagesCount) {
-				return bolNameBundle.getName(columnIndex);
-			} else if (columnIndex == descriptionColumn) {
-				return bolNameBundle.getDescription();
-			} else if (columnIndex == detailsColumn) {
-				return packet.getValue();
-			} else return null;
-			} else return "undefined, packet: " + packet;
+				if (columnIndex < BolName.languagesCount) {
+					return bolNameBundle.getName(columnIndex);
+				} else if (columnIndex == descriptionColumn) {
+					return bolNameBundle.getDescription();
+				} else if (columnIndex == detailsColumn) {
+					return value;
+				} else return null;
+			} else return "sorry, undefined bundle";
 		}
-		
+
 	}
 
 	@Override
@@ -75,7 +79,7 @@ public class BolBaseTableModel extends AbstractTableModel {
 
 	@Override
 	public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-		
+
 		//super.setValueAt(aValue, rowIndex, columnIndex);
 	}
 

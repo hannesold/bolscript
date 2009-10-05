@@ -21,13 +21,13 @@ public class SkippingWorker implements Runnable {
 
 	java.util.List<Thread> workers;
 
-	static boolean running;
+	
 
 	/** A thread that runs an object of this class 
 	 */
 	public Thread thread;
 
-	long minimumUpdateIntervall = 100;
+	long minimumUpdateIntervall = 1;
 
 	long updateIntervall;
 
@@ -117,6 +117,9 @@ public class SkippingWorker implements Runnable {
 		Debug.debug(this, "ending");
 	}
 
-	
-
+	public synchronized boolean hasWork() {
+		return workers.size() > 0;
+	}
 }
+
+

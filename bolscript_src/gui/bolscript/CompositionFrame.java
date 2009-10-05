@@ -9,6 +9,7 @@ import gui.menus.LanguageMenu;
 import gui.menus.ViewMenu;
 
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
@@ -41,15 +42,24 @@ public class CompositionFrame extends JFrame implements WindowListener, Composit
 		EditorFrame editor = null;
 		TalBase talBase;
 	
+		/**
+		 * Is hidden by default. Call showLater().
+		 * @param comp
+		 * @param size
+		 * @param talBase
+		 */
 		public CompositionFrame(Composition comp, Dimension size, TalBase talBase) {
 			this(size, talBase);
 			this.setTitle(comp.getName());
 			compositionPanel.renderComposition(comp);
 			comp.addChangeListener(this);
+			
 		}
 		
 		public CompositionFrame(Dimension size, TalBase talBase) {
 			super();
+			this.setVisible(false);
+			
 			GUI.setAllSizes(this, size);
 			
 			this.talBase = talBase;
@@ -134,6 +144,15 @@ public class CompositionFrame extends JFrame implements WindowListener, Composit
 		 */
 		public void createPdf(String filename, boolean shapes) {
 		 compositionPanel.createPdf(filename, shapes);
+		}
+
+		public void showLater() {
+			EventQueue.invokeLater(new Runnable() {
+				public void run(){
+					setVisible(true);
+				}
+			});
+			
 		}
 
 

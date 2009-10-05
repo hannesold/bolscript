@@ -157,6 +157,7 @@ public class BolscriptDocument extends DefaultStyledDocument{
 
 		 // Debug.temporary(getClass(), "update styles!");
 		 setCharacterAttributes(0, getLength(), rootStyle, true);
+		 
 		 try {
 			 for (Packet p: packets) {
 				 //Debug.temporary(getClass(), "checking packet " + p);
