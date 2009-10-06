@@ -100,7 +100,19 @@ public class SequenceScannerTest {
 		scanner.nextToken();
 		assertEquals("3  !", scanner.nextToken().text);
 
+		input = "dha ge sihn sun dus";
 		
+		scanner = new SequenceScanner(input);
+		assertEquals("dha", scanner.nextToken().text);
+		Debug.temporary(this, scanner.nextToken().text);
+		assertEquals("ge", scanner.nextToken().text);
+		Debug.temporary(this, scanner.nextToken().text);
+		
+		assertEquals("sihn", scanner.nextToken().text);
+		Debug.temporary(this, scanner.nextToken().text);
+		assertEquals("sun", scanner.nextToken().text);
+		Debug.temporary(this, scanner.nextToken().text);
+		assertEquals("dus", scanner.nextToken().text);
 
 	}
 

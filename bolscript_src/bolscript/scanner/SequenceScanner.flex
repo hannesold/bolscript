@@ -28,8 +28,8 @@ import static bolscript.sequences.Representable.*;
 
 LineTerminator = \r|\n|\r\n|\u2028|\u2029|\u000B|\u000C|\u0085
 InputCharacter = [^\r\n]
-Space = [ \t\f\s]
-WhiteSpace     = {LineTerminator} | [ \t\f\s]
+Space = [ \t\f]
+WhiteSpace     = {LineTerminator} | [ \t\f]
 
 /* comments */
 Comment = {TraditionalComment} | {EndOfLineComment} | {DocumentationComment}
@@ -47,7 +47,7 @@ PosInteger = [1-9][0-9]*
 /* bolscript preUnits */
  
 
-BolCandidate = {Pause}|([A-WY-Za-wy-z]+{Numeration}?({WhiteSpace}*{Questioned})?({WhiteSpace}*{Emphasized})?)
+BolCandidate = {Pause}|([A-Za-z]*[A-WY-Za-wy-z]{Numeration}?({WhiteSpace}*{Questioned})?({WhiteSpace}*{Emphasized})?)
 Numeration = [0-9]+ 
 Questioned = "?"+
 Emphasized = "!"+

@@ -45,7 +45,7 @@ public class RendererFactory implements TaskFactory {
 			Runnable appendedTask = appendedTaskFactory.getNewTask();
 			if (appendedTask != null) {
 				EventQueue.invokeLater(appendedTask);
-			}
+			} 
 			
 			compPanel.setHighlightedPaket(comp.getPackets().getPacketAtCaretPosition(caretPosition));
 			compPanel.renderComposition(comp);

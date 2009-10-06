@@ -1,6 +1,5 @@
 package bolscript.scanner;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.regex.MatchResult;
@@ -8,7 +7,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import basics.Debug;
-import basics.FileManager;
 import basics.Rational;
 import bols.BolBase;
 import bolscript.packets.Packet;
@@ -20,7 +18,6 @@ import bolscript.packets.types.PacketType.ParseMode;
 import bolscript.sequences.BolCandidateUnit;
 import bolscript.sequences.FootnoteUnit;
 import bolscript.sequences.ReferencedBolPacketUnit;
-import bolscript.sequences.Representable;
 import bolscript.sequences.RepresentableSequence;
 
 /**
@@ -55,15 +52,31 @@ public class Parser {
 	 * Regex: Whitespaces or newlines at beginning or end of sequence.
 	 */
 	public static final String SNatBeginningOrEnd = "^("+SN + ")*|("+SN+"*(?:$|\\z))";
-	private static DecimalFormat threeDigitFormat = new DecimalFormat("000");
+	//private static DecimalFormat threeDigitFormat = new DecimalFormat("000");
 	//regex for a Rational Nr
 	/**
 	 * Regex: A nonnegative Rational number bounded to 2 digits in numerator and denominator each.
 	 */
 	public static String RATIONAL = "\\d{1,2}+(?:/\\d{1,2}+)?";
-	
 
 	public static Packet defaultSpeedPacket = new Packet("Speed", "1",PacketTypeFactory.SPEED,false);
+	
+	/**
+	 * A Regular expression to split an input String into a series of packets.
+	 * Each match corresponds to one packet, where
+	 * group(1) is optional and means that the packet is hidden
+	 * group(2) is the packets key
+	 * group(3) is the packets value
+	 */
+	public static String packetSplittingRegex = 
+	"(\\$)?"+ //Hidden
+	"\\s*"+ //Whitespaces
+	"((?:[^:\n\r\f])+):" + //Key
+	"([^:]*)" +  //Value
+	"(?=$|[\n\r\f]+(?:(?:(?:(?:[^:\n\r\f]*):)|(?:[\n\r\f]*\\s)*\\z)))" //following Key or End of Input (not captured)
+	;
+	
+	public static Pattern packetSplittingPattern = Pattern.compile(packetSplittingRegex);
 	
 	public static Packets updatePacketsFromString(Packets oldPackets, String input) {
 		//Packets oldoldPackets = oldPackets.clone();
@@ -79,7 +92,7 @@ public class Parser {
 		SequenceParser sequenceParser = new SequenceParser(1, newPackets);
 		
 		int lastUsedOldPacket = -1;
-		
+		int footnoteNr = 1;
 		int i = 0;
 		
 		while (i<newPackets.size()) {
@@ -104,12 +117,15 @@ public class Parser {
 			
 			if (correspondingOldPacket != null) {
 				//Packet correspondingOldPacket = correspondingOldPacket;
-				//update exact content (key/value) and textreferences
+				//update exact content (key/value/visibility) and textreferences from the new version
 				correspondingOldPacket.setKey(currentKey);
 				correspondingOldPacket.setValue(currentValue);
 				correspondingOldPacket.setTextReferencePacket(current.getTextReference());
 				correspondingOldPacket.setTextRefKey(current.getTextRefKey());
 				correspondingOldPacket.setTextRefValue(current.getTextRefValue());
+				correspondingOldPacket.setVisible(current.isVisible());
+				correspondingOldPacket.setHighlighted(current.isHighlighted());
+				
 				
 				//set the old packet in favor of the new packet.
 				newPackets.set(i, correspondingOldPacket);
@@ -133,7 +149,6 @@ public class Parser {
 							seq.clearCache();
 						}
 					}
-					
 					
 					Rational newSpeed = ((Rational) currentSpeedPacket.getObject());
 					Rational oldSpeed = null;
@@ -178,10 +193,13 @@ public class Parser {
 					//add footnote packets
 					RepresentableSequence seq = (RepresentableSequence) added.getObject();
 					ArrayList<FootnoteUnit> footnotes = seq.getFootnoteUnits();
+					
 					for (int j = 0; j < footnotes.size(); j++) {
 						FootnoteUnit fu = footnotes.get(j);
-						Packet fp = new Packet("Footnote "+ fu.getFootnoteNrGlobal(), fu.getFootnoteText(), PacketTypeFactory.FOOTNOTE, true);
+						fu.setFootnoteNrGlobal(footnoteNr);
+						Packet fp = new Packet("Footnote "+ footnoteNr, fu.getFootnoteText(), PacketTypeFactory.FOOTNOTE, true);
 						fp.setObject(fu);
+						footnoteNr++;
 						newPackets.add(i+1,fp);
 						i++;
 					}
@@ -192,7 +210,7 @@ public class Parser {
 			
 		} //while i < newpackets.size()
 
-		debug.temporary(newPackets.toString());
+		//debug.temporary(newPackets.toString());
 		
 		return newPackets;
 		
@@ -208,7 +226,7 @@ public class Parser {
 	
 		Parser.processMetaPackets(packets);
 	
-		Packet currentSpeedPacket = new Packet("Speed","1",PacketTypeFactory.SPEED, false);
+		//Packet currentSpeedPacket = new Packet("Speed","1",PacketTypeFactory.SPEED, false);
 	
 		SequenceParser parser = new SequenceParser(1, packets);
 		
@@ -234,10 +252,67 @@ public class Parser {
 			i++;
 		}
 	
-		debug.temporary(packets.toString());
+		//debug.temporary(packets.toString());
 		return packets;
 	}
 
+	/**
+	 * String-based. Splits an input string in bolscript format into Packet objects 
+	 * which are bundled in one Packets container.
+	 * Packet types and visibilities are assigned by using the maps 
+	 * Packet.keyPacketTypes and Packet.visibilityMap.
+	 * The hide-symbol "$" at the beginning of a key is removed and 
+	 * the packet is assigned invisible.
+	 * 
+	 * @param input An input string in bolscript format.
+	 * @return A Packets container containing the Packets that were 
+	 * found in the input.
+	 * @see Packet, Packets
+	 */
+	public static Packets splitIntoPackets(String input) {
+	
+		String lineBreaks = "[:\n\r\f]+";
+		input.replaceAll(lineBreaks, "\n");
+
+		Matcher m = packetSplittingPattern.matcher(input);
+	
+		Packets packets = new Packets();
+	
+		int i=0;
+		
+		while (m.find()) {
+			//isVisible
+	
+			TextReference packetReference = null;
+			TextReference keyReference = null;
+			TextReference valueReference = null;
+	
+			MatchResult result = m.toMatchResult();
+	
+			String key = m.group(2).replaceAll(SNatBeginningOrEnd, "");
+			
+			if (key.length()>0) { //ignore packets with empty keys
+				packetReference = new TextReference(result.start(0),result.end(0), 0);
+				keyReference = new TextReference(result.start(2),result.end(2), 0);
+				valueReference = new TextReference(result.start(3),result.end(3), 0);
+	
+	
+				PacketType type = PacketTypeFactory.getType(m.group(2).toUpperCase());
+				//debug.temporary(m.group(2).toUpperCase() + " => " + type);
+				boolean isVisible = type.displayInCompositionView() && (m.group(1) == null);
+	
+				Packet packet = new Packet(m.group(2), m.group(3), type, isVisible);
+				packet.setTextReferencePacket(packetReference);
+				packet.setTextRefKey(keyReference);
+				packet.setTextRefValue(valueReference);
+	
+				packets.add(packet);
+				i++;
+			}
+		}
+		return packets;
+	}
+	
 	/**
 	 * <p>Processes meta-packets of the following types:
 	 * <li>COMMENT</li>
@@ -260,7 +335,7 @@ public class Parser {
 	 * @param packets The Packets to be processed. Note that these will be manipulated.
 	 * @see Packet Packet, for a description of the meta-types.
 	 */
-	public static void processMetaPackets(Packets packets) {
+	private static void processMetaPackets(Packets packets) {
 		Iterator<Packet> i = packets.listIterator();
 		while (i.hasNext()) {
 			processMetaPacket(i.next());
@@ -342,70 +417,7 @@ public class Parser {
 		return entries.toArray(entriesArray);
 	}
 
-	/**
-	 * String-based. Splits an input string in bolscript format into Packet objects 
-	 * which are bundled in one Packets container.
-	 * Packet types and visibilities are assigned by using the maps 
-	 * Packet.keyPacketTypes and Packet.visibilityMap.
-	 * The hide-symbol "$" at the beginning of a key is removed and 
-	 * the packet is assigned invisible.
-	 * 
-	 * @param input An input string in bolscript format.
-	 * @return A Packets container containing the Packets that were 
-	 * found in the input.
-	 * @see Packet, Packets
-	 */
-	public static Packets splitIntoPackets(String input) {
 	
-		String lineBreaks = "[:\n\r\f]+";
-		input.replaceAll(lineBreaks, "\n");
-		String regex = "(\\$)?((?:[^:\n\r\f])+):" + //Key
-		"([^:]*)" +  //Value
-		"(?=$|[\n\r\f]+(?:(?:(?:(?:[^:\n\r\f]*):)|(?:[\n\r\f]*\\s)*\\z)))" //following Key or End of Input (not captured)
-		;
-	
-		Pattern pattern = Pattern.compile(regex);
-		Matcher m = pattern.matcher(input);
-	
-		Packets packets = new Packets();
-	
-		int i=0;
-		boolean isVisible;
-		//PacketType type;
-	
-		while (m.find()) {
-			//isVisible
-	
-			TextReference packetReference = null;
-			TextReference keyReference = null;
-			TextReference valueReference = null;
-	
-			MatchResult result = m.toMatchResult();
-	
-			String key = m.group(2).replaceAll(SNatBeginningOrEnd, "");
-			
-			if (key.length()>0) { //ignore packets with empty keys
-				packetReference = new TextReference(result.start(0),result.end(0), 0);
-				keyReference = new TextReference(result.start(2),result.end(2), 0);
-				valueReference = new TextReference(result.start(3),result.end(3), 0);
-	
-	
-				PacketType type = PacketTypeFactory.getType(m.group(2).toUpperCase());
-				//debug.temporary(m.group(2).toUpperCase() + " => " + type);
-				isVisible = type.displayInCompositionView() && (m.group(1) == null);
-	
-				Packet packet = new Packet(m.group(2), m.group(3), type, isVisible);
-	
-				packet.setTextReferencePacket(packetReference);
-				packet.setTextRefKey(keyReference);
-				packet.setTextRefValue(valueReference);
-	
-				packets.add(packet);
-				i++;
-			}
-		}
-		return packets;
-	}
 
 	public static String determineBolStringAroundCaret(String input, int caretPosition) {
 		int RANGE = 20;
