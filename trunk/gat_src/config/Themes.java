@@ -18,10 +18,10 @@ import bols.tals.Teental;
 public class Themes {
 
 	public static Variation getTheme01(BolBaseGeneral bolBase) {
-		return new Variation("Dha Ge Ti Ri Ke Te, Dha -, Dha -, Dha Ge Ti Ri Ke Te", bolBase);
+		return new Variation("Dha Ge Ti Re Ke Te, Dha -, Dha -, Dha Ge Ti Re Ke Te", bolBase);
 	}
 	public static Variation getTheme01b(BolBaseGeneral bolBase) {
-		return new Variation("Dha Ge; Ti Ri Ke Te, Dha -, Dha -, Dha Ge; Ti Ri Ke Te", bolBase);
+		return new Variation("Dha Ge; Ti Re Ke Te, Dha -, Dha -, Dha Ge; Ti Re Ke Te", bolBase);
 	}
 	public static Variation getTheme02(BolBaseGeneral bolBase) {
 		return new Variation("Ge Na Ti Te Dha Ge Na, Dha Ti, Dha Ge Na, Tun Na Ge Na", bolBase);
@@ -34,11 +34,11 @@ public class Themes {
 		return var;
 	}
 	public static Variation getTheme05(BolBaseGeneral bolBase) {
-		Variation var = new Variation("Dha -, Ti Ri Ke Te, Ta Ke Ti Ri Ke Te, Dha Ti Dha Ge, Tin Na Ge Na", bolBase);
+		Variation var = new Variation("Dha -, Ti Re Ke Te, Ta Ke Ti Re Ke Te, Dha Ti Dha Ge, Tin Na Ge Na", bolBase);
 		return var;
 	}
 	public static Variation getTheme06(BolBaseGeneral bolBase) {
-		Variation var = new Variation("Dha -, Ge Te Na Ke, Ta Ke Ti Ri Ke Te, Dhin Ne Ge Ne", bolBase);
+		Variation var = new Variation("Dha -, Ge Te Na Ke, Ta Ke Ti Re Ke Te, Dhin Ne Ge Ne", bolBase);
 		return var;
 	}	
 	public static Variation getTheme07(BolBaseGeneral bolBase) {
@@ -68,7 +68,7 @@ public class Themes {
 	
 	
 	public static Variation getTheme01DbSpeed(BolBaseGeneral bolBase) {
-		Variation var = new Variation("Dha Ge Ti Ri Ke Te, Dha -, Dha -, Dha Ge Ti Ri Ke Te", bolBase);
+		Variation var = new Variation("Dha Ge Ti Re Ke Te, Dha -, Dha -, Dha Ge Ti Re Ke Te", bolBase);
 		Mutator doubler = new MutatorDoublifier(1.0f, 1.0f);
 		Individual in1= new Individual(var);
 		doubler.mutate(in1);
@@ -76,7 +76,7 @@ public class Themes {
 	}
 
 	public static Variation getTheme01NoGe(BolBaseGeneral bolBase) {
-		return new Variation("Dha - Ti Ri Ke Te, Dha -, Dha -, Dha Ge, Ti Ri Ke Te", bolBase);
+		return new Variation("Dha - Ti Re Ke Te, Dha -, Dha -, Dha Ge, Ti Re Ke Te", bolBase);
 	}
 	
 
@@ -94,7 +94,7 @@ public class Themes {
 	}
 	
 	public static Variation getTheme05b(BolBaseGeneral bolBase) {
-		BolSequence seq1 = new BolSequence("Dha - Ti Ri Ke Te Ta Ke Ti Ri Ke Te Dha Ti Dha Ge Tin Na Ge Na", bolBase);
+		BolSequence seq1 = new BolSequence("Dha - Ti Ri Ke Te Ta Ke Ti Re Ke Te Dha Ti Dha Ge Tin Na Ge Na", bolBase);
 		Variation var = new Variation(seq1);
 		var.addSubSequence(0,6, 1f);
 		var.addSubSequence(6,6, 1f);

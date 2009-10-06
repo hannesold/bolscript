@@ -69,16 +69,16 @@ public class CaretRelatedFactory implements TaskFactory {
 				}
 			}
 		}
-		//update document to clear away past selections
+		
+		//update document to clear away past highlighting of referenced packets
 		if (previouslyHighlightedPacket != null) {
-			if (previouslyHighlightedPacket !=null)	previouslyHighlightedPacket.setHighlighted(false);
+			previouslyHighlightedPacket.setHighlighted(false);
 			previouslyHighlightedPacket = null;
-			
 			document.updateStylesLater(composition.getPackets());
 		}
 		
 
-		return null;
+		return new OnlyUpdateStyles();
 	}
 
 	public String getTaskName() {
@@ -89,7 +89,15 @@ public class CaretRelatedFactory implements TaskFactory {
 		this.compPanel = compositionPanel;		
 	}
 	
+	
+	private final class OnlyUpdateStyles implements Runnable {
 
+		@Override
+		public void run() {
+			document.updateStylesNow(composition.getPackets());
+		}
+		
+	}
 	private final class CaretGuessTask implements Runnable {
 
 		String text;
