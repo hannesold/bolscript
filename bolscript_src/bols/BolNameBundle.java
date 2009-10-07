@@ -120,8 +120,10 @@ public class BolNameBundle implements NamedInLanguages {
 				labels[i].append(bolNames[j].getName(i));
 				
 				if (!emptyBol.equals(bolNames[j])) {
+					//is no pause
 					lastNonEmptyBolIndex = labels[i].length();
 				} else {
+					//is a pause
 					if (j<bolNames.length-1) {
 						labels[i].append(" ");
 					}
@@ -131,7 +133,7 @@ public class BolNameBundle implements NamedInLanguages {
 			if (lastNonEmptyBolIndex == 0) {
 				//this means the bundle consists only of pauses
 				//it will be replaced by one pause
-				slabels[i] = emptyBol.getName(BolName.SIMPLE);
+				slabels[i] = emptyBol.getName(i);
 			} else {
 				//empty bols at the end are cut off
 				slabels[i] = Tools.formatName(labels[i].substring(0, lastNonEmptyBolIndex));

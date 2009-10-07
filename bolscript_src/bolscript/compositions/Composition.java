@@ -36,7 +36,7 @@ import bolscript.sequences.SpeedUnit;
 public class Composition implements DataStatePosessor{
 
 	protected ArrayList<Rational> speedsR = null;
-	protected Rational maxSpeed = null;
+	protected Rational maxSpeedInVisibleSequences = null;
 
 	protected ArrayList<String> searchStrings = null;
 
@@ -264,7 +264,7 @@ public class Composition implements DataStatePosessor{
 		// reset everything
 		metaValues.setDefault();
 		speedsR = new ArrayList<Rational>();
-		maxSpeed = new Rational(1);
+		maxSpeedInVisibleSequences = new Rational(1);
 
 		Packet firstBolPacket = null;
 
@@ -297,10 +297,12 @@ public class Composition implements DataStatePosessor{
 					addSpeed((Rational) obj);
 					break;
 
-				case PacketTypeFactory.BOLS:		
-					RepresentableSequence flat = ((RepresentableSequence) obj).flatten(SpeedUnit.getDefaultSpeedUnit());
+				case PacketTypeFactory.BOLS:	
+					RepresentableSequence seq = ((RepresentableSequence) obj);
+					RepresentableSequence flat = seq.flatten();
 					
-					maxSpeed = Rational.max(maxSpeed, flat.getMaxSpeed());
+					if (p.isVisible()) maxSpeedInVisibleSequences = Rational.max(maxSpeedInVisibleSequences, flat.getMaxSpeed());
+					
 					if (metaValues.getString(SNIPPET).equals("")) {
 						if (firstBolPacket == null && p.isVisible()) firstBolPacket = p;
 						if ((key.equalsIgnoreCase("Snippet") 
@@ -411,7 +413,7 @@ public class Composition implements DataStatePosessor{
 	}
 
 	public Rational getMaxSpeed() {
-		return maxSpeed;
+		return maxSpeedInVisibleSequences;
 	}
 
 	public void addChangeListener(CompositionChangedListener c) {

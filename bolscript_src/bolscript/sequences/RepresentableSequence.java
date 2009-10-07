@@ -78,7 +78,7 @@ public class RepresentableSequence implements Representable, Collection<Represen
 
 	
 	
-	private Packet determiningSpeedUnitPacket = null;
+	private Packet referencedSpeedUnitPacket = null;
 	
 	
 	public void setTextReference(TextReference textReference) {
@@ -193,12 +193,13 @@ public class RepresentableSequence implements Representable, Collection<Represen
 	
 	
 	public void setReferencedSpeedPacket(Packet speedPacket) {
-		this.determiningSpeedUnitPacket = speedPacket;		
+		this.referencedSpeedUnitPacket = speedPacket;		
 	}
 	
 	public Packet getReferencedSpeedPacket() {
-		return determiningSpeedUnitPacket;
+		return referencedSpeedUnitPacket;
 	}
+	
 	
 	/**
 	 * Returns all referenced bol packet units.
@@ -374,12 +375,16 @@ public class RepresentableSequence implements Representable, Collection<Represen
 	 * @return a bundled version
 	 */
 	public RepresentableSequence getBundled(Rational targetSpeed, boolean allowedToFillLastBeat) {
+		
 		RepresentableSequence bundled = new RepresentableSequence();
+		
 		boolean currentlyBundling = false;
 		Rational currentSpeed = new Rational(1);
 		Rational currentPosition = new Rational(0);
 		Rational wantedBundleEnd = new Rational(0);
+		
 		RepresentableSequence currentBundle = new RepresentableSequence();
+		
 		Rational bundleDuration = targetSpeed.reciprocal();
 		ArrayList<Representable> currentBundlesFootnotes = new ArrayList<Representable>();
 		//int currentBundlesBeat = 0;
@@ -463,7 +468,7 @@ public class RepresentableSequence implements Representable, Collection<Represen
 			case Representable.BUNDLE:
 				//Debug.temporary(this, "found bundle " + r);
 				HasPlayingStyle bundle = (BolBundle) r;
-				currentPosition = currentPosition.plus(bundle.getPlayingStyle().getSpeed().reciprocal());
+				
 
 				if (currentlyBundling) {
 					//bundling failed
@@ -473,7 +478,8 @@ public class RepresentableSequence implements Representable, Collection<Represen
 					currentBundle.clear();
 				} 
 				bundled.add(r);
-
+				
+				currentPosition = currentPosition.plus(bundle.getPlayingStyle().getSpeed().reciprocal());
 				break;
 
 			case Representable.FOOTNOTE:
@@ -700,6 +706,16 @@ public class RepresentableSequence implements Representable, Collection<Represen
 		return cachedShortSnippet;
 	}
 
+	public RepresentableSequence flatten() {
+		if (referencedSpeedUnitPacket == null) {
+			referencedSpeedUnitPacket = Parser.defaultSpeedPacket;
+		}
+		Rational r = (Rational) referencedSpeedUnitPacket.getObject();
+		SpeedUnit referencedSpeedUnit = new SpeedUnit(r, true, referencedSpeedUnitPacket.getTextReference());
+		
+		return flatten(referencedSpeedUnit);
+	}
+	
 	public RepresentableSequence flatten(SpeedUnit basicSpeedUnit) {
 		return flatten(basicSpeedUnit, 0);
 	}
@@ -1046,5 +1062,7 @@ public class RepresentableSequence implements Representable, Collection<Represen
 	public List<Representable> subList(int fromIndex, int toIndex) {
 		return sequence.subList(fromIndex,toIndex);
 	}
+
+
 
 }

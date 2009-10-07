@@ -70,7 +70,6 @@ public class Parser {
 	 */
 	public static String packetSplittingRegex = 
 	"(\\$)?"+ //Hidden
-	"\\s*"+ //Whitespaces
 	"((?:[^:\n\r\f])+):" + //Key
 	"([^:]*)" +  //Value
 	"(?=$|[\n\r\f]+(?:(?:(?:(?:[^:\n\r\f]*):)|(?:[\n\r\f]*\\s)*\\z)))" //following Key or End of Input (not captured)
@@ -173,6 +172,7 @@ public class Parser {
 				if (current.getType() == PacketTypeFactory.BOLS) {
 					//add a bol packet
 					RepresentableSequence seq = sequenceParser.parseSequence(current, current.getValue());
+					seq.setReferencedSpeedPacket(currentSpeedPacket);
 					current.setObject(seq);
 					added = current;
 				} else {
@@ -226,6 +226,7 @@ public class Parser {
 	
 		Parser.processMetaPackets(packets);
 	
+		Packet currentSpeedPacket = defaultSpeedPacket;
 		//Packet currentSpeedPacket = new Packet("Speed","1",PacketTypeFactory.SPEED, false);
 	
 		SequenceParser parser = new SequenceParser(1, packets);
@@ -237,6 +238,7 @@ public class Parser {
 	
 			if (p.getType() == PacketTypeFactory.BOLS) {
 				RepresentableSequence seq = parser.parseSequence(p, p.getValue());
+				seq.setReferencedSpeedPacket(currentSpeedPacket);
 				p.setObject(seq);
 				ArrayList<FootnoteUnit> footnotes = seq.getFootnoteUnits();
 				
@@ -248,6 +250,8 @@ public class Parser {
 					i++;
 				}
 				
+			} else if (p.getType() == PacketTypeFactory.SPEED) {
+				currentSpeedPacket = p;
 			}
 			i++;
 		}
