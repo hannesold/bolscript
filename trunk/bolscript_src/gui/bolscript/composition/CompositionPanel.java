@@ -367,17 +367,14 @@ public class CompositionPanel extends JLayeredPane {
 		pageBreakPanels.clear();
 		packetMap.clear();
 
-		Packet currentSpeedPacket = new Packet("Speed","1",PacketTypeFactory.SPEED, false);
-		currentSpeedPacket.setObject(new Rational(1));		
-		Rational currentSpeed = (Rational) currentSpeedPacket.getObject();
+		//Packet currentSpeedPacket = new Packet("Speed","1",PacketTypeFactory.SPEED, false);
+		//currentSpeedPacket.setObject(new Rational(1));		
+		//Rational currentSpeed = (Rational) currentSpeedPacket.getObject();
 		
 		if (packets != null) {
 			Tal tal = Teental.getDefaultTeental();
 			for (Packet p : packets) {
-				if (p.getType() == PacketTypeFactory.SPEED) {
-					currentSpeedPacket = p;
-					currentSpeed = (Rational) p.getObject();
-				} else if (p.getType() == PacketTypeFactory.TAL) {
+				if (p.getType() == PacketTypeFactory.TAL) {
 					//tal = (Tal) p.getObject();
 					tal = talBase.getTalFromName((String) p.getObject());
 
@@ -419,7 +416,7 @@ public class CompositionPanel extends JLayeredPane {
 
 						RepresentableSequence seq;
 						 seq = ((RepresentableSequence) p.getObject())
-								.flatten(new SpeedUnit(currentSpeed, true, currentSpeedPacket.getTextReference()))
+								.flatten()
 								.getBundled(bundlingMap,bundlingDepth, true);
 						/*}old parsemode: {
 							seq = ((RepresentableSequence) p.getObject()).getBundled(bundlingMap,bundlingDepth, true);
