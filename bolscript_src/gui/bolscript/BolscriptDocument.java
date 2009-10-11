@@ -100,7 +100,8 @@ public class BolscriptDocument extends DefaultStyledDocument{
 		StyleConstants.setBackground(styleHighlightedBolKey, highlightedBolBackground);
 		StyleConstants.setForeground(styleHighlightedBolVal, Color.BLACK);
 		StyleConstants.setBackground(styleHighlightedBolVal, highlightedBolBackground);	          
-
+		//StyleConstants.setLeftIndent(styleMetaValue, 20f);
+		
 		keyStyleMaps = new HashMap<Integer, Style>();
 		valueStyleMaps = new HashMap<Integer, Style>();
 		PacketType[] metaTypes = PacketTypeFactory.getMetaTypes();

@@ -17,6 +17,9 @@
 	<property name="dir.resources.tablafolder_default" value="${dir.resources}/tablafolder_default"/>
 	<property name="resources.zip.filename" value="resources.zip"/>
 	<property name="resources.zip.completepath" value="${dir.build}/${resources.zip.filename}"/>
+	<property name="resources.splashname" value="bolscript-splash.png"/>
+	<property name="dir.resources.splash" value="${dir.resources}/icons" />
+	<property name="resources.splashscreen" value="${dir.resources.splash}/${resources.splashname}"/>
 	<property name="lib.itext" value="lib/iText-2.1.5.jar" />
 	<property name="jar.filename.mac" value="bolscript_mac.jar" />
 	<property name="jar.filename.other" value="bolscript.jar" />
@@ -99,8 +102,11 @@
 		             value="${version.num}-b${build.number}"/>   
 			<attribute name="Built-Date" value="${TODAY}"/>
 			<attribute name="Built-By" value="${user.name}"/>
+			<attribute name="SplashScreen-Image" value="${resources.splashname}" />
 		</manifest>
 		<fileset dir="${dir.bin}"/>
+		<fileset file="${resources.splashscreen}"/>
+		
 		<zipfileset excludes="META-INF/*.SF" src="${lib.itext}"/>
 		
 		<!-- include the resources.zip -->
@@ -123,7 +129,11 @@
         		version="${version.num}"
         		infostring="${app.name} ${version.num}, ${TODAY}"
         		build="${build.number}"
-        		bundleid="bolscript/MasterMac"/>
+        		bundleid="bolscript/MasterMac"
+				splashfile="$JAVAROOT/${resources.splashname}"
+	>
+		<javafilelist dir="${dir.resources.splash}" files="${resources.splashname}"/>
+	</jarbundler>
 </target>
 	
 <target name="create_dmg" depends="create_applicationbundle_for_mac">
@@ -147,8 +157,10 @@
 			             value="${version.num}-b${build.number}"/>   
 				<attribute name="Built-Date" value="${TODAY}"/>
 				<attribute name="Built-By" value="${user.name}"/>
+				<attribute name="SplashScreen-Image" value="${resources.splashname}" />				
 			</manifest>
 			<fileset dir="${dir.bin}"/>
+			<fileset file="${resources.splashscreen}"/>
 			<zipfileset excludes="META-INF/*.SF" src="${lib.itext}"/>
 			
 			<!-- include the resources.zip -->
