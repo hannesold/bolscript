@@ -379,7 +379,7 @@ public class CompositionPanel extends JLayeredPane {
 					tal = talBase.getTalFromName((String) p.getObject());
 
 					if (tal==null) {
-						Debug.temporary(this, "Tal " + p.getObject() + " not found, using teental");
+						//Debug.temporary(this, "Tal " + p.getObject() + " not found, using teental");
 						tal = Teental.getDefaultTeental();
 					} else {
 						//Debug.temporary(this, "Tal found: " + tal);
@@ -388,7 +388,7 @@ public class CompositionPanel extends JLayeredPane {
 				}
 				if (p.isVisible()) {
 					if (p.getType()==PacketTypeFactory.FOOTNOTE) {
-						Debug.temporary(this, "found footnotepacket with obj: " + p.getObject());
+						//Debug.temporary(this, "found footnotepacket with obj: " + p.getObject());
 						FootnoteText ft = new FootnoteText((FootnoteUnit) p.getObject());
 						addLineBreak(new Float(newHeight), PageBreakPanel.LOW);
 						components.add(ft);

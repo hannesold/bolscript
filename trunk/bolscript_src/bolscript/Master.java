@@ -11,12 +11,15 @@ import gui.bolscript.actions.OmmitChangesAndClose;
 import gui.bolscript.actions.SaveChanges;
 import gui.bolscript.composition.CompositionPanel;
 import gui.bolscript.dialogs.CouldNotBeRemovedDialog;
+import gui.bolscript.dialogs.LoadingTablafolder;
 import gui.bolscript.dialogs.PreferencesDialog;
 import gui.bolscript.dialogs.SaveChangesDialog;
 import gui.bolscript.sequences.SequencePanel;
 import gui.bolscript.tables.CompositionTableModel;
 
 import java.awt.Dimension;
+import java.awt.EventQueue;
+import java.awt.SplashScreen;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
@@ -60,6 +63,8 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 		private FilterPanel filterPanel;
 		private SearchPanel searchPanel;
 		
+		private LoadingTablafolder loadingFrame ;
+		
 		static Debug debug = new Debug(Master.class);
 		
 		
@@ -92,9 +97,16 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 		}
 		
 		public void init() {
+
+			
 			GUI.setNativeLookAndFeel();
 			
 			initDebug();
+			
+			SplashScreen splashScreen = SplashScreen.getSplashScreen();
+			if (splashScreen==null) {
+				debug.critical("SplashScreen not loaded!");
+			}
 			//debug.showErrorConsole();
 			
 			GUI.init();
@@ -120,15 +132,33 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 				prefsDialog.setVisible(true);
 			}
 			
+			
+			EventQueue.invokeLater(new Runnable() { public void run() {
+				showLoadingframeThenLoad();
+			}});
+
+			
+			
+		}
+		public void showLoadingframeThenLoad() {
+			//loadingFrame = new LoadingTablafolder();
+			//loadingFrame.setVisible(true);
+			
+			EventQueue.invokeLater(new Runnable() { public void run() {
+				initGui();
+			}});
+		}
+		
+		public void initGui(){
+			
+			
+			
 			BolBase.init(this.getClass());
 
-			//TalBase.init();
-			
 			compositionBase = new CompositionBase();			
 			compositionBase.addFolderRecursively(Config.pathToTalsNoSlash);
 			compositionBase.addFolderRecursively(bolscript.config.Config.pathToCompositionsNoSlash);
 			compTableModel = new CompositionTableModel(compositionBase);
-			
 			
 			filterPanel = new FilterPanel(compositionBase);
 			compositionBase.setFilterGUI(filterPanel);
@@ -139,18 +169,18 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 				editors = new ArrayList<EditorFrame>();//new EditorFrame(new Dimension(400,800));
 				compositionFrames = new ArrayList<CompositionFrame>();//new CompositionFrame(new Dimension(800,600),false);
 				
-				bolBaseFrame = new BolBaseFrame(new Dimension(800,800));
+				//bolBaseFrame = new BolBaseFrame(new Dimension(800,800));
 				//bolBaseFrame.setVisible(true);
 				
 			} catch (Exception e) {
 				debug.critical("something went wrong");
-				
+				System.exit(0);
 			}
-			
+			//loadingFrame.setVisible(false);
 			Config.addChangeListener(this);
 			debug.temporary("browserFrame established");
 			
-			
+			//loadingFrame.setVisible(false);
 		}
 		
 		/**

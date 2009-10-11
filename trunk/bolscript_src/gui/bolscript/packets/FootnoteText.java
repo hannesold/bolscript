@@ -33,7 +33,7 @@ public class FootnoteText extends JPanel {
 	public FootnoteText (FootnoteUnit footnoteUnit) {
 		super();
 		this.footnoteUnit = footnoteUnit;
-		Debug.temporary(this, "building footnotetext for display " + footnoteUnit);
+		//Debug.temporary(this, "building footnotetext for display " + footnoteUnit);
 		init();
 	}
 	

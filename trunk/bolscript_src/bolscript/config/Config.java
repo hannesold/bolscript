@@ -265,7 +265,7 @@ public class Config {
 			if (pdfExportPath != null) {
 				preferences.put("pdfExportPath",pdfExportPath);
 			}
-			Debug.debug(Config.class, "storing properties under : " + new File(propertiesFilename).getAbsoluteFile());
+			//Debug.debug(Config.class, "storing properties under : " + new File(propertiesFilename).getAbsoluteFile());
 		try {
 			preferences.flush();
 			Debug.debug(Config.class, "Preferences stored");
