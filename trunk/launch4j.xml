@@ -1,7 +1,7 @@
 <launch4jConfig>
-  <dontWrapJar>false</dontWrapJar>
+  <dontWrapJar>true</dontWrapJar>
   <headerType>gui</headerType>
-  <jar>/Users/hannes/Projekte/Workspace/bolscript googlecode/builds/bolscript.jar</jar>
+  <jar>bolscript.jar</jar>
   <outfile>/Users/hannes/Projekte/Workspace/bolscript googlecode/builds/Bolscript.exe</outfile>
   <errTitle>Bolscript</errTitle>
   <cmdLine></cmdLine>

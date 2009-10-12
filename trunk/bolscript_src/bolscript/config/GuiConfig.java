@@ -3,7 +3,11 @@ package bolscript.config;
 
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.GraphicsEnvironment;
+import java.awt.Rectangle;
+import java.awt.Toolkit;
 
 import javax.swing.JPanel;
 
@@ -56,6 +60,38 @@ public class GuiConfig {
 		GuiConfig.vibhagLineThicknesses[Vibhag.SAM] = 2;
 		GuiConfig.vibhagLineThicknesses[Vibhag.TALI] = 1;
 		GuiConfig.vibhagLineThicknesses[Vibhag.KALI] = 1;
+	}
+	
+
+	static Dimension limitByScreen(int wantedWidth, int wantedHeight, double maxPercentOfScreenWidth, double maxPercentOfScreenHeight) {
+		//get local graphics environment
+		GraphicsEnvironment graphicsEnvironment=GraphicsEnvironment.getLocalGraphicsEnvironment();
+				
+		//get maximum window bounds
+		Rectangle maximumWindowBounds=graphicsEnvironment.getMaximumWindowBounds();
+
+		
+		Toolkit toolkit =  Toolkit.getDefaultToolkit ();
+        Dimension screenDim = toolkit.getScreenSize();
+        return new Dimension(Math.min(
+        		(int)Math.round(
+        				maxPercentOfScreenWidth* ((double)maximumWindowBounds.width)), 
+        				wantedWidth
+        				),
+        		Math.min(
+        				(int)Math.round(
+        				maxPercentOfScreenHeight* ((double)maximumWindowBounds.height)), 
+        				wantedHeight));
+	}
+
+	public static Dimension getBrowserFrameDimension() {
+		return limitByScreen(400,800,0.5,1);
+	}
+	public static Dimension getCompositionViewerSize() {
+		return limitByScreen(600,700,0.5,1);
+	}
+	public static Dimension getEditorSize() {
+		return limitByScreen(410,700,0.5,1);
 	}
 	
 }

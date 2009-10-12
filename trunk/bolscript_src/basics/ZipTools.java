@@ -2,10 +2,11 @@ package basics;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Enumeration;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -22,48 +23,80 @@ public class ZipTools {
 	 * They keep their relative paths and land alltogether in destination_path. 
 	 * @param destination_path The destination folder.
 	 * @param zipFile The Zip-File from which to extract.
-	 * @param entry The entry whos 'children' shall be extracted.
+	 * @param fatherEntry The entry whos 'children' shall be extracted.
 	 * @throws Exception
 	 */
-	public static void extractSubentries( String destination_path, ZipFile zipFile, ZipEntry entry) throws Exception{
-		if (entry.isDirectory()) {
+	public static void extractSubentries( String destination_path, ZipFile zipFile, ZipEntry fatherEntry) throws Exception{
+		if (fatherEntry.isDirectory()) {
 			Debug.temporary(ZipTools.class, "ExtractSubentries: the entry is no directory so nothing can be extracted");
 		} else {
-			Debug.temporary(ZipTools.class, "ExtractSubentries of " + entry);
+			Debug.temporary(ZipTools.class, "ExtractSubentries of " + fatherEntry);
 
 
-			String father = entry.getName();
-
+			String father = fatherEntry.getName();
 
 			Enumeration<? extends ZipEntry> entries = zipFile.entries();
+
 			while (entries.hasMoreElements()) {
 				ZipEntry e = entries.nextElement();
 
-				if (!e.equals(entry)) {
-					if (e.getName().startsWith(entry.getName())) {
+				if (!e.equals(fatherEntry)) {
+					if (e.getName().startsWith(fatherEntry.getName())) {
 						Debug.temporary(ZipTools.class, "extraction candidate: " + e.getName());
-						String relativePath = 
-							e.getName().substring(father.length()+1).
-							replaceAll("/", Config.fileSeperator);
-						Debug.temporary(ZipTools.class, "relative path: " + relativePath);
 
-
-						String absoluteDestinationPath = destination_path + Config.fileSeperator + relativePath;
-						Debug.temporary(ZipTools.class, "absoluteDestinationPath: " + absoluteDestinationPath);
-						if (e.isDirectory()) {
-							createDirectory(absoluteDestinationPath);
-						} else {
-
-							try {
-								extractOneFile(e.getName(), absoluteDestinationPath, zipFile.getInputStream(e));
-							} catch (Exception ex) {
-								ex.printStackTrace();
-							}
+						String relativePath = null;
+						try {
+							//for (int i = 0; i <= father.length(); i++) {
+							Debug.temporary(ZipTools.class, "father: '" +father +"', length: " + father.length());
+							Debug.temporary(ZipTools.class, "entry: '"+e.getName()+"'");
+								relativePath = 
+									e.getName()
+										.substring(father.length()+1,e.getName().length());
+								Debug.temporary(ZipTools.class, "relPath: '"+relativePath+"'");	
+								relativePath = relativePath.replaceAll("/", Matcher.quoteReplacement(Config.fileSeperator));
+								Debug.temporary(ZipTools.class, "relPath with correct fileseperators: '"+relativePath+"'");
+								//Debug.temporary(ZipTools.class, "relativePath when cutting of " + i + ": " +relativePath);
+							//}
+							Pattern p;
+						} catch (Exception ex) {
+							Debug.critical(ZipTools.class, "could not establish relative path from " + e.getName() +",\n" +
+															"where father was " + father);
+							Debug.critical(ZipTools.class, ex);
+							ex.printStackTrace();
 						}
+						if (relativePath != null) {
+							Debug.temporary(ZipTools.class, "relative path: " + relativePath);
 
-					}
-				}
-			}
+
+							String absoluteDestinationPath = destination_path + Config.fileSeperator + relativePath;
+							Debug.temporary(ZipTools.class, "absoluteDestinationPath: " + absoluteDestinationPath);
+							//String absDestPathWithoutEndingFileSeperator = absoluteDestinationPath.replaceAll("[\\/]$", "");
+							//Debug.temporary(ZipTools.class, "without ending seperator " + absDestPathWithoutEndingFileSeperator);
+
+							if (e.isDirectory()) {
+								try{
+
+									Debug.temporary(ZipTools.class, "attempting to create directory " + absoluteDestinationPath);
+
+									createDirectory(absoluteDestinationPath);
+								} catch (Exception ex) {
+									Debug.critical(ZipTools.class,"could not create directory " + absoluteDestinationPath);
+								}
+							} else {
+
+								try {
+									extractOneFile(e.getName(), absoluteDestinationPath, zipFile.getInputStream(e));
+								} catch (Exception ex) {
+
+									Debug.critical(ZipTools.class,"could not extract " + e.getName() + " to " + absoluteDestinationPath);
+									ex.printStackTrace();
+									Debug.critical(ZipTools.class, ex);
+								}
+							}
+						} //relativePath != null
+					} //is a subentry (starts with father entrys name) 
+				} // entry != father entry
+			} //while has entries
 		}
 	}
 

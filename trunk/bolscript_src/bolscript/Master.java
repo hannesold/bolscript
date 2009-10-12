@@ -19,7 +19,9 @@ import gui.bolscript.tables.CompositionTableModel;
 
 import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.Image;
 import java.awt.SplashScreen;
+import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
@@ -40,6 +42,7 @@ import bolscript.compositions.DataState;
 import bolscript.config.Config;
 import bolscript.config.ConfigChangeEvent;
 import bolscript.config.ConfigChangeListener;
+import bolscript.config.GuiConfig;
 import bolscript.packets.types.PacketTypeFactory;
 public class Master implements ConfigChangeListener{//implements ApplicationListener{//extends JFrame implements WindowListener {
 
@@ -164,8 +167,12 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 			compositionBase.setFilterGUI(filterPanel);
 			
 			try {
-				browserFrame = new BrowserFrame(new Dimension(800,800),compTableModel, filterPanel);
+				
+				browserFrame = new BrowserFrame(GuiConfig.getBrowserFrameDimension(),compTableModel, filterPanel);
 				browserFrame.setVisible(true);
+				Image icon = Config.getWindowsFrameIcon();
+				debug.temporary("imageIcon: " +icon);
+				if (icon != null) browserFrame.setIconImage(icon);
 				editors = new ArrayList<EditorFrame>();//new EditorFrame(new Dimension(400,800));
 				compositionFrames = new ArrayList<CompositionFrame>();//new CompositionFrame(new Dimension(800,600),false);
 				
@@ -320,9 +327,12 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
        		 
        			 comp.getDataState().open(comp);
        			 
-       			 CompositionFrame compositionFrame = new CompositionFrame(comp, new Dimension(600,700), compositionBase);
-       			 
-       			 EditorFrame editor = new EditorFrame(comp, new Dimension(410,700));
+       			 CompositionFrame compositionFrame = new CompositionFrame(comp, GuiConfig.getCompositionViewerSize(), compositionBase);
+       			 Image icon = Config.getWindowsFrameIcon();
+       			 if (icon != null) compositionFrame.setIconImage(icon);
+				
+       			 EditorFrame editor = new EditorFrame(comp, GuiConfig.getEditorSize());
+       			if (icon != null) editor.setIconImage(icon);
        			
        			 editor.setCompositionFrame(compositionFrame);	 
        			 compositionFrame.setEditor(editor);

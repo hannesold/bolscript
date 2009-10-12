@@ -13,6 +13,7 @@ import javax.swing.table.TableRowSorter;
 
 import basics.GUI;
 import bolscript.Master;
+import bolscript.config.Config;
 import bolscript.config.GuiConfig;
 
 public class CompositionListPanel extends JScrollPane {
@@ -26,7 +27,7 @@ public class CompositionListPanel extends JScrollPane {
 		compositionTable = new JTable(model);
 		compositionTable.setDefaultRenderer(Integer.class, new StateRenderer(false));
 		compositionTable.setDefaultRenderer(Object.class, new CellRenderer());
-		compositionTable.setBackground(Color.white);//Config.tableBG);
+		compositionTable.setBackground(Color.white);
 		compositionTable.getColumnModel().getColumn(0).setMaxWidth(20);
 		compositionTable.getColumnModel().getColumn(1).setMinWidth(140);
 		compositionTable.getColumnModel().getColumn(2).setMinWidth(90);
@@ -39,6 +40,7 @@ public class CompositionListPanel extends JScrollPane {
 		compositionTable.setShowGrid(false);
 		compositionTable.setShowHorizontalLines(false);
 		compositionTable.setShowVerticalLines(true);
+		//compositionTable.set
 		
 		//set Rowsorters
 		RowSorter<CompositionTableModel> sorter = new TableRowSorter<CompositionTableModel>(model);
@@ -53,6 +55,10 @@ public class CompositionListPanel extends JScrollPane {
 		
 		
 		this.setViewportView(compositionTable);
+		this.getViewport().setBackground(Color.white);
+		
+		
+		this.setOpaque(false);
 		
 	}
 

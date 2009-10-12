@@ -25,6 +25,7 @@
 	<property name="jar.filename.other" value="bolscript.jar" />
 	<property name="jar.completepath.mac" value="${dir.build}/${jar.filename.mac}"/>
 	<property name="jar.completepath.other" value="${dir.build}/${jar.filename.other}"/>
+	<property name="resources.icons.windowsframeicon" value ="${dir.resources}/icons/bolscript-logo-32x32.png"/>
 	<property name="app.icon" value="resources/icons/bolscript_logo.icns" />
 	<property name="app.name" value="Bolscript" />
 	<property name="dmg.name" value="Bolscript_${version.num}"/>
@@ -106,6 +107,7 @@
 		</manifest>
 		<fileset dir="${dir.bin}"/>
 		<fileset file="${resources.splashscreen}"/>
+		<fileset file="${resources.icons.windowsframeicon}"/>
 		
 		<zipfileset excludes="META-INF/*.SF" src="${lib.itext}"/>
 		
@@ -161,6 +163,8 @@
 			</manifest>
 			<fileset dir="${dir.bin}"/>
 			<fileset file="${resources.splashscreen}"/>
+			<fileset file="${resources.icons.windowsframeicon}"/>
+			
 			<zipfileset excludes="META-INF/*.SF" src="${lib.itext}"/>
 			
 			<!-- include the resources.zip -->

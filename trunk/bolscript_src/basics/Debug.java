@@ -1,7 +1,9 @@
 package basics;
 
+import gui.bolscript.tasks.ConsoleUpdaterFactory;
+import gui.bolscript.tasks.SkippingWorker;
+
 import java.awt.Dimension;
-import java.awt.EventQueue;
 import java.util.HashMap;
 
 /**
@@ -27,7 +29,7 @@ public class Debug {
 	private static boolean mute = false;
 	private static boolean consoleShowing = false;
 	private static boolean initialised = false;
-	
+	private static SkippingWorker consoleRefreshWorker;
 	private Class<? extends Object> owner;
 	
 	static {
@@ -59,8 +61,9 @@ public class Debug {
 	public static void init () {
 		initialised = true;
 		console = new ErrorConsole(new Dimension(400,300));
-		console.setVisible(false);
 		consoleShowing = false;
+		consoleRefreshWorker = new SkippingWorker(new ConsoleUpdaterFactory(console),200,false);
+		consoleRefreshWorker.begin();
 	}
 	
 
@@ -122,9 +125,11 @@ public class Debug {
 	 */
 	public static void out (Object message) {
 		System.out.println(message);
+		
+		console.addText(message + "\n");
+		
 		if (consoleShowing) {
-			console.addText(message + "\n");
-			EventQueue.invokeLater(new ConsoleUpdater(console, console));
+			consoleRefreshWorker.addUpdate();
 		}
 	}
 	
@@ -197,7 +202,15 @@ public class Debug {
 		if (!consoleShowing) {
 			consoleShowing = true;
 			console.setVisible(true);
+			consoleRefreshWorker.addUpdate();
 		}
+	}
+	
+	public static void hideErrorConsole() {
+		if (consoleShowing) {
+			consoleShowing = false;
+			console.setVisible(false);
+		}		
 	}
 	
 
@@ -238,5 +251,10 @@ public class Debug {
 
 	public static boolean isMuted() {
 		return mute;
+	}
+
+	public static boolean isShowingConsole() {
+		return consoleShowing;
+		
 	}
 }
