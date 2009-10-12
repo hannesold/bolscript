@@ -66,7 +66,7 @@ public class SkippingWorker implements Runnable {
 				if (workers.size()>0) {
 					if (workers.get(workers.size()-1).getState() == Thread.State.NEW) {
 						workers.clear();
-						Debug.temporary(this, "REMOVED SKIPPED WORKER");
+						//Debug.temporary(this, "REMOVED SKIPPED WORKER");
 					} 
 				}
 				workers.add(new Thread(task));

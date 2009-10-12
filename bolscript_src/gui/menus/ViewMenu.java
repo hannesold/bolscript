@@ -8,6 +8,7 @@ import gui.bolscript.actions.DecreaseFontSize;
 import gui.bolscript.actions.IncreaseBundling;
 import gui.bolscript.actions.IncreaseFontSize;
 import gui.bolscript.actions.ResetFontSize;
+import gui.bolscript.actions.ToggleConsole;
 
 import java.awt.event.KeyEvent;
 
@@ -82,5 +83,6 @@ public class ViewMenu extends JMenu {
 		        KeyEvent.VK_U, Config.MENU_SHORTKEY_MASK));
 		this.add(decrBundling);
 		
+
 	}
 }

@@ -7,6 +7,7 @@ import gui.menus.EditMenu;
 import gui.menus.FileMenu;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -15,6 +16,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
+import javax.swing.JSplitPane;
 
 import bolscript.Master;
 
@@ -26,31 +28,33 @@ public class BrowserFrame extends JFrame implements WindowListener{
 	//private CompositionTableModel tableModel;
 	public BrowserFrame(Dimension size, CompositionTableModel model, FilterPanel filterPanel) {
 		super("Bolscript Browser");
-		JPanel panel = new JPanel();
-		panel.setLayout(new BorderLayout());
-		//this.tableModel = model;
-		compositionListPanel = new CompositionListPanel(model);
+	
+		
+
 		
 		this.filterPanel = filterPanel;
 		this.searchPanel = filterPanel.getSearchPanel();
-		
-		panel.add(searchPanel,BorderLayout.NORTH);
+
 		JPanel headPanel = new JPanel();
 		headPanel.setLayout(new BorderLayout());
-		
 		headPanel.add(searchPanel, BorderLayout.NORTH);
 		headPanel.add(filterPanel, BorderLayout.CENTER);
-		
-		panel.add(headPanel,BorderLayout.NORTH);
-		panel.add(compositionListPanel,BorderLayout.CENTER);
+		filterPanel.setMinimumSize(new Dimension(200,130));
+		JPanel lowerPanel = new JPanel();
+		lowerPanel.setLayout(new BorderLayout());
+		compositionListPanel = new CompositionListPanel(model);
+		lowerPanel.add(compositionListPanel,BorderLayout.CENTER);
 		JButton addButton = new JButton(new OpenNew());
-		panel.add(addButton,BorderLayout.SOUTH);
+		lowerPanel.add(addButton,BorderLayout.SOUTH);
 		
+		JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+		splitPane.setLeftComponent(headPanel);
+		splitPane.setRightComponent(lowerPanel);
+		this.setContentPane(splitPane);
 		
-		this.setContentPane(panel);
-		//this.pack();
 		initMenuBar();
 		this.pack();
+		this.setSize(size);
 		this.addWindowListener(this);
 		this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		

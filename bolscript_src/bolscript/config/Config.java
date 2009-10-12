@@ -4,12 +4,17 @@ import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.FontFormatException;
+import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.Toolkit;
+import java.awt.image.ImageObserver;
+import java.awt.image.ImageProducer;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.jar.JarFile;
@@ -17,7 +22,10 @@ import java.util.prefs.Preferences;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import javax.swing.ImageIcon;
 import javax.swing.JTable;
+
+import com.lowagie.text.pdf.codec.Base64.InputStream;
 
 import basics.Debug;
 import basics.Rational;
@@ -38,14 +46,14 @@ public class Config {
 	public static String pathToTalsNoSlash = "";// = pathToCompositions + "tals";
 	//public static String pathToFonts = "";
 	public static String pdfExportPath = null;
-	
+
 	public static String pathToDevanageriFont = "";
 	public static String bolscriptSuffix = ".bols.txt";
 	public static String talSuffix = ".tal.bols.txt";
 	public static String bolBaseSuffix = ".bolbase.txt";
 	public static String pdfSuffix = ".pdf";
 	public static String bolBaseFilename = "bolbase" + bolBaseSuffix;
-	
+
 	public static String pathToBolBase = "";// = pathToCompositions + "bolbase.bolbase";
 
 	public static final double BOLSCRIPT_MINIMUM_SPEED = 1d/128d;
@@ -61,29 +69,29 @@ public class Config {
 	public static float[] bolFontSizeStd = new float[BolName.languagesCount];
 	public static float[] bolFontSizeMin = new float[BolName.languagesCount];
 	public static float[] bolFontSizeMax = new float[BolName.languagesCount];
-	
+
 	public static HashMap<Float, Font>[] bolFontsSized;
 	public static HashMap<Float, Font>[] bolFontsSizedBold;
 	public static final float fontSizeStep = 2f;
 	public static final float fontSizeAtomicStep = 0.5f;
-	
+
 	/**
 	 * The standard setting for bundling. Initially it is 0, meaning, there is no bundling active.
 	 * This can be changed during the running of the program.
 	 */
 	public static int stdBundlingDepth = 0;
-	
+
 	/**
 	 * This is the standard setting for fontsizeIncrease
 	 */
 	public static float stdFontSizeIncrease = 0f;
-	
+
 	/**
 	 * A Map from maximum Speeds ocurring to depth-speed-maps.
 	 */
 	private static HashMap<Rational, BundlingDepthToSpeedMap> bundlingMaps;
-	
-	
+
+
 	public static Preferences preferences;
 
 	public static boolean firstRun = true;
@@ -92,9 +100,9 @@ public class Config {
 	public static final int MENU_SHORTKEY_MASK = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
 	public static int OS = 0;
 	public static boolean initialised = false;
-	
+
 	public static Config config;
-	
+
 	static ArrayList<ConfigChangeListener> listeners;
 	public static int maxBolscriptFileSize = 200 * 1024; // 200kb is maximum size.
 	public static String compositionEncoding = "UTF-8";
@@ -106,10 +114,10 @@ public class Config {
 		}
 	}
 	public static void init () {
-		
+
 		config = new Config();
 		listeners = new ArrayList<ConfigChangeListener>();
-		
+
 		if (System.getProperty("os.name").toLowerCase().startsWith("mac")) {
 			OS = MAC;
 		} else {
@@ -117,18 +125,18 @@ public class Config {
 		}
 
 		initFromPreferencesfile();
-		
+
 		initBundlingMaps();
-		
+
 		initColors();
 
 		initFonts();
-		
+
 		initBolFontsSized();	
 
 		initialised = true;
 	}
-	
+
 	private static void initColors() {
 		JTable table = new JTable();
 		GuiConfig.colorUnvenRows = table.getBackground();
@@ -136,14 +144,14 @@ public class Config {
 		GuiConfig.colorEvenRows = new Color (241,245,250);//selBG.brighter().brighter().brighter().brighter();
 		GuiConfig.tableBG = new Color(217,217,217);
 	}
-	
+
 	/**
 	 * Most importantly attempts to load the String tablaFolder from the Properties file,
 	 * then calling setTablaFolder.
 	 */
 	private static boolean initFromPreferencesfile() {
 		preferences = Preferences.userNodeForPackage(Config.class);
-		
+
 		boolean failed = false;
 		try {
 			tablaFolder = preferences.get("tablaFolder", null);
@@ -165,12 +173,12 @@ public class Config {
 
 		return failed;
 	}
-	
-	
+
+
 	private static void initBundlingMaps() {
 		bundlingMaps = new HashMap<Rational, BundlingDepthToSpeedMap> ();
 	}
-	
+
 	/**
 	 * Returns a Map of bundling depths to bundling speeds, according to the given maxSpeed.
 	 * @see BundlingDepthToSpeedMap
@@ -214,14 +222,14 @@ public class Config {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Generates maps from languages to size->font maps.
 	 */
 	private static void initBolFontsSized() {
 		bolFontsSized = new HashMap[BolName.languagesCount];
 		bolFontsSizedBold =new HashMap[BolName.languagesCount];
-		
+
 		for (int i=0; i < BolName.languagesCount;i++) {
 			HashMap<Float, Font> currentMap = new HashMap<Float, Font>();
 			HashMap<Float, Font> currentBoldMap = new HashMap<Float, Font>();
@@ -231,7 +239,7 @@ public class Config {
 				currentBoldMap.put(j, bolFontsBold[i].deriveFont(j).deriveFont(Font.BOLD));
 				j+=fontSizeAtomicStep;
 			}
-			
+
 			bolFontsSized[i] = currentMap;
 			bolFontsSizedBold[i] = currentBoldMap;
 			//Debug.temporary(Config.class, "bolfontssized: " + bolFontsSized[i]);
@@ -251,21 +259,21 @@ public class Config {
 		if (f!=null) {
 			return f;
 		} else return bolFonts[language];
-		
+
 	}
-	
+
 	/**
 	 * Stores the part of config, that is kept in preferences.
 	 * @throws Exception
 	 */
 	public static void storePreferences() throws Exception{
-			if (tablaFolder != null) {
-				preferences.put("tablaFolder", tablaFolder);
-			}
-			if (pdfExportPath != null) {
-				preferences.put("pdfExportPath",pdfExportPath);
-			}
-			//Debug.debug(Config.class, "storing properties under : " + new File(propertiesFilename).getAbsoluteFile());
+		if (tablaFolder != null) {
+			preferences.put("tablaFolder", tablaFolder);
+		}
+		if (pdfExportPath != null) {
+			preferences.put("pdfExportPath",pdfExportPath);
+		}
+		//Debug.debug(Config.class, "storing properties under : " + new File(propertiesFilename).getAbsoluteFile());
 		try {
 			preferences.flush();
 			Debug.debug(Config.class, "Preferences stored");
@@ -274,7 +282,7 @@ public class Config {
 			throw e;
 		}
 	}
-	
+
 	public static void fireConfigChangedEvent() {
 		Debug.debug(Config.class, "CONFIG CHANGED!");
 		for (ConfigChangeListener listener:listeners) {
@@ -291,11 +299,11 @@ public class Config {
 	public static void removeChangeListener(ConfigChangeListener listener) {
 		listeners.remove(listener);
 	}
-	
+
 	public static void setPdfExportPath(String folder) {
 		pdfExportPath = folder;
 	}
-	
+
 	/**
 	 * Sets and initialises the tablaFolder and the resulting subfolders settings compositions fonts etc,
 	 * checking each for existence and creating the nonexistent.
@@ -306,66 +314,86 @@ public class Config {
 	public static void setTablaFolder(String chosenFolder) {
 		Debug.temporary(Config.class, "setTablaFolder : " + chosenFolder + " (old: " + tablaFolder + ")");
 		//if (!tablaFolder.equals(chosenFolder)) {
-			tablaFolder = chosenFolder;
-			preferences.put("tablaFolder", tablaFolder);
+		tablaFolder = chosenFolder;
+		preferences.put("tablaFolder", tablaFolder);
 
-			
-			File s = new File(chosenFolder + Config.fileSeperator + "settings");
-			if (!s.exists()) {
-				s.mkdir();
-			} 
 
-			File c = new File(chosenFolder + Config.fileSeperator + "compositions");
-			if (!c.exists()) { 
-				c.mkdir();
-			}
-			
-			/*pathToFonts = s.getAbsolutePath() + fileSeperator + "fonts";
+		File s = new File(chosenFolder + Config.fileSeperator + "settings");
+		if (!s.exists()) {
+			s.mkdir();
+		} 
+
+		File c = new File(chosenFolder + Config.fileSeperator + "compositions");
+		if (!c.exists()) { 
+			c.mkdir();
+		}
+
+		/*pathToFonts = s.getAbsolutePath() + fileSeperator + "fonts";
 			File fontFolder = new File(pathToFonts);
 			if (!fontFolder.exists()) {
 				fontFolder.mkdir();
 			}*/
 
-			pathToBolBase = s.getAbsolutePath() + fileSeperator + bolBaseFilename;
-			//Debug.temporary(Config.class, pathToBolBase);
-			
-			
-			pathToCompositionsNoSlash = c.getAbsolutePath();
-			//Debug.temporary(Config.class, pathToCompositionsNoSlash);
-			pathToCompositions = pathToCompositionsNoSlash + fileSeperator;
-			//Debug.temporary(Config.class, pathToCompositions);
-			pathToTalsNoSlash = c.getAbsolutePath() + fileSeperator + "tals";
-			//Debug.temporary(Config.class, pathToTalsNoSlash);
-			pathToTals = pathToTalsNoSlash + fileSeperator;
-			//pathToFonts = s.getAbsolutePath() + fileSeperator + "fonts";
-			//Debug.temporary(Config.class, pathToTals);
-			pathToDevanageriFont = s.getAbsolutePath() + fileSeperator + "devanageri.ttf";
-			
-			String[] requiredFiles = new String[]{pathToBolBase, pathToDevanageriFont};
-			boolean allEssentialsExist = true;
-			for (int i=0; i < requiredFiles.length; i++ ) {
-				allEssentialsExist = allEssentialsExist & (new File(requiredFiles[i])).exists();
-				if (!allEssentialsExist) break;
-			}
-			if (!allEssentialsExist) {
-				//defaults are copied non-destructively from the jar archives resources.zip
-				try {
-					extractDefaultTablafolder(chosenFolder);
-				} catch (Exception e) {
-					Debug.critical(Config.class, "Default tabla folder could not be extracted.");
-					Debug.critical(Config.class, e);
-				}
-			}
+		pathToBolBase = s.getAbsolutePath() + fileSeperator + bolBaseFilename;
+		//Debug.temporary(Config.class, pathToBolBase);
 
-	//	}
+
+		pathToCompositionsNoSlash = c.getAbsolutePath();
+		//Debug.temporary(Config.class, pathToCompositionsNoSlash);
+		pathToCompositions = pathToCompositionsNoSlash + fileSeperator;
+		//Debug.temporary(Config.class, pathToCompositions);
+		pathToTalsNoSlash = c.getAbsolutePath() + fileSeperator + "tals";
+		//Debug.temporary(Config.class, pathToTalsNoSlash);
+		pathToTals = pathToTalsNoSlash + fileSeperator;
+		//pathToFonts = s.getAbsolutePath() + fileSeperator + "fonts";
+		//Debug.temporary(Config.class, pathToTals);
+		pathToDevanageriFont = s.getAbsolutePath() + fileSeperator + "devanageri.ttf";
+
+		String[] requiredFiles = new String[]{pathToBolBase, pathToDevanageriFont};
+		boolean allEssentialsExist = true;
+		for (int i=0; i < requiredFiles.length; i++ ) {
+			allEssentialsExist = allEssentialsExist & (new File(requiredFiles[i])).exists();
+			if (!allEssentialsExist) break;
+		}
+		if (!allEssentialsExist) {
+			//defaults are copied non-destructively from the jar archives resources.zip
+			try {
+				extractDefaultTablafolder(chosenFolder);
+			} catch (Exception e) {
+				Debug.critical(Config.class, "Default tabla folder could not be extracted.");
+				Debug.critical(Config.class, e);
+			}
+		}
+
+		//	}
 
 	}
 	
-	public static void extractDefaultTablafolder(String targetFolder) throws Exception {
-		Debug.temporary(Config.class, "extracting default tabla folder to target folder");
+	private static Image windowsFrameIcon;
+	public static Image getWindowsFrameIcon() {
+		if (windowsFrameIcon==null) {
+			URL url = Config.class.getResource("/bolscript-logo-32x32.png");
+			if (url == null) {
+				Debug.critical(Config.class, "could not load image icon resource");
+				windowsFrameIcon =  null;
+			} else {
+				ImageIcon icon = new ImageIcon(url);
+				if (icon == null) {
+					Debug.critical(Config.class, "could not instantiate image icon");
+					windowsFrameIcon = null;
+				} else {
+					windowsFrameIcon = icon.getImage();
+				}
+			}
+		}
+
+		return windowsFrameIcon;
+	}
+	public static String getJarPath() throws Exception {
+
 		URI uri = Config.class.getProtectionDomain().getCodeSource().getLocation().toURI();
 		Debug.temporary(Config.class, "uri.getpath " + uri.getPath());
-		
+
 		String jarPath;
 		if (uri.getPath().endsWith(".jar")) {
 			//the program is running from a jar file
@@ -375,29 +403,42 @@ public class Config {
 			//a builds/bolscript.jar is needed in any case
 			jarPath = (new File(uri.getPath()).getParent()) + fileSeperator + "builds" + fileSeperator + "bolscript.jar"; 
 		}
-		
+		return jarPath;
+	}
+	
+	public static void extractDefaultTablafolder(String targetFolder) throws Exception {
+		Debug.temporary(Config.class, "extracting default tabla folder to target folder");
+
+		String jarPath = getJarPath();
 		Debug.temporary(Config.class, "jarPath " + jarPath);
 		JarFile jar = new JarFile(jarPath);
-		
+
 		//this is launched from a jar or app bundle.
 		//the resources.zip file needs to be extracted to a temporary destination
 		//before proceeding. It shall be deleted afterwards
 
+		
 		ZipEntry entry = jar.getEntry("resources.zip");
+		
 		String resourcesTempPath = targetFolder + fileSeperator + "resources_temp.zip";
 		Debug.debug(Config.class, "Extracting temporary resources zip to " + resourcesTempPath);
+
+		URL zipUrl = Config.class.getResource("/resources.zip");
+		Debug.temporary(Config.class, "zipurl: " + zipUrl);
+		//ZipFile zipFile = new ZipFil
 		
 		//extract the resources zip file from the jar bundle to a temporary destination
 		File tempFile = ZipTools.extractOneFile(entry.toString(), resourcesTempPath, jar.getInputStream(entry));			
-		
+
 		//zip file can now be opened
 		Debug.temporary(Config.class, "opening zipfile: " + resourcesTempPath);
 		ZipFile resources = new ZipFile(tempFile);
 
 		ZipTools.extractSubentries(targetFolder, resources, resources.getEntry("tablafolder_default"));
 
+
 		tempFile.delete();
-		
+
 	}
 
 	public static void setStandardBundlingDepth(int bundlingDepth) {

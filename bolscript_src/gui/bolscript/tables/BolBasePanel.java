@@ -11,6 +11,7 @@ import javax.swing.table.TableColumnModel;
 import basics.Debug;
 import bols.BolBase;
 import bols.BolName;
+import bolscript.config.GuiConfig;
 
 public class BolBasePanel extends JPanel {
 	
@@ -27,6 +28,10 @@ public class BolBasePanel extends JPanel {
 		model = new BolBaseTableModel(BolBase.getStandard());
 		table = new JTable(model);
 		table.setDefaultRenderer(Object.class, new CellRenderer());
+		table.setGridColor(GuiConfig.tableBG);
+		table.setShowGrid(false);
+		table.setShowHorizontalLines(false);
+		table.setShowVerticalLines(true);
 		
 		scrollPane = new JScrollPane(table);
 		this.add(scrollPane,BorderLayout.CENTER);

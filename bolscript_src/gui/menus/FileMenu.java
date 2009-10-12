@@ -12,6 +12,7 @@ import gui.bolscript.actions.RefreshFromTablafolder;
 import gui.bolscript.actions.RemoveSelected;
 import gui.bolscript.actions.SaveAs;
 import gui.bolscript.actions.SaveChanges;
+import gui.bolscript.actions.ToggleConsole;
 
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
@@ -94,6 +95,14 @@ public class FileMenu extends JMenu {
 		
 		this.addSeparator();
 		this.add(new RefreshFromTablafolder());
+		
+		JMenuItem toggleErrorConsole = new JMenuItem(ToggleConsole.getStandard());
+		toggleErrorConsole.setAccelerator(KeyStroke.getKeyStroke(
+				KeyEvent.VK_T, Config.MENU_SHORTKEY_MASK));
+		
+		this.addSeparator();
+		this.add(toggleErrorConsole);
+		
 		
 		
 		
