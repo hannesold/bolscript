@@ -196,14 +196,22 @@ public class Config {
 	 * Inits the standard font sizes (std, min, max) for each language and 
 	 * the default fonts for each language.
 	 */
+	
 	public static void initFonts() {
+		String[] bolFontNamesStandard = new String[BolName.languagesCount];
+		for (int i=0; i < BolName.languagesCount; i++) {
+			bolFontNamesStandard[i] = "Arial";
+		} 
+		bolFontNamesStandard[BolName.TRANSLITERATION] = "Tahoma";
+		
 		for (int i=0; i < BolName.languagesCount; i++) {
 			bolFontSizeMin[i] = 6f;
 			bolFontSizeStd[i] = 11f;
 			bolFontSizeMax[i] = 48f;
-			bolFonts[i] = new Font("Arial", Font.PLAIN, (int) bolFontSizeStd[i]);
-			bolFontsBold[i] = new Font("Arial", Font.PLAIN, (int) bolFontSizeStd[i]);
+			bolFonts[i] = new Font(bolFontNamesStandard[i], Font.PLAIN, (int) bolFontSizeStd[i]);
+			bolFontsBold[i] = new Font(bolFontNamesStandard[i], Font.PLAIN, (int) bolFontSizeStd[i]);
 		}
+		
 		bolFontSizeStd[BolName.DEVANAGERI] = 13f;
 
 		//trying to load devanageri font from file
@@ -223,6 +231,15 @@ public class Config {
 		}
 	}
 
+	
+	public static void setAllBolFonts(Font[] fonts) {
+		for (int i=0; i < BolName.languagesCount; i++) {
+			bolFonts[i] 	= fonts[i];
+			bolFontsBold[i] = fonts[i].deriveFont(Font.BOLD);
+		}
+		initBolFontsSized();
+	}
+	
 	/**
 	 * Generates maps from languages to size->font maps.
 	 */

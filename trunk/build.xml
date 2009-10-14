@@ -12,6 +12,7 @@
 
 	<property name="version.num" value="0.1"/>
 	<property name="dir.bin" value="bin"/>
+	<property name="dir.tests.bin" value="bolscript_tests_bin"/>
 	<property name="dir.build" value="builds"/>
 	<property name="dir.resources" value="resources" />
 	<property name="dir.resources.tablafolder_default" value="${dir.resources}/tablafolder_default"/>
@@ -23,8 +24,10 @@
 	<property name="lib.itext" value="lib/iText-2.1.5.jar" />
 	<property name="jar.filename.mac" value="bolscript_mac.jar" />
 	<property name="jar.filename.other" value="bolscript.jar" />
+	<property name="jar.filename.fonttests" value="fonttests.jar" />
 	<property name="jar.completepath.mac" value="${dir.build}/${jar.filename.mac}"/>
 	<property name="jar.completepath.other" value="${dir.build}/${jar.filename.other}"/>
+	<property name="jar.completepath.fonttests" value="${dir.build}/${jar.filename.fonttests}"/>
 	<property name="resources.icons.windowsframeicon" value ="${dir.resources}/icons/bolscript-logo-32x32.png"/>
 	<property name="app.icon" value="resources/icons/bolscript_logo.icns" />
 	<property name="app.name" value="Bolscript" />
@@ -69,6 +72,7 @@
 	<delete dir="${dir.build}/${app.name}.app"/>
 	<delete file="${dir.build}/${dmg.name}.dmg" />
 	<delete file="${dir.build}/${app.name}.exe" />
+	<delete file="${jar.completepath.fonttests}" />
 </target>
 	
 <target name="generate_default_tablafolder_from_my_tablafolder">
@@ -170,6 +174,21 @@
 			<!-- include the resources.zip -->
 			<fileset file="${resources.zip.completepath}"/>
 		</jar>
+	</target>
+	
+	<target name="create_font_tests_jar">
+		<jar destfile="${jar.completepath.fonttests}" filesetmanifest="mergewithoutmain">
+			<manifest>				
+				<attribute name="Main-Class" value="gui.fonts.FontTests"/>
+				<attribute name="Class-Path" value="."/>  
+				<attribute name="Built-Date" value="${TODAY}"/>
+				<attribute name="Built-By" value="${user.name}"/>				
+			</manifest>
+			<fileset dir="${dir.bin}"/>
+			<fileset dir="${dir.tests.bin}"/>
+			
+			<zipfileset excludes="META-INF/*.SF" src="${lib.itext}"/>
+		</jar>	
 	</target>
 	
 	<target name="create_exe_for_pc" depends="create_jar_for_pc">
