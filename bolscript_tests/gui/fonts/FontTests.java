@@ -1,96 +1,163 @@
 package gui.fonts;
 
-import java.awt.Color;
+import gui.bolscript.sequences.SequencePanel;
+import gui.bolscript.sequences.SequenceTitlePanel;
+
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
 
 import javax.swing.BoxLayout;
-import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import basics.Debug;
 import basics.GUI;
 import basics.SuffixFilter;
+import bols.Bol;
+import bols.BolBase;
+import bols.BolName;
+import bols.PlayingStyle;
+import bols.tals.Teental;
 import bolscript.config.Config;
+import bolscript.sequences.RepresentableSequence;
 
-public class FontTests  implements ItemListener, WindowListener{
+public class FontTests implements WindowListener, ListSelectionListener{
 	private  JPanel examplePanel;
-	private  JLabel exampleLabel;
-	private  JComboBox fontSelector, fontSelectorLocal;
-	private String pathToFonts = "INSERT PATH HERE";
+	private  JList fontSelector, fontSelectorLocal;
+	
+	private String pathToFonts = Config.tablaFolder + Config.fileSeperator + "settings";
+	
+	JFrame exampleFrame = new JFrame("Examples");
+	RepresentableSequence completeSequence;
+	JFrame mainFrame;
 	
 public FontTests(){
 	init();
 }
+
 public void init() {
+	GUI.setNativeLookAndFeel();
 	Debug.init();
 	Debug.setExclusivelyMapped(false);
 	//Debug.showErrorConsole();
 	Config.init();
+	BolBase.init(this.getClass());
 	
-	JFrame mainFrame = new JFrame("Font chooser");
+	completeSequence = new RepresentableSequence();
+	for (BolName bolName: BolBase.getStandard().getBolNames()) {
+		completeSequence.add(new Bol(bolName, new PlayingStyle(1)));
+	}
+
+	
 	JPanel panel = new JPanel();
-	
 	
 	Font[] systemFonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts();
 	
 	try {
 		File fontFolder = new File(pathToFonts);
+		if (!fontFolder.exists()) throw new Exception("font folder not found"); 
+		
 		File[] fontFiles = fontFolder.listFiles(new SuffixFilter(".ttf"));
+		
 		Font[] localFonts = new Font[fontFiles.length];
 		for (int i=0; i < fontFiles.length; i++){
 			localFonts[i] = Font.createFont(Font.TRUETYPE_FONT, fontFiles[i]);
 		}
-		fontSelectorLocal = new JComboBox(localFonts);
-		panel.add(fontSelectorLocal);
-		fontSelectorLocal.addItemListener(this);
+		
+		fontSelectorLocal = new JList(localFonts);
+		panel.add(new JScrollPane(fontSelectorLocal));
+		fontSelectorLocal.addListSelectionListener(this);
+		fontSelectorLocal.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		
 	} catch ( Exception e) {
+		//fontSelectorLocal = null;
+		Debug.critical(this, "could not load local fonts");
+		e.printStackTrace();
 	}
 	
-	fontSelector = new JComboBox(systemFonts);
-	
-	examplePanel = new JPanel();
-	
-	exampleLabel = new JLabel("0904-0906: " + new String(new char []{'\u0904',',', '\u0905', ',','\u0906'}));
-	exampleLabel.setBackground(new Color(170,170,250));
-	exampleLabel.setOpaque(true);
-	
-	fontSelector.addItemListener(this);
+	fontSelector = new JList(systemFonts);
+	panel.add(new JScrollPane(fontSelector));
+	fontSelector.addListSelectionListener(this);
+	fontSelector.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
 	
-	examplePanel.add(exampleLabel);
+
 	BoxLayout bx = new BoxLayout(panel,BoxLayout.Y_AXIS);
 	panel.setLayout(bx);
 	
-	panel.add(fontSelector);
+	
+	
+	mainFrame = new JFrame("Font chooser");
 	mainFrame.setContentPane(panel);
 	mainFrame.pack();
 	mainFrame.setVisible(true);
 	mainFrame.addWindowListener(this);
 	
-	JFrame exampleFrame = new JFrame("Example");
-	exampleFrame.setContentPane(examplePanel);
+	examplePanel = new JPanel();
+	examplePanel.setLayout(new BoxLayout(examplePanel, BoxLayout.Y_AXIS));
+	JScrollPane scrollPane = new JScrollPane(examplePanel);
+	exampleFrame.setContentPane(scrollPane);
 	exampleFrame.pack();
 	exampleFrame.setVisible(true);
-	exampleFrame.addWindowListener(this);
 	exampleFrame.setLocation(GUI.getRight(mainFrame), GUI.getTop(mainFrame));
+	
+	refreshSequenceFrame();
+	
+	
+	exampleFrame.addWindowListener(this);
+	
+	
+	
+
 }
+	private void refreshSequenceFrame() {
+		examplePanel.removeAll();
+		
+		
+		//sequencePanels = new SequencePanel[BolName.languagesCount];
+		for ( int i = BolName.DEVANAGERI; i <= BolName.TRANSLITERATION; i++) {
+			SequencePanel sequencePanel = new SequencePanel(completeSequence, Teental.getDefaultTeental(),
+					new Dimension(800,80), 0, "", 0, i, 14f, null);
+			SequenceTitlePanel t = new SequenceTitlePanel();
+			t.setTitle(BolName.languageNames[i]);
+			examplePanel.add(t);
+			examplePanel.add(sequencePanel);
+		}
+		
+		exampleFrame.pack();
+		
+		
+		
+	}
+
 	public static void main(String args[]) {
 		FontTests ft = new FontTests();
 	}
 	
-	public void itemStateChanged(ItemEvent e) {
-		Font f = ((Font) ((JComboBox) e.getSource()).getSelectedItem()).deriveFont(12f);
+
+	@Override
+	public void valueChanged(ListSelectionEvent e) {
+		Font f = ((Font) ((JList) e.getSource()).getSelectedValue());
 		Debug.debug(this, f);
-		exampleLabel.setFont(f);
+		
+		Font[] fonts = new Font[BolName.languagesCount];
+		for (int i=0; i < fonts.length; i++) {
+			fonts[i] = f;
+		}
+		Config.setAllBolFonts(fonts);
+		refreshSequenceFrame();
+		//exampleLabel.setFont(f);
+		
 	}
 	public void windowActivated(WindowEvent e) {
 	}
