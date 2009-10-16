@@ -78,6 +78,10 @@ public class CompositionPanel extends JLayeredPane {
 	private AbstractAction[] setLanguage;
 	private ViewerActions viewerActions;
 
+	Boolean rendering = new Boolean(false);
+	Long renderTaskNr = new Long(0);
+	Long finishedRenderTaskNr = new Long(0);
+	
 	/**
 	 * The talBase is queried for retrieving a Tal Object to a Name String 
 	 */
@@ -125,6 +129,7 @@ public class CompositionPanel extends JLayeredPane {
 	private JPanel contentPanel;
 
 	private Packet packetAtCaretPosition;
+
 
 	public CompositionPanel (Dimension size, int language, TalBase talBase) {
 		super();
@@ -175,7 +180,6 @@ public class CompositionPanel extends JLayeredPane {
 	 */
 	public void highlightPacketNow(Packet packet) {
 		Debug.temporary(this, "attempting to highlight ");
-
 
 		for (Packet p: packetMap.keySet()) {
 			packetMap.get(p).setHighlighted(false);
@@ -348,7 +352,10 @@ public class CompositionPanel extends JLayeredPane {
 	}
 
 	private void render() {	
-
+		synchronized(renderTaskNr) {
+			renderTaskNr++;
+		}
+		
 		int newHeight = 0;
 		//Debug.critical(this, "determined renderingwidth: " + this.getParent().getParent().getSize().width);
 
@@ -434,9 +441,6 @@ public class CompositionPanel extends JLayeredPane {
 
 						packetMap.put(p,sequencePanel);
 
-						if (p==packetAtCaretPosition) {
-							sequencePanel.setHighlighted(true);
-						}
 
 						newHeight += components.get(components.size()-1).getPreferredSize().height;
 					}
@@ -457,7 +461,14 @@ public class CompositionPanel extends JLayeredPane {
 
 	}
 
-
+	public boolean finishedRendering() {
+		synchronized(renderTaskNr ) {
+			synchronized(finishedRenderTaskNr) {
+				return (finishedRenderTaskNr - renderTaskNr <=0 );
+			}
+		}
+	}
+	
 	private void addLineBreak(Float lineBreak, int quality) {
 		this.pageBreaksFloat.add(lineBreak);
 		PageBreakPanel newPageBreak = new PageBreakPanel(lineBreak,renderingWidth+10, quality);
@@ -641,9 +652,13 @@ public class CompositionPanel extends JLayeredPane {
 
 			//causes the right refreshing for some reason
 			comp.setBorder(new LineBorder(Color.red,1));
-
-
-
+			
+			
+			highlightPacketNow(packetAtCaretPosition);
+			
+			synchronized(finishedRenderTaskNr) {
+			finishedRenderTaskNr++;
+			}
 		}
 	}
 

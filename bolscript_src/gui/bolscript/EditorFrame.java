@@ -254,7 +254,7 @@ public class EditorFrame extends JFrame implements WindowListener, CompositionCh
 					//the bolbasesearcher is only used if no rendertask is running,
 					//else it will automatically be run after the rendertask
 					if (bolBaseSearcher != null) {
-						Runnable task = bolBaseSearcher.getNewTask();
+						 Runnable task = bolBaseSearcher.getNewTask();
 						if (task != null) task.run();
 					}	
 				}

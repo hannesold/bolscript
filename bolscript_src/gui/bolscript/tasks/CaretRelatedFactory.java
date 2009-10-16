@@ -29,7 +29,7 @@ public class CaretRelatedFactory implements TaskFactory {
 	
 	int caretPosition;
 	
-	static Packet previouslyHighlightedPacket;
+	static Packet previouslyHighlightedReferencedPacket;
 
 	public CaretRelatedFactory(Composition composition, JTextPane textPane, BolBasePanel bolBasePanel, BolscriptDocument document, CompositionPanel compPanel) {
 		this.textPane = textPane;
@@ -65,15 +65,15 @@ public class CaretRelatedFactory implements TaskFactory {
 				Debug.temporary(this, "caret is in a bol packet");
 				if (p.getTextRefValue().contains(caretPosition)) {
 					Debug.temporary(this, "new caret task");
-					return new CaretGuessTask(textPane, textPane.getText(),textPane.getCaretPosition(), p);	
+					return new ProcessBolCandidateAtCarretTask(textPane, textPane.getText(),textPane.getCaretPosition(), p);	
 				}
 			}
 		}
 		
 		//update document to clear away past highlighting of referenced packets
-		if (previouslyHighlightedPacket != null) {
-			previouslyHighlightedPacket.setHighlighted(false);
-			previouslyHighlightedPacket = null;
+		if (previouslyHighlightedReferencedPacket != null) {
+			previouslyHighlightedReferencedPacket.setHighlighted(false);
+			previouslyHighlightedReferencedPacket = null;
 			document.updateStylesLater(composition.getPackets());
 		}
 		
@@ -98,7 +98,7 @@ public class CaretRelatedFactory implements TaskFactory {
 		}
 		
 	}
-	private final class CaretGuessTask implements Runnable {
+	private final class ProcessBolCandidateAtCarretTask implements Runnable {
 
 		String text;
 		static final int RANGE = 20;
@@ -108,7 +108,7 @@ public class CaretRelatedFactory implements TaskFactory {
 		int caretPosition;
 		//Packets packets;
 
-		public CaretGuessTask (JTextPane textPane, String text, int caretPosition, Packet packet) {
+		public ProcessBolCandidateAtCarretTask (JTextPane textPane, String text, int caretPosition, Packet packet) {
 			this.textPane = textPane;
 			//Debug.temporary(this, "caret task constructor");
 			this.caretPosition = caretPosition;
@@ -122,13 +122,15 @@ public class CaretRelatedFactory implements TaskFactory {
 			
 			
 			if (packet != null && compPanel!=null)  {
-				EventQueue.invokeLater(new HighlightInCompositionPanel(packet));
+				if (compPanel.finishedRendering()) {
+					EventQueue.invokeLater(new HighlightInCompositionPanel(packet));
+				}
 			}
 			
-			if (previouslyHighlightedPacket !=null) {
-				previouslyHighlightedPacket.setHighlighted(false);
+			if (previouslyHighlightedReferencedPacket !=null) {
+				previouslyHighlightedReferencedPacket.setHighlighted(false);
 			}
-			boolean highlightedAPacket = false;
+			boolean matchedPacketReference = false;
 
 			if (text != null) {
 				//Debug.temporary(this, this.caretPosition +" in " + text.length()  +" ");
@@ -141,16 +143,17 @@ public class CaretRelatedFactory implements TaskFactory {
 						int packetIndex = packets.indexOf(packet);
 
 						for (int i= packetIndex-1; i>0; i--) {
+							// attempt to match text around caret with referenced packet keys
 							if (packets.get(i).getKey().equalsIgnoreCase(input)) {
 								packets.get(i).setHighlighted(true);
-								highlightedAPacket = true;
-								previouslyHighlightedPacket = packets.get(i);
+								matchedPacketReference = true;
+								previouslyHighlightedReferencedPacket = packets.get(i);
 								break;
 							}
 						}
 
 						//no packet was matched, try to find a fitting bol
-						if (highlightedAPacket == false) {
+						if (matchedPacketReference == false) {
 
 							//Debug.temporary(this, "bolstring around caret " + input);
 							BolName bolName = BolBase.getStandard().getResemblingBol(input);
@@ -163,8 +166,8 @@ public class CaretRelatedFactory implements TaskFactory {
 				} //caretPos <= text.length
 			} //text == null
 			
-			if (!highlightedAPacket) {
-				if (previouslyHighlightedPacket !=null)	previouslyHighlightedPacket.setHighlighted(false);
+			if (!matchedPacketReference) {
+				if (previouslyHighlightedReferencedPacket !=null)	previouslyHighlightedReferencedPacket.setHighlighted(false);
 			}
 			
 			document.updateStylesLater(composition.getPackets());
