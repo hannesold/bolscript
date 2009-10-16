@@ -4,11 +4,9 @@ import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.FontFormatException;
-import java.awt.Graphics;
+import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.Toolkit;
-import java.awt.image.ImageObserver;
-import java.awt.image.ImageProducer;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -24,8 +22,6 @@ import java.util.zip.ZipFile;
 
 import javax.swing.ImageIcon;
 import javax.swing.JTable;
-
-import com.lowagie.text.pdf.codec.Base64.InputStream;
 
 import basics.Debug;
 import basics.Rational;
@@ -197,27 +193,51 @@ public class Config {
 	 * the default fonts for each language.
 	 */
 	
+	public static boolean existsFontFamily(String name) {
+		String [] availableFontFamilies = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
+		for (String familyName: availableFontFamilies) {
+			if (name.equalsIgnoreCase(familyName)) {
+				return true;
+			}
+		}
+		return false;
+	}
 	public static void initFonts() {
-		String[] bolFontNamesStandard = new String[BolName.languagesCount];
+		String[][] bolFontNamesPreferred = new String[BolName.languagesCount][];
+		
+		
+		
+		//Set all preferred font names to default
+		String bolFontDefaultName = "Arial";
 		for (int i=0; i < BolName.languagesCount; i++) {
-			bolFontNamesStandard[i] = "Arial";
+			bolFontNamesPreferred[i] = new String[]{bolFontDefaultName};
 		} 
-		bolFontNamesStandard[BolName.TRANSLITERATION] = "Tahoma";
+		//Set preferred fonts for translit
+		bolFontNamesPreferred[BolName.TRANSLITERATION] = new String[]{"Tahoma", bolFontDefaultName};
 		
 		for (int i=0; i < BolName.languagesCount; i++) {
 			bolFontSizeMin[i] = 6f;
 			bolFontSizeStd[i] = 11f;
 			bolFontSizeMax[i] = 48f;
-			bolFonts[i] = new Font(bolFontNamesStandard[i], Font.PLAIN, (int) bolFontSizeStd[i]);
-			bolFontsBold[i] = new Font(bolFontNamesStandard[i], Font.PLAIN, (int) bolFontSizeStd[i]);
+			
+			for (int j=0; j < bolFontNamesPreferred.length; j++) {
+				if (existsFontFamily(bolFontNamesPreferred[i][j])) {
+					bolFonts[i] = new Font(bolFontNamesPreferred[i][j], Font.PLAIN, (int) bolFontSizeStd[i]);
+					bolFontsBold[i] = new Font(bolFontNamesPreferred[i][j], Font.PLAIN, (int) bolFontSizeStd[i]);
+					break;
+				}
+			}
 		}
 		
 		bolFontSizeStd[BolName.DEVANAGERI] = 13f;
 
 		//trying to load devanageri font from file
 		try {
-			bolFonts[BolName.DEVANAGERI] = Font.createFont( Font.TRUETYPE_FONT, new FileInputStream(pathToDevanageriFont) ).deriveFont(bolFontSizeStd[BolName.DEVANAGERI]);
-			bolFontsBold[BolName.DEVANAGERI] = Font.createFont( Font.TRUETYPE_FONT, new FileInputStream(pathToDevanageriFont) ).deriveFont(bolFontSizeStd[BolName.DEVANAGERI]).deriveFont(Font.BOLD);
+			bolFonts[BolName.DEVANAGERI] 		= Font.createFont( Font.TRUETYPE_FONT, 
+					new FileInputStream(pathToDevanageriFont) ).deriveFont(bolFontSizeStd[BolName.DEVANAGERI]);
+			bolFontsBold[BolName.DEVANAGERI] 	= Font.createFont( Font.TRUETYPE_FONT, 
+					new FileInputStream(pathToDevanageriFont) ).deriveFont(bolFontSizeStd[BolName.DEVANAGERI]).deriveFont(Font.BOLD);
+			
 			Debug.temporary(Config.class, "Devanageri font loaded: " + bolFontsBold[BolName.DEVANAGERI]);
 		} catch (FileNotFoundException e) {
 			Debug.critical(Config.class, "Devanageri Font not found in '" + pathToDevanageriFont + "', using default.");
