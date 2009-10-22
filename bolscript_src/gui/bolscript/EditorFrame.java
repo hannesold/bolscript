@@ -5,6 +5,9 @@ import gui.bolscript.composition.CompositionPanel;
 import gui.bolscript.dialogs.SaveChangesDialog;
 import gui.bolscript.tables.BolBasePanel;
 import gui.bolscript.tasks.CaretRelatedFactory;
+import gui.bolscript.tasks.EditTasks;
+import gui.bolscript.tasks.ListWorker;
+import gui.bolscript.tasks.PlainCaretMoveTasks;
 import gui.bolscript.tasks.RendererFactory;
 import gui.bolscript.tasks.SkippingWorker;
 import gui.menus.EditMenu;
@@ -63,6 +66,8 @@ public class EditorFrame extends JFrame implements WindowListener, CompositionCh
 	private CaretRelatedFactory bolBaseSearcher;
 
 
+	private ListWorker listWorker;
+	
 	/**
 	 * Is hidden by default. Call showLater().
 	 * @param comp
@@ -107,6 +112,9 @@ public class EditorFrame extends JFrame implements WindowListener, CompositionCh
 		renderWorker = new SkippingWorker(new RendererFactory(this, bolBaseSearcher), 10, false);
 		renderWorker.begin();
 
+		listWorker = new ListWorker(100, true);
+		listWorker.begin();
+		
 		//add listeners
 		document.addDocumentListener(this);
 		textPane.addCaretListener(this);
@@ -240,16 +248,21 @@ public class EditorFrame extends JFrame implements WindowListener, CompositionCh
 	public void compile() {
 		if (compositionPanel != null) {
 
-			renderWorker.addUpdate();
+			lastCaretPosition = textPane.getCaretPosition();
+			EditTasks editTasks = new EditTasks(composition, compositionPanel, bolBasePanel, document, textPane.getText(), lastCaretPosition);
+			listWorker.addTaskList(editTasks);
+			//renderWorker.addUpdate();
 			//	bolBaseSearchWorker.addUpdate();
+			
 		}
 
 	}
 
 	public void caretUpdate(CaretEvent e) {
 		if (textPane.getCaretPosition() != lastCaretPosition) {
+			
 			//if (bolBaseSearchWorker != null) bolBaseSearchWorker.addUpdate();
-			if (renderWorker!= null) {
+			/*	if (renderWorker!= null) {
 				if (!renderWorker.hasWork()) {
 					//the bolbasesearcher is only used if no rendertask is running,
 					//else it will automatically be run after the rendertask
@@ -258,8 +271,10 @@ public class EditorFrame extends JFrame implements WindowListener, CompositionCh
 						if (task != null) task.run();
 					}	
 				}
-			}
+			}*/
 			lastCaretPosition = textPane.getCaretPosition();
+			PlainCaretMoveTasks caretTasks = new PlainCaretMoveTasks(composition, compositionPanel, bolBasePanel, document,lastCaretPosition);
+			listWorker.addTaskList(caretTasks);
 		}
 	}
 

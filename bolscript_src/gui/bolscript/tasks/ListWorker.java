@@ -22,7 +22,7 @@ public class ListWorker implements Runnable {
 
 	java.util.List<Thread> workers;
 
-	private ArrayList<TaskList> taskLists;
+	private ArrayList<TaskList> taskListQueue;
 
 
 	/** A thread that runs an object of this class 
@@ -40,20 +40,22 @@ public class ListWorker implements Runnable {
 	 * @param updateIntervallMillis The Intervall that the worker Thread waits before checking again for existing tasks (updates) (and processing them).
 	 * @param instantUpdates If set to true the addUpdate method interrupts the sleeping Intervall, so the new update is executed instantly.
 	 */
-	public ListWorker (TaskFactory taskFactory, long updateIntervallMillis, boolean instantUpdates) {
-		this.taskFactory = taskFactory;
+	public ListWorker (long updateIntervallMillis, boolean instantUpdates) {
 		this.updateIntervall = Math.max(minimumUpdateIntervall, updateIntervallMillis);
 		this.instantUpdates = instantUpdates;
-
-		workers = Collections.synchronizedList(new ArrayList<Thread>());
+		
+		taskListQueue = new ArrayList<TaskList>();
+		
 		thread = new Thread(this);
 		thread.setDaemon(true);
 	}
 
 
 	public void addTaskList (TaskList newTaskList) {
-		synchronized(taskLists) {
-			taskLists.add(newTaskList);
+		synchronized(taskListQueue) {
+			taskListQueue.add(newTaskList);
+			
+			if (instantUpdates) taskListQueue.notifyAll();
 		}
 	}
 
@@ -65,10 +67,9 @@ public class ListWorker implements Runnable {
 
 	public void stop() {
 		stop = true;
-		synchronized(taskLists) {
-			taskLists.clear();
+		synchronized(taskListQueue) {
+			taskListQueue.clear();
 		}
-		
 		synchronized (thread) {
 			if (thread.getState().equals(Thread.State.TIMED_WAITING)) thread.interrupt();
 		}
@@ -79,33 +80,37 @@ public class ListWorker implements Runnable {
 		while (stop == false) {
 			TaskList currentList = null;
 
-			synchronized(taskLists) {
-				while (taskLists.size() == 0 && stop == false) {
+			synchronized(taskListQueue) {
+				while (taskListQueue.size() == 0 && stop == false) {
 					try {
-						wait(100);
+						taskListQueue.wait(updateIntervall);
 					} catch(InterruptedException e) {
 						Debug.temporary(this, "waiting interrupted");
 					}
 				}
 				Debug.temporary(this, "choosing list to process from queue");
-				currentList = taskLists.get(0);
+				//TODO
+				//more elegantly please!
+				currentList = taskListQueue.get(0);
 				int indexOfListToBeProcessed = 0;
 				int i = 1;
-				while (i < taskLists.size() && taskLists.get(i).overridesPending(currentList)) {
+				while (i < taskListQueue.size() && taskListQueue.get(i).overridesPending(currentList)) {
 					indexOfListToBeProcessed = i;
-					currentList = taskLists.get(i);
+					currentList = taskListQueue.get(i);
 					i++;
 				}
 				for (int j=0; j <= indexOfListToBeProcessed; j++) {
-					taskLists.remove(0);
+					taskListQueue.remove(0);
 					Debug.temporary(this, "removing skipped lists");
 				}
 			}
 			if (currentList!= null) {
 				currentList.process();
 				Debug.temporary(this, "completed processing of list");
-				synchronized(taskLists) {
-					taskLists.remove(currentList);
+				synchronized(taskListQueue) {
+					taskListQueue.remove(currentList);
+					//TODO
+					// update this in case multiple instances of one list are in the queue
 					Debug.temporary(this, "removing processed list from queue");
 				}
 			}
