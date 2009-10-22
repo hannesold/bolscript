@@ -1,5 +1,7 @@
 package gui.bolscript.tasks;
 
+import java.util.ArrayList;
+
 import gui.bolscript.BolscriptDocument;
 import gui.bolscript.composition.CompositionPanel;
 import gui.bolscript.tables.BolBasePanel;
@@ -24,6 +26,18 @@ public class PlainCaretMoveTasks extends TaskList {
 	protected Representable unitAtCaretPosition;
 	protected Packet highlightedReferencedPacket;
 	
+	public PlainCaretMoveTasks(Composition comp, CompositionPanel compPanel,
+			BolBasePanel bolBasePanel, BolscriptDocument document, int caretPosition) {
+		super();
+		this.comp = comp;
+		this.compPanel = compPanel;
+		this.bolBasePanel = bolBasePanel;
+		this.document = document;
+		this.caretPosition = caretPosition;
+		tasks = new ArrayList<Task>();
+		init();
+	}
+	
 	private void init () {
 		tasks.add(
 				new Task("DeterminePacketAndUnitAtCaret", Task.ExecutionThread.AnyThread) {
@@ -35,9 +49,11 @@ public class PlainCaretMoveTasks extends TaskList {
 						packetAtCaretPosition = packets.getPacketAtCaretPosition(caretPosition);
 						
 						if (packetAtCaretPosition != null) {
-							unitAtCaretPosition = packetAtCaretPosition.getUnitAtCaretPosition();
-							if (unitAtCaretPosition.getType() == Representable.REFERENCED_BOL_PACKET) {
-								highlightedReferencedPacket = ((ReferencedBolPacketUnit) unitAtCaretPosition).getReferencedPacket();
+							unitAtCaretPosition = packetAtCaretPosition.getUnitAtCaretPosition(caretPosition);
+							if (unitAtCaretPosition !=null) {
+								if (unitAtCaretPosition.getType() == Representable.REFERENCED_BOL_PACKET) {
+									highlightedReferencedPacket = ((ReferencedBolPacketUnit) unitAtCaretPosition).getReferencedPacket();
+								}
 							}
 						} else {
 							unitAtCaretPosition = null;
@@ -84,6 +100,8 @@ public class PlainCaretMoveTasks extends TaskList {
 	public boolean overridesPending(TaskList taskList) {
 		return (taskList.getClass() == this.getClass());
 	}
+
+
 	
 	
 }

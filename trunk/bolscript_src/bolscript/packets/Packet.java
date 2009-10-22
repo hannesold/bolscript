@@ -1,11 +1,10 @@
 package bolscript.packets;
 
-import java.util.HashMap;
-
 import basics.Debug;
 import bolscript.packets.types.PacketType;
 import bolscript.packets.types.PacketTypeFactory;
 import bolscript.sequences.Representable;
+import bolscript.sequences.RepresentableSequence;
 
 /**
  * <p>Packet represents one Key/Value packet in a bolscript string. The class  
@@ -234,7 +233,24 @@ public class Packet {
 		return highlighted;
 	}
 
-	public Representable getUnitAtCaretPosition() {
+	public Representable getUnitAtCaretPosition(int caretPosition) {
+		
+		//TODO implement smarter binary search or so
+		
+		if (packetId != PacketTypeFactory.BOLS || object == null || textRefValue == null) {
+			return null;
+		}
+		RepresentableSequence seq = (RepresentableSequence) object;
+		int relativeCaretPosition = caretPosition - textRefValue.start();
+		for (int i=0; i < seq.size(); i++) {
+			Representable r = seq.get(i);
+			if (r.getTextReference() != null) {
+				if (r.getTextReference().contains(relativeCaretPosition)) {
+					return r;
+				}
+			}
+			
+		}
 		
 		return null;
 	}

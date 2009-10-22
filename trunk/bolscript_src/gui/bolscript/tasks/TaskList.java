@@ -20,14 +20,14 @@ public abstract class TaskList {
 			if (task.getThread() == ExecutionThread.AnyThread) {
 				task.run();
 			} else if (task.getThread() == ExecutionThread.EventQueue) {
-				
-				synchronized(task.getLock()) {
+				Object lock = task.getLock();
+				synchronized(lock) {
 					
 					EventQueue.invokeLater(task);					
 					
 					while (task.getState() != Task.State.Completed) {
 						try {
-							wait();
+							lock.wait();
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						}
