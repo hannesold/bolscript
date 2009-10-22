@@ -49,7 +49,7 @@ public class RendererFactory implements TaskFactory {
 		 
 			
 			compPanel.setHighlightedPaket(comp.getPackets().getPacketAtCaretPosition(caretPosition));
-			compPanel.renderComposition(comp);
+			compPanel.renderComposition(comp, false);
 			
 			
 			

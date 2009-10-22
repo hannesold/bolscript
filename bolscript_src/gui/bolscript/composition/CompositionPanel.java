@@ -21,6 +21,7 @@ import java.awt.Insets;
 import java.awt.event.KeyEvent;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -33,6 +34,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 
@@ -129,6 +131,8 @@ public class CompositionPanel extends JLayeredPane {
 	private JPanel contentPanel;
 
 	private Packet packetAtCaretPosition;
+
+	private Worker preparedWorker;
 
 
 	public CompositionPanel (Dimension size, int language, TalBase talBase) {
@@ -315,7 +319,7 @@ public class CompositionPanel extends JLayeredPane {
 		return composition;
 	}
 
-	public void renderComposition(Composition comp) {
+	public void renderComposition(Composition comp, boolean onlyPrepare) {
 		if (comp.getPackets() != null) {
 			this.composition = comp;
 			this.bundlingMap = Config.getBundlingDepthToSpeedMap(composition.getMaxSpeed());
@@ -323,7 +327,7 @@ public class CompositionPanel extends JLayeredPane {
 			setFontSizeInc(Config.stdFontSizeIncrease);
 			this.packets = comp.getPackets();
 			updateActionEnabling();
-			render();			
+			prepareRendering(false);			
 		} else {
 			this.composition = null;
 			renderError("The Compositions content packets could not be read");
@@ -351,7 +355,7 @@ public class CompositionPanel extends JLayeredPane {
 		renderingWidth = Math.max(50, width);
 	}
 
-	private void render() {	
+	private void prepareRendering(boolean onlyPrepare) {	
 		synchronized(renderTaskNr) {
 			renderTaskNr++;
 		}
@@ -456,11 +460,20 @@ public class CompositionPanel extends JLayeredPane {
 
 		addLineBreak(new Float(newSize.height), PageBreakPanel.LOW);
 
-		EventQueue.invokeLater(new Worker(this, components, newSize));
-
-
+		
+		if (!onlyPrepare) {
+			EventQueue.invokeLater(new Worker(this, components, newSize));
+		} else {
+			preparedWorker = new Worker(this, components, newSize);
+		}
 	}
 
+	public void renderNowAfterPreperationg() {
+		if (preparedWorker != null) {
+			preparedWorker.run();
+			preparedWorker = null;
+		}
+	}
 	public boolean finishedRendering() {
 		synchronized(renderTaskNr ) {
 			synchronized(finishedRenderTaskNr) {
@@ -614,6 +627,7 @@ public class CompositionPanel extends JLayeredPane {
 			contentPanel.setBorder(backupBorder);
 		}
 	}
+	
 	private class Worker implements Runnable {
 
 		private Dimension size;
@@ -673,7 +687,7 @@ public class CompositionPanel extends JLayeredPane {
 
 			setFontSizeInc(fontSizeIncrease);
 			updateActionEnabling();
-			render();
+			prepareRendering(false);
 		} else Debug.debug(this, "Language is already " + BolName.languageNames[language]);
 	}
 
@@ -681,7 +695,7 @@ public class CompositionPanel extends JLayeredPane {
 		int oldBundlingDepth = bundlingDepth;
 		setBundlingDepth(bundlingDepth+1);
 		Config.setStandardBundlingDepth(bundlingDepth);
-		if (oldBundlingDepth != bundlingDepth) render();
+		if (oldBundlingDepth != bundlingDepth) prepareRendering(false);
 		updateActionEnabling();
 	}
 
@@ -689,7 +703,7 @@ public class CompositionPanel extends JLayeredPane {
 		int oldBundlingDepth = bundlingDepth;
 		setBundlingDepth(bundlingDepth-1);
 		Config.setStandardBundlingDepth(bundlingDepth);
-		if (oldBundlingDepth != bundlingDepth) render();
+		if (oldBundlingDepth != bundlingDepth) prepareRendering(false);
 		updateActionEnabling();
 	}
 
@@ -706,14 +720,14 @@ public class CompositionPanel extends JLayeredPane {
 		setFontSizeInc(fontSizeIncrease+Config.fontSizeStep);
 		Config.setStandardFontSizeIncrease(fontSizeIncrease);
 		updateActionEnabling();
-		render();
+		prepareRendering(false);
 	}
 
 	public void decreaseFontSize() {
 		setFontSizeInc(fontSizeIncrease-Config.fontSizeStep);
 		Config.setStandardFontSizeIncrease(fontSizeIncrease);
 		updateActionEnabling();
-		render();
+		prepareRendering(false);
 	}
 	private void setFontSizeInc(float newOffset) {
 
@@ -731,7 +745,7 @@ public class CompositionPanel extends JLayeredPane {
 	public void resetFontSize() {
 		fontSizeIncrease = 0;
 		updateActionEnabling();
-		render();
+		prepareRendering(false);
 	}
 
 	public void setHighlightedPaket(Packet packetAtCaretPosition) {

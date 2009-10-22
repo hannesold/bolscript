@@ -46,15 +46,12 @@ public class BolscriptDocument extends DefaultStyledDocument{
 	Style styleBolKey;
 	Style styleBolValue;
 
-
 	Style styleUnit;
-
 
 	Style styleHighlightedBolKey;
 	Style styleHighlightedBolVal;
 
 	Style parseError;
-
 
 	HashMap<Integer, Style> keyStyleMaps, valueStyleMaps;
 	private Style styleFailedKey;
@@ -66,7 +63,17 @@ public class BolscriptDocument extends DefaultStyledDocument{
 
 	private int caretPosition=0;
 	
-	public  void initStylesAndMaps(){
+	private Packet highlightedReferencedPacket = null;
+	
+	public Packet getHighlightedReferencedPacket() {
+		return highlightedReferencedPacket;
+	}
+
+	public void setHighlightedReferencedPacket(Packet highlightedReferencedPacket) {
+		this.highlightedReferencedPacket = highlightedReferencedPacket;
+	}
+
+	public void initStylesAndMaps(){
 		rootStyle = addStyle("root", null);
 		StyleConstants.setForeground(rootStyle, Color.BLACK);
 		StyleConstants.setBackground(rootStyle, Color.WHITE);
@@ -169,10 +176,18 @@ public class BolscriptDocument extends DefaultStyledDocument{
 					 Style valStyle = valueStyleMaps.get(p.getType());
 					 if (keyStyle == null) keyStyle = styleBolKey;
 					 if (valStyle == null) valStyle = styleBolValue;
-					 if (p.isHighlighted()) {
+					 
+					 if (highlightedReferencedPacket != null) {
+						 if (highlightedReferencedPacket==p) {
+							 keyStyle = styleHighlightedBolKey;
+							 valStyle = styleHighlightedBolVal;
+						 }
+					 }
+					 /*if (p.isHighlighted()) {
 						 keyStyle = styleHighlightedBolKey;
 						 valStyle = styleHighlightedBolVal;
-					 }
+					 }*/
+					 
 					 //Debug.temporary(getClass(), "key: " + p.getTextRefKey());
 					 //Debug.temporary(getClass(), "val: " + p.getTextRefValue());
 					 setCharacterAttributes(p.getTextRefKey().start(), p.getTextReference().length(), keyStyle, true);
