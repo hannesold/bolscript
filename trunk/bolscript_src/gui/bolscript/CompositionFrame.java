@@ -51,7 +51,7 @@ public class CompositionFrame extends JFrame implements WindowListener, Composit
 		public CompositionFrame(Composition comp, Dimension size, TalBase talBase) {
 			this(size, talBase);
 			this.setTitle(comp.getName());
-			compositionPanel.renderComposition(comp);
+			compositionPanel.renderComposition(comp, false);
 			comp.addChangeListener(this);
 			
 		}
@@ -97,7 +97,7 @@ public class CompositionFrame extends JFrame implements WindowListener, Composit
 		
 		public void showComposition(Composition comp){
 			this.setTitle(comp.getName());
-			compositionPanel.renderComposition(comp);
+			compositionPanel.renderComposition(comp, false);
 		}
 
 

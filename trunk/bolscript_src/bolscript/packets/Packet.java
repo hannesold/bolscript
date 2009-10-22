@@ -5,6 +5,7 @@ import java.util.HashMap;
 import basics.Debug;
 import bolscript.packets.types.PacketType;
 import bolscript.packets.types.PacketTypeFactory;
+import bolscript.sequences.Representable;
 
 /**
  * <p>Packet represents one Key/Value packet in a bolscript string. The class  
@@ -231,6 +232,11 @@ public class Packet {
 	}
 	public boolean isHighlighted() {
 		return highlighted;
+	}
+
+	public Representable getUnitAtCaretPosition() {
+		
+		return null;
 	}
 	
 	

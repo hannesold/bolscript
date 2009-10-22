@@ -1,6 +1,5 @@
 package bolscript.sequences;
 
-import basics.Rational;
 import bolscript.packets.Packet;
 import bolscript.packets.TextReference;
 
