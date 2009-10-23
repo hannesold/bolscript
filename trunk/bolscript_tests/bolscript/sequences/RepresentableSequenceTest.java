@@ -2,16 +2,14 @@ package bolscript.sequences;
 
 import static org.junit.Assert.assertEquals;
 
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import basics.Debug;
-import basics.FileManager;
 import basics.Rational;
+import bols.Bol;
 import bols.BolBase;
-import bols.BundlingDepthToSpeedMap;
 import bolscript.config.Config;
 import bolscript.scanner.SequenceParser;
 
@@ -122,6 +120,47 @@ public class RepresentableSequenceTest {
 			SpeedUnit last = seq.lastAbsoluteSpeedUnit(new SpeedUnit(new Rational(externalSpeeds[i]),true,null));
 			assertEquals(new Rational(expectedLastSpeeds[i]), last.getSpeed());
 		}
+	}
+	
+	@Test
+	public void testGetUnitAtCaretPosition () {
+		String input = "Dha Dhin Dhin ( 4 Ti Re )";
+		SequenceParser parser = new SequenceParser(0, null);
+		RepresentableSequence seq = parser.parseSequence(null, input);
+		
+		String [] expectedBolNames  = new String[]
+		         {"Dha", 
+				"Dhin", 
+				"Dhin", 
+				"Ti", 
+				"Re"};
+		int[][] caretPositions = new int[5][];
+		caretPositions[0] = new int[]{0,1,2,3};
+		caretPositions[1] = new int[]{4,5,6,7,8};
+		caretPositions[2] = new int[]{9,10,11,12,13};
+		caretPositions[3] = new int[]{18,19,20};
+		caretPositions[4] = new int[]{21,22,23};
+		
+		for (int i = 0; i < expectedBolNames.length; i++) {
+			for (int j = 0; j < caretPositions[i].length; j++) {
+				int caretPosition = caretPositions[i][j];
+				assertEquals(
+						Representable.BOL, 
+						seq.getUnitAtCaretPosition(caretPosition).getType());
+				Bol bol = (Bol) seq.getUnitAtCaretPosition(caretPosition);
+				assertEquals(
+						BolBase.getStandard().getBolName(expectedBolNames[i]), 
+						bol.getBolName());	
+				//Debug.temporary(this, "found the expected bol " + expectedBolNames[i]);
+			}
+		}
+		
+		
+		
+		
+		//assertEquals(Representable.BOL, );
+		
+		
 	}
 
 }

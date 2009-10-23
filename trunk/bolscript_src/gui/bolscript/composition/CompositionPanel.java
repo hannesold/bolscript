@@ -183,7 +183,7 @@ public class CompositionPanel extends JLayeredPane {
 	 * @param packet
 	 */
 	public void highlightPacketNow(Packet packet) {
-		Debug.temporary(this, "attempting to highlight ");
+		//Debug.temporary(this, "attempting to highlight ");
 
 		for (Packet p: packetMap.keySet()) {
 			packetMap.get(p).setHighlighted(false);
@@ -191,12 +191,12 @@ public class CompositionPanel extends JLayeredPane {
 
 		if (packet != null) {
 			HighlightablePanel panel = packetMap.get(packet);
-			Debug.temporary(this, "determined panel " + panel);
+			//Debug.temporary(this, "determined panel " + panel);
 			if (panel != null) {
 				panel.setHighlighted(true);
 				//Rectangle panelBounds = ;
 				this.scrollRectToVisible(panel.getBounds());
-				Debug.temporary(this, "highlighting Panel: " + panel);
+				//Debug.temporary(this, "highlighting Panel: " + panel);
 			}
 		}
 	}

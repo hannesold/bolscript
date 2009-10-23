@@ -1063,6 +1063,28 @@ public class RepresentableSequence implements Representable, Collection<Represen
 		return sequence.subList(fromIndex,toIndex);
 	}
 
+	public Representable getUnitAtCaretPosition(int relativeCaretPosition) {
+		//Debug.temporary(this, "looking for unit at: " + relativeCaretPosition);
+		for (int i=0; i < sequence.size(); i++) {
+			Representable r = sequence.get(i);
+			if (r.getTextReference() != null) {
+				//Debug.temporary(this,"comparing to unit at " + r.getTextReference() + ", " + r);
+				if (r.getTextReference().contains(relativeCaretPosition)) {
+					//Debug.temporary(this,"match");
+					if (r.getType() == Representable.SEQUENCE) {
+						return ((RepresentableSequence) r).getUnitAtCaretPosition(relativeCaretPosition);
+					} else {
+						//Debug.temporary(this,"returning " + r);
+						return r;
+					}
+				}
+			}
+		}
+			
+		
+		return null;
+	}
+
 
 
 }
