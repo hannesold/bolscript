@@ -14,14 +14,20 @@ public abstract class Task implements Runnable{
 	public enum State {
 		New,
 		Running,
-		Completed
+		Completed,
+		CompletedWithError
 	}
-	
+
 	protected String name;
 	protected ExecutionThread thread;
 	protected State state;
 	protected Object lock;
-	
+	protected long duration = -1;
+	public Exception getException() {
+		return exception;
+	}
+
+	protected Exception exception = null;
 	
 	public Task(String name, ExecutionThread thread) {
 		super();
@@ -34,7 +40,7 @@ public abstract class Task implements Runnable{
 	public Object getLock() {
 		return lock;
 	}
-	
+
 	public State getState() {
 		return state;
 	}
@@ -46,15 +52,28 @@ public abstract class Task implements Runnable{
 	public String getName() {
 		return name;
 	}
-	
+
 	public void run() {
+
 		synchronized (lock) {
-			state = State.Running;
-			doTask();
-			state = State.Completed;
+			try {
+				state = State.Running;
+				long time = System.currentTimeMillis();
+				doTask();
+				duration = System.currentTimeMillis() - time;
+				state = State.Completed;
+			} catch (Exception e) {
+				state = State.CompletedWithError;
+				exception = e;
+			} 
 			lock.notifyAll();
+
 		}
 	}
-	
+
+	public long getDuration() {
+		return duration;
+	}
+
 	public abstract void doTask();
 }

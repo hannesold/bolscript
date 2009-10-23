@@ -99,9 +99,9 @@ public class ListWorker implements Runnable {
 					currentList = taskListQueue.get(i);
 					i++;
 				}
-				for (int j=0; j <= indexOfListToBeProcessed; j++) {
+				for (int j=1; j <= indexOfListToBeProcessed; j++) {
 					taskListQueue.remove(0);
-					Debug.temporary(this, "removing skipped lists");
+					Debug.temporary(this, "removed skipped list");
 				}
 			}
 			if (currentList!= null) {

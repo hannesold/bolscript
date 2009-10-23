@@ -236,24 +236,19 @@ public class Packet {
 	public Representable getUnitAtCaretPosition(int caretPosition) {
 		
 		//TODO implement smarter binary search or so
-		
-		if (packetId != PacketTypeFactory.BOLS || object == null || textRefValue == null) {
+		Debug.temporary(this, "getUnitAtCaretPosition, textRefValue: "+ textRefValue + ", caretPosition " + caretPosition);
+		//Debug.temporary(this, "packetType "+ packetType+ ", caretPosition " + caretPosition);
+		if (packetType.getId() != PacketTypeFactory.BOLS || object == null || textRefValue == null) {
+			
 			return null;
 		}
-		RepresentableSequence seq = (RepresentableSequence) object;
-		int relativeCaretPosition = caretPosition - textRefValue.start();
-		for (int i=0; i < seq.size(); i++) {
-			Representable r = seq.get(i);
-			if (r.getTextReference() != null) {
-				if (r.getTextReference().contains(relativeCaretPosition)) {
-					return r;
-				}
-			}
-			
-		}
 		
-		return null;
+		int relativeCaretPosition = caretPosition - textRefValue.start();
+		//Debug.temporary(this, "relative Caret Position: " + relativeCaretPosition);
+		return ((RepresentableSequence) object).getUnitAtCaretPosition(relativeCaretPosition);
 	}
+	
+	
 	
 	
 }

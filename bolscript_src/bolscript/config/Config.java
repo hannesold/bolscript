@@ -217,7 +217,7 @@ public class Config {
 		
 		for (int i=0; i < BolName.languagesCount; i++) {
 			bolFontSizeMin[i] = 6f;
-			bolFontSizeStd[i] = 11f;
+			bolFontSizeStd[i] = 12f;
 			bolFontSizeMax[i] = 48f;
 			
 			for (int j=0; j < bolFontNamesPreferred.length; j++) {

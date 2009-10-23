@@ -90,7 +90,7 @@ public class EditTasks extends TaskList {
 							if (unitAtCaretPosition.getType() == Representable.BOL) {
 								Bol bol = (Bol) unitAtCaretPosition;
 								BolName bolName = BolBase.getStandard().getResemblingBol(bol.getBolName().getName(BolName.EXACT));								
-								bolBasePanel.selectBol(bolName);								
+								if (bolName != null) bolBasePanel.selectBol(bolName);								
 							}
 						}
 					}

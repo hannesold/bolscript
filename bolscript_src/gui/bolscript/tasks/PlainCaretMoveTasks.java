@@ -1,10 +1,12 @@
 package gui.bolscript.tasks;
 
-import java.util.ArrayList;
-
 import gui.bolscript.BolscriptDocument;
 import gui.bolscript.composition.CompositionPanel;
 import gui.bolscript.tables.BolBasePanel;
+
+import java.util.ArrayList;
+
+import basics.Debug;
 import bols.Bol;
 import bols.BolBase;
 import bols.BolName;
@@ -50,6 +52,7 @@ public class PlainCaretMoveTasks extends TaskList {
 						
 						if (packetAtCaretPosition != null) {
 							unitAtCaretPosition = packetAtCaretPosition.getUnitAtCaretPosition(caretPosition);
+							Debug.temporary(this, "unit at caret position determined: "+ unitAtCaretPosition);
 							if (unitAtCaretPosition !=null) {
 								if (unitAtCaretPosition.getType() == Representable.REFERENCED_BOL_PACKET) {
 									highlightedReferencedPacket = ((ReferencedBolPacketUnit) unitAtCaretPosition).getReferencedPacket();
@@ -76,8 +79,8 @@ public class PlainCaretMoveTasks extends TaskList {
 						if (unitAtCaretPosition != null) {
 							if (unitAtCaretPosition.getType() == Representable.BOL) {
 								Bol bol = (Bol) unitAtCaretPosition;
-								BolName bolName = BolBase.getStandard().getResemblingBol(bol.getBolName().getName(BolName.EXACT));								
-								bolBasePanel.selectBol(bolName);								
+								BolName bolName = BolBase.getStandard().getResemblingBol(bol.getBolName().getName(BolName.EXACT));
+								if (bolName != null) bolBasePanel.selectBol(bolName);								
 							}
 						}
 					}

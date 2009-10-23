@@ -127,8 +127,8 @@ public abstract class BolBaseGeneral {
 	 * @return
 	 */
 	public BolNameBundle getBolNameBundle(String exactNames) {
-		Debug.temporary(this,"getBolNameBundle for '" + exactNames + "'");
-		Debug.temporary(this,"result: " + bundleMap.get(exactNames));
+		//Debug.temporary(this,"getBolNameBundle for '" + exactNames + "'");
+		//Debug.temporary(this,"result: " + bundleMap.get(exactNames));
 		return bundleMap.get(exactNames);
 	}
 	
