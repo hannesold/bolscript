@@ -1,12 +1,9 @@
 #summary a quick overview over the syntax
 
-= Introduction =
-Bolscript features a fairly simple syntax. This page provides an overview. However it might be simpler to look at some examples.
-
-
-= General structure =
+== General structure ==
 Each composition is kept in one bolscript file with the file ending `.comp.txt`, with the only exception being tals, which need to have the ending `.tal.txt`.
 
+== Key / Value pairs ==
 Each bolscript file is made up of key/value packets of the form
 `Key: Value`
 The program knows certain keys:
