@@ -1,0 +1,18 @@
+#summary Just a few screenshots
+
+===Composition Browser===
+[http://oudbrothers.de/bolscript/screenshots/0.1/browser.png]
+
+
+===Editor and Viewer===
+[http://oudbrothers.de/bolscript/screenshots/0.1/editor_and_viewer.png]
+
+
+===The same sequence displayed in different languages===
+[http://oudbrothers.de/bolscript/screenshots/0.1/simple.png]
+
+
+[http://oudbrothers.de/bolscript/screenshots/0.1/devanagari.png]
+
+
+[http://oudbrothers.de/bolscript/screenshots/0.1/transliterate.png]
