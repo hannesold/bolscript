@@ -47,7 +47,8 @@ import bols.tals.Tal;
 import bols.tals.TalBase;
 import bols.tals.Teental;
 import bolscript.compositions.Composition;
-import bolscript.config.Config;
+import bolscript.config.GuiConfig;
+import bolscript.config.UserConfig;
 import bolscript.packets.Packet;
 import bolscript.packets.Packets;
 import bolscript.packets.types.PacketTypeFactory;
@@ -246,8 +247,8 @@ public class CompositionPanel extends JLayeredPane {
 			decreaseBundling.setEnabled(bundlingDepth > 0);
 			increaseBundling.setEnabled(bundlingDepth <  bundlingMap.getMaxDepth());
 
-			boolean incrFsPossible = (fontSizeIncrease + Config.fontSizeStep) <= (Config.bolFontSizeMax[language] - Config.bolFontSizeStd[language]);
-			boolean decrFsPossible = (fontSizeIncrease - Config.fontSizeStep) >= (Config.bolFontSizeMin[language] - Config.bolFontSizeStd[language]);
+			boolean incrFsPossible = (fontSizeIncrease + GuiConfig.fontSizeStep) <= (GuiConfig.bolFontSizeMax[language] - GuiConfig.bolFontSizeStd[language]);
+			boolean decrFsPossible = (fontSizeIncrease - GuiConfig.fontSizeStep) >= (GuiConfig.bolFontSizeMin[language] - GuiConfig.bolFontSizeStd[language]);
 
 			decreaseFontsize.setEnabled(decrFsPossible);
 			increaseFontsize.setEnabled(incrFsPossible);
@@ -270,7 +271,7 @@ public class CompositionPanel extends JLayeredPane {
 		for (int i=0; i < BolName.languagesCount; i++) {
 			JMenuItem l = new JMenuItem(setLanguage[i]);
 			l.setAccelerator(KeyStroke.getKeyStroke(
-					numberKeys[i], Config.MENU_SHORTKEY_MASK));
+					numberKeys[i], GuiConfig.MENU_SHORTKEY_MASK));
 
 			languageMenu.add(l);
 
@@ -291,11 +292,11 @@ public class CompositionPanel extends JLayeredPane {
 		JMenuItem incrFonts = new JMenuItem(increaseFontsize);
 		viewMenu.add(incrFonts);
 		incrFonts.setAccelerator(KeyStroke.getKeyStroke(
-				KeyEvent.VK_I, KeyEvent.ALT_DOWN_MASK | Config.MENU_SHORTKEY_MASK));
+				KeyEvent.VK_I, KeyEvent.ALT_DOWN_MASK | GuiConfig.MENU_SHORTKEY_MASK));
 
 		JMenuItem decrFonts = new JMenuItem (decreaseFontsize);
 		decrFonts.setAccelerator(KeyStroke.getKeyStroke(
-				KeyEvent.VK_U, KeyEvent.ALT_DOWN_MASK | Config.MENU_SHORTKEY_MASK));
+				KeyEvent.VK_U, KeyEvent.ALT_DOWN_MASK | GuiConfig.MENU_SHORTKEY_MASK));
 		viewMenu.add(decrFonts);
 
 		viewMenu.add(resetFontsize);
@@ -303,12 +304,12 @@ public class CompositionPanel extends JLayeredPane {
 		viewMenu.addSeparator();
 		JMenuItem incrBundling = new JMenuItem(increaseBundling);
 		incrBundling.setAccelerator(KeyStroke.getKeyStroke(
-				KeyEvent.VK_I, Config.MENU_SHORTKEY_MASK));			
+				KeyEvent.VK_I, GuiConfig.MENU_SHORTKEY_MASK));			
 		viewMenu.add(incrBundling);
 
 		JMenuItem decrBundling = new JMenuItem(decreaseBundling);
 		decrBundling.setAccelerator(KeyStroke.getKeyStroke(
-				KeyEvent.VK_U, Config.MENU_SHORTKEY_MASK));
+				KeyEvent.VK_U, GuiConfig.MENU_SHORTKEY_MASK));
 		viewMenu.add(decrBundling);
 		return viewMenu;
 	}
@@ -322,9 +323,9 @@ public class CompositionPanel extends JLayeredPane {
 	public void renderComposition(Composition comp, boolean onlyPrepare) {
 		if (comp.getPackets() != null) {
 			this.composition = comp;
-			this.bundlingMap = Config.getBundlingDepthToSpeedMap(composition.getMaxSpeed());
-			setBundlingDepth(Config.stdBundlingDepth);
-			setFontSizeInc(Config.stdFontSizeIncrease);
+			this.bundlingMap = BundlingDepthToSpeedMap.getBundlingDepthToSpeedMap(composition.getMaxSpeed());
+			setBundlingDepth(UserConfig.stdBundlingDepth);
+			setFontSizeInc(UserConfig.stdFontSizeIncrease);
 			this.packets = comp.getPackets();
 			updateActionEnabling();
 			prepareRendering(false);			
@@ -433,7 +434,7 @@ public class CompositionPanel extends JLayeredPane {
 							seq = ((RepresentableSequence) p.getObject()).getBundled(bundlingMap,bundlingDepth, true);
 						}*/
 						
-						SequencePanel sequencePanel = new SequencePanel(seq, tal, variationDim, 0,"",0, language, Config.bolFontSizeStd[language] + fontSizeIncrease, p);
+						SequencePanel sequencePanel = new SequencePanel(seq, tal, variationDim, 0,"",0, language, GuiConfig.bolFontSizeStd[language] + fontSizeIncrease, p);
 
 						addLineBreak(new Float(newHeight), PageBreakPanel.LOW);
 						components.add(sequencePanel);
@@ -694,7 +695,7 @@ public class CompositionPanel extends JLayeredPane {
 	public void increaseBundling() {
 		int oldBundlingDepth = bundlingDepth;
 		setBundlingDepth(bundlingDepth+1);
-		Config.setStandardBundlingDepth(bundlingDepth);
+		UserConfig.setStandardBundlingDepth(bundlingDepth);
 		if (oldBundlingDepth != bundlingDepth) prepareRendering(false);
 		updateActionEnabling();
 	}
@@ -702,7 +703,7 @@ public class CompositionPanel extends JLayeredPane {
 	public void decreaseBundling() {
 		int oldBundlingDepth = bundlingDepth;
 		setBundlingDepth(bundlingDepth-1);
-		Config.setStandardBundlingDepth(bundlingDepth);
+		UserConfig.setStandardBundlingDepth(bundlingDepth);
 		if (oldBundlingDepth != bundlingDepth) prepareRendering(false);
 		updateActionEnabling();
 	}
@@ -717,23 +718,23 @@ public class CompositionPanel extends JLayeredPane {
 	}
 
 	public void increaseFontSize() {
-		setFontSizeInc(fontSizeIncrease+Config.fontSizeStep);
-		Config.setStandardFontSizeIncrease(fontSizeIncrease);
+		setFontSizeInc(fontSizeIncrease+GuiConfig.fontSizeStep);
+		UserConfig.setStandardFontSizeIncrease(fontSizeIncrease);
 		updateActionEnabling();
 		prepareRendering(false);
 	}
 
 	public void decreaseFontSize() {
-		setFontSizeInc(fontSizeIncrease-Config.fontSizeStep);
-		Config.setStandardFontSizeIncrease(fontSizeIncrease);
+		setFontSizeInc(fontSizeIncrease-GuiConfig.fontSizeStep);
+		UserConfig.setStandardFontSizeIncrease(fontSizeIncrease);
 		updateActionEnabling();
 		prepareRendering(false);
 	}
 	private void setFontSizeInc(float newOffset) {
 
-		float maxIncrease = Config.bolFontSizeMax[language] - Config.bolFontSizeStd[language];
+		float maxIncrease = GuiConfig.bolFontSizeMax[language] - GuiConfig.bolFontSizeStd[language];
 
-		float minIncrease = Config.bolFontSizeMin[language] - Config.bolFontSizeStd[language];
+		float minIncrease = GuiConfig.bolFontSizeMin[language] - GuiConfig.bolFontSizeStd[language];
 		//		Debug.temporary(this, "trying to set to: " + newOffset);
 		//		Debug.temporary(this, "min: " + minIncrease);
 		//		Debug.temporary(this, "max: " + maxIncrease);

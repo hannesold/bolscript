@@ -72,7 +72,7 @@ public class FileManager {
 				 */
 				while (( line = input.readLine()) != null){
 					contents.append(line);
-					contents.append(Config.lineSeperator);
+					contents.append(Config.bolscriptStandardLineSeperator);
 				}
 			}
 			finally {

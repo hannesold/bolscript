@@ -12,7 +12,6 @@ import javax.swing.border.LineBorder;
 
 import basics.GUI;
 import bols.NamedInLanguages;
-import bolscript.config.Config;
 import bolscript.config.GuiConfig;
 
 public abstract class BolPanelGeneral extends JPanel implements MouseListener{
@@ -40,7 +39,7 @@ public abstract class BolPanelGeneral extends JPanel implements MouseListener{
 		this.fontSize = fontSize;
 		
 		label = new JLabel(nameGiver.getName(language));
-		Font f = Config.getBolFont(language, fontSize, emphasized); //Config.bolFonts[language].deriveFont(fontSize);
+		Font f = GuiConfig.getBolFont(language, fontSize, emphasized); //Config.bolFonts[language].deriveFont(fontSize);
 		label.setFont(f);
 		
 		Dimension labelPrefSize = GUI.getPrefferedSize(label,100);

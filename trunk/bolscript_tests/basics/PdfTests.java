@@ -7,6 +7,7 @@ import java.io.IOException;
 import javax.swing.JLabel;
 
 import bolscript.config.Config;
+import bolscript.config.UserConfig;
 
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
@@ -32,7 +33,7 @@ import com.lowagie.text.pdf.PdfWriter;
 			// we create a writer
 			PdfWriter writer;
 			
-			writer = PdfWriter.getInstance(document, new FileOutputStream(Config.tablaFolder +Config.fileSeperator  + "pdf_test.pdf"));
+			writer = PdfWriter.getInstance(document, new FileOutputStream(UserConfig.tablaFolder +Config.fileSeperator  + "pdf_test.pdf"));
 			Rectangle pageSize = writer.getPageSize();
 			
 			float pageWidth =  pageSize.getWidth();

@@ -15,6 +15,7 @@ import bolscript.compositions.Composition;
 import bolscript.compositions.CompositionBase;
 import bolscript.compositions.DataState;
 import bolscript.config.Config;
+import bolscript.config.UserConfig;
 
 public class ExportPdf extends AbstractAction {
 	CompositionFrame compFrame;
@@ -34,8 +35,8 @@ public class ExportPdf extends AbstractAction {
 		
 		File currentFile = new File(path);
 		FileDialog fileDialog = new FileDialog(compFrame, "Export Pdf As", FileDialog.SAVE);
-		if (Config.pdfExportPath!=null) {
-			fileDialog.setDirectory(Config.pdfExportPath);
+		if (UserConfig.pdfExportPath!=null) {
+			fileDialog.setDirectory(UserConfig.pdfExportPath);
 		} else fileDialog.setDirectory(currentFile.getPath());
 		
 		fileDialog.setFilenameFilter(new SuffixFilter(Config.pdfSuffix));
@@ -47,7 +48,7 @@ public class ExportPdf extends AbstractAction {
 			String filename = fileDialog.getDirectory() + Config.fileSeperator + fileDialog.getFile();
 			Debug.debug(this, "Export Pdf As : " + filename);
 			this.compFrame.createPdf(filename, false);
-			Config.setPdfExportPath(fileDialog.getDirectory());
+			UserConfig.setPdfExportPath(fileDialog.getDirectory());
 		}
 		
 		fileDialog.dispose();

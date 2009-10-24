@@ -23,6 +23,7 @@ import javax.swing.KeyStroke;
 
 import bolscript.Master;
 import bolscript.config.Config;
+import bolscript.config.GuiConfig;
 
 public class FileMenu extends JMenu {
 	
@@ -59,25 +60,25 @@ public class FileMenu extends JMenu {
 		
 		JMenuItem saver = new JMenuItem(new SaveChanges(editor,false));
 		saver.setAccelerator(KeyStroke.getKeyStroke(
-		        KeyEvent.VK_S, Config.MENU_SHORTKEY_MASK));
+		        KeyEvent.VK_S, GuiConfig.MENU_SHORTKEY_MASK));
 		this.add(saver);
 		
 		JMenuItem saveAs = new JMenuItem(new SaveAs(editor));
 		saveAs.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, 
 				(java.awt.event.InputEvent.SHIFT_MASK | 
-						Config.MENU_SHORTKEY_MASK)));
+						GuiConfig.MENU_SHORTKEY_MASK)));
 		this.add(saveAs);
 		
 		JMenuItem export = new JMenuItem(new ExportPdf(viewer));
 		export.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, 
-				Config.MENU_SHORTKEY_MASK));
+				GuiConfig.MENU_SHORTKEY_MASK));
 		this.add(export);
 		
 		this.addSeparator();
 		
 		JMenuItem closer = new JMenuItem(new CloseEditor(editor));
 		closer.setAccelerator(KeyStroke.getKeyStroke(
-		        KeyEvent.VK_W, Config.MENU_SHORTKEY_MASK));
+		        KeyEvent.VK_W, GuiConfig.MENU_SHORTKEY_MASK));
 		this.add(closer);
 		
 		
@@ -88,7 +89,7 @@ public class FileMenu extends JMenu {
 			
 			int remKey = (Config.OS == Config.MAC) ? KeyEvent.VK_BACK_SPACE : KeyEvent.VK_DELETE;
 			remover.setAccelerator(KeyStroke.getKeyStroke(
-			        remKey, Config.MENU_SHORTKEY_MASK));
+			        remKey, GuiConfig.MENU_SHORTKEY_MASK));
 			
 			this.add(remover);
 		//}
@@ -98,7 +99,7 @@ public class FileMenu extends JMenu {
 		
 		JMenuItem toggleErrorConsole = new JMenuItem(ToggleConsole.getStandard());
 		toggleErrorConsole.setAccelerator(KeyStroke.getKeyStroke(
-				KeyEvent.VK_T, Config.MENU_SHORTKEY_MASK));
+				KeyEvent.VK_T, GuiConfig.MENU_SHORTKEY_MASK));
 		
 		this.addSeparator();
 		this.add(toggleErrorConsole);

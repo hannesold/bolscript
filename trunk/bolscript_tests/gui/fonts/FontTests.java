@@ -29,13 +29,15 @@ import bols.BolName;
 import bols.PlayingStyle;
 import bols.tals.Teental;
 import bolscript.config.Config;
+import bolscript.config.GuiConfig;
+import bolscript.config.UserConfig;
 import bolscript.sequences.RepresentableSequence;
 
 public class FontTests implements WindowListener, ListSelectionListener{
 	private  JPanel examplePanel;
 	private  JList fontSelector, fontSelectorLocal;
 	
-	private String pathToFonts = Config.tablaFolder + Config.fileSeperator + "settings";
+	private String pathToFonts = UserConfig.tablaFolder + Config.fileSeperator + "settings";
 	
 	JFrame exampleFrame = new JFrame("Examples");
 	RepresentableSequence completeSequence;
@@ -154,7 +156,7 @@ public void init() {
 		for (int i=0; i < fonts.length; i++) {
 			fonts[i] = f;
 		}
-		Config.setAllBolFonts(fonts);
+		GuiConfig.setAllBolFonts(fonts);
 		refreshSequenceFrame();
 		//exampleLabel.setFont(f);
 		

@@ -23,7 +23,6 @@ import bols.tals.LayoutCycle;
 import bols.tals.Tal;
 import bols.tals.Teental;
 import bols.tals.Vibhag;
-import bolscript.config.Config;
 import bolscript.config.GuiConfig;
 import bolscript.packets.Packet;
 import bolscript.sequences.FootnoteUnit;
@@ -60,7 +59,7 @@ public class SequencePanel extends HighlightablePanel  {
 	//private Variation variation; 
 	protected Tal tal;
 	protected int language = BolName.SIMPLE;
-	protected float fontSize = Config.bolFontSizeStd[BolName.SIMPLE];
+	protected float fontSize = GuiConfig.bolFontSizeStd[BolName.SIMPLE];
 
 	protected Dimension vibhagSize;
 	protected boolean highlighted;
@@ -209,7 +208,7 @@ public class SequencePanel extends HighlightablePanel  {
 	 */
 	protected Dimension determinCellSize() {
 		JLabel label = new JLabel("");
-		label.setFont(Config.getBolFont(language, fontSize, false));
+		label.setFont(GuiConfig.getBolFont(language, fontSize, false));
 		int maxBolLabelHeight=0;
 		int maxCellWidth = 0;
 		Dimension tempSize = new Dimension(0,0);

@@ -21,6 +21,7 @@ import basics.GUI;
 import bolscript.config.Config;
 import bolscript.config.ConfigChangeEvent;
 import bolscript.config.ConfigChangeListener;
+import bolscript.config.UserConfig;
 
 public class PreferencesDialog extends JDialog implements WindowListener, ConfigChangeListener{
 
@@ -44,7 +45,7 @@ public class PreferencesDialog extends JDialog implements WindowListener, Config
 		txtTablaDir = new JTextField();
 		txtTablaDir.setEditable(false);
 		Debug.debug(this, "setting text");
-		txtTablaDir.setText(Config.tablaFolder);
+		txtTablaDir.setText(UserConfig.tablaFolder);
 		txtTablaDir.setPreferredSize(new Dimension(340, txtTablaDir.getPreferredSize().height));
 		chooseAction = new ChooseTablaDir(this);
 		
@@ -91,8 +92,8 @@ public class PreferencesDialog extends JDialog implements WindowListener, Config
 		chooseAction.actionPerformed(e);
 		String chosenFolder = chooseAction.getChosenFolder();
 		if ((chosenFolder != null)
-				&! chosenFolder.equals(Config.tablaFolder)) {
-			Config.setTablaFolder(chooseAction.getChosenFolder());
+				&! chosenFolder.equals(UserConfig.tablaFolder)) {
+			UserConfig.setTablaFolder(chooseAction.getChosenFolder());
 			Config.fireConfigChangedEvent();
 			changed = true;
 		}
@@ -102,7 +103,7 @@ public class PreferencesDialog extends JDialog implements WindowListener, Config
 	 * Gets called by Config.fireConfigChangedEvent()
 	 */
 	public void configChanged(ConfigChangeEvent e) {
-		txtTablaDir.setText(Config.tablaFolder);
+		txtTablaDir.setText(UserConfig.tablaFolder);
 	}
 	
 	/**

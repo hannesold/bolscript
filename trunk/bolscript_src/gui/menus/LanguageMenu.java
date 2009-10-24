@@ -23,7 +23,7 @@ import javax.swing.KeyStroke;
 
 import bols.BolName;
 import bolscript.Master;
-import bolscript.config.Config;
+import bolscript.config.GuiConfig;
 
 public class LanguageMenu extends JMenu {
 	
@@ -64,7 +64,7 @@ public class LanguageMenu extends JMenu {
 					l = new JMenuItem(new SetLanguage(null, i));
 				}
 				l.setAccelerator(KeyStroke.getKeyStroke(
-				        numberKeys[i], Config.MENU_SHORTKEY_MASK));
+				        numberKeys[i], GuiConfig.MENU_SHORTKEY_MASK));
 
 				this.add(l);
 				
