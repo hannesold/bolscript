@@ -6,6 +6,6 @@ Gat is *not downloaded with bolscript*. It is only part of the developer version
 I designed and implemented gat as a bachelor report, which you can download [http://www.oudbrothers.de/interface/hannes%20oud%20-%20gat.pdf here]
 
 
-= Details =
+== Summary ==
 Gat mainly attempts to mimic kaida variation composition by using a parametrical genetic algorithm which starts from a selected kaida theme. Gat also features a theka looper, a little tihai composer and graphical and midi output. For details on concept and implementation follow the link above. Since I only invested around 2-3 months it does not have much javadoc documentation at all and lots of things are neither safe nor optimized.
 A lot of components however have moved on to bolscript and have been updated and cleaned up a little there.
