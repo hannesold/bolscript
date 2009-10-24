@@ -17,7 +17,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 
-import bolscript.config.Config;
+import bolscript.config.GuiConfig;
 
 public class ViewMenu extends JMenu {
 	
@@ -63,11 +63,11 @@ public class ViewMenu extends JMenu {
 		JMenuItem incrFonts = new JMenuItem(actions.increaseFontsize);
 		this.add(incrFonts);
 		incrFonts.setAccelerator(KeyStroke.getKeyStroke(
-		        KeyEvent.VK_I, KeyEvent.ALT_DOWN_MASK | Config.MENU_SHORTKEY_MASK));
+		        KeyEvent.VK_I, KeyEvent.ALT_DOWN_MASK | GuiConfig.MENU_SHORTKEY_MASK));
 
 		JMenuItem decrFonts = new JMenuItem (actions.decreaseFontsize);
 		decrFonts.setAccelerator(KeyStroke.getKeyStroke(
-		        KeyEvent.VK_U, KeyEvent.ALT_DOWN_MASK | Config.MENU_SHORTKEY_MASK));
+		        KeyEvent.VK_U, KeyEvent.ALT_DOWN_MASK | GuiConfig.MENU_SHORTKEY_MASK));
 		this.add(decrFonts);
 		
 		this.add(actions.resetFontsize);
@@ -75,12 +75,12 @@ public class ViewMenu extends JMenu {
 		this.addSeparator();
 		JMenuItem incrBundling = new JMenuItem(actions.increaseBundling);
 		incrBundling.setAccelerator(KeyStroke.getKeyStroke(
-		        KeyEvent.VK_I, Config.MENU_SHORTKEY_MASK));			
+		        KeyEvent.VK_I, GuiConfig.MENU_SHORTKEY_MASK));			
 		this.add(incrBundling);
 		
 		JMenuItem decrBundling = new JMenuItem(actions.decreaseBundling);
 		decrBundling.setAccelerator(KeyStroke.getKeyStroke(
-		        KeyEvent.VK_U, Config.MENU_SHORTKEY_MASK));
+		        KeyEvent.VK_U, GuiConfig.MENU_SHORTKEY_MASK));
 		this.add(decrBundling);
 		
 

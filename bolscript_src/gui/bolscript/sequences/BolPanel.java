@@ -16,7 +16,7 @@ public class BolPanel extends BolPanelGeneral implements MouseListener {
 	 * @deprecated Use {@link #BolPanel(Bol,Dimension,boolean,int, float)} instead
 	 */
 	public BolPanel(Bol bol, Dimension size, boolean isEmphasized) {
-		this(bol, size, isEmphasized, bols.BolName.SIMPLE, bolscript.config.Config.bolFontSizeStd[bols.BolName.SIMPLE]);
+		this(bol, size, isEmphasized, bols.BolName.SIMPLE, bolscript.config.GuiConfig.bolFontSizeStd[bols.BolName.SIMPLE]);
 	}
 
 	public BolPanel(Bol bol, Dimension size, boolean isEmphasized, int language, float fontSize) {

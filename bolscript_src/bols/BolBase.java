@@ -87,7 +87,6 @@ public class BolBase extends BolBaseGeneral {
 		Debug.temporary(this, "bundles : " + bundleMap);
 		
 		
-		
 		try {
 			initMidiMaps();
 		} catch (NoBolNameException ex) {

@@ -9,7 +9,7 @@ import bols.BolName;
 import bols.Variation;
 import bols.tals.Tal;
 import bols.tals.Teental;
-import bolscript.config.Config;
+import bolscript.config.GuiConfig;
 import bolscript.sequences.RepresentableSequence;
 import config.Themes;
 
@@ -37,21 +37,21 @@ public class VariationPanel extends SequencePanel {
 	}
 	
 	public VariationPanel(RepresentableSequence sequence, Tal tal, Dimension size) {
-		super(sequence,tal,size,1, "Dhin", 4, bols.BolName.SIMPLE, Config.bolFontSizeStd[BolName.SIMPLE], null);
+		super(sequence,tal,size,1, "Dhin", 4, bols.BolName.SIMPLE, GuiConfig.bolFontSizeStd[BolName.SIMPLE], null);
 	}
 	public VariationPanel(Variation variation, Tal tal, Dimension size) {
 		this(variation,tal,size,1, "Dhin", 4);
 	}
 	
 	public VariationPanel(Variation variation, Tal tal, Dimension size, int minRows, String fixedLargestWidthBol, int fixedMaxSpeed) {
-		super( variation.getAsRepresentableSequence(), tal, size, minRows, fixedLargestWidthBol, fixedMaxSpeed, BolName.SIMPLE, Config.bolFontSizeStd[BolName.SIMPLE], null);
+		super( variation.getAsRepresentableSequence(), tal, size, minRows, fixedLargestWidthBol, fixedMaxSpeed, BolName.SIMPLE, GuiConfig.bolFontSizeStd[BolName.SIMPLE], null);
 	}
 	/**
 	 * @deprecated Use {@link #VariationPanel(RepresentableSequence,Tal,Dimension,int,String,int,int, float)} instead
 	 */
 	public VariationPanel(RepresentableSequence sequence, Tal tal, Dimension size, int minRows, String fixedLargestWidthBol, int fixedMaxSpeed) {
 		super(sequence, tal, size, minRows, fixedLargestWidthBol, fixedMaxSpeed,
-				BolName.SIMPLE, Config.bolFontSizeStd[BolName.SIMPLE], null);
+				BolName.SIMPLE, GuiConfig.bolFontSizeStd[BolName.SIMPLE], null);
 	}
 
 	

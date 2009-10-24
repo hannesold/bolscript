@@ -68,4 +68,11 @@ public class Tools {
 			return s.toString();
 		} else return new String("");
 	}
+	
+	public static int assure(int min, int value, int max) {
+		return Math.min(Math.max(min, value), max);
+	}
+	public static double assure(double min, double value, double max) {
+		return Math.min(Math.max(min, value), max);
+	}
 }

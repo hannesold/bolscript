@@ -7,7 +7,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 
 import bols.BolName;
-import bolscript.config.Config;
+import bolscript.config.UserConfig;
 
 public class SetLanguage extends AbstractAction {
 	CompositionPanel compPanel;
@@ -23,7 +23,7 @@ public class SetLanguage extends AbstractAction {
 	
 	public void actionPerformed(ActionEvent e) {
 		compPanel.setLanguage(language);
-		Config.standardLanguage = language;
+		UserConfig.standardLanguage = language;
 	}
 	
 }

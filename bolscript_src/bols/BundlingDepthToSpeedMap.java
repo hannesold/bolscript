@@ -1,8 +1,10 @@
 package bols;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import basics.Rational;
+import bolscript.config.CacheClearable;
 
 /**
  * This class contains a mapping of bundling depths to bundling speeds.
@@ -15,6 +17,11 @@ public class BundlingDepthToSpeedMap {
 	//min bundlingdepth is always 0
 	
 	private Rational[] bundlingSpeeds;
+
+	/**
+	 * A Map from maximum Speeds ocurring to depth-speed-maps.
+	 */
+	public static HashMap<Rational, BundlingDepthToSpeedMap> bundlingMaps;
 	
 	
 	public BundlingDepthToSpeedMap(int maxBundlingDepth, Rational[] bundlingSpeeds) {
@@ -66,4 +73,22 @@ public class BundlingDepthToSpeedMap {
 		}
 		return s.toString();
 	}
+
+
+	/**
+	 * Returns a Map of bundling depths to bundling speeds, according to the given maxSpeed.
+	 * @see BundlingDepthToSpeedMap
+	 */
+	public static BundlingDepthToSpeedMap getBundlingDepthToSpeedMap(Rational maxSpeed) {
+		if (bundlingMaps == null) {
+			BundlingDepthToSpeedMap.bundlingMaps = new HashMap<Rational, BundlingDepthToSpeedMap> ();
+		}
+		BundlingDepthToSpeedMap map = BundlingDepthToSpeedMap.bundlingMaps.get(maxSpeed);
+		if (map == null) {
+			map = getDefault(maxSpeed);
+			BundlingDepthToSpeedMap.bundlingMaps.put(maxSpeed, map);
+		}
+		return map;
+	}
+
 }

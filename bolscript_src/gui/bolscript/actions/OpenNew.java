@@ -9,7 +9,7 @@ import javax.swing.AbstractAction;
 import javax.swing.KeyStroke;
 
 import bolscript.Master;
-import bolscript.config.Config;
+import bolscript.config.GuiConfig;
 
 public class OpenNew extends AbstractAction {
 	EditorFrame editor;
@@ -18,7 +18,7 @@ public class OpenNew extends AbstractAction {
 		//this.editor = editor;
 		this.putValue(NAME, "New Composition");
 		this.putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(
-		        KeyEvent.VK_N, Config.MENU_SHORTKEY_MASK));
+		        KeyEvent.VK_N, GuiConfig.MENU_SHORTKEY_MASK));
 		//closer.setAccelerator();
 
 	}

@@ -25,7 +25,7 @@ import bols.tals.TalBase;
 import bolscript.compositions.Composition;
 import bolscript.compositions.CompositionChangeEvent;
 import bolscript.compositions.CompositionChangedListener;
-import bolscript.config.Config;
+import bolscript.config.UserConfig;
 
 /**
  * This is the Composition Viewer Frame.
@@ -66,7 +66,7 @@ public class CompositionFrame extends JFrame implements WindowListener, Composit
 			
 			this.setTitle("");
 			bolBase = BolBase.standard();
-			compositionPanel = new CompositionPanel(size, Config.standardLanguage, talBase);
+			compositionPanel = new CompositionPanel(size, UserConfig.standardLanguage, talBase);
 			
 			JPanel p = new JPanel();
 			scrollPane = new JScrollPane(p);

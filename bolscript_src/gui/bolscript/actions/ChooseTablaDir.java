@@ -12,6 +12,7 @@ import javax.swing.filechooser.FileFilter;
 import basics.Debug;
 import basics.FolderFilter;
 import bolscript.config.Config;
+import bolscript.config.UserConfig;
 
 public class ChooseTablaDir extends AbstractAction {
 
@@ -27,7 +28,7 @@ public class ChooseTablaDir extends AbstractAction {
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		String path = new String(Config.tablaFolder);
+		String path = new String(UserConfig.tablaFolder);
 		File folder = new File(path);
 		if (!folder.exists()) {
 			path = System.getProperty("user.dir");
@@ -55,7 +56,7 @@ public class ChooseTablaDir extends AbstractAction {
 			System.setProperty("apple.awt.fileDialogForDirectories", "false");
 		} else {
 			JFileChooser fileDialog = new JFileChooser();
-			fileDialog.setCurrentDirectory(new File(Config.tablaFolder));
+			fileDialog.setCurrentDirectory(new File(UserConfig.tablaFolder));
 			//fileDialog.setVisible(false);
 			fileDialog.setDialogTitle("Choose Tabla Folder");
 			FileFilter filter = new FolderFilter();

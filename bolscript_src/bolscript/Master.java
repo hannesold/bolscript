@@ -43,6 +43,7 @@ import bolscript.config.Config;
 import bolscript.config.ConfigChangeEvent;
 import bolscript.config.ConfigChangeListener;
 import bolscript.config.GuiConfig;
+import bolscript.config.UserConfig;
 import bolscript.packets.types.PacketTypeFactory;
 public class Master implements ConfigChangeListener{//implements ApplicationListener{//extends JFrame implements WindowListener {
 
@@ -129,7 +130,7 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 			
 			prefsDialog = new PreferencesDialog();
 			
-			if (Config.firstRun) {
+			if (UserConfig.firstRun) {
 				Debug.temporary(this, "first run");
 				prefsDialog.setModal(true);
 				prefsDialog.setVisible(true);
@@ -170,7 +171,7 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 				
 				browserFrame = new BrowserFrame(GuiConfig.getBrowserFrameDimension(),compTableModel, filterPanel);
 				browserFrame.setVisible(true);
-				Image icon = Config.getWindowsFrameIcon();
+				Image icon = GuiConfig.getWindowsFrameIcon();
 				debug.temporary("imageIcon: " +icon);
 				if (icon != null) browserFrame.setIconImage(icon);
 				editors = new ArrayList<EditorFrame>();//new EditorFrame(new Dimension(400,800));
@@ -328,7 +329,7 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
        			 comp.getDataState().open(comp);
        			 
        			 CompositionFrame compositionFrame = new CompositionFrame(comp, GuiConfig.getCompositionViewerSize(), compositionBase);
-       			 Image icon = Config.getWindowsFrameIcon();
+       			 Image icon = GuiConfig.getWindowsFrameIcon();
        			 if (icon != null) compositionFrame.setIconImage(icon);
 				
        			 EditorFrame editor = new EditorFrame(comp, GuiConfig.getEditorSize());
@@ -443,7 +444,7 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 				debug.temporary("storing config....");
 				boolean configStored = false;
 				try {
-					Config.storePreferences();
+					UserConfig.storePreferences();
 					configStored = true;
 				} catch (Exception e) {
 					configStored = false;
