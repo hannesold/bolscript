@@ -14,7 +14,7 @@ The program knows certain keys:
  * Editors - the names, if there is more than one editor
  * Gharana - the name of the gharana of 
  * Gharanas - a comma seperated list of gharanas 
- * Name - a name, if no name is entered, bolscript attempts to generate one
+ * Name - a name for the composition, if no name is entered, bolscript attempts to generate one
  * Tal - Set a tal for the upcoming parts of the composition (Example Tal: Teental). Note that only Tals found amoung your tabla folder will be correctly interpretable by bolscript.
  * Type - the composition type, for example Kaida, Tukra, Rela, ...
  * Types - a list of one or more comma seperated types
