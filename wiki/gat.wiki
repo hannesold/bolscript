@@ -1,6 +1,7 @@
 #summary A short intro to gat
 
-= Introduction =
+= gat? =
+Gat is *not downloaded with bolscript*. It is only part of the developer version.
 
 I designed and implemented gat as a bachelor report, which you can download [http://www.oudbrothers.de/interface/hannes%20oud%20-%20gat.pdf here]
 
