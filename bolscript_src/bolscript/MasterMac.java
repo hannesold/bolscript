@@ -1,5 +1,9 @@
 package bolscript;
 
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
+
 import basics.Debug;
 import basics.GUI;
 
@@ -9,6 +13,26 @@ import com.apple.eawt.ApplicationListener;
 
 public class MasterMac extends Master implements ApplicationListener{
 	
+	@Override
+	public void revealFileInOSFileManager(String filename) {
+		    String script = 
+		    	"tell application \"Finder\" \n" +
+		    		"reveal (POSIX file \"/" + filename + "\") \n" +
+		    		"activate \n"+
+		    	"end tell";
+		    
+		    ScriptEngineManager mgr = new ScriptEngineManager();
+		    ScriptEngine engine = mgr.getEngineByName("AppleScript");
+
+		    try {
+				engine.eval(script);
+			} catch (ScriptException e) {
+				Debug.critical(this, "AppleScript for revealing file could not be run");
+				e.printStackTrace();
+			}
+		
+	}
+
 	public static Application application;
 	
 	public MasterMac() {

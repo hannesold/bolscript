@@ -32,13 +32,8 @@ public class RemoveSelected extends AbstractAction {
 	}
 	
 	public void actionPerformed(ActionEvent e) {
-		int [] rows = compositionTable.getSelectedRows();
-		ArrayList<Composition> compsToRemove = new ArrayList<Composition>();
-		for (int i=0; i < rows.length; i++) {
-			compsToRemove.add(((CompositionTableModel)compositionTable.getModel()).getComposition(
-					compositionTable.getRowSorter().convertRowIndexToModel(rows[i])
-			));
-		}
+		
+		ArrayList<Composition> compsToRemove = Master.master.getSelectedCompositions();
 		
 		RemoveAndDeleteDialog dialog = new RemoveAndDeleteDialog(browser);
 		dialog.setVisible(true);

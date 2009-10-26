@@ -23,6 +23,7 @@ import java.awt.Image;
 import java.awt.SplashScreen;
 import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
@@ -101,7 +102,6 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 		}
 		
 		public void init() {
-
 			
 			GUI.setNativeLookAndFeel();
 			
@@ -154,8 +154,6 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 		}
 		
 		public void initGui(){
-			
-			
 			
 			BolBase.init(this.getClass());
 
@@ -246,6 +244,21 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 		
 		public void saveEditor(EditorFrame editor) {
 			saveEditorAs(editor, editor.getComposition().getLinkLocal());				
+		}
+		
+
+		public void revealFileInOSFileManager(String filename) {
+			//windows implementation
+			if (Config.OS == Config.WINDOWS) {
+				try {
+					Runtime.getRuntime().exec("explorer.exe /select, \""+filename+"\"");
+				} catch (IOException e) {
+					debug.critical("could not show file in explorer, " + e);
+					e.printStackTrace();
+				}
+			}
+			
+			//mac implementation is done in MasterMac
 		}
 		
 		public void saveEditorAs(EditorFrame editor, String filename) {
@@ -474,6 +487,21 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 
 		public CompositionBase getCompositionBase() {
 			return compositionBase;
+		}
+
+		public ArrayList<Composition> getSelectedCompositions() {
+			
+			JTable compositionTable = browserFrame.getCompositionListPanel().getCompositionTable();
+			int [] rows = compositionTable.getSelectedRows();
+			ArrayList<Composition> selectedCompositions = new ArrayList<Composition>();
+			
+			for (int i=0; i < rows.length; i++) {
+				selectedCompositions.add(((CompositionTableModel)compositionTable.getModel()).getComposition(
+						compositionTable.getRowSorter().convertRowIndexToModel(rows[i])
+				));
+			}
+			
+			return selectedCompositions;
 		}
 
 
