@@ -33,6 +33,7 @@
 	<property name="app.name" value="Bolscript" />
 	<property name="dmg.name" value="Bolscript_${version.num}"/>
 	<property name="dmg.size" value="3000"/>
+	<property name="win.zip" value="Bolscript ${version.num}.zip"/>
 	
 	<property name="dir.mytablafolder" value="../../Bolscript/Tablafolder"/>
 	
@@ -73,6 +74,7 @@
 	<delete file="${dir.build}/${dmg.name}.dmg" />
 	<delete file="${dir.build}/${app.name}.exe" />
 	<delete file="${jar.completepath.fonttests}" />
+	<delete file="${dir.build}/${win.zip}" />
 </target>
 	
 <target name="generate_default_tablafolder_from_my_tablafolder">
@@ -193,7 +195,18 @@
 	
 	<target name="create_exe_for_pc" depends="create_jar_for_pc">
 		<launch4j configFile="launch4j.xml" />
+		
 	</target>
+	
+	<target name="create_zip_for_pc" depends="create_exe_for_pc">
+		<zip destfile="${dir.build}/${win.zip}"> 
+			<fileset file="${jar.completepath.other}" />
+			<fileset file="${dir.build}/Bolscript.exe" />
+		</zip>
+		
+	</target>
+	
+	
 	
 	
 </project>

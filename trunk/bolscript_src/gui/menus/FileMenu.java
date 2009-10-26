@@ -10,6 +10,7 @@ import gui.bolscript.actions.OpenNew;
 import gui.bolscript.actions.OpenPreferences;
 import gui.bolscript.actions.RefreshFromTablafolder;
 import gui.bolscript.actions.RemoveSelected;
+import gui.bolscript.actions.RevealCompositionInOSFileManager;
 import gui.bolscript.actions.SaveAs;
 import gui.bolscript.actions.SaveChanges;
 import gui.bolscript.actions.ToggleConsole;
@@ -95,6 +96,13 @@ public class FileMenu extends JMenu {
 		//}
 		
 		this.addSeparator();
+		
+		JMenuItem revealer = new JMenuItem(new RevealCompositionInOSFileManager(browser, editor));
+		revealer.setAccelerator(KeyStroke.getKeyStroke(
+				KeyEvent.VK_O, GuiConfig.MENU_SHORTKEY_MASK | KeyEvent.ALT_DOWN_MASK));
+		this.add(revealer);
+		
+		this.addSeparator();
 		this.add(new RefreshFromTablafolder());
 		
 		JMenuItem toggleErrorConsole = new JMenuItem(ToggleConsole.getStandard());
@@ -112,6 +120,7 @@ public class FileMenu extends JMenu {
 			this.addSeparator();
 			this.add(new ExitProgram());
 		}
+		
 	}
 
 }
