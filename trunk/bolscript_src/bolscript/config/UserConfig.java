@@ -142,11 +142,10 @@ public class UserConfig {
 		Config.pathToBolBase = s.getAbsolutePath() + Config.fileSeperator + Config.bolBaseFilename;
 		//Debug.temporary(Config.class, pathToBolBase);
 	
-	
 		Config.pathToCompositionsNoSlash = c.getAbsolutePath();
 		//Debug.temporary(Config.class, pathToCompositionsNoSlash);
 		Config.pathToCompositions = Config.pathToCompositionsNoSlash + Config.fileSeperator;
-		//Debug.temporary(Config.class, pathToCompositions);
+		Debug.temporary(Config.class, Config.pathToCompositions);
 		Config.pathToTalsNoSlash = c.getAbsolutePath() + Config.fileSeperator + "tals";
 		//Debug.temporary(Config.class, pathToTalsNoSlash);
 		Config.pathToTals = Config.pathToTalsNoSlash + Config.fileSeperator;

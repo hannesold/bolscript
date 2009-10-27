@@ -18,22 +18,22 @@ import bolscript.compositions.Composition;
 public class RemoveSelected extends AbstractAction {
 	EditorFrame editor;
 	boolean deleteAfterwards;
-	JTable compositionTable;
 	BrowserFrame browser;
 	
 	public RemoveSelected(BrowserFrame browser) {
+		super("Remove");
 		if (browser == null) {
 			this.setEnabled(false);
-		} else {
-			this.compositionTable = browser.getCompositionListPanel().getCompositionTable();
 		}
 		this.browser = browser;
-		this.putValue(NAME, "Remove");
 	}
+	
+	
 	
 	public void actionPerformed(ActionEvent e) {
 		
-		ArrayList<Composition> compsToRemove = Master.master.getSelectedCompositions();
+		//Master.master.
+		ArrayList<Composition> compsToRemove = browser.getCompositionListPanel().getSelectedCompositions();
 		
 		RemoveAndDeleteDialog dialog = new RemoveAndDeleteDialog(browser);
 		dialog.setVisible(true);

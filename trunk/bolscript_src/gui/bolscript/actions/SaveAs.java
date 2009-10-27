@@ -18,14 +18,14 @@ import bolscript.config.Config;
 public class SaveAs extends AbstractAction {
 
 	private EditorFrame editor;
-	
-	
+
+
 	public SaveAs(EditorFrame editor) {
 		super();
 		if (editor == null) this.setEnabled(false);
 		this.editor = editor;
 		this.putValue(NAME, "Save as...");
-		
+
 	}
 
 	public void actionPerformed(ActionEvent e) {
@@ -33,19 +33,20 @@ public class SaveAs extends AbstractAction {
 		if (editor.getComposition().getDataState() == DataState.NEW) {
 			path = CompositionBase.generateFilename(editor.getComposition(), Config.bolscriptSuffix);
 		} else path = editor.getComposition().getLinkLocal();
-		
+
 		File currentFile = new File(path);
 		FileDialog fileDialog = new FileDialog(editor, "Save As", FileDialog.SAVE);
-		fileDialog.setDirectory(currentFile.getPath());
+		Debug.temporary(this, "setting path to " + currentFile.getParent());
+		fileDialog.setDirectory(currentFile.getParent());
 		fileDialog.setFilenameFilter(new SuffixFilter(Config.bolscriptSuffix));
 		fileDialog.setFile(currentFile.getName());
-		
+
 		fileDialog.setVisible(true);
 
 		if (fileDialog.getFile() != null) {
-			
-		String filename = fileDialog.getDirectory() + Config.fileSeperator + fileDialog.getFile();
-		
+
+			String filename = fileDialog.getDirectory() + Config.fileSeperator + fileDialog.getFile();
+
 			/*if (!filename.endsWith(Config.bolscriptSuffix)) {
 				filename = filename + Config.bolscriptSuffix;
 			}*/
@@ -53,12 +54,8 @@ public class SaveAs extends AbstractAction {
 			Debug.debug(this, "Save As : " + filename);
 			Master.master.saveEditorAs(editor, filename);
 		}
-		
+
 		fileDialog.dispose();
-		//if (fileDialog.get)
-		
-		
-		//fileDialog.add
 	}
 
 }

@@ -4,12 +4,9 @@ import gui.bolscript.actions.CloseEditor;
 import gui.bolscript.composition.CompositionPanel;
 import gui.bolscript.dialogs.SaveChangesDialog;
 import gui.bolscript.tables.BolBasePanel;
-import gui.bolscript.tasks.CaretRelatedFactory;
 import gui.bolscript.tasks.EditTasks;
 import gui.bolscript.tasks.ListWorker;
 import gui.bolscript.tasks.PlainCaretMoveTasks;
-import gui.bolscript.tasks.RendererFactory;
-import gui.bolscript.tasks.SkippingWorker;
 import gui.menus.EditMenu;
 import gui.menus.FileMenu;
 import gui.menus.LanguageMenu;
@@ -18,6 +15,8 @@ import gui.menus.ViewMenu;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Toolkit;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
@@ -34,12 +33,11 @@ import javax.swing.event.DocumentListener;
 import javax.swing.undo.UndoManager;
 
 import basics.Debug;
-import basics.GUI;
 import bolscript.compositions.Composition;
 import bolscript.compositions.CompositionChangeEvent;
 import bolscript.compositions.CompositionChangedListener;
 
-public class EditorFrame extends JFrame implements WindowListener, CompositionChangedListener, DocumentListener, CaretListener {
+public class EditorFrame extends JFrame implements WindowListener, CompositionChangedListener, DocumentListener, CaretListener, ComponentListener {
 
 	CompositionPanel compositionPanel;
 	CompositionFrame compositionFrame;
@@ -54,17 +52,11 @@ public class EditorFrame extends JFrame implements WindowListener, CompositionCh
 	public JTextPane textPane;
 	public JButton buttonCompile;
 
-	SkippingWorker renderWorker;
-	//SkippingWorker bolBaseSearchWorker;
-
 	final UndoManager undoManager;
 	private BolscriptDocument document;
 
 	private int lastCaretPosition = -1;
 	private BolBasePanel bolBasePanel;
-
-	private CaretRelatedFactory bolBaseSearcher;
-
 
 	private ListWorker listWorker;
 	
@@ -80,14 +72,13 @@ public class EditorFrame extends JFrame implements WindowListener, CompositionCh
 		this.setSize(size);
 		composition = comp;
 		this.setVisible(false);
-		
-		
 
 		//init textPane
 		document = new BolscriptDocument();
 		textPane = new JTextPane(document);
 		textPane.setText(comp.getRawData());
 		textPane.setCaretPosition(0);
+		
 		JScrollPane scrollpane = new JScrollPane(textPane,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);		
 		scrollpane.setMinimumSize(new Dimension(200, 150));
 
@@ -104,14 +95,10 @@ public class EditorFrame extends JFrame implements WindowListener, CompositionCh
 		//init the menubar
 		initMenuBar();
 
-		//this.setText(comp.getRawData());
 		undoManager = new UndoManager();
 		document.addUndoableEditListener(undoManager); 
 
-		bolBaseSearcher = new CaretRelatedFactory(composition, textPane, bolBasePanel, document, null);
-		renderWorker = new SkippingWorker(new RendererFactory(this, bolBaseSearcher), 10, false);
-		renderWorker.begin();
-
+		//init worker
 		listWorker = new ListWorker(100, true);
 		listWorker.begin();
 		
@@ -125,14 +112,11 @@ public class EditorFrame extends JFrame implements WindowListener, CompositionCh
 		
 		document.updateStylesLater(comp.getPackets());
 		
-
 	}
-
 
 	public BolscriptDocument getDocument() {
 		return document;
 	}
-
 
 	public JMenuBar initMenuBar() {
 		menuBar = new JMenuBar();
@@ -156,7 +140,6 @@ public class EditorFrame extends JFrame implements WindowListener, CompositionCh
 
 	public void setCompositionPanel(CompositionPanel compositionPanel) {
 		this.compositionPanel = compositionPanel;
-		bolBaseSearcher.setCompositionPanel(compositionPanel);
 	}
 
 	public int getCaretPosition() {
@@ -192,22 +175,16 @@ public class EditorFrame extends JFrame implements WindowListener, CompositionCh
 		this.compositionFrame = compositionFrame;
 		this.setCompositionPanel(compositionFrame.getCompositionPanel());
 
-		renderWorker.addUpdate();
-		//bolBaseSearchWorker.addUpdate();
-		compositionFrame.addComponentListener(GUI.proxyComponentResizedListener(renderWorker,"compFrameResized"));
+		compositionFrame.addComponentListener(this);
 		composition.addChangeListener(compositionFrame);
-
-
 	}
-
+	
 	public void arrangeCompositionFrame() {
 		Dimension screenSize =Toolkit.getDefaultToolkit().getScreenSize();
 		int right = screenSize.width;
 		compositionFrame.setLocation(right - compositionFrame.getWidth(), this.getLocation().y);
 		this.setLocation(right - compositionFrame.getWidth() - this.getWidth(), this.getLocation().y);
-
 	}
-
 
 	public void compositionChanged(CompositionChangeEvent compositionChangeEvent) {
 		this.setTitle(compositionChangeEvent.getComposition().getName());
@@ -218,28 +195,29 @@ public class EditorFrame extends JFrame implements WindowListener, CompositionCh
 	}
 
 
+	@Override
 	public void changedUpdate(DocumentEvent e) {
-		if (!textPane.getText().equals(lastVersion)){
-			compile();
-			lastVersion = textPane.getText();
-		}
-
+		processEdit();
 	}
 
+	@Override
 	public void insertUpdate(DocumentEvent e) {
-		if (!textPane.getText().equals(lastVersion)){
-			compile();
-			lastVersion = textPane.getText();
-		}
+		processEdit();
 	}
 
+	@Override
 	public void removeUpdate(DocumentEvent e) {
+		processEdit();
+	}
+
+	private void processEdit() {
 		if (!textPane.getText().equals(lastVersion)){
 			compile();
 			lastVersion = textPane.getText();
 		}	
+		
 	}
-
+	
 	/**
 	 * Is called when the text is changed.
 	 * 
@@ -247,54 +225,40 @@ public class EditorFrame extends JFrame implements WindowListener, CompositionCh
 	 */
 	public void compile() {
 		if (compositionPanel != null) {
-
 			lastCaretPosition = textPane.getCaretPosition();
 			EditTasks editTasks = new EditTasks(composition, compositionPanel, bolBasePanel, document, textPane.getText(), lastCaretPosition);
 			listWorker.addTaskList(editTasks);
-			//renderWorker.addUpdate();
-			//	bolBaseSearchWorker.addUpdate();
-			
 		}
-
+	}
+	
+	public void viewerFrameResized(ComponentEvent e) {
+		compile();
 	}
 
+	@Override
 	public void caretUpdate(CaretEvent e) {
 		if (textPane.getCaretPosition() != lastCaretPosition) {
-			
-			//if (bolBaseSearchWorker != null) bolBaseSearchWorker.addUpdate();
-			/*	if (renderWorker!= null) {
-				if (!renderWorker.hasWork()) {
-					//the bolbasesearcher is only used if no rendertask is running,
-					//else it will automatically be run after the rendertask
-					if (bolBaseSearcher != null) {
-						 Runnable task = bolBaseSearcher.getNewTask();
-						if (task != null) task.run();
-					}	
-				}
-			}*/
 			lastCaretPosition = textPane.getCaretPosition();
 			PlainCaretMoveTasks caretTasks = new PlainCaretMoveTasks(composition, compositionPanel, bolBasePanel, document,lastCaretPosition);
 			listWorker.addTaskList(caretTasks);
 		}
 	}
 
-
 	public void windowClosing(WindowEvent e) {
-		Debug.debug(this, "window closed: " + e);
+		Debug.debug(this, "window closing: " + e);
 		new CloseEditor(this).closeEditor();
 	}
 
+	@Override
 	public void dispose() {
 		composition.removeChangeListener(this);
-		if (renderWorker != null) renderWorker.stop();
+		composition.removeChangeListener(compositionFrame);
+		if (listWorker != null) listWorker.stop();
 		super.dispose();
 	}
 
 	public void windowActivated(WindowEvent e) {}
-
-	public void windowClosed(WindowEvent e) {
-
-	}
+	public void windowClosed(WindowEvent e) {}
 	public void windowDeactivated(WindowEvent e) {}
 	public void windowDeiconified(WindowEvent e) {}
 	public void windowIconified(WindowEvent e) {}
@@ -308,6 +272,25 @@ public class EditorFrame extends JFrame implements WindowListener, CompositionCh
 			}
 		});
 		
+	}
+
+	@Override
+	public void componentHidden(ComponentEvent e) {
+	}
+
+	@Override
+	public void componentMoved(ComponentEvent e) {
+	}
+
+	@Override
+	public void componentResized(ComponentEvent e) {
+		if (e.getComponent() == this.compositionFrame) {
+			compile();
+		}
+	}
+
+	@Override
+	public void componentShown(ComponentEvent e) {
 	}
 
 

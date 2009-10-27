@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
+import javax.swing.AbstractAction;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -38,6 +39,7 @@ public class PreferencesDialog extends JDialog implements WindowListener, Config
 		this.pack();
 	}
 	
+	@SuppressWarnings("serial")
 	public void init() {
 		JPanel panel = new JPanel();
 		JLabel explanation = new JLabel("<html><p style=\"width:400px; padding: 10px;\">The <b>Tabla directory</b> has to contain two subfolders:<br><b>compositions</b> for your compositions and <br><b>settings</b> for your settings.<br><br><i>These subfolders will be constructed automatically if they don't exist.</i></p></html>");
@@ -49,8 +51,11 @@ public class PreferencesDialog extends JDialog implements WindowListener, Config
 		txtTablaDir.setPreferredSize(new Dimension(340, txtTablaDir.getPreferredSize().height));
 		chooseAction = new ChooseTablaDir(this);
 		
-		btnTablaDir = new JButton("Choose");
-		btnTablaDir.addActionListener(GUI.proxyActionListener(this, "chooseDir"));
+		btnTablaDir = new JButton(new AbstractAction("Choose") {	
+			@Override
+			public void actionPerformed(ActionEvent e) { chooseDir(e); }
+		});
+		
 		txtTablaDirLabel.setLabelFor(txtTablaDir);
 		JPanel tablaDirPanel = new JPanel();
 		tablaDirPanel.add(txtTablaDirLabel);
@@ -62,10 +67,13 @@ public class PreferencesDialog extends JDialog implements WindowListener, Config
 		tablaDirPanel.setAlignmentX(0);
 		
 		JPanel buttonPanel = new JPanel();
-		ok = new JButton("OK");
-		buttonPanel.add(ok);
-		ok.addActionListener(GUI.proxyActionListener(this,"ok"));
+		ok = new JButton(new AbstractAction("OK") {	
+			@Override
+			public void actionPerformed(ActionEvent e) { ok(e);	}
+		});
 		
+		buttonPanel.add(ok);
+
 		panel.setLayout(bx);
 		panel.add(explanation);
 		panel.add(tablaDirPanel);

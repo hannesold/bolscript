@@ -18,13 +18,11 @@ public class ChooseTablaDir extends AbstractAction {
 
 	Dialog owner;
 	
-
 	private String chosenFolder = null;
 	
 	public ChooseTablaDir(Dialog owner) {
-		super();
+		super("Browse");
 		this.owner = owner;
-		this.putValue(NAME, "Browse");
 	}
 
 	public void actionPerformed(ActionEvent e) {
@@ -57,17 +55,12 @@ public class ChooseTablaDir extends AbstractAction {
 		} else {
 			JFileChooser fileDialog = new JFileChooser();
 			fileDialog.setCurrentDirectory(new File(UserConfig.tablaFolder));
-			//fileDialog.setVisible(false);
 			fileDialog.setDialogTitle("Choose Tabla Folder");
 			FileFilter filter = new FolderFilter();
-			//FileFilter filter = new FolderFilter();
-			//fileDialog.addChoosableFileFilter(filter);
 			fileDialog.setDialogType(JFileChooser.OPEN_DIALOG);
-			fileDialog.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);//(new FolderFilter());
+			fileDialog.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 			fileDialog.setAcceptAllFileFilterUsed(false);
 
-			//fileDialog.setFileSelectionMode(JFileChooser.)
-			
 			int answer = fileDialog.showDialog(null, "Use this folder");
 			if (answer != JFileChooser.CANCEL_OPTION) {
 				File d = fileDialog.getCurrentDirectory();
@@ -77,8 +70,6 @@ public class ChooseTablaDir extends AbstractAction {
 				Debug.debug(this, "file chosen: " + f.getAbsolutePath());
 				chosenFolder = f.getAbsolutePath();
 			} else Debug.debug(this, "directory chosing aborted"); 
-			//Debug.debug(this, "directory chosen: " + fileDialog.getF);
-			//chosenFolder = fileDialog.getDirectory();
 
 		}
 		
