@@ -43,9 +43,9 @@ public class ListWorker implements Runnable {
 	public ListWorker (long updateIntervallMillis, boolean instantUpdates) {
 		this.updateIntervall = Math.max(minimumUpdateIntervall, updateIntervallMillis);
 		this.instantUpdates = instantUpdates;
-		
+
 		taskListQueue = new ArrayList<TaskList>();
-		
+
 		thread = new Thread(this);
 		thread.setDaemon(true);
 	}
@@ -54,7 +54,7 @@ public class ListWorker implements Runnable {
 	public void addTaskList (TaskList newTaskList) {
 		synchronized(taskListQueue) {
 			taskListQueue.add(newTaskList);
-			
+
 			if (instantUpdates) taskListQueue.notifyAll();
 		}
 	}
@@ -71,7 +71,10 @@ public class ListWorker implements Runnable {
 			taskListQueue.clear();
 		}
 		synchronized (thread) {
-			if (thread.getState().equals(Thread.State.TIMED_WAITING)) thread.interrupt();
+			if (thread.getState().equals(Thread.State.TIMED_WAITING)) {
+				thread.interrupt();
+
+			}
 		}
 	}
 
@@ -88,20 +91,22 @@ public class ListWorker implements Runnable {
 						Debug.temporary(this, "waiting interrupted");
 					}
 				}
-				Debug.temporary(this, "choosing list to process from queue");
-				//TODO
-				//more elegantly please!
-				currentList = taskListQueue.get(0);
-				int indexOfListToBeProcessed = 0;
-				int i = 1;
-				while (i < taskListQueue.size() && taskListQueue.get(i).overridesPending(currentList)) {
-					indexOfListToBeProcessed = i;
-					currentList = taskListQueue.get(i);
-					i++;
-				}
-				for (int j=1; j <= indexOfListToBeProcessed; j++) {
-					taskListQueue.remove(0);
-					Debug.temporary(this, "removed skipped list");
+				if (stop == false) {
+					Debug.temporary(this, "choosing list to process from queue");
+					//TODO
+					//more elegantly please!
+					currentList = taskListQueue.get(0);
+					int indexOfListToBeProcessed = 0;
+					int i = 1;
+					while (i < taskListQueue.size() && taskListQueue.get(i).overridesPending(currentList)) {
+						indexOfListToBeProcessed = i;
+						currentList = taskListQueue.get(i);
+						i++;
+					}
+					for (int j=1; j <= indexOfListToBeProcessed; j++) {
+						taskListQueue.remove(0);
+						Debug.temporary(this, "removed skipped list");
+					}
 				}
 			}
 			if (currentList!= null) {

@@ -38,7 +38,7 @@ public class RevealCompositionInOSFileManager extends AbstractAction {
 
 	public void actionPerformed(ActionEvent e) {
 		if (browser != null) {
-			ArrayList<Composition> selectedCompositions = Master.master.getSelectedCompositions();
+			ArrayList<Composition> selectedCompositions = browser.getCompositionListPanel().getSelectedCompositions();
 			if (selectedCompositions.size() > 0) {
 				Composition compToReveal = selectedCompositions.get(0);
 				if (compToReveal.getLinkLocal() != null) {

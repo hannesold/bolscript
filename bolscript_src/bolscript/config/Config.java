@@ -25,6 +25,9 @@ public class Config {
 	public static String pathToTalsNoSlash = "";// = pathToCompositions + "tals";
 	public static String pathToDevanageriFont = "";
 	
+	public static String pathToCompositionsNoSlash = "";// = "/Users/hannes/Projekte/Workspace/tabla/bols";
+	public static String pathToCompositions = "";// = "/Users/hannes/Projekte/Workspace/tabla/bols/";
+
 	public static String bolscriptSuffix = ".bols.txt";
 	public static String bolBaseSuffix = ".bolbase.txt";
 	public static String pdfSuffix = ".pdf";
@@ -144,7 +147,5 @@ public class Config {
 
 	}
 
-	public static String pathToCompositionsNoSlash = "";// = "/Users/hannes/Projekte/Workspace/tabla/bols";
-	public static String pathToCompositions = "";// = "/Users/hannes/Projekte/Workspace/tabla/bols/";
-
+	
 }

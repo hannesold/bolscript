@@ -14,6 +14,7 @@ import bolscript.config.GuiConfig;
 public class CellRenderer extends DefaultTableCellRenderer {
 
 	public CellRenderer() {
+		
 	}
 
 	@Override
