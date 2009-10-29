@@ -8,6 +8,7 @@ import gui.bolscript.actions.DecreaseFontSize;
 import gui.bolscript.actions.IncreaseBundling;
 import gui.bolscript.actions.IncreaseFontSize;
 import gui.bolscript.actions.ResetFontSize;
+import gui.bolscript.actions.SetLanguage;
 import gui.bolscript.actions.ToggleConsole;
 
 import java.awt.event.KeyEvent;
@@ -17,6 +18,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 
+import bols.BolName;
 import bolscript.config.GuiConfig;
 
 public class ViewMenu extends JMenu {
@@ -83,6 +85,38 @@ public class ViewMenu extends JMenu {
 		        KeyEvent.VK_U, GuiConfig.MENU_SHORTKEY_MASK));
 		this.add(decrBundling);
 		
+		this.addSeparator();
+		addLanguages();
 
 	}
+	
+	public void addLanguages () {
+		
+		int [] numberKeys = new int [] {
+				KeyEvent.VK_1,
+				KeyEvent.VK_2, 
+				KeyEvent.VK_3, 
+				KeyEvent.VK_4, 
+				KeyEvent.VK_5, 
+				KeyEvent.VK_6, 
+				KeyEvent.VK_7,
+				KeyEvent.VK_8,
+				KeyEvent.VK_9,
+				KeyEvent.VK_0};
+		
+		for (int i=0; i < BolName.languagesCount; i++) {
+			JMenuItem l;
+			if (viewer != null) {
+				l= new JMenuItem(viewer.getCompositionPanel().getViewerActions().setLanguage[i]);
+			} else {
+				l = new JMenuItem(new SetLanguage(null, i));
+			}
+			l.setAccelerator(KeyStroke.getKeyStroke(
+			        numberKeys[i], GuiConfig.MENU_SHORTKEY_MASK));
+
+			this.add(l);
+			
+		}
+	
+}
 }

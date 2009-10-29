@@ -17,6 +17,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.RowSorter;
 import javax.swing.SortOrder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableRowSorter;
 
 import basics.Debug;
@@ -51,7 +53,8 @@ public class CompositionListPanel extends JScrollPane  {
 		compositionTable.setShowHorizontalLines(false);
 		compositionTable.setShowVerticalLines(true);
 		//compositionTable.set
-
+		
+		
 		compositionTable.addMouseListener(new MouseAdapter()
 		{
 

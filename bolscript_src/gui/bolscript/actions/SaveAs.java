@@ -1,6 +1,7 @@
 package gui.bolscript.actions;
 
 import gui.bolscript.EditorFrame;
+import gui.bolscript.dialogs.SaveOutsideTablaFolder;
 
 import java.awt.FileDialog;
 import java.awt.event.ActionEvent;
@@ -30,6 +31,8 @@ public class SaveAs extends AbstractAction {
 
 	public void actionPerformed(ActionEvent e) {
 		String path;
+		
+		
 		if (editor.getComposition().getDataState() == DataState.NEW) {
 			path = CompositionBase.generateFilename(editor.getComposition(), Config.bolscriptSuffix);
 		} else path = editor.getComposition().getLinkLocal();
@@ -42,9 +45,37 @@ public class SaveAs extends AbstractAction {
 		fileDialog.setFile(currentFile.getName());
 
 		fileDialog.setVisible(true);
-
+		//File Dialog is modal. 
+		//When a location and filename is chosen the program continues here.
+		
+		
 		if (fileDialog.getFile() != null) {
-
+			
+			//int choice =;
+			
+			try {
+				String dirPath = fileDialog.getDirectory();
+				String compPath = new File(Config.pathToCompositions).getAbsolutePath();
+				if (!dirPath.startsWith(compPath)) {
+					SaveOutsideTablaFolder question = new SaveOutsideTablaFolder(editor);
+					question.setVisible(true); // (modal)
+					switch (question.getChoice()) {
+						case(SaveOutsideTablaFolder.CANCEL):
+							fileDialog.dispose();
+							return;
+						case (SaveOutsideTablaFolder.CHANGE_FOLDER):
+							fileDialog.dispose();
+							actionPerformed(e);
+							return;
+						case (SaveOutsideTablaFolder.PROCEED):
+							break;
+					}
+				}
+			} catch (Exception ex) {
+				//proceed
+			}
+			
+			
 			String filename = fileDialog.getDirectory() + Config.fileSeperator + fileDialog.getFile();
 
 			/*if (!filename.endsWith(Config.bolscriptSuffix)) {

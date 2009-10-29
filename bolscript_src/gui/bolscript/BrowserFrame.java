@@ -5,9 +5,9 @@ import gui.bolscript.tables.CompositionListPanel;
 import gui.bolscript.tables.CompositionTableModel;
 import gui.menus.EditMenu;
 import gui.menus.FileMenu;
+import gui.menus.MenuUpdater;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -17,6 +17,10 @@ import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 
 import bolscript.Master;
 
@@ -24,6 +28,7 @@ public class BrowserFrame extends JFrame implements WindowListener{
 	private CompositionListPanel compositionListPanel;
 	private FilterPanel filterPanel;
 	private SearchPanel searchPanel;
+	private MenuUpdater menuUpdater;
 	
 	//private CompositionTableModel tableModel;
 	public BrowserFrame(Dimension size, CompositionTableModel model, FilterPanel filterPanel) {
@@ -68,34 +73,39 @@ public class BrowserFrame extends JFrame implements WindowListener{
 	}
 
 
-	public void initMenuBar() {
-/*
-		JMenu filemenu = new JMenu("File");
-		filemenu.add(new OpenNew());
-		filemenu.addSeparator();
-		filemenu.add(new RefreshFromTablafolder());
-		
-		if (!Master.master.isRunningAsMacApplication()) {
-			filemenu.add(new OpenPreferences());		
-			filemenu.addSeparator();
-			filemenu.add(new ExitProgram());
-		}
-		
-		JMenu editmenu = new JMenu("Edit");
-		JMenuItem remover = new JMenuItem(new RemoveSelected(this));
-		
-		int remKey = (Config.OS == Config.MAC) ? KeyEvent.VK_BACK_SPACE : KeyEvent.VK_DELETE;
-		remover.setAccelerator(KeyStroke.getKeyStroke(
-		        remKey, Config.MENU_SHORTKEY_MASK));
-		
-		editmenu.add(remover);
-		*/
+	private void initMenuBar() {
+
 		JMenuBar menubar = new JMenuBar();		
 		menubar.add(new FileMenu(this));
 		menubar.add(new EditMenu(this));
 		
+		
 		this.setJMenuBar(menubar);
+		
+		initMenuUpdater();
 	}
+	
+	private void initMenuUpdater() {
+		menuUpdater = new MenuUpdater(this.getJMenuBar());
+		compositionListPanel.getCompositionTable().getSelectionModel().addListSelectionListener(new ListSelectionListener()  {
+			
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+				menuUpdater.updateEnabling();
+			}
+		});
+		
+		compositionListPanel.getTableModel().addTableModelListener(new TableModelListener() {
+			
+			@Override
+			public void tableChanged(TableModelEvent e) {
+				menuUpdater.updateEnabling();	
+			}
+		});
+		
+	}
+	
+	
 	public void windowClosing(WindowEvent e) {
 		Master.master.exit();
 	}
