@@ -14,12 +14,13 @@ import javax.swing.JTable;
 import basics.Debug;
 import bolscript.Master;
 import bolscript.compositions.Composition;
+import bolscript.compositions.DataState;
 
-public class RemoveSelected extends AbstractAction {
+public class RemoveSelected extends AbstractAction implements EnablingUpdatable{
 	EditorFrame editor;
 	boolean deleteAfterwards;
 	BrowserFrame browser;
-	
+
 	public RemoveSelected(BrowserFrame browser) {
 		super("Remove");
 		if (browser == null) {
@@ -27,19 +28,19 @@ public class RemoveSelected extends AbstractAction {
 		}
 		this.browser = browser;
 	}
-	
-	
-	
+
+
+
 	public void actionPerformed(ActionEvent e) {
-		
+
 		//Master.master.
-		ArrayList<Composition> compsToRemove = browser.getCompositionListPanel().getSelectedCompositions();
-		
+		ArrayList<Composition> compsToRemove = getCompositionsToRemove();
+
 		RemoveAndDeleteDialog dialog = new RemoveAndDeleteDialog(browser);
 		dialog.setVisible(true);
-		
+
 		switch (dialog.getChoice()) {
-		
+
 		case RemoveAndDeleteDialog.ONLY_REMOVE:
 			Master.master.removeCompositions(compsToRemove, false);
 			break;
@@ -52,6 +53,39 @@ public class RemoveSelected extends AbstractAction {
 		}
 
 	}
-	
-	
+
+	/**
+	 * Gathers all removable Compositions from the browsers composition list tables selection.
+	 * @return
+	 */
+	private ArrayList<Composition> getCompositionsToRemove() {
+		ArrayList<Composition> compsToRemove = new ArrayList<Composition>(browser.getCompositionListPanel().getSelectedCompositions());
+		//Debug.temporary(this, "gathering compositions to remove: " + compsToRemove);
+		if (compsToRemove.size()>0) {
+			for (Composition comp: compsToRemove) {
+				if (comp != null) {
+					if (comp.getDataState() != null) {
+						switch (comp.getDataState()) {
+						case CONNECTED:
+							break;
+						case EDITING:
+							break;
+						default:
+							compsToRemove.remove(comp);
+						}
+					} else compsToRemove.remove(comp);
+				} else compsToRemove.remove(comp);
+			}
+		}
+		return compsToRemove;
+	}
+
+	@Override
+	public boolean updateEnabling() {
+		boolean newState = (getCompositionsToRemove().size() >0); 
+		enabled = newState;
+		return newState;
+	}
+
+
 }

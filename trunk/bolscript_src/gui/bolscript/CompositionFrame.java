@@ -5,7 +5,6 @@ import gui.bolscript.actions.CloseEditor;
 import gui.bolscript.composition.CompositionPanel;
 import gui.menus.EditMenu;
 import gui.menus.FileMenu;
-import gui.menus.LanguageMenu;
 import gui.menus.ViewMenu;
 
 import java.awt.Dimension;
@@ -84,14 +83,7 @@ public class CompositionFrame extends JFrame implements WindowListener, Composit
 			menuBar.add(new FileMenu(this));
 			menuBar.add(new EditMenu(this));
 			menuBar.add(new ViewMenu(this));
-			menuBar.add(new LanguageMenu(this));
-			/*JMenu fileMenu = new JMenu("File");
-			fileMenu.add(new ExportPdf(this));
-			
-			menuBar.add(fileMenu);
-			menuBar.add(compositionPanel.getLanguageMenu());
-			menuBar.add(compositionPanel.getViewMenu());*/
-			
+
 			this.setJMenuBar(menuBar);
 		}
 		

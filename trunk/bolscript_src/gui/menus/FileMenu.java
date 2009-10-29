@@ -21,6 +21,8 @@ import java.awt.event.KeyEvent;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
+import javax.swing.event.MenuEvent;
+import javax.swing.event.MenuListener;
 
 import bolscript.Master;
 import bolscript.config.Config;
@@ -113,14 +115,20 @@ public class FileMenu extends JMenu {
 		this.add(toggleErrorConsole);
 		
 		
-		
-		
 		if (!Master.master.isRunningAsMacApplication()) {
+			/**
+			 * When running as mac application the preferences and quit menu items are in the application menu,
+			 * not in the file menu.
+			 */
 			this.add(new OpenPreferences());		
 			this.addSeparator();
 			this.add(new ExitProgram());
-		}
+		} 
+		
+		
 		
 	}
+	
+	
 
 }

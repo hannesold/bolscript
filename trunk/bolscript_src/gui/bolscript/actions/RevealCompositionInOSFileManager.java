@@ -13,7 +13,7 @@ import bolscript.compositions.Composition;
 import bolscript.compositions.DataState;
 import bolscript.config.Config;
 
-public class RevealCompositionInOSFileManager extends AbstractAction {
+public class RevealCompositionInOSFileManager extends AbstractAction implements EnablingUpdatable {
 
 	private BrowserFrame browser = null;
 	private EditorFrame editor = null;
@@ -41,18 +41,21 @@ public class RevealCompositionInOSFileManager extends AbstractAction {
 		updateEnabling();
 	}
 
-	public void updateEnabling() {
+	public boolean updateEnabling() {
 		Composition comp = getMeantComposition();
 		if (comp != null) {
 			if (comp.getDataState() != DataState.NEW && 
 				comp.getDataState() != DataState.MISSING &&
 				comp.getDataState() != DataState.ERROR) {
 				this.setEnabled(true);
+				return true;
 			} else {
 				this.setEnabled(false);
+				return true;
 			}
 		} else {
 			this.setEnabled(false);
+			return false;
 		}
 	}
 	
