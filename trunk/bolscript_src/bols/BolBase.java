@@ -140,11 +140,9 @@ public class BolBase extends BolBaseGeneral {
 				if (entries.length >= BolName.languagesCount) {
 					String[] labels = new String[BolName.languagesCount];
 					for (int i = 0; i < labels.length; i++) {
-						if (i != BolName.DEVANAGERI) {
-							labels[i] = Tools.formatFirstCapital(entries[i].replaceAll(Parser.SNatBeginningOrEnd, ""));
-						} else {
-							labels[i] = entries[i].replaceAll(Parser.SNatBeginningOrEnd, "");
-						}
+						
+						labels[i] = BolName.formatString(entries[i].replaceAll(Parser.SNatBeginningOrEnd, ""), i);
+						
 					}
 					//Debug.temporary(this, "exact name scanned: '" + labels[BolName.EXACT]+"'");
 
@@ -263,7 +261,7 @@ public class BolBase extends BolBaseGeneral {
 					//addBolNameBundle(bundle);
 					//Debug.temporary(this, "setting replacement bundle name to '" + bundle.getName(BolName.EXACT).replaceAll(Reader.SNatBeginningOrEnd,"") +"'");
 					addReplacementPacket(bundle.getName(BolName.EXACT), 
-							" ( " + bundleSpeed + " " + bundle.getExactBolNames() + " ) ", bundle);
+							" ( " + bundleSpeed + "! " + bundle.getExactBolNames() + " ) ", bundle);
 				}
 			}
 		}

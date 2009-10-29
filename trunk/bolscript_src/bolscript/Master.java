@@ -384,6 +384,10 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 	}
 
 
+	public BrowserFrame getBrowser() {
+		return browserFrame;
+	}
+
 	/**
 	 * Removes the compositions from the compositionBase and deletes them if requested.
 	 */

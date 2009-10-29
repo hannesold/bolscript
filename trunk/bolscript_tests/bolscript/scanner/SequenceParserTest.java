@@ -178,7 +178,7 @@ public class SequenceParserTest {
 	@Test 
 	public void completeTest() {
 		String input[] = new String[]{
-				"Dha Ge 2! Dhin! Na \"pronounced tirket!\" ( 2 ti re ki te ) x2<2\n" +
+				"Dha Ge 2 Dhin! Na \"pronounced tirket!\" ( 2! ti re ki te ) x2<2\n" +
 		"Dha ti (ki te ta ke) Dha x3"};
 		SequenceParser parser = new SequenceParser(0, null);	
 

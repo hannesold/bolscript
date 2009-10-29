@@ -53,7 +53,7 @@ public class SpeedUnit extends Unit implements Representable{
     		} else {
     			den = 1;
     		}
-    		boolean absolute = (m.group(3) != null);
+    		boolean absolute = (m.group(3) == null);
     		
     		Rational speed = new Rational(num,den);
     		if (speed.toDouble() >= Config.BOLSCRIPT_MINIMUM_SPEED && speed.toDouble() <= Config.BOLSCRIPT_MAXIMUM_SPEED) {
