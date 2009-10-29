@@ -10,7 +10,7 @@
 <!--ANT 1.7 is required-->
 	
 
-	<property name="version.num" value="0.1"/>
+	<property name="version.num" value="0.11"/>
 	<property name="dir.bin" value="bin"/>
 	<property name="dir.tests.bin" value="bolscript_tests_bin"/>
 	<property name="dir.build" value="builds"/>

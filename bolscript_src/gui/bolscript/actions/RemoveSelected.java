@@ -58,7 +58,9 @@ public class RemoveSelected extends AbstractAction implements EnablingUpdatable{
 	 * Gathers all removable Compositions from the browsers composition list tables selection.
 	 * @return
 	 */
-	private ArrayList<Composition> getCompositionsToRemove() {
+	private synchronized ArrayList<Composition>  getCompositionsToRemove() {
+		//TODO Check why synchronization is necassary at this point!!!
+		
 		ArrayList<Composition> compsToRemove = new ArrayList<Composition>(browser.getCompositionListPanel().getSelectedCompositions());
 		//Debug.temporary(this, "gathering compositions to remove: " + compsToRemove);
 		if (compsToRemove.size()>0) {
@@ -81,7 +83,7 @@ public class RemoveSelected extends AbstractAction implements EnablingUpdatable{
 	}
 
 	@Override
-	public boolean updateEnabling() {
+	public boolean  updateEnabling() {
 		boolean newState = (getCompositionsToRemove().size() >0); 
 		enabled = newState;
 		return newState;
