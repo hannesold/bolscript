@@ -8,7 +8,7 @@
 [http://oudbrothers.de/bolscript/screenshots/0.1/editor_and_viewer.png]
 
 
-===The same sequence displayed in different languages===
+===The same sequence displayed in different representations===
 [http://oudbrothers.de/bolscript/screenshots/0.1/simple.png]
 
 
