@@ -22,14 +22,10 @@ public class RemoveSelected extends AbstractAction implements EnablingUpdatable{
 	BrowserFrame browser;
 
 	public RemoveSelected(BrowserFrame browser) {
-		super("Remove");
-		if (browser == null) {
-			this.setEnabled(false);
-		}
+		super("Remove");		
 		this.browser = browser;
+		updateEnabling();
 	}
-
-
 
 	public void actionPerformed(ActionEvent e) {
 
@@ -58,14 +54,23 @@ public class RemoveSelected extends AbstractAction implements EnablingUpdatable{
 	 * Gathers all removable Compositions from the browsers composition list tables selection.
 	 * @return
 	 */
-	private synchronized ArrayList<Composition>  getCompositionsToRemove() {
+	private ArrayList<Composition> getCompositionsToRemove() {
 		//TODO Check why synchronization is necassary at this point!!!
-		
-		ArrayList<Composition> compsToRemove = new ArrayList<Composition>(browser.getCompositionListPanel().getSelectedCompositions());
+
+		ArrayList<Composition> compsToRemove = 
+			new ArrayList<Composition>(browser
+					.getCompositionListPanel()
+					.getSelectedCompositions());
 		//Debug.temporary(this, "gathering compositions to remove: " + compsToRemove);
-		if (compsToRemove.size()>0) {
-			for (Composition comp: compsToRemove) {
+		int nrOfCompsToRemove = compsToRemove.size();
+		if (nrOfCompsToRemove>0) {
+
+			for (int i=0; i < nrOfCompsToRemove; i++) {
+				Composition comp = compsToRemove.get(i);
+				boolean remove = false;
+
 				if (comp != null) {
+
 					if (comp.getDataState() != null) {
 						switch (comp.getDataState()) {
 						case CONNECTED:
@@ -73,10 +78,17 @@ public class RemoveSelected extends AbstractAction implements EnablingUpdatable{
 						case EDITING:
 							break;
 						default:
-							compsToRemove.remove(comp);
+							remove = true;
 						}
-					} else compsToRemove.remove(comp);
-				} else compsToRemove.remove(comp);
+					} else remove = true;
+				} else remove = true;
+
+				if ( remove && comp != null) {
+					Debug.temporary(this, "not removable: " + comp);
+					compsToRemove.remove(comp);
+				} else {
+					Debug.temporary(this, "keeping removable: " + comp);
+				}
 			}
 		}
 		return compsToRemove;
@@ -84,9 +96,14 @@ public class RemoveSelected extends AbstractAction implements EnablingUpdatable{
 
 	@Override
 	public boolean  updateEnabling() {
-		boolean newState = (getCompositionsToRemove().size() >0); 
-		enabled = newState;
-		return newState;
+		if (browser == null) {
+			this.setEnabled(false);
+			return false;
+		} else {
+			boolean newState = (getCompositionsToRemove().size() >0); 
+			enabled = newState;
+			return newState;
+		}
 	}
 
 
