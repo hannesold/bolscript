@@ -4,6 +4,7 @@
 package bols;
 
 import basics.Debug;
+import basics.Tools;
 
 /**
  * Represents one general Tabla Bol with its different names in different languages.
@@ -174,4 +175,22 @@ public class BolName implements NamedInLanguages {
 		this.wellDefinedInBolBase = wellDefinedInBolBase;
 	}
 	
+	/**
+	 * Formats a string according to the formatting rules of the language,
+	 * i.e. transliterated is formed to lower case, while simple is formated like a name with
+	 * capitalization of the first letter.
+	 * @param s
+	 * @param language
+	 * @return the formatted String
+	 */
+	public static String formatString(String s, int language) {
+		switch (language) {	
+		case (DEVANAGERI) :
+			return s;
+		case (TRANSLITERATION) :
+			return s.toLowerCase();
+		default:
+			return Tools.formatName(s);
+		}
+	}
 }

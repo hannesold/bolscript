@@ -10,19 +10,22 @@ import javax.swing.AbstractAction;
 
 import bolscript.Master;
 import bolscript.compositions.Composition;
+import bolscript.compositions.DataState;
 import bolscript.config.Config;
 
 public class RevealCompositionInOSFileManager extends AbstractAction {
 
 	private BrowserFrame browser = null;
 	private EditorFrame editor = null;
+	private Composition composition = null;
 	
-	public RevealCompositionInOSFileManager(BrowserFrame browser, EditorFrame editor) {
+	public RevealCompositionInOSFileManager(BrowserFrame browser, EditorFrame editor, Composition composition) {
 		super();
 		//if (composition == null) this.setEnabled(false);
 		
 		this.editor = editor;
 		this.browser = browser;
+		this.composition = composition; 
 		
 		switch (Config.OS) {
 		case Config.WINDOWS:
@@ -34,8 +37,39 @@ public class RevealCompositionInOSFileManager extends AbstractAction {
 		default:
 			this.putValue(NAME, "Reveal in File Manager");	
 		}
+		
+		updateEnabling();
 	}
 
+	public void updateEnabling() {
+		Composition comp = getMeantComposition();
+		if (comp != null) {
+			if (comp.getDataState() != DataState.NEW && 
+				comp.getDataState() != DataState.MISSING &&
+				comp.getDataState() != DataState.ERROR) {
+				this.setEnabled(true);
+			} else {
+				this.setEnabled(false);
+			}
+		} else {
+			this.setEnabled(false);
+		}
+	}
+	
+	private Composition getMeantComposition() {
+		if (browser != null) {
+			ArrayList<Composition> selectedCompositions = browser.getCompositionListPanel().getSelectedCompositions();
+			if (selectedCompositions.size() > 0) {
+				return selectedCompositions.get(0);
+			} else return null;
+		} else if (editor != null) {
+			return editor.getComposition();		
+		} else if (composition != null) {
+			return composition;
+			
+		} else return null;
+	}
+	
 	public void actionPerformed(ActionEvent e) {
 		if (browser != null) {
 			ArrayList<Composition> selectedCompositions = browser.getCompositionListPanel().getSelectedCompositions();
@@ -53,6 +87,12 @@ public class RevealCompositionInOSFileManager extends AbstractAction {
 						Master.master.revealFileInOSFileManager(path);
 					}
 				}
+		} else if (composition != null) {
+			String path = composition.getLinkLocal();
+			if (path != null) {
+				Master.master.revealFileInOSFileManager(path);
+			}
+			
 		}
 	}
 

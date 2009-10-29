@@ -3,6 +3,7 @@ package bols;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import basics.GUI;
 import basics.Tools;
 import bolscript.sequences.Representable;
 import bolscript.sequences.RepresentableSequence;
@@ -136,7 +137,8 @@ public class BolNameBundle implements NamedInLanguages {
 				slabels[i] = emptyBol.getName(i);
 			} else {
 				//empty bols at the end are cut off
-				slabels[i] = Tools.formatName(labels[i].substring(0, lastNonEmptyBolIndex));
+				slabels[i] = labels[i].substring(0, lastNonEmptyBolIndex);
+				slabels[i] = BolName.formatString(slabels[i], i);
 			}
 			
 		}

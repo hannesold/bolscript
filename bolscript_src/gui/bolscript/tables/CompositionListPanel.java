@@ -2,6 +2,8 @@ package gui.bolscript.tables;
 
 
 import gui.bolscript.actions.OpenComposition;
+import gui.bolscript.actions.RemoveSelected;
+import gui.bolscript.actions.RevealCompositionInOSFileManager;
 
 import java.awt.Color;
 import java.awt.event.MouseAdapter;
@@ -125,7 +127,14 @@ public class CompositionListPanel extends JScrollPane  {
 	public JPopupMenu getPopupMenu(Composition comp) {
 		JPopupMenu popupMenu = new JPopupMenu();
 		JMenuItem open = new JMenuItem(new OpenComposition(comp));
+		JMenuItem reveal = new JMenuItem(new RevealCompositionInOSFileManager(null, null, comp));
+		JMenuItem remove = new JMenuItem(new RemoveSelected(Master.master.getBrowser()));
+		
 		popupMenu.add(open);
+		popupMenu.add(reveal);
+		popupMenu.addSeparator();
+		popupMenu.add(remove);
+		
 		return popupMenu;
 	}
 

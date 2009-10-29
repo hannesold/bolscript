@@ -97,7 +97,7 @@ public class FileMenu extends JMenu {
 		
 		this.addSeparator();
 		
-		JMenuItem revealer = new JMenuItem(new RevealCompositionInOSFileManager(browser, editor));
+		JMenuItem revealer = new JMenuItem(new RevealCompositionInOSFileManager(browser, editor, null));
 		revealer.setAccelerator(KeyStroke.getKeyStroke(
 				KeyEvent.VK_O, GuiConfig.MENU_SHORTKEY_MASK | KeyEvent.ALT_DOWN_MASK));
 		this.add(revealer);
