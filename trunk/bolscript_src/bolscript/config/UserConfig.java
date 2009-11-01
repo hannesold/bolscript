@@ -32,6 +32,7 @@ public class UserConfig {
 	public static Preferences preferences;
 
 	public static boolean firstRun = true;
+	public static boolean hasChosenTablaFolderThisRun = false;
 	
 	public UserConfig() {
 	}
@@ -69,6 +70,15 @@ public class UserConfig {
 		}
 	}
 
+	public static void uninstall() throws Exception {
+		if (preferences == null) {
+			preferences = Preferences.userNodeForPackage(Config.class);
+		}
+		preferences.clear();
+		preferences.flush();
+		Debug.temporary(UserConfig.class, "uninstalled");
+	}
+	
 	/**
 	 * Most importantly attempts to load the String tablaFolder from the Properties file,
 	 * then calling setTablaFolder.
@@ -79,7 +89,7 @@ public class UserConfig {
 		boolean failed = false;
 		try {
 	
-			tablaFolder = UserConfig.preferences.get("tablaFolder", null);
+			tablaFolder = preferences.get("tablaFolder", null);
 	
 			if (tablaFolder == null) {
 				UserConfig.firstRun = true;
@@ -117,6 +127,7 @@ public class UserConfig {
 	 * @param chosenFolder
 	 */
 	public static void setTablaFolder(String chosenFolder) {
+		hasChosenTablaFolderThisRun = true;
 		Debug.temporary(Config.class, "setTablaFolder : " + chosenFolder + " (old: " + tablaFolder + ")");
 		//if (!tablaFolder.equals(chosenFolder)) {
 		tablaFolder = chosenFolder;
@@ -169,6 +180,9 @@ public class UserConfig {
 			}
 		}
 	
+		GuiConfig.initFonts();
+		GuiConfig.initBolFontsSized();
+		
 		//	}
 	
 	}

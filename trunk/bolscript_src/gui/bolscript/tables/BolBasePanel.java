@@ -1,11 +1,13 @@
 package gui.bolscript.tables;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Rectangle;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.table.TableColumnModel;
 
 import basics.Debug;
@@ -27,13 +29,19 @@ public class BolBasePanel extends JPanel {
 
 		model = new BolBaseTableModel(BolBase.getStandard());
 		table = new JTable(model);
-		table.setDefaultRenderer(Object.class, new CellRenderer());
+		//table.setMinimumSize(new Dimension(500,300));
+		table.setDefaultRenderer(Object.class, new CellRenderer(true));
 		table.setGridColor(GuiConfig.tableBG);
 		table.setShowGrid(false);
 		table.setShowHorizontalLines(false);
 		table.setShowVerticalLines(true);
 		
+		
 		scrollPane = new JScrollPane(table);
+		//scrollPane.setPreferredSize(new Dimension(500,300));
+		//scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+		//scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		
 		this.add(scrollPane,BorderLayout.CENTER);
 		
 		initColumnWidths();
@@ -42,6 +50,7 @@ public class BolBasePanel extends JPanel {
 private void initColumnWidths () {
 		
 		TableColumnModel columnModel = table.getColumnModel();
+		
 		columnModel.getColumn(BolName.SIMPLE).setMinWidth(42);
 		columnModel.getColumn(BolName.SIMPLE).setWidth(60);
 		columnModel.getColumn(BolName.SIMPLE).setMaxWidth(60);

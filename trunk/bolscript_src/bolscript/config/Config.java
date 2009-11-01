@@ -122,7 +122,6 @@ public class Config {
 		//this is launched from a jar or app bundle.
 		//the resources.zip file needs to be extracted to a temporary destination
 		//before proceeding. It shall be deleted afterwards
-
 		
 		ZipEntry entry = jar.getEntry("resources.zip");
 		
@@ -141,7 +140,9 @@ public class Config {
 		ZipFile resources = new ZipFile(tempFile);
 
 		ZipTools.extractSubentries(targetFolder, resources, resources.getEntry("tablafolder_default"));
-
+		
+		resources.close();
+		
 
 		tempFile.delete();
 

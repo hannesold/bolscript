@@ -8,49 +8,27 @@
 <!--http://www.rgagnon.com/javadetails/java-0532.html-->
 <!--http://www.devdaily.com/blog/post/mac-os-x/sample-mac-jar-bundler-ant-build-script/-->
 <!--ANT 1.7 is required-->
-	
 
-	<property name="version.num" value="0.11"/>
-	<property name="dir.bin" value="bin"/>
-	<property name="dir.tests.bin" value="bolscript_tests_bin"/>
-	<property name="dir.build" value="builds"/>
-	<property name="dir.resources" value="resources" />
-	<property name="dir.resources.tablafolder_default" value="${dir.resources}/tablafolder_default"/>
-	<property name="resources.zip.filename" value="resources.zip"/>
-	<property name="resources.zip.completepath" value="${dir.build}/${resources.zip.filename}"/>
-	<property name="resources.splashname" value="bolscript-splash.png"/>
-	<property name="dir.resources.splash" value="${dir.resources}/icons" />
-	<property name="resources.splashscreen" value="${dir.resources.splash}/${resources.splashname}"/>
-	<property name="lib.itext" value="lib/iText-2.1.5.jar" />
-	<property name="jar.filename.mac" value="bolscript_mac.jar" />
-	<property name="jar.filename.other" value="bolscript.jar" />
-	<property name="jar.filename.fonttests" value="fonttests.jar" />
-	<property name="jar.completepath.mac" value="${dir.build}/${jar.filename.mac}"/>
-	<property name="jar.completepath.other" value="${dir.build}/${jar.filename.other}"/>
-	<property name="jar.completepath.fonttests" value="${dir.build}/${jar.filename.fonttests}"/>
-	<property name="resources.icons.windowsframeicon" value ="${dir.resources}/icons/bolscript-logo-32x32.png"/>
-	<property name="app.icon" value="resources/icons/bolscript_logo.icns" />
-	<property name="app.name" value="Bolscript" />
-	<property name="dmg.name" value="Bolscript_${version.num}"/>
-	<property name="dmg.size" value="3000"/>
-	<property name="win.zip" value="Bolscript ${version.num}.zip"/>
-	
-	<property name="dir.mytablafolder" value="../../Bolscript/Tablafolder"/>
-	
-	<buildnumber file="build.num"/>
+	<property file="version.num"/>
+	<buildnumber file="build.num" /> 
+	<property file="build.properties"/>
+		
 	<tstamp>
 		<format property="TODAY" pattern="yyyy-MM-dd HH:mm:ss" />
 	</tstamp>
 
 <taskdef classname="JFlex.anttask.JFlexTask" name="jflex" />
-<taskdef name="jarbundler" 
+	
+	<taskdef name="jarbundler" 
 	         classname="net.sourceforge.jarbundler.JarBundler" />
 	
-<property name="launch4j.dir" value ="../3dparty/launch4j" />	
+	
 <taskdef name="launch4j"
 	classname="net.sf.launch4j.ant.Launch4jTask" 
 	classpath="${launch4j.dir}/launch4j.jar :${launch4j.dir}/lib/xstream.jar" />
 
+
+	
 <target name="build_scanner">
 	<jflex
 		file="bolscript_src/bolscript/scanner/SequenceScanner.flex"
@@ -206,8 +184,21 @@
 		
 	</target>
 	
+	<target name="create_uninstaller">
+		<jar destfile="${jar.completepath.uninstaller}" filesetmanifest="mergewithoutmain">
+					<manifest>				
+						<attribute name="Main-Class" value="bolscript.Uninstaller"/>
+						<attribute name="Class-Path" value="."/>  
+						<attribute name="Built-Date" value="${TODAY}"/>
+						<attribute name="Built-By" value="${user.name}"/>				
+					</manifest>
+					<fileset dir="${dir.bin}"/>
+		</jar>	
+	</target>
+
+
 	
-	
+
 	
 </project>
 

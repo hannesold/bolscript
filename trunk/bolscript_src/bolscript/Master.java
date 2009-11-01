@@ -17,18 +17,14 @@ import gui.bolscript.dialogs.SaveChangesDialog;
 import gui.bolscript.sequences.SequencePanel;
 import gui.bolscript.tables.CompositionTableModel;
 
-import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Image;
 import java.awt.SplashScreen;
-import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
-import javax.swing.JPopupMenu;
-import javax.swing.JTable;
 
 import midi.MidiStationSimple;
 import basics.Debug;
@@ -118,8 +114,17 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 
 		PacketTypeFactory.init();
 
+		/*
+		try {
+			UserConfig.uninstall();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
+		
 		Config.init();
 
+		
 		//Turn on midi or not
 		/*try {
 				MidiStationSimple.init();

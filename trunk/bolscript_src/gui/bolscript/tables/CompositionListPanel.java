@@ -38,7 +38,7 @@ public class CompositionListPanel extends JScrollPane  {
 		this.tableModel = model;
 		compositionTable = new JTable(model);
 		compositionTable.setDefaultRenderer(Integer.class, new StateRenderer(false));
-		compositionTable.setDefaultRenderer(Object.class, new CellRenderer());
+		compositionTable.setDefaultRenderer(Object.class, new CellRenderer(true));
 		compositionTable.setBackground(Color.white);
 		compositionTable.getColumnModel().getColumn(0).setMaxWidth(20);
 		compositionTable.getColumnModel().getColumn(1).setMinWidth(140);

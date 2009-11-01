@@ -3,13 +3,13 @@ package gui.bolscript.dialogs;
 import gui.bolscript.actions.ChooseTablaDir;
 import gui.midi.MidiOutSelectorPanel;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
 import javax.swing.AbstractAction;
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -18,7 +18,6 @@ import javax.swing.JTextField;
 
 import midi.MidiStationSimple;
 import basics.Debug;
-import basics.GUI;
 import bolscript.config.Config;
 import bolscript.config.ConfigChangeEvent;
 import bolscript.config.ConfigChangeListener;
@@ -42,8 +41,22 @@ public class PreferencesDialog extends JDialog implements WindowListener, Config
 	@SuppressWarnings("serial")
 	public void init() {
 		JPanel panel = new JPanel();
-		JLabel explanation = new JLabel("<html><p style=\"width:400px; padding: 10px;\">The <b>Tabla directory</b> has to contain two subfolders:<br><b>compositions</b> for your compositions and <br><b>settings</b> for your settings.<br><br><i>These subfolders will be constructed automatically if they don't exist.</i></p></html>");
+		JLabel explanation = new JLabel(
+				"<html>" +
+				"<div style=\"width:480px; padding: 20px 80px 20px 40px; background: white; font-family:Arial; font-size:14pt; \">" +
+				"<h2 style=\"padding-bottom: 10px;\">Choose a <b>Tabla Folder</b>!</h2>" +
+				"When working with bolscript:"+
+				"<ul>"+
+						"<li style=\"padding-bottom: 10px;\">store <i>all your compositions</i> in the <b>compositions</b> subfolder of your tablafolder." +
+						"<li style=\"padding-bottom: 10px;\">to customize the available bols edit your <b>bolbase.bolbase.txt</b> in the <b>settings</b> subfolder of your tablafolder with wordpad (windows) or textedit (mac).</li>" +
+					"</ul>" +
+				"<p style=\"font-size: 12pt;\">The subfolders will be constructed and filled with demo compositions " +
+				"automatically if you choose an empty/new tabla folder.</p>" +
+				"</div>" +
+				"</html>");
+		
 		JLabel txtTablaDirLabel = new JLabel("Tabla Folder");
+		
 		txtTablaDir = new JTextField();
 		txtTablaDir.setEditable(false);
 		Debug.debug(this, "setting text");
@@ -62,21 +75,30 @@ public class PreferencesDialog extends JDialog implements WindowListener, Config
 		tablaDirPanel.add(txtTablaDir);
 		tablaDirPanel.add(btnTablaDir);
 		
-		BoxLayout bx = new BoxLayout(panel, BoxLayout.Y_AXIS);
+		/*BoxLayout bx = new BoxLayout(panel, BoxLayout.Y_AXIS);
 		explanation.setAlignmentX(0);
-		tablaDirPanel.setAlignmentX(0);
+		tablaDirPanel.setAlignmentX(0);*/
 		
 		JPanel buttonPanel = new JPanel();
-		ok = new JButton(new AbstractAction("OK") {	
+		ok = new JButton(new AbstractAction("OK") {
+			
 			@Override
-			public void actionPerformed(ActionEvent e) { ok(e);	}
+			public void actionPerformed(ActionEvent e) { 
+				ok(e);	
+			}
 		});
+		if (UserConfig.firstRun &! UserConfig.hasChosenTablaFolderThisRun) {
+			ok.setEnabled(false);
+			
+		}
+		
+		this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		
 		buttonPanel.add(ok);
 
-		panel.setLayout(bx);
-		panel.add(explanation);
-		panel.add(tablaDirPanel);
+		panel.setLayout(new BorderLayout());
+		panel.add(explanation, BorderLayout.NORTH);
+		panel.add(tablaDirPanel, BorderLayout.CENTER);
 		
 		if (MidiStationSimple.getStandard() !=null) {
 			MidiOutSelectorPanel midiOutSelectorPanel = new MidiOutSelectorPanel(MidiStationSimple.getStandard());
@@ -84,12 +106,13 @@ public class PreferencesDialog extends JDialog implements WindowListener, Config
 			panel.add(midiOutSelectorPanel);
 		}
 		
-		panel.add(buttonPanel);
+		panel.add(buttonPanel, BorderLayout.SOUTH);
 		
 		this.setContentPane(panel);
 		
 		Config.addChangeListener(this);
-		this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+		
+		this.setResizable(false);
 	}
 	
 	/**
@@ -104,6 +127,7 @@ public class PreferencesDialog extends JDialog implements WindowListener, Config
 			UserConfig.setTablaFolder(chooseAction.getChosenFolder());
 			Config.fireConfigChangedEvent();
 			changed = true;
+			ok.setEnabled(true);
 		}
 	}
 	
