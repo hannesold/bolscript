@@ -13,8 +13,10 @@ import bolscript.config.GuiConfig;
 
 public class CellRenderer extends DefaultTableCellRenderer {
 
-	public CellRenderer() {
-		
+	boolean withToolTips = false;
+	
+	public CellRenderer(boolean withToolTips) {
+		this.withToolTips = withToolTips;
 	}
 
 	@Override
@@ -39,7 +41,9 @@ public class CellRenderer extends DefaultTableCellRenderer {
 
 		}
 		
-		
+		if (withToolTips) {
+			c.setToolTipText(value.toString());
+		}
 		return c;
 	}
 

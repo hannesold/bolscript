@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project default="upload_nightly_to_google" name="uploads bolscript packages to google code">
+<taskdef classname="net.bluecow.googlecode.ant.GoogleCodeUploadTask"  classpath="../3dparty/ant-googlecode-0.0.2.jar" name="gcupload"/>
+	
+	<property file="version.num"/>
+	<property file="build.num" />
+	<property file="build.properties" />
+	<property file="login.properties" />
+
+	<target name="upload_nightly_to_google">
+		
+		
+		<gcupload 
+				        username="${login.username}" 
+				        password="${login.password}" 
+				        projectname="${login.project.name}" 
+				        filename="/Users/hannes/Projekte/Workspace/bolscript googlecode/${dmg.completepath}" 
+				        targetfilename="${dmg.name}_${build.number}.dmg"
+				        summary="Bolscript for OS X (Version ${version.num} ${build.number} nightly build)"
+				        labels="Type-Archive, OpSys-OSX, Featured" 
+				/>
+		<gcupload 
+					verbose="true"
+			        username="${login.username}" 
+			        password="${login.password}" 
+			        projectname="${login.project.name}"
+				    filename="/Users/hannes/Projekte/Workspace/bolscript googlecode/${win.zip.completepath}" 
+				    targetfilename="${app.name} ${version.num} ${build.number}.zip"
+				    summary="Bolscript for Windows (Version ${version.num} ${build.number} nightly build)"
+				    labels="Type-Archive, OpSys-Windows, Featured" 
+				/>
+	</target>
+	
+</project>
