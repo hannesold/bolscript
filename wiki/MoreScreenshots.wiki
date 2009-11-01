@@ -1,4 +1,5 @@
 #summary Just a few screenshots
+#labels Featured
 
 ===Composition Browser===
 [http://oudbrothers.de/bolscript/screenshots/0.1/browser.png]
