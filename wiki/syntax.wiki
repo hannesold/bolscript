@@ -1,4 +1,5 @@
 #summary a quick overview over the syntax
+#labels Featured
 
 == General structure ==
 Each composition is kept in one bolscript file with the file ending `.comp.txt`, with the only exception being tals, which need to have the ending `.tal.txt`.
