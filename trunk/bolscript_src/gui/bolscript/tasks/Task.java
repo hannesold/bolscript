@@ -17,6 +17,21 @@ public abstract class Task implements Runnable{
 		Completed,
 		CompletedWithError
 	}
+	public class TaskException extends Exception{
+		private Exception reason;
+		private String message;
+		
+		public TaskException(String message, Exception reason) {
+			super();
+			this.message = message;
+			this.reason = reason;
+		}
+
+		public Exception getReason() {
+			return reason;
+		}
+		
+	}
 
 	protected String name;
 	protected ExecutionThread thread;
@@ -62,10 +77,17 @@ public abstract class Task implements Runnable{
 				doTask();
 				duration = System.currentTimeMillis() - time;
 				state = State.Completed;
+			} catch (TaskException e) {
+				state = State.CompletedWithError;
+				if (e.getReason() != null) {
+					exception = e.getReason();
+				} else {
+					exception = e;
+				}
 			} catch (Exception e) {
 				state = State.CompletedWithError;
 				exception = e;
-			} 
+			}
 			lock.notifyAll();
 
 		}
@@ -75,5 +97,5 @@ public abstract class Task implements Runnable{
 		return duration;
 	}
 
-	public abstract void doTask();
+	public abstract void doTask() throws TaskException;
 }

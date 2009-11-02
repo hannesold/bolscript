@@ -1,204 +1,178 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <project default="create_jar_for_mac" name="create runnable jars for bolscript">
-<!--this file was created by Eclipse Runnable JAR Export Wizard and changed by hannes-->
-<!--jar bundler creates the mac application bundle: https://sourceforge.net/projects/jarbundler/-->
-<!--you have to add the jarbundler jar as an external jar in eclipse preferences->ant-->
-<!--I oriented myself by http://onjava.com/pub/a/onjava/2003/12/17/ant_bestpractices.html-->
-<!--http://www.rgagnon.com/javadetails/java-0532.html-->
-<!--http://www.devdaily.com/blog/post/mac-os-x/sample-mac-jar-bundler-ant-build-script/-->
-<!--ANT 1.7 is required-->
+	<!--this file was created by Eclipse Runnable JAR Export Wizard and changed by hannes-->
+	<!--jar bundler creates the mac application bundle: https://sourceforge.net/projects/jarbundler/-->
+	<!--you have to add the jarbundler jar as an external jar in eclipse preferences->ant-->
+	<!--I oriented myself by http://onjava.com/pub/a/onjava/2003/12/17/ant_bestpractices.html-->
+	<!--http://www.rgagnon.com/javadetails/java-0532.html-->
+	<!--http://www.devdaily.com/blog/post/mac-os-x/sample-mac-jar-bundler-ant-build-script/-->
+	<!--ANT 1.7 is required-->
 
 	<property file="version.num"/>
-	<buildnumber file="build.num" /> 
+	<buildnumber file="build.num" />
 	<property file="build.properties"/>
-		
+
 	<tstamp>
 		<format property="TODAY" pattern="yyyy-MM-dd HH:mm:ss" />
 	</tstamp>
 
-<taskdef classname="JFlex.anttask.JFlexTask" name="jflex" />
-	
-	<taskdef name="jarbundler" 
-	         classname="net.sourceforge.jarbundler.JarBundler" />
-	
-	
-<taskdef name="launch4j"
-	classname="net.sf.launch4j.ant.Launch4jTask" 
-	classpath="${launch4j.dir}/launch4j.jar :${launch4j.dir}/lib/xstream.jar" />
+	<taskdef name="jflex" classname="JFlex.anttask.JFlexTask" />
 
+	<taskdef name="jarbundler" classname="net.sourceforge.jarbundler.JarBundler" />
+
+	<taskdef name="launch4j" classname="net.sf.launch4j.ant.Launch4jTask" classpath="${launch4j.dir}/launch4j.jar :${launch4j.dir}/lib/xstream.jar" />
 
 	
-<target name="build_scanner">
-	<jflex
-		file="bolscript_src/bolscript/scanner/SequenceScanner.flex"
-		destdir="bolscript_src"
-		
-		verbose="true"
-		nobak="true"
-	/>
-	<javac
-	    srcdir="bolscript_src/bolscript/scanner/"
-	    destdir="bin"
-	/>
+	<target name="clean_all">
+		<delete file="${jar.completepath.mac}" />
+		<delete file="${jar.completepath.other}" />
+		<delete file="${resources.zip.completepath}" />
+		<delete dir="${dir.build}/${app.name}.app" />
+		<delete file="${dir.build}/${dmg.name}.dmg" />
+		<delete file="${dir.build}/${app.name}.exe" />
+		<delete file="${jar.completepath.fonttests}" />
+		<delete file="${dir.build}/${win.zip}" />
+	</target>
+			
+	<target name="build_scanner">
+		<jflex file="bolscript_src/bolscript/scanner/SequenceScanner.flex" destdir="bolscript_src" verbose="true" nobak="true" />
+		<javac srcdir="bolscript_src/bolscript/scanner/" destdir="bin" />
+	</target>
 
-</target>
+	<target name="generate_default_tablafolder_from_my_tablafolder">
+		<delete dir="${dir.resources.tablafolder_default}" />
+		<copy todir="${dir.resources.tablafolder_default}/compositions/demos" overwrite="true">
+			<fileset dir="${dir.mytablafolder}/compositions/demos">
+			</fileset>
+		</copy>
+		<copy todir="${dir.resources.tablafolder_default}/compositions/tals" overwrite="true">
+			<fileset dir="${dir.mytablafolder}/compositions/tals">
+			</fileset>
+		</copy>
+		<copy todir="${dir.resources.tablafolder_default}/settings" overwrite="true">
+			<fileset dir="${dir.mytablafolder}/settings" />
+		</copy>
+	</target>
 
-<target name="clean_all">
-	<delete file="${jar.completepath.mac}"/>
-	<delete file="${jar.completepath.other}"/>
-	<delete file="${resources.zip.completepath}"/>
-	<delete dir="${dir.build}/${app.name}.app"/>
-	<delete file="${dir.build}/${dmg.name}.dmg" />
-	<delete file="${dir.build}/${app.name}.exe" />
-	<delete file="${jar.completepath.fonttests}" />
-	<delete file="${dir.build}/${win.zip}" />
-</target>
-	
-<target name="generate_default_tablafolder_from_my_tablafolder">
-	<delete dir="${dir.resources.tablafolder_default}"/>
-	 <copy todir="${dir.resources.tablafolder_default}/compositions/demos" overwrite="true">
-	    <fileset dir="${dir.mytablafolder}/compositions/demos">
-	    </fileset>
-	 </copy>
-	<copy todir="${dir.resources.tablafolder_default}/compositions/tals" overwrite="true">
-		<fileset dir="${dir.mytablafolder}/compositions/tals">
-		</fileset>
-	</copy>
-	<copy todir="${dir.resources.tablafolder_default}/settings" overwrite="true">
-		<fileset dir="${dir.mytablafolder}/settings"/>
-	</copy>
-</target>
-	
-<target name="zip_resources" depends="generate_default_tablafolder_from_my_tablafolder">
-<!-- zip all resources that shall be bundled in the distributed jar as resources.zip -->
-	<zip destfile="${resources.zip.completepath}" 
-		basedir="${dir.resources}" excludes="**/*.icns">
-	</zip>
-</target>
+	<target name="zip_resources" depends="generate_default_tablafolder_from_my_tablafolder">
+		<!-- zip all resources that shall be bundled in the distributed jar as resources.zip -->
+		<zip destfile="${resources.zip.completepath}" basedir="${dir.resources}" excludes="**/*.icns">
+		</zip>
+	</target>
 
-<target name="create_jar_for_mac" depends="zip_resources">
-	<!--create a runnable jar and a mac os x application bundle using jar bundler-->	
-	<jar destfile="${jar.completepath.mac}" filesetmanifest="mergewithoutmain">
-		<manifest>
-			<attribute name="Main-Class" value="bolscript.MasterMac"/>
-			<attribute name="Class-Path" value="."/>
-			<attribute name="Implementation-Version" 
-		             value="${version.num}-b${build.number}"/>   
-			<attribute name="Built-Date" value="${TODAY}"/>
-			<attribute name="Built-By" value="${user.name}"/>
-			<attribute name="SplashScreen-Image" value="${resources.splashname}" />
-		</manifest>
-		<fileset dir="${dir.bin}"/>
-		<fileset file="${resources.splashscreen}"/>
-		<fileset file="${resources.icons.windowsframeicon}"/>
-		
-		<zipfileset excludes="META-INF/*.SF" src="${lib.itext}"/>
-		
-		<!-- include the resources.zip -->
-		<fileset file="${resources.zip.completepath}"/>
-		
-		<!-- eclipse had this added, I dont know if it is needed: <zipfileset excludes="META-INF/*.SF" src="/Applications/eclipse/plugins/org.hamcrest.core_1.1.0.v20090501071000.jar"/> -->
-	</jar>
-</target>
-	
-<target name="create_applicationbundle_for_mac" depends="create_jar_for_mac">
-	<!-- create the application bundle, using jarbundler -->
-	<jarbundler dir="${dir.build}"
-	            name="${app.name}"
-				shortname="${app.name}"
-	            mainclass="bolscript.MasterMac" 
-	            jar="${jar.completepath.mac}" 
-				icon="${app.icon}" 
-       		 	signature="Hannes Oud"
-		        jvmversion="1.6+"
-        		version="${version.num}"
-        		infostring="${app.name} ${version.num}, ${TODAY}"
-        		build="${build.number}"
-        		bundleid="bolscript/MasterMac"
-				splashfile="$JAVAROOT/${resources.splashname}"
-	>
-		<javafilelist dir="${dir.resources.splash}" files="${resources.splashname}"/>
-	</jarbundler>
-</target>
-	
-<target name="create_dmg" depends="create_applicationbundle_for_mac">
-	<!-- create disk image -->
-	<exec dir="${dir.build}" executable="hdiutil"><arg line="create -size ${dmg.size}k -fs HFS+ -volname ${dmg.name} ${dmg.name}.dmg"/></exec>
-	<!-- mount it -->
-	<exec executable="hdiutil" dir="${dir.build}"><arg line="attach ${dmg.name}.dmg"/></exec>
-	<!-- copy file into it -->
-	<exec executable="cp"><arg line="-r ${dir.build}/${app.name}.app /Volumes/${dmg.name}"/></exec>
-	<!-- unmount it-->
-	<exec executable="hdiutil"><arg line="detach /Volumes/${dmg.name}"/></exec>
-</target>
-	
+	<target name="create_jar_for_mac" depends="zip_resources">
+		<!--create a runnable jar and a mac os x application bundle using jar bundler-->
+		<jar destfile="${jar.completepath.mac}" filesetmanifest="mergewithoutmain">
+			<manifest>
+				<attribute name="Main-Class" value="bolscript.MasterMac" />
+				<attribute name="Class-Path" value="." />
+				<attribute name="Implementation-Version" value="${version.num}-b${build.number}" />
+				<attribute name="Built-Date" value="${TODAY}" />
+				<attribute name="Built-By" value="${user.name}" />
+				<attribute name="SplashScreen-Image" value="${resources.splashname}" />
+			</manifest>
+			<fileset dir="${dir.bin}" />
+			<fileset file="${resources.splashscreen}" />
+			<fileset file="${resources.icons.windowsframeicon}" />
+
+			<zipfileset excludes="META-INF/*.SF" src="${lib.itext}" />
+
+			<!-- include the resources.zip -->
+			<fileset file="${resources.zip.completepath}" />
+
+			<!-- eclipse had this added, I dont know if it is needed: <zipfileset excludes="META-INF/*.SF" src="/Applications/eclipse/plugins/org.hamcrest.core_1.1.0.v20090501071000.jar"/> -->
+		</jar>
+	</target>
+
+	<target name="create_applicationbundle_for_mac" depends="create_jar_for_mac">
+		<!-- create the application bundle, using jarbundler -->
+		<jarbundler dir="${dir.build}" name="${app.name}" shortname="${app.name}" mainclass="bolscript.MasterMac" jar="${jar.completepath.mac}" icon="${app.icon}" signature="Hannes Oud" jvmversion="1.6+" version="${version.num}" infostring="${app.name} ${version.num}, ${TODAY}" build="${build.number}" bundleid="bolscript/MasterMac" splashfile="$JAVAROOT/${resources.splashname}">
+			<javafilelist dir="${dir.resources.splash}" files="${resources.splashname}" />
+		</jarbundler>
+	</target>
+
+	<target name="create_dmg" depends="create_applicationbundle_for_mac">
+		<!-- create disk image -->
+		<exec dir="${dir.build}" executable="hdiutil">
+			<arg line="create -size ${dmg.size}k -fs HFS+ -volname ${dmg.name} ${dmg.name}.dmg" />
+		</exec>
+		<!-- mount it -->
+		<exec executable="hdiutil" dir="${dir.build}">
+			<arg line="attach ${dmg.name}.dmg" />
+		</exec>
+		<!-- copy file into it -->
+		<exec executable="cp">
+			<arg line="-r ${dir.build}/${app.name}.app /Volumes/${dmg.name}" />
+		</exec>
+		<!-- unmount it-->
+		<exec executable="hdiutil">
+			<arg line="detach /Volumes/${dmg.name}"/>
+		</exec>
+	</target>
+
 	<target name="create_jar_for_pc" depends="zip_resources">
-		<!--create a runnable jar which is plattform independent -->		
+		<!--create a runnable jar which is plattform independent -->
 		<jar destfile="${jar.completepath.other}" filesetmanifest="mergewithoutmain">
-			<manifest>				
+			<manifest>
 				<attribute name="Main-Class" value="bolscript.Master"/>
 				<attribute name="Class-Path" value="."/>
 				<attribute name="Implementation-Version" 
-			             value="${version.num}-b${build.number}"/>   
+			             value="${version.num}-b${build.number}"/>
 				<attribute name="Built-Date" value="${TODAY}"/>
 				<attribute name="Built-By" value="${user.name}"/>
-				<attribute name="SplashScreen-Image" value="${resources.splashname}" />				
+				<attribute name="SplashScreen-Image" value="${resources.splashname}" />
 			</manifest>
 			<fileset dir="${dir.bin}"/>
 			<fileset file="${resources.splashscreen}"/>
 			<fileset file="${resources.icons.windowsframeicon}"/>
-			
+
 			<zipfileset excludes="META-INF/*.SF" src="${lib.itext}"/>
-			
+
 			<!-- include the resources.zip -->
 			<fileset file="${resources.zip.completepath}"/>
+		</jar>
+	</target>
+
+	<target name="create_exe_for_pc" depends="create_jar_for_pc">
+		<launch4j configFile="launch4j.xml" />
+
+	</target>
+
+	<target name="create_zip_for_pc" depends="create_exe_for_pc">
+		<zip destfile="${dir.build}/${win.zip}">
+			<fileset file="${jar.completepath.other}" />
+			<fileset file="${dir.build}/Bolscript.exe" />
+		</zip>
+
+	</target>
+
+	<target name="create_uninstaller">
+		<jar destfile="${jar.completepath.uninstaller}" filesetmanifest="mergewithoutmain">
+			<manifest>
+				<attribute name="Main-Class" value="bolscript.Uninstaller"/>
+				<attribute name="Class-Path" value="."/>
+				<attribute name="Built-Date" value="${TODAY}"/>
+				<attribute name="Built-By" value="${user.name}"/>
+			</manifest>
+			<fileset dir="${dir.bin}"/>
 		</jar>
 	</target>
 	
 	<target name="create_font_tests_jar">
 		<jar destfile="${jar.completepath.fonttests}" filesetmanifest="mergewithoutmain">
-			<manifest>				
+			<manifest>
 				<attribute name="Main-Class" value="gui.fonts.FontTests"/>
-				<attribute name="Class-Path" value="."/>  
+				<attribute name="Class-Path" value="."/>
 				<attribute name="Built-Date" value="${TODAY}"/>
-				<attribute name="Built-By" value="${user.name}"/>				
+				<attribute name="Built-By" value="${user.name}"/>
 			</manifest>
 			<fileset dir="${dir.bin}"/>
 			<fileset dir="${dir.tests.bin}"/>
-			
+
 			<zipfileset excludes="META-INF/*.SF" src="${lib.itext}"/>
-		</jar>	
-	</target>
-	
-	<target name="create_exe_for_pc" depends="create_jar_for_pc">
-		<launch4j configFile="launch4j.xml" />
-		
-	</target>
-	
-	<target name="create_zip_for_pc" depends="create_exe_for_pc">
-		<zip destfile="${dir.build}/${win.zip}"> 
-			<fileset file="${jar.completepath.other}" />
-			<fileset file="${dir.build}/Bolscript.exe" />
-		</zip>
-		
-	</target>
-	
-	<target name="create_uninstaller">
-		<jar destfile="${jar.completepath.uninstaller}" filesetmanifest="mergewithoutmain">
-					<manifest>				
-						<attribute name="Main-Class" value="bolscript.Uninstaller"/>
-						<attribute name="Class-Path" value="."/>  
-						<attribute name="Built-Date" value="${TODAY}"/>
-						<attribute name="Built-By" value="${user.name}"/>				
-					</manifest>
-					<fileset dir="${dir.bin}"/>
-		</jar>	
+		</jar>
 	</target>
 
-
-	
-
-	
 </project>
 

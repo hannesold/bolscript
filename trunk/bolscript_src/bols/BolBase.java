@@ -1,5 +1,8 @@
 package bols;
 
+import gui.bolscript.tasks.Task;
+import gui.bolscript.tasks.Task.TaskException;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,20 +20,20 @@ import bolscript.scanner.Parser;
 
 
 public class BolBase extends BolBaseGeneral {
-	
+
 	/**
 	 * An auxilliary private class for storig prototype properties of a
 	 * potential bundle during parsing a bolbase file.
 	 * @author hannes
 	 */
 	private class PotentialBundle {
-		
 		String[] labels;
 		String description;
 		ArrayList<String> bolNameStrings;
 	}
+
 	private class PotentialCombinedBolName {
-		
+
 		public PotentialCombinedBolName(BolName bolName,
 				String[] bolNamesToBeCombined) {
 			super();
@@ -40,10 +43,10 @@ public class BolBase extends BolBaseGeneral {
 		BolName bolName;
 		String[] bolNamesToBeCombined;
 	}
-	
+
 	private static BolBase standard = null;
 	public static boolean standardInitialised = false;
-	
+
 	public static void init(Class caller) {
 		try {
 			Debug.debug(BolBase.class, "init called by: " + caller.getSimpleName());
@@ -56,16 +59,16 @@ public class BolBase extends BolBaseGeneral {
 			System.exit(1);
 		}	
 	}
-	
+
 	public static void initOnce(Class caller) {
 		if (!standardInitialised)
 			init(caller);
 	}
-	
+
 	public static BolBaseGeneral standard() {
 		return getStandard();
 	}
-	
+
 	public static void setStandard(BolBase standard) {
 		BolBase.standard = standard;
 	}
@@ -76,17 +79,34 @@ public class BolBase extends BolBaseGeneral {
 	public BolBase() {
 		super();
 		generalNoteOffset = 36;
-		
-		try {
-			addBolNamesFromFile(Config.pathToBolBase);
-		} catch (FileReadException ex) {
-			Debug.critical(this, "BolBase could not read bolbase file. Using defaults. " + ex);
+
+		Task addFromFilesTask = new Task("Load bolbase from file", Task.ExecutionThread.AnyThread){
+
+			@Override
+			public void doTask() throws TaskException {
+				try {
+					addBolNamesFromFile(Config.pathToBolBase);
+				} catch (FileReadException e) {
+					throw new TaskException("BolBase could not be loaded", e);
+				}
+			}				
+		};
+
+		addFromFilesTask.run();
+
+		if (addFromFilesTask.getState() == Task.State.CompletedWithError) {
+			Debug.critical(this, "BolBase loading did not work: " + addFromFilesTask.getException() + ": ");
+			addFromFilesTask.getException().printStackTrace();
+
+			Debug.critical(this, "BolBase could not read bolbase file. Using defaults. ");
 			addBolNames("Dha Ge Ti Ri Ke Te Tin Na Ne Ta Ke Dhin Ta3 Tun Dhun Ge2");
+		} else {
+			Debug.temporary(this, "bolbase loading took: " + addFromFilesTask.getDuration() + "ms");
 		}
 		Debug.temporary(this, "bols inited: " + Tools.toString(bolNames));
 		Debug.temporary(this, "bundles : " + bundleMap);
-		
-		
+
+
 		try {
 			initMidiMaps();
 		} catch (NoBolNameException ex) {
@@ -109,26 +129,26 @@ public class BolBase extends BolBaseGeneral {
 		} catch (NoBolNameException ex) {
 			Debug.critical(this, "Kali maps could not be initialised. " + ex);
 		}
-		
-		
+
+
 	}
-	
+
 	private void addBolNamesFromFile(String filename) throws FileReadException {
 		HashMap<String, Integer> handMap = new HashMap<String, Integer> ();
 		handMap.put("LEFT", BolName.LEFT);
 		handMap.put("RIGHT", BolName.RIGHT);
 		handMap.put("OTHER", BolName.OTHER);
 		handMap.put("COMBINED", BolName.COMBINED);
-		
+
 		ArrayList<PotentialCombinedBolName> potentialCombined = new ArrayList<PotentialCombinedBolName>();
 		ArrayList<PotentialBundle> potentialBundles = new ArrayList<PotentialBundle>();
-		
+
 		Scanner scanner = new Scanner(FileManager.getContents(new File(filename), Config.bolBaseEncoding));
-		
+
 		String seperator = "\\s*;\\s*";
-		
+
 		while (scanner.hasNextLine()) {
-			
+
 			String line = scanner.nextLine();
 			//Debug.temporary(this.getClass(),line);
 			if (!line.startsWith("#")) {
@@ -136,19 +156,19 @@ public class BolBase extends BolBaseGeneral {
 				String [] entries = line.split(seperator);
 				Debug.temporary(getClass(), Tools.toString(entries));
 				String description = "";
-				
+
 				if (entries.length >= BolName.languagesCount) {
 					String[] labels = new String[BolName.languagesCount];
 					for (int i = 0; i < labels.length; i++) {
-						
+
 						labels[i] = BolName.formatString(entries[i].replaceAll(Parser.SNatBeginningOrEnd, ""), i);
-						
+
 					}
 					//Debug.temporary(this, "exact name scanned: '" + labels[BolName.EXACT]+"'");
 
 					if (entries.length >= BolName.languagesCount+1) {
 						description = entries[BolName.languagesCount].replaceAll(Parser.SNatBeginningOrEnd,"");
-						
+
 						if (entries.length >= BolName.languagesCount+2) {
 							String typeField = entries[BolName.languagesCount+1].replaceAll(Parser.SNatBeginningOrEnd,"");
 							Integer handType = handMap.get(typeField.toUpperCase());
@@ -161,7 +181,7 @@ public class BolBase extends BolBaseGeneral {
 								addBolName(newBolName);
 							} else {
 								//check if it is combined bol or a bundle
-								
+
 								//	Debug.temporary(this, newBolName + " looking for combined bols");
 								Pattern combinedPattern = Pattern.compile("([A-Za-z0-9]+)\\s*\\+\\s*([A-Za-z0-9]+)");
 								Matcher combinedMatcher = combinedPattern.matcher(typeField);
@@ -187,36 +207,36 @@ public class BolBase extends BolBaseGeneral {
 									PotentialBundle potentialBundle = new PotentialBundle();
 									potentialBundle.labels = entries;
 									potentialBundle.description = description;
-									
+
 									Pattern bundlePattern = Pattern.compile("[A-Za-z0-9]+");
 									Matcher m = bundlePattern.matcher(typeField);
 									potentialBundle.bolNameStrings = new ArrayList<String>();
 									while (m.find()) {
 										potentialBundle.bolNameStrings.add(m.group(0));							
 									}
-									
+
 									potentialBundles.add(potentialBundle);
 								}
-								
+
 							}
 						}
 					}
-					
+
 				}
 			}
 
 
 		}
-		
+
 		//process combined bols
 		for (int i = 0; i < potentialCombined.size(); i++) {
 			PotentialCombinedBolName comb = potentialCombined.get(i);
-//			Debug.temporary(this, "searching for " + bolCombinations.get(i)[0]);
+			//			Debug.temporary(this, "searching for " + bolCombinations.get(i)[0]);
 			BolName hand1 = getBolName(comb.bolNamesToBeCombined[0]);
-//			Debug.temporary(this, "found: " + hand1);
-//			Debug.temporary(this, "searching for " + bolCombinations.get(i)[1]);
+			//			Debug.temporary(this, "found: " + hand1);
+			//			Debug.temporary(this, "searching for " + bolCombinations.get(i)[1]);
 			BolName hand2 = getBolName(comb.bolNamesToBeCombined[1]);
-//			Debug.temporary(this, "found: " + hand2);
+			//			Debug.temporary(this, "found: " + hand2);
 			if ((hand1 != null) && (hand2 != null)) {
 				//Debug.temporary(this,combinedBols.get(i) + " adding hand: " + hand1);
 				//Debug.temporary(this,combinedBols.get(i) + " adding hand: " + hand2);
@@ -225,17 +245,17 @@ public class BolBase extends BolBaseGeneral {
 				comb.bolName.setHandType(BolName.UNKNOWN);
 			}
 		}
-		
+
 		//process bundles
 		for (int i = 0; i < potentialBundles.size(); i++) {
 			PotentialBundle potBundle = potentialBundles.get(i);
 			//potentialBundleLabels.add(names);
 			//potentialBundleDescriptions.add(description);
 			//potentialBundles.add(currentBundle);
-			
+
 			//the first entry must be a number
 			if (potBundle.bolNameStrings.size() > 1) {
-				
+
 				Rational bundleSpeed = new Rational(1);
 				if (potBundle.bolNameStrings.get(0).matches("[0-9]+")) {
 					bundleSpeed = Rational.parseNonNegRational(potBundle.bolNameStrings.get(0));
@@ -256,7 +276,7 @@ public class BolBase extends BolBaseGeneral {
 					currentArray = currentBundlesBolNames.toArray(currentArray);
 					BolNameBundle bundle = new BolNameBundle(currentArray, potBundle.labels);
 					bundle.setDescription(potBundle.description);
-					
+
 					standardBolNameBundles.add(bundle);
 					//addBolNameBundle(bundle);
 					//Debug.temporary(this, "setting replacement bundle name to '" + bundle.getName(BolName.EXACT).replaceAll(Reader.SNatBeginningOrEnd,"") +"'");
@@ -267,7 +287,7 @@ public class BolBase extends BolBaseGeneral {
 		}
 	}
 
-	
+
 	/**
 	 * BolMaps are maps from one Bol to a Midinote, coordinates and a hand
 	 * @throws Exception
@@ -275,42 +295,42 @@ public class BolBase extends BolBaseGeneral {
 	private void initMidiMaps() throws NoBolNameException {
 
 		// Parameters: name, coordinate, midinote, hand
-		
+
 		//pause
 		addMidiMap("-",  0, 0, MidiMap.NONE);
-		
+
 		//righthand only
 		addMidiMap("Ti", 1, 3, MidiMap.RIGHT);
 		addMidiMap("Ta", 1, 3, MidiMap.RIGHT);
 		addMidiMap("Ri", 1, 4, MidiMap.RIGHT);
 		addMidiMap("Te", 1, 5, MidiMap.RIGHT);
 		addMidiMap("Ne", 1, 6, MidiMap.RIGHT);
-		
+
 		addMidiMap("Ta3", 2, 1, MidiMap.RIGHT);
 		addMidiMap("Tun", 2, 2, MidiMap.RIGHT);
 		addMidiMap("Na", 3, 0, MidiMap.RIGHT);
-		
+
 		//addMidiMap("Ta", 3, 0, MidiMap.RIGHT);
 
-		
+
 		//lefthand only
 		addMidiMap("Ke", 1, 31, MidiMap.LEFT);
 		addMidiMap("Ge", 2, 28, MidiMap.LEFT);
 		addMidiMap("Ge2",2,29, MidiMap.LEFT);
-		
+
 		Debug.debug(this, "midimaps set: " + Tools.toString(midiMaps));
 
 	}
-		
+
 	/**
 	 * BolMaps are maps from one Bol to multiple Midimaps
 	 * @throws Exception
 	 */
 	private void initBolMaps() throws NoBolNameException {
-		
+
 		// Parameters: Bol name, left hand, right hand
 		addBolMap("-", getMidiMap("-"), getMidiMap("-"));
-		
+
 		//one hand bols
 		addBolMap("Ti", getMidiMap("-"), getMidiMap("Ti"));
 		addBolMap("Ri", getMidiMap("-"), getMidiMap("Ri"));
@@ -320,7 +340,7 @@ public class BolBase extends BolBaseGeneral {
 		addBolMap("Ta", getMidiMap("-"), getMidiMap("Ta"));
 		addBolMap("Na", getMidiMap("-"), getMidiMap("Na"));
 		addBolMap("Ge", getMidiMap("Ge"), getMidiMap("-"));
-		
+
 		//two hand bols
 		addBolMap("Dha", getMidiMap("Ge"), getMidiMap("Na"));
 		addBolMap("Tin", getMidiMap("Ke"), getMidiMap("Ta3"));
@@ -328,10 +348,10 @@ public class BolBase extends BolBaseGeneral {
 		addBolMap("Tun", getMidiMap("Ke"), getMidiMap("Tun"));
 		addBolMap("Dhun", getMidiMap("Ge"), getMidiMap("Tun"));		
 		addBolMap("Ta3", getMidiMap("-"), getMidiMap("Ta3"));
-		
+
 		Debug.debug(this, "bolsMaps set: " + Tools.toString(bolMaps));
 	}
-	
+
 	public void initKaliMaps() throws NoBolNameException {
 		//auto-add KaliMaps where left hand is empty or nonresonant
 		for (BolName bolName : getBolNames()) {
@@ -344,7 +364,7 @@ public class BolBase extends BolBaseGeneral {
 			} catch (Exception e) {
 				Debug.debug(this, "not adding kaliMap, no BolMap for " + bolName);
 			}
-							
+
 		}	
 		//add remaining
 		addKaliMap("Ge", "Ke");
@@ -355,20 +375,20 @@ public class BolBase extends BolBaseGeneral {
 	public BolName getResemblingBol(String input) {
 
 		Debug.temporary(this, "checking out " + input);
-		
+
 		char[] inputChars = input.toLowerCase().toCharArray();
-		
+
 		//int[] resemblence = new int[bolNames.size()];
 		int maxResemblence = -1;
 		int bestBol = 0;
-		
+
 		for (int i=0; i<bolNames.size();i++) {
 			BolName bolName = bolNames.get(i);
 			if (!bolName.isWellDefinedInBolBase()) continue;
 			char[] exact = bolNames.get(i).getName(BolName.EXACT).toLowerCase().toCharArray();
-			
+
 			//Debug.temporary(this, "comparing " + input.toLowerCase() + " to " + bolNames.get(i).getName(BolName.EXACT).toLowerCase());
-			
+
 			for (int j = 0 ;j < Math.min(inputChars.length,exact.length);j++) {
 				//Debug.temporary(this,"comparing " + inputChars[j] + " to " + exact[j]); 
 				if (exact[j]==inputChars[j]) {
@@ -381,7 +401,7 @@ public class BolBase extends BolBaseGeneral {
 					}
 				} else break;
 			}
-			
+
 			if (bestBol == i && maxResemblence == (inputChars.length-1)) {
 				break;
 			}

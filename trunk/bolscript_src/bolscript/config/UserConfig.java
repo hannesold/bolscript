@@ -154,7 +154,7 @@ public class UserConfig {
 		//Debug.temporary(Config.class, pathToBolBase);
 	
 		Config.pathToCompositionsNoSlash = c.getAbsolutePath();
-		//Debug.temporary(Config.class, pathToCompositionsNoSlash);
+		Debug.temporary(Config.class, "pathToCompositionsNoSlash: " + Config.pathToCompositionsNoSlash);
 		Config.pathToCompositions = Config.pathToCompositionsNoSlash + Config.fileSeperator;
 		Debug.temporary(Config.class, Config.pathToCompositions);
 		Config.pathToTalsNoSlash = c.getAbsolutePath() + Config.fileSeperator + "tals";

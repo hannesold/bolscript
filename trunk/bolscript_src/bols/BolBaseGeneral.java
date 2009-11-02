@@ -16,33 +16,33 @@ public abstract class BolBaseGeneral {
 	protected ArrayList<BolMap> bolMaps;
 	protected ArrayList<MidiMap> midiMaps;
 	protected HashMap<BolName,BolName> kaliMaps;
-	
+
 	protected Packets standardReplacements;
 	protected ArrayList<BolNameBundle> standardBolNameBundles;
-	
-	
+
+
 	protected int generalNoteOffset;
-	
+
 	protected BolName emptyBol;
-	
+
 	protected int nrOfWellDefinedBolNames;
-	
+
 	// bolNames = new ArrayList();
-	
+
 	public BolBaseGeneral () {
 		bolNames = new ArrayList<BolName>();
 		wellDefinedBolNames = new ArrayList<BolName>();
-		
+
 		bolMaps = new ArrayList<BolMap>();
 		midiMaps = new ArrayList<MidiMap>();
 		kaliMaps = new HashMap<BolName,BolName>();
 		bundleMap = new HashMap<String,BolNameBundle>();
 		standardReplacements = new Packets();
 		standardBolNameBundles = new ArrayList<BolNameBundle>();
-		
+
 		generalNoteOffset = 0;
 	}
-	
+
 	public BolName getEmptyBol() {
 		//pause bol
 		return emptyBol;
@@ -51,7 +51,7 @@ public abstract class BolBaseGeneral {
 	protected void setEmptyBol(BolName emptyBol) {
 		this.emptyBol = emptyBol;
 	}
-	
+
 	/**
 	 * Marks the Bol with BolName.EXACT equaling the name as the empty Bol, i.e. an explicit pause.
 	 * @param name
@@ -66,60 +66,66 @@ public abstract class BolBaseGeneral {
 		}
 	}
 
-	
+
 	public void addBolNames(String strBolNames) {
 		//strBolNames like "Dha Ge Dhin "...
-		
+
 		Pattern p = Pattern.compile(" ");
 		String[] nameArray = p.split(strBolNames);
-		
+
 		//in constructor?
 		//bolNames.clear();
-		
+
 		for (int i=0; i < nameArray.length; i++) {
 			addBolName(new BolName(nameArray[i]));
 			//bolNames.add(new BolName(nameArray[i]));
 		}
 
 	}
-	
+
+	/**
+	 * Adds a BolName to the BolBase, overwrites any existing with an equal exact name.
+	 * @param bolName
+	 */
 	public void addBolName(BolName bolName) {
-		if (getBolName(bolName.getName(BolName.EXACT)) == null) {
-			
-			bolNames.add(bolName);
-			if (bolName.isWellDefinedInBolBase()) {
-				wellDefinedBolNames.add(bolName);
+		BolName existing = getBolName(bolName.getName(BolName.EXACT));
+		if (existing != null) {
+			bolNames.remove(existing);
+			if (existing.isWellDefinedInBolBase()) {
+				wellDefinedBolNames.remove(existing);
 			}
 		}
+
+		bolNames.add(bolName);
+		if (bolName.isWellDefinedInBolBase()) {
+			wellDefinedBolNames.add(bolName);
+		}
+
 	}
-	
+
 
 	public ArrayList<BolName> getBolNames() {
 		return bolNames;
 	}
-	
-	public BolName getBolName(String name) {
-		boolean found = false;
-		BolName bolName = null;
-	
+
+
+	/**
+	 * Returns the BolName with the given exact Name (but ignoring cases)
+	 * or null if none was found.
+	 * @param exactName
+	 * @return
+	 */
+	public BolName getBolName(String exactName) {
+
 		for (int i=0; i < bolNames.size(); i++) {
-			//find current BolName in allBolNames
-			
-			if (bolNames.get(i).getName(BolName.EXACT).equalsIgnoreCase(name)) {
-				
-				bolName = bolNames.get(i);
-				found = true;
-				//break;
+			if (bolNames.get(i).getName(BolName.EXACT).equalsIgnoreCase(exactName)) {
+				return bolNames.get(i);
 			}
 		}
-		if (found) {
-			return bolName;
-		} else {
-			//System.out.println(name + " not found in bolNames");
-			return null;
-		}
+
+		return null;
 	}
-	
+
 	/**
 	 * Returns the bolNameBundle fitting to the String containing a sequence of exact whitespace-seperated bolnames,
 	 * or Null if none exists.
@@ -131,11 +137,11 @@ public abstract class BolBaseGeneral {
 		//Debug.temporary(this,"result: " + bundleMap.get(exactNames));
 		return bundleMap.get(exactNames);
 	}
-	
+
 	/*public BolNameBundle getOrGenerateBolNameBundle() {
-		
+
 	}*/
-	
+
 	/**
 	 * Adds a bolname bundle. Unlike the other (older) methods, this overwrites existing.
 	 * @param bundle
@@ -143,13 +149,13 @@ public abstract class BolBaseGeneral {
 	public void addBolNameBundle(BolNameBundle bundle) {
 		bundleMap.put(bundle.getExactBolNames(), bundle);
 	}
-	
+
 	public void addReplacementPacket(String key, String val, BolNameBundle bolNameBundle) {
 		Packet replacementPacket = new Packet(key, val, PacketTypeFactory.BOLS, false);
 		replacementPacket.setObject(bolNameBundle);
 		standardReplacements.add(replacementPacket);
 	}
-	
+
 	/**
 	 * Returns packets of type BOL, which are supposed to be used
 	 * for key -> value inserting in Reader.
@@ -157,7 +163,7 @@ public abstract class BolBaseGeneral {
 	public Packets getReplacementPackets () {
 		return standardReplacements;
 	}
-	
+
 	/**
 	 * Returns packets of type BOL, which are supposed to be used
 	 * for key -> value inserting in Reader.
@@ -169,13 +175,13 @@ public abstract class BolBaseGeneral {
 		}
 		return r;
 	}
-	
+
 	public ArrayList<BolNameBundle> getStandardBolNameBundles() {
 		return standardBolNameBundles;
 	}
 
 	public BolMap getBolMap(BolName bolName) {
-		
+
 		boolean found=false;
 		int i=0;
 		while ((i < bolMaps.size())&&(!found)) {
@@ -184,18 +190,18 @@ public abstract class BolBaseGeneral {
 			}
 			i++;
 		}
-		
+
 		if (found) {
 			return ((BolMap) bolMaps.get(i-1));
 		} else {
 			return null;
 		}
 	}
-	
+
 	public MidiMap getMidiMap(BolName bolName, int hand) {
-		
+
 		MidiMap map = null;
-		
+
 		boolean found=false;
 		int i=0; 
 		while ((i < midiMaps.size())&&(!found)) {
@@ -207,7 +213,7 @@ public abstract class BolBaseGeneral {
 			}
 			i++;
 		}
-		
+
 		if (found) {
 			return map;
 		} else {
@@ -215,11 +221,11 @@ public abstract class BolBaseGeneral {
 			return null;
 		}
 	}
-	
+
 	public MidiMap getMidiMap(BolName bolName) {
-		
+
 		MidiMap map = null;
-		
+
 		int i=0; 
 		while (i < midiMaps.size()) {
 			MidiMap currentMap = midiMaps.get(i);
@@ -233,7 +239,7 @@ public abstract class BolBaseGeneral {
 		}
 		return null;
 	}
-	
+
 	public MidiMap getMidiMap(String name) {
 		BolName bolName = getBolName(name);
 		if (bolName != null) {
@@ -243,22 +249,17 @@ public abstract class BolBaseGeneral {
 			return null;
 		}	
 	}
-	
-	public void addMidiMap(MidiMap map){
-		//check if already exists...
-		MidiMap existingMap = getMidiMap(map.getBolName());
-		
-		//Debug.temporary(this, "addMap(" + map+")");
-		if (existingMap==null) {
-			midiMaps.add(map);
-			//Debug.temporary(this, "map: " + map + " added");
-		} else {
-			//Debug.temporary(this, "MidiMap with bolName: " + map.getBolName() + " already exists");
-		}
 
+
+	public void addMidiMap(MidiMap map){
+		MidiMap existingMap = getMidiMap(map.getBolName());
+		if (existingMap!=null) {
+			midiMaps.remove(existingMap);
+		}
+		midiMaps.add(map);
 	}
-	
-	public void addMidiMap(String name, int coordinate, int noteValue, int hand) throws NoBolNameException {
+
+	public MidiMap addMidiMap(String name, int coordinate, int noteValue, int hand)  {
 
 		BolName bolName = getBolName(name);
 		//Debug.temporary(this, "adding Midimap, getBolName("+name+") = " + bolName);
@@ -266,15 +267,19 @@ public abstract class BolBaseGeneral {
 			MidiMap map = new MidiMap(bolName, coordinate, noteValue, hand);
 			//Debug.temporary(this, "generated midimap: " + map);
 			addMidiMap(map);
+			return map;
 		} else {
+			return null;
+		}
+		/*else {
 			throw new NoBolNameException("midiMap not added", name);
-		}	
+		}	*/
 	}
-	
+
 	public void addKaliMap(BolName name1, BolName name2){
 		//check if already exists...
 		BolName existingKaliBol = kaliMaps.get(name1);
-		
+
 		if (existingKaliBol==null) {
 			kaliMaps.put(name1,name2);
 			Debug.debug(this, "kaliBol: " + name1 + " -> " + name2 + " added");
@@ -283,7 +288,7 @@ public abstract class BolBaseGeneral {
 		}
 
 	}
-	
+
 	public void addKaliMap(String name, String name2) throws NoBolNameException {
 		BolName bolName = getBolName(name);
 		BolName bolName2 = getBolName(name2);
@@ -293,7 +298,7 @@ public abstract class BolBaseGeneral {
 			throw new NoBolNameException("kaliMap not added", name);
 		}	
 	}
-	
+
 	public BolName getKaliBolName(BolName bolName) {
 		BolName kb = kaliMaps.get(bolName);
 		if (kb!=null) {
@@ -303,11 +308,11 @@ public abstract class BolBaseGeneral {
 			return bolName;
 		}
 	}
-	
+
 	public void addBolMap(BolMap map) {
 		//check if already exists...
 		BolMap existingMap = getBolMap(map.getBolName());
-		
+
 		if (existingMap==null) {
 			bolMaps.add(map);
 			Debug.debug(this, map + "added");
@@ -315,7 +320,7 @@ public abstract class BolBaseGeneral {
 			Debug.debug(this, "BolMap with bolName: " + map.getBolName().toString() + " already exists");
 		}
 	}
-	
+
 	public void addBolMap(String name, MidiMap hand1, MidiMap hand2) throws NoBolNameException {
 		BolName bolName = getBolName(name);
 		if (bolName != null) {
@@ -325,7 +330,7 @@ public abstract class BolBaseGeneral {
 			throw new NoBolNameException("bolMap not added", name);
 		}	
 	}
-	
+
 	public void addBolMap(String name, MidiMap hand1, MidiMap hand2, double scale1, double scale2) throws NoBolNameException {
 		BolName bolName = getBolName(name);
 		if (bolName != null) {
@@ -343,34 +348,34 @@ public abstract class BolBaseGeneral {
 	public void setGeneralNoteOffset(int generalNoteOffset) {
 		this.generalNoteOffset = generalNoteOffset;
 	}
-		
+
 	public void printAll () {
 		String strBolNames= "\n----\n"+bolNames.size()+" BolNames\n";
 		String strMidiMaps = "\n\n----\n"+midiMaps.size()+" MidiMaps\n";
 		String strBolMaps = "\n----\n"+bolMaps.size()+" BolMaps\n";
-		
+
 		for (int i=0; i < bolNames.size();i++){
 			strBolNames += ((BolName)bolNames.get(i)).toString() + ", ";		
 		}
-		
+
 		for (int i=0; i < midiMaps.size();i++){
 			strMidiMaps += ((MidiMap)midiMaps.get(i)).toString()+ "\n";		
 		}
-		
+
 		for (int i=0; i < bolMaps.size();i++){
 			strBolMaps += ((BolMap)bolMaps.get(i)).toString()+ "\n";		
 		}
-		
+
 		Debug.debug(this, strBolNames + strMidiMaps + strBolMaps);
 	}
-	
+
 	public double getDifference(BolMap bm1, BolMap bm2) {
 		int diffLeft = bm1.getLeftHand().getCoordinate() - bm2.getLeftHand().getCoordinate();
 		int diffRight = bm1.getRightHand().getCoordinate() - bm2.getRightHand().getCoordinate();
 		double diff = Math.sqrt(diffLeft*diffLeft + diffRight*diffRight);
 		return diff;
 	}
-	
+
 	public double getDifference(String name1, String name2) {
 		return getDifference(getBolMap(getBolName(name1)), getBolMap(getBolName(name2)));
 	}
@@ -381,5 +386,5 @@ public abstract class BolBaseGeneral {
 	public ArrayList<BolName> getWellDefinedBolNames() {
 		return wellDefinedBolNames;
 	}
-	
+
 }
