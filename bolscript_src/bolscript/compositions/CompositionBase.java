@@ -8,6 +8,8 @@ import java.io.FileFilter;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
 
+import javax.swing.JOptionPane;
+
 import basics.Debug;
 import basics.FileManager;
 import basics.FileReadException;
@@ -327,6 +329,7 @@ public class CompositionBase implements VisibleCompositionDonator, TalBase{
 	public static String generateFilename(Composition comp, String suffix) {
 		StringBuilder s = new StringBuilder();
 		s.append(Config.pathToCompositions);
+		
 		String seperator = " - ";
 		
 		MetaValues metaValues = comp.getMetaValues();
@@ -351,6 +354,7 @@ public class CompositionBase implements VisibleCompositionDonator, TalBase{
 		String filename = s.toString() + suffix;	
 		File f = new File(filename);		
 		
+		//JOptionPane.showMessageDialog(null, filename);
 		//make sure the filename is unique
 		int i = 1;		
 		while (f.exists()) {

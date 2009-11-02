@@ -23,8 +23,11 @@ import java.awt.SplashScreen;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
 
 import javax.swing.JOptionPane;
+
+import com.sun.org.apache.xalan.internal.xsltc.compiler.Pattern;
 
 import midi.MidiStationSimple;
 import basics.Debug;
@@ -108,13 +111,13 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 		if (splashScreen==null) {
 			debug.critical("SplashScreen not loaded!");
 		}
-		//debug.showErrorConsole();
-
+		
 		GUI.init();
 
 		PacketTypeFactory.init();
 
-		/*
+		//force previous uninstall!
+		/* 
 		try {
 			UserConfig.uninstall();
 		} catch (Exception e) {
@@ -123,7 +126,6 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 		}*/
 		
 		Config.init();
-
 		
 		//Turn on midi or not
 		/*try {
@@ -142,14 +144,11 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 			prefsDialog.setVisible(true);
 		}
 
-
 		EventQueue.invokeLater(new Runnable() { public void run() {
 			showLoadingframeThenLoad();
 		}});
-
-
-
 	}
+	
 	public void showLoadingframeThenLoad() {
 		//loadingFrame = new LoadingTablafolder();
 		//loadingFrame.setVisible(true);
@@ -257,6 +256,16 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 		//windows implementation
 		if (Config.OS == Config.WINDOWS) {
 			try {
+				
+				/**
+				 * fix a problem which is unclear to me at the moment, where
+				 * \\ apears instead of \ in a path after saving a new composition.
+				 */
+				filename = filename.replaceAll("[\\\\]+", Matcher.quoteReplacement("\\"));
+				
+				/**
+				 * Tell Windows Explorer to show the file
+				 */
 				Runtime.getRuntime().exec("explorer.exe /select, \""+filename+"\"");
 			} catch (IOException e) {
 				debug.critical("could not show file in explorer, " + e);

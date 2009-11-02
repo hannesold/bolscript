@@ -3,6 +3,7 @@ package gui.bolscript.tasks;
 import gui.bolscript.BolscriptDocument;
 import gui.bolscript.composition.CompositionPanel;
 import gui.bolscript.tables.BolBasePanel;
+import gui.bolscript.tasks.Task.TaskException;
 
 import java.util.ArrayList;
 
@@ -44,7 +45,7 @@ public class PlainCaretMoveTasks extends TaskList {
 		tasks.add(
 				new Task("DeterminePacketAndUnitAtCaret", Task.ExecutionThread.AnyThread) {
 					@Override
-					public void doTask() {
+					public void doTask() throws TaskException {
 						highlightedReferencedPacket = null;
 						
 						Packets packets = comp.getPackets();
@@ -66,7 +67,7 @@ public class PlainCaretMoveTasks extends TaskList {
 		tasks.add(
 				new Task("UpdateDocumentStyles", Task.ExecutionThread.EventQueue) {
 					@Override
-					public void doTask() {
+					public void doTask() throws TaskException {
 						document.setCaretPosition(caretPosition);
 						document.setHighlightedReferencedPacket(highlightedReferencedPacket);
 						document.updateStylesNow(comp.getPackets());
@@ -75,7 +76,7 @@ public class PlainCaretMoveTasks extends TaskList {
 		tasks.add(
 				new Task("UpdateBolBasePanel", Task.ExecutionThread.EventQueue) {
 					@Override
-					public void doTask() {
+					public void doTask() throws TaskException {
 						if (unitAtCaretPosition != null) {
 							if (unitAtCaretPosition.getType() == Representable.BOL) {
 								Bol bol = (Bol) unitAtCaretPosition;
@@ -90,7 +91,7 @@ public class PlainCaretMoveTasks extends TaskList {
 				new Task("UpdateCompPanelByHighlightingAndScrolling", Task.ExecutionThread.EventQueue) {
 
 					@Override
-					public void doTask() {
+					public void doTask() throws TaskException {
 						compPanel.highlightPacketNow(packetAtCaretPosition);
 					}
 					
