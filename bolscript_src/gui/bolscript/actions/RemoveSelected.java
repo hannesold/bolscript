@@ -84,10 +84,10 @@ public class RemoveSelected extends AbstractAction implements EnablingUpdatable{
 				} else remove = true;
 
 				if ( remove && comp != null) {
-					Debug.temporary(this, "not removable: " + comp);
+					//Debug.temporary(this, "not removable: " + comp);
 					compsToRemove.remove(comp);
 				} else {
-					Debug.temporary(this, "keeping removable: " + comp);
+					//Debug.temporary(this, "keeping removable: " + comp);
 				}
 			}
 		}
