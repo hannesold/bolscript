@@ -2,7 +2,7 @@
 #labels Featured
 
 == General structure ==
-Each composition is kept in one bolscript file with the file ending `.comp.txt`, with the only exception being tals, which need to have the ending `.tal.txt`.
+Each composition is kept in one bolscript file with the file ending `.bols.txt`, with the only exception being tals, which need to have the ending `.tal.bols.txt`.
 
 == Key / Value pairs ==
 Each bolscript file is made up of key/value packets of the form
