@@ -138,7 +138,7 @@ public class CompositionBase implements VisibleCompositionDonator, TalBase{
 		if (compToOverwrite == comp) {
 			Debug.debug(this, "Composition is saved:");
 			//comp is saved
-			FileManager.writeFile(filename, comp.getRawData(), Config.compositionEncoding);
+			FileManager.writeFile(filename, comp.getCompleteDataForStoring(), Config.compositionEncoding);
 			Debug.debug(this, "...is saved");
 			comp.getDataState().save(comp);
 			
@@ -153,7 +153,7 @@ public class CompositionBase implements VisibleCompositionDonator, TalBase{
 			
 			Debug.debug(this, "Composition is overwritten:");
 			//comp is saved
-			FileManager.writeFile(filename, comp.getRawData(), Config.compositionEncoding);
+			FileManager.writeFile(filename, comp.getCompleteDataForStoring(), Config.compositionEncoding);
 			Debug.debug(this, "...is saved");
 			comp.getDataState().save(comp);
 			
@@ -163,7 +163,7 @@ public class CompositionBase implements VisibleCompositionDonator, TalBase{
 				String oldFileName = comp.getLinkLocal();
 				
 				//comp is saved under new filename
-				FileManager.writeFile(filename, comp.getRawData(), Config.compositionEncoding);
+				FileManager.writeFile(filename, comp.getCompleteDataForStoring(), Config.compositionEncoding);
 				Debug.debug(this, "...is saved to new filename.");
 				comp.setLinkLocal(filename);
 				comp.rebuildFulltextSearch();

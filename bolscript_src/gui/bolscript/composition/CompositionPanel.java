@@ -327,12 +327,12 @@ public class CompositionPanel extends JLayeredPane {
 	}
 
 	public void renderComposition(Composition comp, boolean onlyPrepare) {
-		if (comp.getPackets() != null) {
+		if (comp.getEditorPackets() != null) {
 			this.composition = comp;
 			this.bundlingMap = BundlingDepthToSpeedMap.getBundlingDepthToSpeedMap(composition.getMaxSpeed());
 			setBundlingDepth(UserConfig.stdBundlingDepth);
 			setFontSizeInc(UserConfig.stdFontSizeIncrease);
-			this.packets = comp.getPackets();
+			this.packets = comp.getEditorPackets();
 			updateActionEnabling();
 			prepareRendering(false);			
 		} else {

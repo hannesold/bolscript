@@ -118,6 +118,14 @@ public interface PacketType extends Comparable<PacketType> {
 	 * The color of the key in the composition editor.
 	 */
 	Color getKeyColor();
+
+	/**
+	 * <ul>
+	 * <li>true: Packets of this type are shown in the text-based editor</li>
+	 * <li>false: Packets of this type are not shown in the editor</li>
+	 * </ul>
+	 */
+	boolean displayForEditingInTextEditor();
 	
 	
 }

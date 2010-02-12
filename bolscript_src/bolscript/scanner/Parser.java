@@ -98,10 +98,10 @@ public class Parser {
 		int i = 0;
 
 		while (i<newPackets.size()) {
-			Packet current = newPackets.get(i);
-			String currentKey = current.getKey();
+			Packet current 		= newPackets.get(i);
+			String currentKey 	= current.getKey();
 			String currentValue = current.getValue();
-			Packet added = null;
+			Packet added 		= null;
 
 			Packet correspondingOldPacket = null;
 			for (int j=lastUsedOldPacket+1; j < oldPackets.size();j++) {
@@ -270,6 +270,8 @@ public class Parser {
 	 * Packet.keyPacketTypes and Packet.visibilityMap.
 	 * The hide-symbol "$" at the beginning of a key is removed and 
 	 * the packet is assigned invisible.
+	 * Packets of a type which is marked as non-user-editable meta data (currently history-packets)
+	 * are ignored when building the textReferences.
 	 * 
 	 * @param input An input string in bolscript format.
 	 * @return A Packets container containing the Packets that were 
@@ -287,6 +289,7 @@ public class Parser {
 
 		int i=0;
 
+		
 		while (m.find()) {
 			//isVisible
 
@@ -300,15 +303,15 @@ public class Parser {
 
 			if (key.length()>0) { //ignore packets with empty keys
 				packetReference = new TextReference(result.start(0),result.end(0), 0);
-				keyReference = new TextReference(result.start(2),result.end(2), 0);
-				valueReference = new TextReference(result.start(3),result.end(3), 0);
+				keyReference 	= new TextReference(result.start(2),result.end(2), 0);
+				valueReference 	= new TextReference(result.start(3),result.end(3), 0);
 
 
 				PacketType type = PacketTypeFactory.getType(m.group(2).toUpperCase());
 				//debug.temporary(m.group(2).toUpperCase() + " => " + type);
 				boolean isVisible = type.displayInCompositionView() && (m.group(1) == null);
 
-				Packet packet = new Packet(m.group(2), m.group(3), type, isVisible);
+				Packet packet = new Packet(m.group(2), m.group(3), type, isVisible);				
 				
 				packet.setTextReferencePacket(packetReference);
 				packet.setTextRefKey(keyReference);
@@ -376,8 +379,9 @@ public class Parser {
 				}
 				break;
 			case PacketTypeFactory.HISTORY:
-				String[] lines = p.getValue().split(Parser.N);
+				String[] lines = p.getValue().replaceAll(SNatBeginningOrEnd, "").split(Parser.N);
 				
+				Debug.temporary(Parser.class, "parsing History-entries: \"" + p.getValue() +"\"");
 				HistoryEntries historyEntries = new HistoryEntries();
 				
 				for (int i=0; i < lines.length; i++) {					
@@ -385,10 +389,12 @@ public class Parser {
 					
 					HistoryEntry entry = null;
 					try {
+						Debug.temporary(Parser.class, "parsing History-entry-candidate: " + input);
 						entry = HistoryEntry.fromString(input);
 					} catch (ParseException e) {
 						Debug.critical(Parser.class, e);
 						e.printStackTrace();
+						
 					}
 					if (entry != null) {
 						historyEntries.add(entry);

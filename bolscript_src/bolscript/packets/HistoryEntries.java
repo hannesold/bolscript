@@ -8,7 +8,7 @@ import java.util.Date;
 import bolscript.packets.types.HistoryEntry;
 import bolscript.packets.types.HistoryEntryDateComparator;
 
-public class HistoryEntries {
+public class HistoryEntries implements BolscriptFormattableValue{
 	private ArrayList<HistoryEntry> entries;
 	
 	public HistoryEntries() {
@@ -59,5 +59,15 @@ public class HistoryEntries {
 			builder.append("\n");			
 		}
 		return builder.toString();
+	}
+
+	@Override
+	public String formatAsBolscriptValue() {
+		StringBuilder builder = new StringBuilder();
+		for(int i = 0; i < entries.size(); i++) {			
+			builder.append(entries.get(i).formatForBolscript() + "\n");
+		}
+		return builder.toString();
+		
 	}
 }

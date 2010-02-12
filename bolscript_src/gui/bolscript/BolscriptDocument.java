@@ -207,7 +207,7 @@ public class BolscriptDocument extends DefaultStyledDocument{
 
 	/**
 	 * Rebuilds undo listeners from backup
-	 * @param packets
+	 * @param editorPackets
 	 */
 	public void rebuildListeners() {
 		for (UndoableEditListener listener:undoListeners) {

@@ -48,7 +48,7 @@ public class PlainCaretMoveTasks extends TaskList {
 					public void doTask() throws TaskException {
 						highlightedReferencedPacket = null;
 						
-						Packets packets = comp.getPackets();
+						Packets packets = comp.getEditorPackets();
 						packetAtCaretPosition = packets.getPacketAtCaretPosition(caretPosition);
 						
 						if (packetAtCaretPosition != null) {
@@ -70,7 +70,7 @@ public class PlainCaretMoveTasks extends TaskList {
 					public void doTask() throws TaskException {
 						document.setCaretPosition(caretPosition);
 						document.setHighlightedReferencedPacket(highlightedReferencedPacket);
-						document.updateStylesNow(comp.getPackets());
+						document.updateStylesNow(comp.getEditorPackets());
 					}
 				});
 		tasks.add(

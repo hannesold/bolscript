@@ -56,25 +56,25 @@ public class PacketTypeFactory {
 		if (!initialized) {
 
 			types 			= new PacketType[PacketTypeFactory.nrOfTypes];
-			types[BOLS] 	= new PacketTypeStandard(BOLS, "Bol", "Bols", 				new String[]{},false,0,			StorageType.OTHER,		ParseMode.OTHER,true,false,true,bolKeyColor);
-			types[FOOTNOTE] = new PacketTypeStandard(FOOTNOTE,"Footnote", "Footnotes", 	new String[]{}, false,0,		StorageType.STRINGLIST,	ParseMode.NONE,true,true,true,metaKeyColor);
-			types[SPEED] 	= new PacketTypeStandard(SPEED, "Speed", "Speeds",			new String[]{"SPEED"},true,-60,	StorageType.STRINGLIST,	ParseMode.OTHER,false,true,true,metaKeyColor);
-			types[FAILED] 	= new PacketTypeStandard(FAILED,"Failed","Failed",			new String[]{},false,0,			StorageType.NONE,		ParseMode.NONE,false,true,false,failedKeyColor);
-			types[LAYOUT] 	= new PacketTypeStandard(LAYOUT,"Layout","Layouts",			new String[]{"LAYOUT"},false,0,	StorageType.STRING, 	ParseMode.OTHER,false,true,false,metaKeyColor);
-			types[LENGTH] 	= new PacketTypeStandard(LENGTH, "Length", "Lengths", 		new String[]{"LENGTH"},false,0,	StorageType.STRING,		ParseMode.OTHER,false,true,false,metaKeyColor);
-			types[NAME] 	= new PacketTypeStandard(NAME, "Name", "Names", 			new String[]{"NAME"},true,-100,	StorageType.STRING,		ParseMode.STRING,false,true,true,metaKeyColor);
-			types[VIBHAGS] 	= new PacketTypeStandard(VIBHAGS, "Vibhag", "Vibhags", 		new String[]{"VIBHAGS"},false,0,StorageType.STRING,		ParseMode.OTHER,false,false,false,metaKeyColor);
-			types[TAL] 		= new PacketTypeStandard(TAL,"Tal","Tals",					new String[]{"TAL", "TALS", "TALA"},true, -90, 	StorageType.STRINGLIST, ParseMode.STRING,false,true,true,metaKeyColor);
-			types[TYPE]		= new PacketTypeStandard(TYPE,"Type","Types", 				new String[]{"TYPE","TYPES"},true,-80,			StorageType.STRINGLIST,	ParseMode.COMMASEPERATED,false,true,true,metaKeyColor);
-			types[GHARANA] 	= new PacketTypeStandard(GHARANA,"Gharana", "Gharanas", 	new String[]{"GHARANA","GHARANAS"},true,	0,	StorageType.STRINGLIST,	ParseMode.COMMASEPERATED,false,true,true,metaKeyColor);
-			types[EDITOR] 	= new PacketTypeStandard(EDITOR, "Editor", "Editors", 		new String[]{"EDITOR","EDITORS"},true,0,		StorageType.STRINGLIST,	ParseMode.COMMASEPERATED,false,true,true,metaKeyColor);
-			types[COMMENT] 	= new PacketTypeStandard(COMMENT, "Comment", "Comments", 	new String[]{"COMMENT","COMMENTS"}, false, 0, 	StorageType.STRINGLIST, ParseMode.STRING, true, true, true, metaKeyColor);
-			types[COMPOSER]	= new PacketTypeStandard(COMPOSER, "Composer", "Composers", new String[]{"COMPOSER","COMPOSERS"}, true, 0, 	StorageType.STRINGLIST, ParseMode.COMMASEPERATED, false, true, true, metaKeyColor);
-			types[SOURCE]	= new PacketTypeStandard(SOURCE, "Source", "Sources", 		new String[]{"SOURCE","SOURCES"}, true, -50, 	StorageType.STRINGLIST, ParseMode.STRING, false, true, true, metaKeyColor);
-			types[KEYS]		= new PacketTypeStandard(KEYS,"Key","Keys",					new String[]{}, false,0,						StorageType.STRINGLIST,	ParseMode.NONE,false,true,true,metaKeyColor);
-			types[SNIPPET]	= new PacketTypeStandard(SNIPPET, "Snippet", "Snippets", 	new String[]{"Snippet","Snippets"},true,-40,	StorageType.STRING,		ParseMode.STRING,false,true,true,metaKeyColor);
-			types[HISTORY]  = new PacketTypeStandard(HISTORY, "History", "History", 	new String[]{"HISTORY"},false,0, 				StorageType.NONE,		ParseMode.OTHER,false,true,true,metaKeyColor);
-			types[CREATED]  = new PacketTypeStandard(CREATED, "Created", "Created", 	new String[]{},true,0, 				StorageType.STRING,		ParseMode.OTHER,false,true,true,metaKeyColor);
+			types[BOLS] 	= new PacketTypeStandard(BOLS, "Bol", "Bols", 				new String[]{},false,0,			StorageType.OTHER,		ParseMode.OTHER,true,true,false,true, bolKeyColor);
+			types[FOOTNOTE] = new PacketTypeStandard(FOOTNOTE,"Footnote", "Footnotes", 	new String[]{}, false,0,		StorageType.STRINGLIST,	ParseMode.NONE,true,true,true,true, metaKeyColor);
+			types[SPEED] 	= new PacketTypeStandard(SPEED, "Speed", "Speeds",			new String[]{"SPEED"},true,-60,	StorageType.STRINGLIST,	ParseMode.OTHER,true,false,true,true, metaKeyColor);
+			types[FAILED] 	= new PacketTypeStandard(FAILED,"Failed","Failed",			new String[]{},false,0,			StorageType.NONE,		ParseMode.NONE,true,false,true,false, failedKeyColor);
+			types[LAYOUT] 	= new PacketTypeStandard(LAYOUT,"Layout","Layouts",			new String[]{"LAYOUT"},false,0,	StorageType.STRING, 	ParseMode.OTHER,true,false,true,false, metaKeyColor);
+			types[LENGTH] 	= new PacketTypeStandard(LENGTH, "Length", "Lengths", 		new String[]{"LENGTH"},false,0,	StorageType.STRING,		ParseMode.OTHER,true,false,true,false, metaKeyColor);
+			types[NAME] 	= new PacketTypeStandard(NAME, "Name", "Names", 			new String[]{"NAME"},true,-100,	StorageType.STRING,		ParseMode.STRING,true,false,true,true, metaKeyColor);
+			types[VIBHAGS] 	= new PacketTypeStandard(VIBHAGS, "Vibhag", "Vibhags", 		new String[]{"VIBHAGS"},false,0,StorageType.STRING,		ParseMode.OTHER,true,false,false,false, metaKeyColor);
+			types[TAL] 		= new PacketTypeStandard(TAL,"Tal","Tals",					new String[]{"TAL", "TALS", "TALA"},true, -90, 	StorageType.STRINGLIST, ParseMode.STRING,true,false,true,true, metaKeyColor);
+			types[TYPE]		= new PacketTypeStandard(TYPE,"Type","Types", 				new String[]{"TYPE","TYPES"},true,-80,			StorageType.STRINGLIST,	ParseMode.COMMASEPERATED,true,false,true,true, metaKeyColor);
+			types[GHARANA] 	= new PacketTypeStandard(GHARANA,"Gharana", "Gharanas", 	new String[]{"GHARANA","GHARANAS"},true,	0,	StorageType.STRINGLIST,	ParseMode.COMMASEPERATED,true,false,true,true, metaKeyColor);
+			types[EDITOR] 	= new PacketTypeStandard(EDITOR, "Editor", "Editors", 		new String[]{"EDITOR","EDITORS"},true,0,		StorageType.STRINGLIST,	ParseMode.COMMASEPERATED,true,false,true,true, metaKeyColor);
+			types[COMMENT] 	= new PacketTypeStandard(COMMENT, "Comment", "Comments", 	new String[]{"COMMENT","COMMENTS"}, false, 0, 	StorageType.STRINGLIST, ParseMode.STRING, true, true, true, true, metaKeyColor);
+			types[COMPOSER]	= new PacketTypeStandard(COMPOSER, "Composer", "Composers", new String[]{"COMPOSER","COMPOSERS"}, true, 0, 	StorageType.STRINGLIST, ParseMode.COMMASEPERATED, true, false, true, true, metaKeyColor);
+			types[SOURCE]	= new PacketTypeStandard(SOURCE, "Source", "Sources", 		new String[]{"SOURCE","SOURCES"}, true, -50, 	StorageType.STRINGLIST, ParseMode.STRING, true, false, true, true, metaKeyColor);
+			types[KEYS]		= new PacketTypeStandard(KEYS,"Key","Keys",					new String[]{}, false,0,						StorageType.STRINGLIST,	ParseMode.NONE,true,false,true,true, metaKeyColor);
+			types[SNIPPET]	= new PacketTypeStandard(SNIPPET, "Snippet", "Snippets", 	new String[]{"Snippet","Snippets"},true,-40,	StorageType.STRING,		ParseMode.STRING,true,false,true,true, metaKeyColor);
+			types[HISTORY]  = new PacketTypeStandard(HISTORY, "History", "History", 	new String[]{"HISTORY"},false,0, 				StorageType.NONE,		ParseMode.OTHER,false,false,true,true, metaKeyColor);
+			types[CREATED]  = new PacketTypeStandard(CREATED, "Created", "Created", 	new String[]{},true,0, 				StorageType.STRING,		ParseMode.OTHER,true,false,true,true, metaKeyColor);
 			
 			keyTypeMap = new HashMap<String, PacketType>();
 			for (int i=0; i < nrOfTypes; i++) {

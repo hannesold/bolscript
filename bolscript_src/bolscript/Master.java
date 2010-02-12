@@ -278,12 +278,12 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 
 	public void saveEditorAs(EditorFrame editor, String filename) {
 		Composition comp = editor.getComposition();
-		comp.setRawData(editor.getText());
-		comp.extractInfoFromRawData();
+		comp.setEditableRawData(editor.getText());
+		comp.extractInfoFromEditableRawData();
 
 		try {
 			compositionBase.saveCompositionToFile(comp, filename);
-			editor.getComposition().backUpRawData();
+			editor.getComposition().backUpEditableRawData();
 			debug.debug("Saved composition " + comp);
 		} catch (FileWriteException ex) {
 			debug.critical("Could not save composition: " + ex);
@@ -337,7 +337,7 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 		if (comp.getDataState() != DataState.EDITING) {
 			comp.establishRawData();
 			if (comp.establishRawData()) {
-				comp.backUpRawData();
+				comp.backUpEditableRawData();
 
 				comp.getDataState().open(comp);
 
