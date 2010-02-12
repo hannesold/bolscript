@@ -59,6 +59,7 @@ public class CellBorder implements Border {
 	public void paintBorder(Component c, Graphics g, int x, int y, int width,
 			int height) {
 		
+		//g.drawString("123", cellPadding, height-2);
 		for (int i=0; i < nrOfSteps;i++) {
 			g.setColor(steps[i]);
 			int margin = cellPadding+(i*stepWidth);

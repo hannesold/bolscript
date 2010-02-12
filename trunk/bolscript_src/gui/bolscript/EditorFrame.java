@@ -3,6 +3,7 @@ package gui.bolscript;
 import gui.bolscript.actions.CloseEditor;
 import gui.bolscript.composition.CompositionPanel;
 import gui.bolscript.dialogs.SaveChangesDialog;
+import gui.bolscript.sequences.UnitPanelListener;
 import gui.bolscript.tables.BolBasePanel;
 import gui.bolscript.tasks.EditTasks;
 import gui.bolscript.tasks.ListWorker;
@@ -35,8 +36,10 @@ import basics.Debug;
 import bolscript.compositions.Composition;
 import bolscript.compositions.CompositionChangeEvent;
 import bolscript.compositions.CompositionChangedListener;
+import bolscript.packets.Packet;
+import bolscript.sequences.Representable;
 
-public class EditorFrame extends JFrame implements WindowListener, CompositionChangedListener, DocumentListener, CaretListener, ComponentListener {
+public class EditorFrame extends JFrame implements WindowListener, CompositionChangedListener, DocumentListener, CaretListener, ComponentListener, UnitPanelListener {
 
 	CompositionPanel compositionPanel;
 	CompositionFrame compositionFrame;
@@ -229,6 +232,12 @@ public class EditorFrame extends JFrame implements WindowListener, CompositionCh
 		}
 	}
 	
+	@Override
+	public void unitClickedInSequencePanel(Representable r, Packet containingPacket) {
+		Debug.temporary(this, r +" clicked in Packet " + containingPacket);
+		
+	}
+	
 	public void viewerFrameResized(ComponentEvent e) {
 		compile();
 	}
@@ -290,6 +299,8 @@ public class EditorFrame extends JFrame implements WindowListener, CompositionCh
 	@Override
 	public void componentShown(ComponentEvent e) {
 	}
+
+	
 
 
 

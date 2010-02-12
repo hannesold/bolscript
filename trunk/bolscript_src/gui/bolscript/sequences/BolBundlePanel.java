@@ -27,5 +27,9 @@ public BolBundlePanel(BolBundle bundle, Dimension size, boolean isEmphasized, in
 		
 		
 	}
+
+	public BolBundle getBolBundle() {
+		return bundle;
+	}
 	
 }

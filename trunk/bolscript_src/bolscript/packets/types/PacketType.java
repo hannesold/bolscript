@@ -27,7 +27,7 @@ public interface PacketType extends Comparable<PacketType> {
 	
 	public enum ParseMode{
 		/**
-		 * This packet is subject to parsing
+		 * This packet is NOT subject to parsing
 		 */
 		NONE,
 		/**
