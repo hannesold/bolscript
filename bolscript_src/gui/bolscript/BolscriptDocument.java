@@ -24,13 +24,14 @@ import bolscript.packets.types.PacketType;
 import bolscript.packets.types.PacketTypeFactory;
 import bolscript.sequences.Representable;
 import bolscript.sequences.RepresentableSequence;
+import bolscript.sequences.SpeedUnit;
 
 public class BolscriptDocument extends DefaultStyledDocument{
 
 	private static final String HIGHLIGHTED_MARKER = "___HIGHLIGHTED";
 	static Color editorMetaColor = new Color(20,200,20);
 	static Color footnoteColor = new Color(20,20,200);
-	static Color bolKeyColor = Color.BLACK;
+	static Color bolKeyColor = new Color(0,0,0);
 	static Color unitColor = Color.BLACK;
 
 	static Color failedKeyColor = bolKeyColor;
@@ -88,14 +89,19 @@ public class BolscriptDocument extends DefaultStyledDocument{
 		rootStyle = addStyle("root", null);
 		StyleConstants.setForeground(rootStyle, Color.BLACK);
 		StyleConstants.setBackground(rootStyle, Color.WHITE);
+		//StyleConstants.setFontFamily(rootStyle,"Tahoma");
+		//StyleConstants.setFontSize(rootStyle, 13);
 
 		styleMetaKey = addStyle("key", rootStyle);
 		StyleConstants.setBold(styleMetaKey, true);
 		StyleConstants.setForeground(styleMetaKey, editorMetaColor);
-
+		StyleConstants.setFontSize(styleMetaKey, 13);
+		
+		
 		styleBolKey = addStyle("meta", styleMetaKey);
 		StyleConstants.setForeground(styleBolKey, bolKeyColor);
-
+		StyleConstants.setFontSize(styleBolKey, 13);
+		
 		styleFailedKey = addStyle("failedkey", styleMetaKey);
 		styleFailedValue = addStyle("failedkey", styleMetaValue);
 		StyleConstants.setForeground(styleFailedKey, failedKeyColor);
@@ -154,7 +160,10 @@ public class BolscriptDocument extends DefaultStyledDocument{
 		}
 		keyStyleMaps.put(PacketTypeFactory.FAILED, styleFailedKey);
 		valueStyleMaps.put(PacketTypeFactory.FAILED, styleFailedValue);
-
+		
+		valueStyleMaps.put(PacketTypeFactory.SPEED, styleSpeed);
+		valueStyleMaps.put(PacketTypeFactory.TAL, styleSpeed);
+		
 		Enumeration<?> names = getStyleNames();
 
 		ArrayList<String> existing = new ArrayList<String>();
@@ -239,7 +248,7 @@ public class BolscriptDocument extends DefaultStyledDocument{
 					//Debug.temporary(getClass(), "val: " + p.getTextRefValue());
 					setCharacterAttributes(p.getTextRefKey().start(), p.getTextReference().length(), keyStyle, true);
 					setCharacterAttributes(p.getTextRefValue().start(), p.getTextRefValue().length(), valStyle, true);
-
+					
 
 					if (p.getType() == PacketTypeFactory.BOLS) {
 
@@ -317,6 +326,9 @@ public class BolscriptDocument extends DefaultStyledDocument{
 		case Representable.KARDINALITY_MODIFIER:
 			return styleKardinality;
 		case Representable.SPEED:
+			/*if (((SpeedUnit) r).isAbsolute()) {
+				return styleFailedValue;
+			} else */
 			return styleSpeed;
 		}
 

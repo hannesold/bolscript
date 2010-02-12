@@ -737,7 +737,7 @@ public class RepresentableSequence implements Representable, Collection<Represen
 
 			if (currentDepth == 0) {
 				flat.add(currentSpeedUnit);
-//				Debug.temporary(this, "adding initial speed unit " + basicSpeedUnit);
+				//Debug.temporary(this, "adding initial speed unit " + basicSpeedUnit);
 			}
 			currentDepth++;
 
@@ -753,17 +753,18 @@ public class RepresentableSequence implements Representable, Collection<Represen
 
 					if (s.isAbsolute() &! currentSpeedUnit.getSpeed().equals(s.getSpeed())) {
 						//add new absolute speeds directly
-//						Debug.temporary(this, "adding abs speed " + s);
+						//Debug.temporary(this, "adding abs speed " + s + " (current speed was: " + currentSpeedUnit+")");
 						flat.add(s);
 						currentSpeedUnit = s;
-					} else {
+					} else if (!s.isAbsolute()){
 						//add relative speeds by multiplying with base speed
+						
 						Rational speedCandidate = s.getSpeed().times(basicSpeedUnit.getSpeed());
 						if (!currentSpeedUnit.getSpeed().equals(speedCandidate)) {
 							//only add if it differs from the current speed
 							SpeedUnit newSpeedUnit = new SpeedUnit(speedCandidate,true,s.getTextReference());
 							flat.add(newSpeedUnit);
-//							Debug.temporary(this, "adding (multiplied rel) speed " + s);
+							//Debug.temporary(this, "adding (multiplied rel) speed " + s + " (current speed was: " + currentSpeedUnit+")");
 							currentSpeedUnit = newSpeedUnit;
 						}
 					}

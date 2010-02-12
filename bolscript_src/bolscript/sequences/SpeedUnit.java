@@ -36,7 +36,7 @@ public class SpeedUnit extends Unit implements Representable{
 	}
 	
 	public String toString() {
-		return obj.toString() + ((absolute)?"!":"");
+		return obj.toString() + ((absolute)?"abs":"rel");
 	}
 		
 	public Rational getSpeed() {

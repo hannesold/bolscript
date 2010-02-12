@@ -1,5 +1,6 @@
 package gui.bolscript.composition;
 
+import gui.bolscript.CompositionFrame;
 import gui.bolscript.actions.DecreaseBundling;
 import gui.bolscript.actions.DecreaseFontSize;
 import gui.bolscript.actions.IncreaseBundling;
@@ -10,6 +11,7 @@ import gui.bolscript.packets.CommentText;
 import gui.bolscript.packets.FootnoteText;
 import gui.bolscript.sequences.SequencePanel;
 import gui.bolscript.sequences.SequenceTitlePanel;
+import gui.bolscript.sequences.UnitPanelListener;
 import gui.menus.ViewerActions;
 import gui.playlist.HighlightablePanel;
 
@@ -85,6 +87,7 @@ public class CompositionPanel extends JLayeredPane {
 	Long renderTaskNr = new Long(0);
 	Long finishedRenderTaskNr = new Long(0);
 	
+	
 	/**
 	 * The talBase is queried for retrieving a Tal Object to a Name String 
 	 */
@@ -136,12 +139,15 @@ public class CompositionPanel extends JLayeredPane {
 	private Worker preparedWorker;
 
 
-	public CompositionPanel (Dimension size, int language, TalBase talBase) {
+	private CompositionFrame compositionFrame = null;
+	
+	public CompositionPanel (Dimension size, int language, TalBase talBase, CompositionFrame compositionFrame) {
 		super();
 		this.language = language;
 		this.talBase = talBase;
 		packetMap = new HashMap<Packet, HighlightablePanel>();
 		init(size);
+		this.compositionFrame = compositionFrame;
 	}
 
 	public void init(Dimension size) {
@@ -360,6 +366,10 @@ public class CompositionPanel extends JLayeredPane {
 		synchronized(renderTaskNr) {
 			renderTaskNr++;
 		}
+		UnitPanelListener unitPanelListener = null;
+		if (compositionFrame != null) {
+			unitPanelListener = compositionFrame.getEditor();
+		}
 		
 		int newHeight = 0;
 		//Debug.critical(this, "determined renderingwidth: " + this.getParent().getParent().getSize().width);
@@ -434,7 +444,8 @@ public class CompositionPanel extends JLayeredPane {
 							seq = ((RepresentableSequence) p.getObject()).getBundled(bundlingMap,bundlingDepth, true);
 						}*/
 						
-						SequencePanel sequencePanel = new SequencePanel(seq, tal, variationDim, 0,"",0, language, GuiConfig.bolFontSizeStd[language] + fontSizeIncrease, p);
+						
+						SequencePanel sequencePanel = new SequencePanel(seq, tal, variationDim, 0,"",0, language, GuiConfig.bolFontSizeStd[language] + fontSizeIncrease, p, unitPanelListener );
 
 						addLineBreak(new Float(newHeight), PageBreakPanel.LOW);
 						components.add(sequencePanel);
@@ -752,6 +763,11 @@ public class CompositionPanel extends JLayeredPane {
 	public void setHighlightedPaket(Packet packetAtCaretPosition) {
 		this.packetAtCaretPosition = packetAtCaretPosition; 
 
+	}
+
+	public void setCompositionFrame(CompositionFrame compositionFrame) {
+		this.compositionFrame =compositionFrame;
+		
 	}
 
 

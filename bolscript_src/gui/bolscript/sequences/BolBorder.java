@@ -22,6 +22,7 @@ public class BolBorder implements Border {
 			int height) {
 	
 		g.setColor(color);
+		
 		g.drawLine(0, y+height-stickHeight, 0, y+height-1);
 	}
 

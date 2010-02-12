@@ -65,7 +65,7 @@ public class CompositionFrame extends JFrame implements WindowListener, Composit
 			
 			this.setTitle("");
 			bolBase = BolBase.standard();
-			compositionPanel = new CompositionPanel(size, UserConfig.standardLanguage, talBase);
+			compositionPanel = new CompositionPanel(size, UserConfig.standardLanguage, talBase, this);
 			
 			JPanel p = new JPanel();
 			scrollPane = new JScrollPane(p);
@@ -99,6 +99,7 @@ public class CompositionFrame extends JFrame implements WindowListener, Composit
 
 		public void setCompositionPanel(CompositionPanel compositionPanel) {
 			this.compositionPanel = compositionPanel;
+			compositionPanel.setCompositionFrame(this);
 		}
 
 		public EditorFrame getEditor() {

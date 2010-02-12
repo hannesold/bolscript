@@ -23,6 +23,7 @@ import bols.tals.Tal;
 import bols.tals.TalBase;
 import bolscript.Master;
 import bolscript.config.Config;
+import bolscript.packets.HistoryEntries;
 import bolscript.packets.Packet;
 import bolscript.packets.Packets;
 import bolscript.packets.types.PacketType;
@@ -53,6 +54,8 @@ public class Composition implements DataStatePosessor{
 
 	protected String linkLocal = null;
 	protected String linkServer = null;
+	
+	protected HistoryEntries history = null;
 
 	protected int id = 0; //id on the database
 
@@ -140,16 +143,26 @@ public class Composition implements DataStatePosessor{
 		searchBuilderChanged = true;
 	}
 
+	/**
+	 * Returns a String containing all searchable content.
+	 */
 	public String getFulltextSearchString() {
 		if (searchBuilderChanged) {
 			completeSearchString = completeSearchBuilder.toString();
 		} return completeSearchString;
 	}
 
+	/**
+	 * Rebuilds the searchable string, which is used for fulltext searching of this composition.
+	 * - Adds all metaValues, whos type is tagges searchable, by appending the result of their makeString method.
+	 * - Adds the local link (filename)
+	 * - Adds all bol sequences from bol packets in simple and exact script
+	 */
 	public void rebuildFulltextSearch() {
 		completeSearchBuilder = new StringBuilder();
 		searchBuilderChanged = true;
 
+		// add metaValues
 		for (int i=0; i < PacketTypeFactory.nrOfTypes; i++) {
 			if (PacketTypeFactory.getType(i).isSearchable()) {
 				addSearchString(metaValues.makeString(i));
@@ -265,7 +278,8 @@ public class Composition implements DataStatePosessor{
 		metaValues.setDefault();
 		speedsR = new ArrayList<Rational>();
 		maxSpeedInVisibleSequences = new Rational(1);
-
+		history = null;
+		
 		Packet firstBolPacket = null;
 
 		for (int i=0; i < packets.size(); i++) {
@@ -317,7 +331,9 @@ public class Composition implements DataStatePosessor{
 						}
 					} 
 					break;
-
+				case PacketTypeFactory.HISTORY:
+					history = (HistoryEntries) p.getObject();
+					
 				default:
 					if (packetType.getStorageType() == StorageType.STRINGLIST) {
 						if (packetType.getParseMode() == ParseMode.COMMASEPERATED) {
@@ -376,6 +392,12 @@ public class Composition implements DataStatePosessor{
 		} else if (name.equals("")) metaValues.setString(NAME, "Unnamed");
 
 		removeSpeed(new Rational(1));
+
+		if (history == null) {
+			history = new HistoryEntries();		
+		}
+		
+		metaValues.setString(PacketTypeFactory.CREATED, history.getCreationDateAsString());
 
 		rebuildFulltextSearch();
 		fireCompositionChanged();

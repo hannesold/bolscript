@@ -1,9 +1,12 @@
 package gui.bolscript.sequences;
 
 import java.awt.Dimension;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 import midi.MidiStationSimple;
+import basics.Debug;
 import bols.Bol;
 import bols.BolName;
 import bolscript.config.GuiConfig;
@@ -34,9 +37,23 @@ public class BolPanel extends BolPanelGeneral implements MouseListener {
 			this.addMouseListener(MidiStationSimple.getStandard().getSingleBolClickListener());
 		}
 		
+		this.addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				
+				onClick(e);
+			}
+			
+		});
+		
 		
 	}
 	
+	public void onClick(MouseEvent e) {
+		Debug.temporary(this, "clicked, textRef: " + bol.getTextReference());
+		
+	}
 	public Bol getBol() {
 		return bol;
 	}

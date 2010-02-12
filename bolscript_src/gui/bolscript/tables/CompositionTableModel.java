@@ -22,7 +22,6 @@ public class CompositionTableModel extends AbstractTableModel implements Composi
 	
 	private ArrayList<Composition> compositions;
 	private ArrayList<PacketType> metaColumns;
-	private ArrayList<PacketType> allMetaColumns;
 	
 	public CompositionTableModel(CompositionBase compBase) {
 		this.compBase = compBase;
@@ -35,27 +34,14 @@ public class CompositionTableModel extends AbstractTableModel implements Composi
 
 	public void init() {
 		metaColumns = new ArrayList<PacketType>();
-		allMetaColumns = new ArrayList<PacketType>();
-		
 		PacketType[] types = PacketTypeFactory.getColumnTypes();
-		
-		//ArrayList<PacketType> metaColumns = new ArrayList<PacketType>();
 		
 		for (int i=0; i < types.length;i++) {
 			metaColumns.add(types[i]);
 		}
-		Collections.sort(metaColumns);
-		
-		allMetaColumns = new ArrayList<PacketType>(metaColumns);
-		
-		
+		Collections.sort(metaColumns);		
 	}
 	
-	/*@Override
-	public Class<?> getColumnClass(int columnIndex) {
-		// TODO Auto-generated method stub
-		return super.getColumnClass(columnIndex);
-	}*/
 
 	@Override
 	public String getColumnName(int column) {
@@ -65,11 +51,12 @@ public class CompositionTableModel extends AbstractTableModel implements Composi
 			return metaColumns.get(column-1).getDisplayNameTable();
 		}
 	}
-
+	@Override
 	public int getColumnCount() {
 		return 1+metaColumns.size();
 	}
-
+	
+	@Override
 	public int getRowCount() {
 		return compositions.size();
 	}
@@ -82,7 +69,7 @@ public class CompositionTableModel extends AbstractTableModel implements Composi
 		} else return String.class;		
 	}
 
-
+	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		
 		Composition c = compositions.get(rowIndex);
@@ -95,6 +82,10 @@ public class CompositionTableModel extends AbstractTableModel implements Composi
 	}
 
 
+	/**
+	 * Returns the composition at the i-th row.
+	 * @param i
+	 */
 	public Composition getComposition(int i) {
 		if (i < compositions.size()) {
 			return compositions.get(i);
@@ -102,6 +93,7 @@ public class CompositionTableModel extends AbstractTableModel implements Composi
 	}
 
 
+	@Override
 	public void compositionBaseChanged(CompositionBaseChangeEvent event) {
 		for (Composition comp: compositions) {
 			comp.removeChangeListener(this);
@@ -113,12 +105,14 @@ public class CompositionTableModel extends AbstractTableModel implements Composi
 		fireTableDataChanged();
 	}
 
+
 	private void addAsListenerToCompositions() {
 		for (Composition comp: compositions) {
 			comp.addChangeListener(this);
 		}
 	}
 
+	@Override
 	public void compositionChanged(CompositionChangeEvent compositionChangeEvent) {
 		Debug.debug(this, "registered compositionChanged");
 		//compositions = compBase.listVisible();

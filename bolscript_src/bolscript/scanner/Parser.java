@@ -1,5 +1,6 @@
 package bolscript.scanner;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.regex.MatchResult;
@@ -9,9 +10,11 @@ import java.util.regex.Pattern;
 import basics.Debug;
 import basics.Rational;
 import bols.BolBase;
+import bolscript.packets.HistoryEntries;
 import bolscript.packets.Packet;
 import bolscript.packets.Packets;
 import bolscript.packets.TextReference;
+import bolscript.packets.types.HistoryEntry;
 import bolscript.packets.types.PacketType;
 import bolscript.packets.types.PacketTypeFactory;
 import bolscript.packets.types.PacketType.ParseMode;
@@ -31,7 +34,7 @@ import bolscript.sequences.RepresentableSequence;
  */
 public class Parser {
 	public static Debug debug = new Debug(Parser.class);
-	
+
 	/**
 	 * Regex: Newline caracters;
 	 */
@@ -60,7 +63,7 @@ public class Parser {
 	public static String RATIONAL = "\\d{1,2}+(?:/\\d{1,2}+)?";
 
 	public static Packet defaultSpeedPacket = new Packet("Speed", "1",PacketTypeFactory.SPEED,false);
-	
+
 	/**
 	 * A Regular expression to split an input String into a series of packets.
 	 * Each match corresponds to one packet, where
@@ -69,41 +72,41 @@ public class Parser {
 	 * group(3) is the packets value
 	 */
 	public static String packetSplittingRegex = 
-	"(\\$)?"+ //Hidden
-	"((?:[^:\n\r\f])+):" + //Key
-	"([^:]*)" +  //Value
-	"(?=$|[\n\r\f]+(?:(?:(?:(?:[^:\n\r\f]*):)|(?:[\n\r\f]*\\s)*\\z)))" //following Key or End of Input (not captured)
-	;
-	
+		"(\\$)?"+ //Hidden
+		"((?:[^:\n\r\f])+):" + //Key
+		"([^:]*)" +  //Value
+		"(?=$|[\n\r\f]+(?:(?:(?:(?:[^:\n\r\f]*):)|(?:[\n\r\f]*\\s)*\\z)))" //following Key or End of Input (not captured)
+		;
+
 	public static Pattern packetSplittingPattern = Pattern.compile(packetSplittingRegex);
-	
+
 	public static Packets updatePacketsFromString(Packets oldPackets, String input) {
 		//Packets oldoldPackets = oldPackets.clone();
 		//oldoldPackets.addAll(oldPackets);
-		
+
 		Packets newPackets = splitIntoPackets(input);
-		
+
 		newPackets.add(0,defaultSpeedPacket);
 		newPackets.addAll(1,BolBase.getStandard().getReplacementPackets());
-		
+
 		Packet currentSpeedPacket = defaultSpeedPacket;
-		
+
 		SequenceParser sequenceParser = new SequenceParser(1, newPackets);
-		
+
 		int lastUsedOldPacket = -1;
 		int footnoteNr = 1;
 		int i = 0;
-		
+
 		while (i<newPackets.size()) {
 			Packet current = newPackets.get(i);
 			String currentKey = current.getKey();
 			String currentValue = current.getValue();
 			Packet added = null;
-			
+
 			Packet correspondingOldPacket = null;
 			for (int j=lastUsedOldPacket+1; j < oldPackets.size();j++) {
 				Packet old = oldPackets.get(j);
-				
+
 				if (currentKey.equalsIgnoreCase(old.getKey())) {
 					if (currentValue.equalsIgnoreCase(old.getValue())) {
 						//this is like the old packet
@@ -113,7 +116,7 @@ public class Parser {
 					}
 				}
 			}
-			
+
 			if (correspondingOldPacket != null) {
 				//Packet correspondingOldPacket = correspondingOldPacket;
 				//update exact content (key/value/visibility) and textreferences from the new version
@@ -124,20 +127,20 @@ public class Parser {
 				correspondingOldPacket.setTextRefValue(current.getTextRefValue());
 				correspondingOldPacket.setVisible(current.isVisible());
 				correspondingOldPacket.setHighlighted(current.isHighlighted());
-				
-				
+
+
 				//set the old packet in favor of the new packet.
 				newPackets.set(i, correspondingOldPacket);
-				
+
 				added = correspondingOldPacket;
-				
+
 				if (correspondingOldPacket.getType() == PacketTypeFactory.BOLS) {
 					RepresentableSequence seq = (RepresentableSequence) correspondingOldPacket.getObject();
 					// check for references
 					ArrayList<ReferencedBolPacketUnit> referencedPacketUnits = seq.getReferencedBolPacketUnits();
 					for (ReferencedBolPacketUnit unit: referencedPacketUnits) {
 						//if (newPackets.conunit.getReferencedPacket())
-						
+
 						Packet referencedPacket = newPackets.findReferencedBolPacket(correspondingOldPacket, unit.getReferencedPacket().getKey());
 						if (referencedPacket == null) {
 							//needs to be reparsed, since the reference seems to be gone
@@ -148,7 +151,7 @@ public class Parser {
 							seq.clearCache();
 						}
 					}
-					
+
 					Rational newSpeed = ((Rational) currentSpeedPacket.getObject());
 					Rational oldSpeed = null;
 					if (seq.getReferencedSpeedPacket() != null) {
@@ -156,16 +159,16 @@ public class Parser {
 							oldSpeed = ((Rational) seq.getReferencedSpeedPacket().getObject());
 						}
 					}
-					
+
 					seq.setReferencedSpeedPacket(currentSpeedPacket);
 					if (!newSpeed.equals(oldSpeed)) {
 						seq.clearCache();
 					}
-					
+
 
 				} //== BOLS
-				
-				
+
+
 			} // correspondingOldPacket != null
 			else { //correspondingOldPacket == null
 				//this is a new packet!
@@ -181,19 +184,19 @@ public class Parser {
 					added = current;
 				}
 			}
-			
-			
+
+
 			if (added != null) {
 				if (added.getType() == PacketTypeFactory.SPEED) {
-				
+
 					currentSpeedPacket = added;
-				
+
 				} else if (added.getType() == PacketTypeFactory.BOLS) {
-					
+
 					//add footnote packets
 					RepresentableSequence seq = (RepresentableSequence) added.getObject();
 					ArrayList<FootnoteUnit> footnotes = seq.getFootnoteUnits();
-					
+
 					for (int j = 0; j < footnotes.size(); j++) {
 						FootnoteUnit fu = footnotes.get(j);
 						fu.setFootnoteNrGlobal(footnoteNr);
@@ -205,43 +208,43 @@ public class Parser {
 					}
 				}
 			}
-			
+
 			i++;
-			
+
 		} //while i < newpackets.size()
 
 		//debug.temporary(newPackets.toString());
-		
+
 		return newPackets;
-		
+
 	}
-	
-	
+
+
 	public static Packets compilePacketsFromString(String input) {
-	
+
 		Packets packets = splitIntoPackets(input);
 
 		packets.add(0,defaultSpeedPacket);
 		packets.addAll(1, BolBase.getStandard().getReplacementPackets());
-	
+
 		Parser.processMetaPackets(packets);
-	
+
 		Packet currentSpeedPacket = defaultSpeedPacket;
 		//Packet currentSpeedPacket = new Packet("Speed","1",PacketTypeFactory.SPEED, false);
-	
+
 		SequenceParser parser = new SequenceParser(1, packets);
-		
+
 		int i = 0;
-	
+
 		while (i <packets.size()) {	
 			Packet p = packets.get(i);
-	
+
 			if (p.getType() == PacketTypeFactory.BOLS) {
 				RepresentableSequence seq = parser.parseSequence(p, p.getValue());
 				seq.setReferencedSpeedPacket(currentSpeedPacket);
 				p.setObject(seq);
 				ArrayList<FootnoteUnit> footnotes = seq.getFootnoteUnits();
-				
+
 				for (int j = 0; j < footnotes.size(); j++) {
 					FootnoteUnit fu = footnotes.get(j);
 					Packet fp = new Packet("Footnote "+ fu.getFootnoteNrGlobal(), fu.getFootnoteText(), PacketTypeFactory.FOOTNOTE, true);
@@ -249,13 +252,13 @@ public class Parser {
 					packets.add(i+1,fp);
 					i++;
 				}
-				
+
 			} else if (p.getType() == PacketTypeFactory.SPEED) {
 				currentSpeedPacket = p;
 			}
 			i++;
 		}
-	
+
 		//debug.temporary(packets.toString());
 		return packets;
 	}
@@ -274,49 +277,50 @@ public class Parser {
 	 * @see Packet, Packets
 	 */
 	public static Packets splitIntoPackets(String input) {
-	
+
 		String lineBreaks = "[:\n\r\f]+";
 		input.replaceAll(lineBreaks, "\n");
 
 		Matcher m = packetSplittingPattern.matcher(input);
-	
+
 		Packets packets = new Packets();
-	
+
 		int i=0;
-		
+
 		while (m.find()) {
 			//isVisible
-	
+
 			TextReference packetReference = null;
 			TextReference keyReference = null;
 			TextReference valueReference = null;
-	
+
 			MatchResult result = m.toMatchResult();
-	
+
 			String key = m.group(2).replaceAll(SNatBeginningOrEnd, "");
-			
+
 			if (key.length()>0) { //ignore packets with empty keys
 				packetReference = new TextReference(result.start(0),result.end(0), 0);
 				keyReference = new TextReference(result.start(2),result.end(2), 0);
 				valueReference = new TextReference(result.start(3),result.end(3), 0);
-	
-	
+
+
 				PacketType type = PacketTypeFactory.getType(m.group(2).toUpperCase());
 				//debug.temporary(m.group(2).toUpperCase() + " => " + type);
 				boolean isVisible = type.displayInCompositionView() && (m.group(1) == null);
-	
+
 				Packet packet = new Packet(m.group(2), m.group(3), type, isVisible);
+				
 				packet.setTextReferencePacket(packetReference);
 				packet.setTextRefKey(keyReference);
 				packet.setTextRefValue(valueReference);
-	
+
 				packets.add(packet);
 				i++;
 			}
 		}
 		return packets;
 	}
-	
+
 	/**
 	 * <p>Processes meta-packets of the following types:
 	 * <li>COMMENT</li>
@@ -345,7 +349,7 @@ public class Parser {
 			processMetaPacket(i.next());
 		} //while
 	}
-	
+
 	private static void processMetaPacket(Packet p) {
 		int type = p.getType();
 		//debug.temporary(p.getKey() + " => " + p.getValue() + ", type: " + p.getPType());
@@ -355,23 +359,54 @@ public class Parser {
 			setObjFromString(p);
 		} else if (parseMode == ParseMode.COMMASEPERATED) {
 			setObjFromCommaSeperated(p);
-		} else if (parseMode == ParseMode.OTHER) switch (type) {
+		} else if (parseMode == ParseMode.OTHER) {
+			String input;
+			switch (type) {
 
-		case PacketTypeFactory.SPEED:
-			String input = p.getValue().replaceAll(Parser.SN +"*", "");
-			try {
-				Rational speed = Rational.parseNonNegRational(input);
-				p.setObject(speed);
-				debug.debug("read speed " + speed);
-			} catch (Exception e) {
-				debug.debug("failed to parse Speed, will be ignored!");
-				p.setType(PacketTypeFactory.FAILED);
-			}
-			break;
 
-		} // switch	
+			case PacketTypeFactory.SPEED:
+				input = p.getValue().replaceAll(Parser.SN +"*", "");
+				try {
+					Rational speed = Rational.parseNonNegRational(input);
+					p.setObject(speed);
+					debug.debug("read speed " + speed);
+				} catch (Exception e) {
+					debug.debug("failed to parse Speed, will be ignored!");
+					p.setType(PacketTypeFactory.FAILED);
+				}
+				break;
+			case PacketTypeFactory.HISTORY:
+				String[] lines = p.getValue().split(Parser.N);
+				
+				HistoryEntries historyEntries = new HistoryEntries();
+				
+				for (int i=0; i < lines.length; i++) {					
+					input = lines[i].replaceAll(Parser.SNatBeginningOrEnd, "");
+					
+					HistoryEntry entry = null;
+					try {
+						entry = HistoryEntry.fromString(input);
+					} catch (ParseException e) {
+						Debug.critical(Parser.class, e);
+						e.printStackTrace();
+					}
+					if (entry != null) {
+						historyEntries.add(entry);
+					}
+					
+				}
+				if (historyEntries.size() > 0) {
+					p.setObject(historyEntries);					
+				} else {
+					debug.debug("failed to parse History events, will be ignored!");
+					p.setType(PacketTypeFactory.FAILED);
+				}
+				
+				break;
+			} // switch	
+		}
 	}
-	
+
 	/**
 	 * Sets a packet's object under the assumption, that its value is a comma
 	 * seperated list. If the resulting entries are empty the Packet is set to FAILED.
@@ -383,8 +418,8 @@ public class Parser {
 			p.setObject(entries);
 		} else p.setType(PacketTypeFactory.FAILED);	
 	}
-	
-	
+
+
 
 	/**
 	 * Sets a packet's object under the assumption, that its value is non-empty string.
@@ -421,13 +456,13 @@ public class Parser {
 		return entries.toArray(entriesArray);
 	}
 
-	
+
 
 	public static String determineBolStringAroundCaret(String input, int caretPosition) {
 		int RANGE = 20;
 		int leftBorder = Math.max(0, caretPosition-RANGE);
 		int rightBorder = Math.min(input.length(), caretPosition+RANGE);
-	
+
 		//debug.temporary("char after(?) caretPosition: " + input.charAt(caretPosition));
 		String leftOfCaret = "(?<=\\(|\\)|"+SN+"|^)("+BOL+")?$";
 		String rightOfCaret = "^"+ BOL + "(?>=\\(|\\)|"+SN+"|$)";
@@ -435,14 +470,14 @@ public class Parser {
 		//debug.temporary("left substring = " + leftSubstring);
 		String rightSubstring = input.substring(caretPosition, rightBorder);
 		//debug.temporary("left substring = " + rightSubstring);
-	
+
 		Matcher mLeft = Pattern.compile(leftOfCaret).matcher(leftSubstring);
 		Matcher mRight = Pattern.compile(rightOfCaret).matcher(rightSubstring);
-	
+
 		String leftSnippet;
 		String rightSnippet;
 		if (mLeft.find()) {
-	
+
 			leftSnippet = mLeft.group();
 			//debug.temporary("found leftsnippet " + leftSnippet);
 		} else leftSnippet = "";
@@ -450,9 +485,9 @@ public class Parser {
 			rightSnippet = mRight.group();
 			//debug.temporary("found rightsnippet " + rightSnippet);
 		} else rightSnippet = "";
-		
+
 		String candidate = leftSnippet + rightSnippet;
-	
+
 		Matcher m = BolCandidateUnit.pattern.matcher(candidate);
 		if (m.find()) {
 			candidate = m.group(1);

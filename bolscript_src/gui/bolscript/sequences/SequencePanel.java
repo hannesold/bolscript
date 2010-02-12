@@ -6,6 +6,9 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Insets;
 import java.awt.Point;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
@@ -80,11 +83,16 @@ public class SequencePanel extends HighlightablePanel  {
 
 	protected Packet containingPacket = null;
 
-	public SequencePanel(RepresentableSequence sequence, Tal tal, Dimension size, int minRows, String fixedLargestWidthBol, int fixedMaxSpeed, int language, float fontSize, Packet containingPacket) {
+	protected MouseListener unitPanelMouseListener = null;
+	
+	protected UnitPanelListener unitPanelListener;
+	
+	public SequencePanel(RepresentableSequence sequence, Tal tal, Dimension size, int minRows, String fixedLargestWidthBol, int fixedMaxSpeed, int language, float fontSize, Packet containingPacket, UnitPanelListener unitPanelListener) {
 		super();
 		this.setLayout(null);
 		this.setBorder(BorderFactory.createLineBorder(GuiConfig.sequencePanelBorderColor,2));
 
+		this.unitPanelListener = unitPanelListener;
 		this.containingPacket = containingPacket;
 		lineBreaks = new ArrayList<Float>();
 		cells = new ArrayList<CellPanel>();
@@ -108,9 +116,32 @@ public class SequencePanel extends HighlightablePanel  {
 		this.fontSize = fontSize;
 		//Debug.debug(this, "new vp, language is " + language);
 
+		this.unitPanelMouseListener = new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				if (BolPanel.class.isInstance(e.getSource())) {
+					Bol bol = ((BolPanel) e.getSource()).getBol();
+					dispatchUnitClick(bol);
+				}  else if (BolBundlePanel.class.isInstance(e.getSource())){
+					BolBundle bundlePanel = ((BolBundlePanel) e.getSource()).getBolBundle();
+					dispatchUnitClick(bundlePanel);
+				}
+				
+				
+			}
+		};
 		render();
 	}
 
+	public void dispatchUnitClick(Representable r) {
+		Debug.temporary(this, "dispatching click on " + r + ", with textreference " + r.getTextReference());
+		if (unitPanelListener != null) {
+			Debug.temporary(this, "dispatching to: " + unitPanelListener);
+			unitPanelListener.unitClickedInSequencePanel(r, containingPacket);
+		}
+	}
+	
+	
 	public boolean isHighlighted() {
 		return highlighted;
 	}
@@ -299,9 +330,11 @@ public class SequencePanel extends HighlightablePanel  {
 
 				if (type == Representable.BOL) {
 					bp = new BolPanel((Bol) b,new Dimension(width,height),((Bol) b).isEmphasized(), language, fontSize);
+					bp.addMouseListener(this.unitPanelMouseListener);
 				} else {
 					//is of type bundle!
 					bp = new BolBundlePanel((BolBundle) b, new Dimension(width,height), false, language, fontSize);
+					bp.addMouseListener(this.unitPanelMouseListener);
 				}
 
 				lastBolPanel = bp;
