@@ -12,7 +12,9 @@ import static bolscript.packets.types.PacketTypeFactory.TYPE;
 import java.awt.EventQueue;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 
 import basics.Debug;
 import basics.FileManager;
@@ -23,9 +25,12 @@ import bols.tals.Tal;
 import bols.tals.TalBase;
 import bolscript.Master;
 import bolscript.config.Config;
+import bolscript.config.UserConfig;
 import bolscript.packets.HistoryEntries;
 import bolscript.packets.Packet;
 import bolscript.packets.Packets;
+import bolscript.packets.types.HistoryEntry;
+import bolscript.packets.types.HistoryOperationType;
 import bolscript.packets.types.PacketType;
 import bolscript.packets.types.PacketTypeFactory;
 import bolscript.packets.types.PacketType.ParseMode;
@@ -118,8 +123,13 @@ public class Composition implements DataStatePosessor{
 	 * @throws FileReadException
 	 */
 	public Composition(File file, TalBase talBase) throws FileReadException{
-		this(FileManager.getContents(file, Config.maxBolscriptFileSize, Config.compositionEncoding), talBase);
-		setLinkLocal(file.getAbsolutePath());		
+		
+		String completeRawData = FileManager.getContents(file, Config.maxBolscriptFileSize, Config.compositionEncoding);
+		setLinkLocal(file.getAbsolutePath());
+		changeListeners = new ArrayList<CompositionChangedListener>();
+		this.talBase = talBase;
+		
+		initFromCompleteRawData(completeRawData);				
 		setDataState(DataState.CONNECTED);
 		backUpEditableRawData();
 	}
@@ -129,6 +139,7 @@ public class Composition implements DataStatePosessor{
 		this.editorPackets = Parser.compilePacketsFromString(rawData);		
 		processNonEditablePacketsAndBuildEditablePortionOfRawData(rawData);		
 		extractInfoFromPackets(editorPackets);
+		
 	}
 
 	public MetaValues getMetaValues() {
@@ -419,8 +430,10 @@ public class Composition implements DataStatePosessor{
 
 		removeSpeed(new Rational(1));
 
+		populateHistory();
 		if (history != null) {
 			metaValues.setString(PacketTypeFactory.CREATED, history.getCreationDateAsString());
+			metaValues.setString(PacketTypeFactory.LAST_MODIFIED, history.getModifiedDateAsString());
 		}
 
 		rebuildFulltextSearch();
@@ -432,6 +445,7 @@ public class Composition implements DataStatePosessor{
 		
 		int textReferenceShift = 0;
 		nonEditorPackets = new Packets();
+		history = null;
 		
 		for (int i = 0; i < editorPackets.size(); i++) {
 			Packet p = editorPackets.get(i);
@@ -479,6 +493,8 @@ public class Composition implements DataStatePosessor{
 					default:
 					//no others yet to be treated
 				}
+				
+				
 			} 
 		}
 		
@@ -486,6 +502,64 @@ public class Composition implements DataStatePosessor{
 		this.setEditableRawData(editorRawData);
 	}
 	
+	/**
+	 * Returns the first entered 'Editor', or null if there are none.
+	 */
+	public String getEnteredUser() {
+		ArrayList<String> users = metaValues.getList(PacketTypeFactory.EDITOR);
+		if (users !=null) {
+			if (users.size()>0) {
+				return users.get(0);
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Expects processNonEditablePacketsAndBuildEditablePortionOfRawData
+	 * and extractInfoFromPackets to have been run.
+	 */
+	protected void populateHistory() {
+		Debug.temporary(this,"populateHistory");
+		if (history == null) {
+			Debug.temporary(this,"history == null");
+			history = new HistoryEntries();
+			
+			PacketType historyType = PacketTypeFactory.getType(PacketTypeFactory.HISTORY);
+			Packet historyPacket = new Packet(historyType.getKeys()[0], "", historyType.getId(), false);
+			historyPacket.setObject(history);
+			
+			nonEditorPackets.add(historyPacket);
+			Debug.temporary(this,"adding history packet, size now " + nonEditorPackets.size());
+		}
+		
+		if (history.size() == 0) {
+
+			if (linkLocal != null) {
+				//if the composition comes from a file and has a valid lastModified date, this will be noted as the creation date.
+				
+				File file = new File(linkLocal);
+				if (file.lastModified() != 0L) {
+					String user = getEnteredUser();
+					if (user == null) {
+						user = UserConfig.userId;
+					}
+					history.add(new HistoryEntry(new Date(file.lastModified()), HistoryOperationType.CREATED, user));
+				}
+			} else {
+				String user = getEnteredUser();
+				if (user == null) {
+					user = UserConfig.userId;
+				}
+				history.add(new HistoryEntry(Calendar.getInstance().getTime(), HistoryOperationType.CREATED, user));				
+			}
+		}		
+	}
+	
+	public HistoryEntries getHistory() {
+		return history;
+	}
+
 	public String toString() {
 		return metaValues.getList(TYPE) + " " + metaValues.getString(NAME);
 	}
@@ -522,9 +596,12 @@ public class Composition implements DataStatePosessor{
 	 * </ul>
 	 */
 	public String getCompleteDataForStoring() {
+		Debug.temporary(this, "getCompleteDataForStoring, nonEdPack.size: " + nonEditorPackets.size());
 		StringBuilder builder = new StringBuilder();
 		for (Packet p: nonEditorPackets) {
-			builder.append(p.formatForBolscript());			
+			builder.append(p.formatForBolscript());	
+			Debug.temporary(this, "appending: " + p);
+			Debug.temporary(this, "formatted:\n" + p.formatForBolscript());
 		}
 		builder.append(editableRawData);
 		return builder.toString();

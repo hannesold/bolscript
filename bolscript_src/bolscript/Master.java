@@ -23,6 +23,7 @@ import java.awt.SplashScreen;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.regex.Matcher;
 
 import javax.swing.JOptionPane;
@@ -45,6 +46,8 @@ import bolscript.config.ConfigChangeEvent;
 import bolscript.config.ConfigChangeListener;
 import bolscript.config.GuiConfig;
 import bolscript.config.UserConfig;
+import bolscript.packets.types.HistoryEntry;
+import bolscript.packets.types.HistoryOperationType;
 import bolscript.packets.types.PacketTypeFactory;
 public class Master implements ConfigChangeListener{//implements ApplicationListener{//extends JFrame implements WindowListener {
 
@@ -281,6 +284,21 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 		comp.setEditableRawData(editor.getText());
 		comp.extractInfoFromEditableRawData();
 
+		if (comp.hasChangedSinceBackup() && comp.getDataState() == DataState.EDITING) {
+			//String user = comp.getEnteredUser();
+			String user = UserConfig.userId;
+			
+			comp.getHistory().add(new HistoryEntry(Calendar.getInstance().getTime(), HistoryOperationType.MODIFIED, user));			
+		} else if (comp.getDataState() == DataState.NEW) {
+			String user = comp.getEnteredUser();
+			if (user != null) {
+				if (!user.equals(UserConfig.userId)) {
+					//TODO ask if user shall be saved.
+					UserConfig.userId = user;
+				}
+			}
+		}
+		
 		try {
 			compositionBase.saveCompositionToFile(comp, filename);
 			editor.getComposition().backUpEditableRawData();
@@ -429,7 +447,7 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 	 * The new compositions status is set to NEW, and it is instantly added to the compositionBase
 	 */
 	public void openNewComposition() {
-		String template = "Editor: Unknown\nGharana: Punjab\nType: Unknown\n\nTal: Teental\n";
+		String template = "Editor: " + UserConfig.userId + "\nGharana: Punjab\nType: Unknown\n\nTal: Teental\n";
 
 		Composition comp = new Composition(template, compositionBase);
 		comp.setDataState(DataState.NEW);

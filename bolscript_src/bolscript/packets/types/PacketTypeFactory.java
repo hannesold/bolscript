@@ -28,9 +28,9 @@ public class PacketTypeFactory {
 	public static final int SOURCE = 16;
 	public static final int HISTORY = 17;
 	public static final int CREATED = 18;
-	//public static final int MODIFIED_INFO = 19;
+	public static final int LAST_MODIFIED = 19;
 	
-	public static final int nrOfTypes = 19;
+	public static final int nrOfTypes = 20;
 
 	private static PacketType[] types=null;
 
@@ -75,6 +75,7 @@ public class PacketTypeFactory {
 			types[SNIPPET]	= new PacketTypeStandard(SNIPPET, "Snippet", "Snippets", 	new String[]{"Snippet","Snippets"},true,-40,	StorageType.STRING,		ParseMode.STRING,true,false,true,true, metaKeyColor);
 			types[HISTORY]  = new PacketTypeStandard(HISTORY, "History", "History", 	new String[]{"HISTORY"},false,0, 				StorageType.NONE,		ParseMode.OTHER,false,false,true,true, metaKeyColor);
 			types[CREATED]  = new PacketTypeStandard(CREATED, "Created", "Created", 	new String[]{},true,0, 				StorageType.STRING,		ParseMode.OTHER,true,false,true,true, metaKeyColor);
+			types[LAST_MODIFIED]  = new PacketTypeStandard(LAST_MODIFIED, "Modified", "Modified", 	new String[]{},true,0, 				StorageType.STRING,		ParseMode.OTHER,true,false,true,true, metaKeyColor);
 			
 			keyTypeMap = new HashMap<String, PacketType>();
 			for (int i=0; i < nrOfTypes; i++) {

@@ -7,13 +7,18 @@ import basics.Debug;
 import basics.Tools;
 import bols.BolName;
 
+import static bolscript.config.PreferenceKeys.*;
+
 public class UserConfig {
 
 	public static String tablaFolder = null;
 	
 	public static String pdfExportPath = null;
 	
+	public static String userId = "Unknown";
+	
 	private static UserConfig standard = null;
+	
 	
 	/**
 	 * This is the standard setting for fontsizeIncrease
@@ -50,15 +55,19 @@ public class UserConfig {
 	 */
 	public static void storePreferences() throws Exception{
 		if (tablaFolder != null) {
-			UserConfig.preferences.put("tablaFolder", tablaFolder);
+			UserConfig.preferences.put(TABLA_FOLDER, tablaFolder);
 		}
 		if (pdfExportPath != null) {
-			UserConfig.preferences.put("pdfExportPath",pdfExportPath);
+			UserConfig.preferences.put(PDF_EXPORT_PATH,pdfExportPath);
+		}
+		if (userId != null) {
+			UserConfig.preferences.put(USER_ID, userId);
 		}
 		
-		preferences.putInt("stdBundlingDepth", stdBundlingDepth);
-		preferences.putFloat("stdFontSizeIncrease", stdFontSizeIncrease);
-		preferences.putInt("standardLanguage", standardLanguage);
+		preferences.putInt(		STD_BUNDLING_DEPTH, 	stdBundlingDepth);
+		preferences.putFloat(	STD_FONT_SIZE_INCREASE, stdFontSizeIncrease);
+		preferences.putInt(		STANDARD_LANGUAGE, 		standardLanguage);
+		
 		
 		//Debug.debug(Config.class, "storing properties under : " + new File(propertiesFilename).getAbsoluteFile());
 		try {
@@ -87,9 +96,10 @@ public class UserConfig {
 		UserConfig.preferences = Preferences.userNodeForPackage(Config.class);
 	
 		boolean failed = false;
+		
 		try {
 	
-			tablaFolder = preferences.get("tablaFolder", null);
+			tablaFolder = preferences.get(TABLA_FOLDER, null);
 	
 			if (tablaFolder == null) {
 				UserConfig.firstRun = true;
@@ -99,14 +109,15 @@ public class UserConfig {
 				UserConfig.setTablaFolder(tablaFolder);
 				UserConfig.firstRun = false;
 			}
-			pdfExportPath = preferences.get("pdfExportPath", tablaFolder);
-	
-			stdBundlingDepth 	= Tools.assure(0, preferences.getInt("stdBundlingDepth", 0), 4);
-			stdFontSizeIncrease = preferences.getFloat("stdFontSizeIncrease", 0);
-			standardLanguage 	= Tools.assure(0, 
-					preferences.getInt("standardLanguage", BolName.SIMPLE), 
-					BolName.languagesCount);
+			pdfExportPath = preferences.get(PDF_EXPORT_PATH, tablaFolder);			
 			
+			userId = preferences.get(USER_ID, "Unknown");
+			
+			stdBundlingDepth 	= Tools.assure(0, preferences.getInt(STD_BUNDLING_DEPTH, 0), 4);
+			stdFontSizeIncrease = preferences.getFloat(STD_FONT_SIZE_INCREASE, 0);
+			standardLanguage 	= Tools.assure(0, 
+					preferences.getInt(STANDARD_LANGUAGE, BolName.SIMPLE), 
+					BolName.languagesCount);
 		} catch (Exception e) {
 			Debug.critical(Config.class, "Preferences could not be loaded " + e);
 			failed = false;
@@ -131,7 +142,7 @@ public class UserConfig {
 		Debug.temporary(Config.class, "setTablaFolder : " + chosenFolder + " (old: " + tablaFolder + ")");
 		//if (!tablaFolder.equals(chosenFolder)) {
 		tablaFolder = chosenFolder;
-		preferences.put("tablaFolder", tablaFolder);
+		preferences.put(TABLA_FOLDER, tablaFolder);
 	
 	
 		File s = new File(chosenFolder + Config.fileSeperator + "settings");

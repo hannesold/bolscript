@@ -16,6 +16,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.RowSorter;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SortOrder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -35,6 +36,7 @@ public class CompositionListPanel extends JScrollPane  {
 
 	public CompositionListPanel(CompositionTableModel model) {
 		super();
+		//this.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
 		this.tableModel = model;
 		compositionTable = new JTable(model);
 		compositionTable.setDefaultRenderer(Integer.class, new StateRenderer(false));
@@ -115,7 +117,6 @@ public class CompositionListPanel extends JScrollPane  {
 
 		//= new Def
 		compositionTable.setRowSorter(sorter);
-
 
 		this.setViewportView(compositionTable);
 		this.getViewport().setBackground(Color.white);
