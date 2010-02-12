@@ -123,6 +123,23 @@ public class Packet {
 		this.value = value;
 	}
 	
+	/**
+	 * Formats the Packet in a Bolscript-parsable way.
+	 * If the object implements BolscriptFormattableValue, the value of object.formatAsBolscriptValue() is returned
+	 * as value, otherwise the value established from parsing is returned.
+	 * @return
+	 */
+	public String formatForBolscript() {
+		StringBuilder s = new StringBuilder();
+		s.append((visible?"":"$") + key + ":\n");
+		if (BolscriptFormattableValue.class.isInstance(object)) {
+			s.append(((BolscriptFormattableValue)object).formatAsBolscriptValue());
+		} else s.append(value);
+		s.append("\n");
+		
+		return s.toString();
+	}
+	
 	public String toString() {
 		StringBuilder s = new StringBuilder();
 		s.append("\n\n[p:"+id+" " +packetType +", Key: " + key+", "+s.append(textRefPacket)+"]\n");

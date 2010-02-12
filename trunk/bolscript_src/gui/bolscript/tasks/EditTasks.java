@@ -49,8 +49,8 @@ public class EditTasks extends TaskList {
 		new Task("UpdateComposition", Task.ExecutionThread.AnyThread) {
 			@Override
 			public void doTask() throws TaskException {
-				comp.setRawData(text);
-				comp.extractInfoFromRawData();		
+				comp.setEditableRawData(text);
+				comp.extractInfoFromEditableRawData();		
 			}
 		});
 		tasks.add(
@@ -59,7 +59,7 @@ public class EditTasks extends TaskList {
 					public void doTask() throws TaskException {
 						highlightedReferencedPacket = null;
 						
-						Packets packets = comp.getPackets();
+						Packets packets = comp.getEditorPackets();
 						packetAtCaretPosition = packets.getPacketAtCaretPosition(caretPosition);
 						
 						if (packetAtCaretPosition != null) {
@@ -80,7 +80,7 @@ public class EditTasks extends TaskList {
 					public void doTask() throws TaskException {
 						document.setCaretPosition(caretPosition);
 						document.setHighlightedReferencedPacket(highlightedReferencedPacket);
-						document.updateStylesNow(comp.getPackets());
+						document.updateStylesNow(comp.getEditorPackets());
 					}
 				});
 		tasks.add(

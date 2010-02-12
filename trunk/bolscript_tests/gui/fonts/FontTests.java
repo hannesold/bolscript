@@ -129,7 +129,7 @@ public void init() {
 		//sequencePanels = new SequencePanel[BolName.languagesCount];
 		for ( int i = BolName.DEVANAGERI; i <= BolName.TRANSLITERATION; i++) {
 			SequencePanel sequencePanel = new SequencePanel(completeSequence, Teental.getDefaultTeental(),
-					new Dimension(800,80), 0, "", 0, i, 14f, null);
+					new Dimension(800,80), 0, "", 0, i, 14f, null, null);
 			SequenceTitlePanel t = new SequenceTitlePanel();
 			t.setTitle(BolName.languageNames[i]);
 			examplePanel.add(t);

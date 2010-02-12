@@ -112,7 +112,7 @@ public class HistoryEntry {
 			}
 
 		} 
-		throw new ParseException ("HistoryEntry could not be parsed", 0);
+		throw new ParseException ("HistoryEntry could not be parsed: (" + input + ")", 0);
 
 	}
 

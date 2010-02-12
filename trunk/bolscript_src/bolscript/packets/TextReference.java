@@ -71,7 +71,20 @@ public class TextReference {
 		return (startIndex<=caretPosition) && (caretPosition <= endIndex);
 	}
 	
+	/**
+	 * Returns a new TextReference, which is positioned relative to the given TextReference (startIndex and endIndex are added)
+	 * @param other
+	 */
 	public TextReference translateBy(TextReference other) {
 		return new TextReference(startIndex+other.startIndex, endIndex+other.startIndex,line+other.line);
+	}
+	
+	/**
+	 * Moves the TextReference by a given number of characters.
+	 * @param translationSize
+	 */
+	public void move(int translationSize) {
+		startIndex += translationSize;
+		endIndex   += translationSize;	
 	}
 }

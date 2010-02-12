@@ -18,6 +18,9 @@ public class PacketTypeStandard implements PacketType {
 	protected StorageType storageType;
 	protected ParseMode parseMode;
 	protected boolean displayInCompositionView;
+	
+	private boolean displayForEditingInTextEditor;
+	
 	protected boolean metaPaket;
 	protected boolean searchable;
 	protected Color keyColor;
@@ -26,8 +29,8 @@ public class PacketTypeStandard implements PacketType {
 	public PacketTypeStandard(int id, String displayNameSingular,
 			String displayNamePlural, String[] keys, boolean displayInTable,
 			int tableWeight, StorageType storageType, ParseMode parseMode,
-			boolean displayInCompositionView, boolean metaPaket,
-			boolean searchable, Color keyColor) {
+			boolean displayInEditor, boolean displayInCompositionView,
+			boolean metaPaket, boolean searchable, Color keyColor) {
 		super();
 		this.id = id;
 		this.displayNameSingular = displayNameSingular;
@@ -41,6 +44,7 @@ public class PacketTypeStandard implements PacketType {
 		this.metaPaket = metaPaket;
 		this.searchable = searchable;
 		this.keyColor = keyColor;
+		this.displayForEditingInTextEditor = displayInEditor;
 		
 		switch (storageType) {
 			case STRINGLIST:
@@ -124,6 +128,13 @@ public class PacketTypeStandard implements PacketType {
 	
 	public String getDisplayNameFilter() {
 		return displayNameFilter;
+	}
+
+
+	
+	@Override
+	public boolean displayForEditingInTextEditor() {
+		return displayForEditingInTextEditor;
 	}
 
 }

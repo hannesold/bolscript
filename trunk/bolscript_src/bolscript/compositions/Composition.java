@@ -45,9 +45,6 @@ public class Composition implements DataStatePosessor{
 	protected StringBuilder completeSearchBuilder = null;
 	boolean searchBuilderChanged = true;
 
-	protected String rawData = new String("");
-	protected String oldRawData = new String("");
-
 	protected ArrayList<CompositionChangedListener> changeListeners;
 
 	protected DataState dataState = DataState.NOT_CHECKED; //not connected, missing, connected, loaded
@@ -59,8 +56,26 @@ public class Composition implements DataStatePosessor{
 
 	protected int id = 0; //id on the database
 
-	protected Packets packets = null;
+	/**
+	 * The editable (editable in the composition text editor) part of the raw bolscript data
+	 */
+	protected String editableRawData = new String("");
 
+	/**
+	 * A backup of the editable part of the raw bolscript data
+	 */
+	protected String oldEditableRawData = new String("");
+	
+	/**
+	 * The packets that are subject to (text-) editing
+	 */
+	protected Packets editorPackets = null;
+	
+	/**
+	 * Tha packets that are not subject to the text editor
+	 */
+	protected Packets nonEditorPackets = null;
+	
 	protected boolean isTal = false;
 	
 	/**
@@ -86,12 +101,10 @@ public class Composition implements DataStatePosessor{
 	 */
 	public Composition(String rawData, TalBase talBase) {
 		changeListeners = new ArrayList<CompositionChangedListener>();
-		this.talBase = talBase;
-		this.setRawData(rawData);
-		metaValues = new MetaValues();
-		extractInfoFromRawData();
+		this.talBase = talBase;		
+		initFromCompleteRawData(rawData);
 	}
-
+	
 	/**
 	 * Inits a composition from a bolscript file.
 	 * Uses reader to get the rawData from the file.
@@ -106,9 +119,16 @@ public class Composition implements DataStatePosessor{
 	 */
 	public Composition(File file, TalBase talBase) throws FileReadException{
 		this(FileManager.getContents(file, Config.maxBolscriptFileSize, Config.compositionEncoding), talBase);
-		setLinkLocal(file.getAbsolutePath());
+		setLinkLocal(file.getAbsolutePath());		
 		setDataState(DataState.CONNECTED);
-		backUpRawData();
+		backUpEditableRawData();
+	}
+	
+	private void initFromCompleteRawData(String rawData) {		
+		metaValues = new MetaValues();		
+		this.editorPackets = Parser.compilePacketsFromString(rawData);		
+		processNonEditablePacketsAndBuildEditablePortionOfRawData(rawData);		
+		extractInfoFromPackets(editorPackets);
 	}
 
 	public MetaValues getMetaValues() {
@@ -182,9 +202,9 @@ public class Composition implements DataStatePosessor{
 			}
 		};
 
-		if (packets != null) {
+		if (editorPackets != null) {
 			//add bols to searchstring
-			for (Packet p: packets) {
+			for (Packet p: editorPackets) {
 				if (p.getType() == PacketTypeFactory.BOLS) {
 					
 					if (p.getObject() != null) {
@@ -249,18 +269,19 @@ public class Composition implements DataStatePosessor{
 	}
 	
 	
-	public Packets getPackets() {
-		return packets;
+	public Packets getEditorPackets() {
+		return editorPackets;
 	}
 
-	public void extractInfoFromRawData() {
-		if (rawData != null) {
-			if (this.packets == null) {
-				this.packets = Parser.compilePacketsFromString(rawData);
+	
+	public void extractInfoFromEditableRawData() {
+		if (editableRawData != null) {
+			if (this.editorPackets == null) {
+				this.editorPackets = Parser.compilePacketsFromString(editableRawData);
 			} else {
-				this.packets = Parser.updatePacketsFromString(packets, rawData);
+				this.editorPackets = Parser.updatePacketsFromString(editorPackets, editableRawData);
 			}
-			extractInfoFromPackets(this.packets);
+			extractInfoFromPackets(this.editorPackets);
 		} else {
 			Debug.critical(this, "the rawdata is empty, will not be processed");
 		}
@@ -278,7 +299,7 @@ public class Composition implements DataStatePosessor{
 		metaValues.setDefault();
 		speedsR = new ArrayList<Rational>();
 		maxSpeedInVisibleSequences = new Rational(1);
-		history = null;
+		//HistoryEntries newlyParsedHistory = null;
 		
 		Packet firstBolPacket = null;
 
@@ -331,9 +352,14 @@ public class Composition implements DataStatePosessor{
 						}
 					} 
 					break;
-				case PacketTypeFactory.HISTORY:
-					history = (HistoryEntries) p.getObject();
-					
+				/*case PacketTypeFactory.HISTORY:
+					if (newlyParsedHistory == null) {
+						newlyParsedHistory = (HistoryEntries) p.getObject();
+					} else {
+						//newlyParsedHistory = newlyParsedHistory.merge((HistoryEntries) p.getObject());
+						//there is only supposed to be one history packet!	
+					}
+					break;*/
 				default:
 					if (packetType.getStorageType() == StorageType.STRINGLIST) {
 						if (packetType.getParseMode() == ParseMode.COMMASEPERATED) {
@@ -393,16 +419,73 @@ public class Composition implements DataStatePosessor{
 
 		removeSpeed(new Rational(1));
 
-		if (history == null) {
-			history = new HistoryEntries();		
+		if (history != null) {
+			metaValues.setString(PacketTypeFactory.CREATED, history.getCreationDateAsString());
 		}
-		
-		metaValues.setString(PacketTypeFactory.CREATED, history.getCreationDateAsString());
 
 		rebuildFulltextSearch();
 		fireCompositionChanged();
 	}
 
+	protected void processNonEditablePacketsAndBuildEditablePortionOfRawData(String completeRawData) {
+		String editorRawData = new String (completeRawData);
+		
+		int textReferenceShift = 0;
+		nonEditorPackets = new Packets();
+		
+		for (int i = 0; i < editorPackets.size(); i++) {
+			Packet p = editorPackets.get(i);
+			
+			if (p.hasTextReferences()) {
+				p.getTextReference().move(-textReferenceShift);
+				p.getTextRefKey().move(-textReferenceShift);
+				p.getTextRefValue().move(-textReferenceShift);
+			}
+			if (!p.getPType().displayForEditingInTextEditor()) {
+				Debug.temporary(this, "found noneditable packet: " + p );
+				
+				//add to non-editable packets
+				nonEditorPackets.add(p);
+				
+				if (p.hasTextReferences()) {
+					
+					int cutBegin = p.getTextReference().start();
+					int cutEnd 	 = p.getTextReference().end();
+					
+					if (i < editorPackets.size()-1) {
+						
+						if (editorPackets.get(i+1).hasTextReferences()) {
+							cutEnd = editorPackets.get(i+1).getTextReference().start();
+						}
+						
+						// move textReferences of upcoming packets
+						textReferenceShift += cutEnd - cutBegin;
+						//remove from rawData.
+						editorRawData = editorRawData.substring(0, Math.max(0,p.getTextReference().start())) + editorRawData.substring(cutEnd);
+						
+					} else {
+						//remove from rawData
+						editorRawData = editorRawData.substring(0, Math.max(0,p.getTextReference().start()));
+					}
+					
+					Debug.temporary(this, "removed from rawData:\n" + p.getValue());
+					
+				}
+				switch (p.getType()) {
+					case PacketTypeFactory.HISTORY:
+					history = (HistoryEntries) p.getObject();
+					break;
+
+					default:
+					//no others yet to be treated
+				}
+			} 
+		}
+		
+		editorPackets.removeAll(nonEditorPackets);
+		this.setEditableRawData(editorRawData);
+	}
+	
 	public String toString() {
 		return metaValues.getList(TYPE) + " " + metaValues.getString(NAME);
 	}
@@ -411,7 +494,8 @@ public class Composition implements DataStatePosessor{
 		if (dataState == DataState.NEW) return true;
 
 		try {
-			rawData = FileManager.getContents(new File(this.linkLocal), Config.maxBolscriptFileSize, Config.compositionEncoding);
+			String rawData = FileManager.getContents(new File(this.linkLocal), Config.maxBolscriptFileSize, Config.compositionEncoding);
+			initFromCompleteRawData(rawData);
 			dataState.connect(this);
 			return true;
 		} 
@@ -422,16 +506,36 @@ public class Composition implements DataStatePosessor{
 		return false;
 	}
 
-	public String getRawData() {
-		return rawData;
+	/**
+	 * Returns the editable portion of the data as a string.
+	 * @return
+	 */
+	public String getEditableRawData() {
+		return editableRawData;
+	}
+	
+	/**
+	 * Returns the complete Data for storage in a file.
+	 * This is composed of: <ul>
+	 * <li>the noneditable packets</li>
+	 * <li>the rawData, which represents the editor content</li>
+	 * </ul>
+	 */
+	public String getCompleteDataForStoring() {
+		StringBuilder builder = new StringBuilder();
+		for (Packet p: nonEditorPackets) {
+			builder.append(p.formatForBolscript());			
+		}
+		builder.append(editableRawData);
+		return builder.toString();
 	}
 
 	/**
-	 * Sets the rawData to a copy of the passed String.
+	 * Sets the editable portion of the raw data to a copy of the passed String.
 	 * @param rawData
 	 */
-	public void setRawData(String rawData) {
-		this.rawData = new String(rawData);
+	public void setEditableRawData(String rawData) {
+		this.editableRawData = new String(rawData);
 	}
 
 	public Rational getMaxSpeed() {
@@ -455,17 +559,17 @@ public class Composition implements DataStatePosessor{
 		}
 	}
 
-	public void backUpRawData() {
-		if (rawData != null) this.oldRawData = new String(rawData);
+	public void backUpEditableRawData() {
+		if (editableRawData != null) this.oldEditableRawData = new String(editableRawData);
 	}
 
 	public boolean hasChangedSinceBackup() {
-		return (!oldRawData.equals(rawData));
+		return (!oldEditableRawData.equals(editableRawData));
 	}
 
 	public void revertFromBackup() {
-		setRawData(new String(oldRawData));
-		extractInfoFromRawData();
+		setEditableRawData(new String(oldEditableRawData));
+		extractInfoFromEditableRawData();
 
 	}
 

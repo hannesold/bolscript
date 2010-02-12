@@ -78,7 +78,7 @@ public class EditorFrame extends JFrame implements WindowListener, CompositionCh
 		//init textPane
 		document = new BolscriptDocument();
 		textPane = new JTextPane(document);
-		textPane.setText(comp.getRawData());
+		textPane.setText(comp.getEditableRawData());
 		textPane.setCaretPosition(0);
 		
 		JScrollPane scrollpane = new JScrollPane(textPane,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);		
@@ -112,7 +112,7 @@ public class EditorFrame extends JFrame implements WindowListener, CompositionCh
 		
 		compositionPanel = null;
 		
-		document.updateStylesLater(comp.getPackets());
+		document.updateStylesLater(comp.getEditorPackets());
 		
 	}
 
