@@ -45,6 +45,7 @@ import bolscript.config.Config;
 import bolscript.config.ConfigChangeEvent;
 import bolscript.config.ConfigChangeListener;
 import bolscript.config.GuiConfig;
+import bolscript.config.PreferenceKeys;
 import bolscript.config.UserConfig;
 import bolscript.packets.types.HistoryEntry;
 import bolscript.packets.types.HistoryOperationType;
@@ -114,7 +115,7 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 		if (splashScreen==null) {
 			debug.critical("SplashScreen not loaded!");
 		}
-		
+
 		GUI.init();
 
 		PacketTypeFactory.init();
@@ -127,9 +128,9 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}*/
-		
+
 		Config.init();
-		
+
 		//Turn on midi or not
 		/*try {
 				MidiStationSimple.init();
@@ -151,7 +152,7 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 			showLoadingframeThenLoad();
 		}});
 	}
-	
+
 	public void showLoadingframeThenLoad() {
 		//loadingFrame = new LoadingTablafolder();
 		//loadingFrame.setVisible(true);
@@ -222,7 +223,9 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 	 * Is called whenever Config has changed (at the moment when tablaFolder was changed)
 	 */
 	public void configChanged(ConfigChangeEvent e) {
-		refreshFromTablafolder();
+		if (e.hasChanged(PreferenceKeys.TABLA_FOLDER)) {
+			refreshFromTablafolder();
+		}
 	}
 
 	/**
@@ -259,13 +262,13 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 		//windows implementation
 		if (Config.OS == Config.WINDOWS) {
 			try {
-				
+
 				/**
 				 * fix a problem which is unclear to me at the moment, where
 				 * \\ apears instead of \ in a path after saving a new composition.
 				 */
 				filename = filename.replaceAll("[\\\\]+", Matcher.quoteReplacement("\\"));
-				
+
 				/**
 				 * Tell Windows Explorer to show the file
 				 */
@@ -286,19 +289,21 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 
 		if (comp.hasChangedSinceBackup() && comp.getDataState() == DataState.EDITING) {
 			//String user = comp.getEnteredUser();
-			String user = UserConfig.userId;
-			
+			String user = UserConfig.getUserId();
+
 			comp.getHistory().add(new HistoryEntry(Calendar.getInstance().getTime(), HistoryOperationType.MODIFIED, user));			
 		} else if (comp.getDataState() == DataState.NEW) {
-			String user = comp.getEnteredUser();
-			if (user != null) {
-				if (!user.equals(UserConfig.userId)) {
-					//TODO ask if user shall be saved.
-					UserConfig.userId = user;
+			if (UserConfig.userIdIsOnDefaultSetting()) {
+				String user = comp.getEnteredUser();
+				if (user != null) {
+					if (!user.equals(UserConfig.getUserId())) {
+						//TODO ask if user shall be saved.
+						UserConfig.setUserIdAfterValidation(user);
+					}
 				}
 			}
 		}
-		
+
 		try {
 			compositionBase.saveCompositionToFile(comp, filename);
 			editor.getComposition().backUpEditableRawData();
@@ -335,7 +340,7 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 	}
 
 	public void clickOnCompositionList(MouseEvent e) {
-		
+
 	}
 
 	public ArrayList<EditorFrame> getEditors(Composition comp) {
@@ -447,7 +452,7 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 	 * The new compositions status is set to NEW, and it is instantly added to the compositionBase
 	 */
 	public void openNewComposition() {
-		String template = "Editor: " + UserConfig.userId + "\nGharana: Punjab\nType: Unknown\n\nTal: Teental\n";
+		String template = "Editor: " + UserConfig.getUserId() + "\nGharana: Punjab\nType: Unknown\n\nTal: Teental\n";
 
 		Composition comp = new Composition(template, compositionBase);
 		comp.setDataState(DataState.NEW);
@@ -511,7 +516,7 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 		return compositionBase;
 	}
 
-	
+
 
 
 

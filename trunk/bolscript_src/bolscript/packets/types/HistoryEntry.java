@@ -8,6 +8,8 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import bolscript.config.UserConfig;
+
 
 public class HistoryEntry {
 
@@ -29,12 +31,10 @@ public class HistoryEntry {
 	}
 	//needs HistoryOperationType to be initialised
 	public static void init() {
-		//TODO improve usernameregexp
-		String userNameRegexp = "[a-zA-Z]+";
 		String regexp = "(\\d\\d\\d\\d\\.\\d\\d\\.\\d\\d\\s*\\d\\d \\d\\d)\\s+";
 		regexp += "("+HistoryOperationType.getRegexp()+")";
 		regexp += "(?=\\s+by\\s+";
-		regexp += "("+userNameRegexp+")";
+		regexp += "("+UserConfig.USER_ID_REGEX+")";
 		regexp += ")?";
 		parserPattern = Pattern.compile(regexp);
 
