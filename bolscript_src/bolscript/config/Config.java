@@ -78,10 +78,10 @@ public class Config {
 		initialised = true;
 	}
 
-	public static void fireConfigChangedEvent() {
+	public static void fireConfigChangedEvent(String ... changedPreferenceKeys) {
 		Debug.debug(Config.class, "CONFIG CHANGED!");
 		for (ConfigChangeListener listener:listeners) {
-			EventQueue.invokeLater(new ConfigChangeEvent(config, listener));
+			EventQueue.invokeLater(new ConfigChangeEvent(config, listener, changedPreferenceKeys));
 		}
 	}
 

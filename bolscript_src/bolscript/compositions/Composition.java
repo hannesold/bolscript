@@ -542,14 +542,14 @@ public class Composition implements DataStatePosessor{
 				if (file.lastModified() != 0L) {
 					String user = getEnteredUser();
 					if (user == null) {
-						user = UserConfig.userId;
+						user = UserConfig.getUserId();
 					}
 					history.add(new HistoryEntry(new Date(file.lastModified()), HistoryOperationType.CREATED, user));
 				}
 			} else {
 				String user = getEnteredUser();
 				if (user == null) {
-					user = UserConfig.userId;
+					user = UserConfig.getUserId();
 				}
 				history.add(new HistoryEntry(Calendar.getInstance().getTime(), HistoryOperationType.CREATED, user));				
 			}

@@ -2,6 +2,7 @@ package bolscript.config;
 
 import java.io.File;
 import java.util.prefs.Preferences;
+import java.util.regex.Pattern;
 
 import basics.Debug;
 import basics.Tools;
@@ -15,10 +16,12 @@ public class UserConfig {
 	
 	public static String pdfExportPath = null;
 	
-	public static String userId = "Unknown";
+	private static String userId = "Unknown";
 	
 	private static UserConfig standard = null;
 	
+	public static final String USER_ID_REGEX = "(\\w+)(\\w|\\s|[\\.\\-_])*";
+	private static final String DEFAULT_USER_ID = "Unknown";
 	
 	/**
 	 * This is the standard setting for fontsizeIncrease
@@ -60,8 +63,8 @@ public class UserConfig {
 		if (pdfExportPath != null) {
 			UserConfig.preferences.put(PDF_EXPORT_PATH,pdfExportPath);
 		}
-		if (userId != null) {
-			UserConfig.preferences.put(USER_ID, userId);
+		if (getUserId() != null) {
+			UserConfig.preferences.put(USER_ID, getUserId());
 		}
 		
 		preferences.putInt(		STD_BUNDLING_DEPTH, 	stdBundlingDepth);
@@ -111,7 +114,7 @@ public class UserConfig {
 			}
 			pdfExportPath = preferences.get(PDF_EXPORT_PATH, tablaFolder);			
 			
-			userId = preferences.get(USER_ID, "Unknown");
+			setUserIdAfterValidation(preferences.get(USER_ID, DEFAULT_USER_ID));
 			
 			stdBundlingDepth 	= Tools.assure(0, preferences.getInt(STD_BUNDLING_DEPTH, 0), 4);
 			stdFontSizeIncrease = preferences.getFloat(STD_FONT_SIZE_INCREASE, 0);
@@ -204,6 +207,32 @@ public class UserConfig {
 
 	public static void setStandardBundlingDepth(int bundlingDepth) {
 		UserConfig.stdBundlingDepth = bundlingDepth;
+	}
+
+
+	public static boolean validateUserId(String candidate) {
+		String userIdRegex = "(\\w+)(\\w|\\s|[\\.\\-_])*";
+		Pattern pattern = Pattern.compile(userIdRegex);
+		if (pattern.matcher(candidate).matches()) return true;
+		return false;	
+	}
+
+	public static boolean setUserIdAfterValidation(String candidate) {
+		if (validateUserId(candidate)) {
+			userId = candidate;
+			
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public static String getUserId() {
+		return userId;
+	}
+
+	public static boolean userIdIsOnDefaultSetting() {
+		return userId.equals(DEFAULT_USER_ID);
 	}
 
 }
