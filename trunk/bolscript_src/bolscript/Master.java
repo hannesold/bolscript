@@ -12,6 +12,7 @@ import gui.bolscript.actions.SaveChanges;
 import gui.bolscript.composition.CompositionPanel;
 import gui.bolscript.dialogs.CouldNotBeRemovedDialog;
 import gui.bolscript.dialogs.LoadingTablafolder;
+import gui.bolscript.dialogs.OpenFileDialog;
 import gui.bolscript.dialogs.PreferencesDialog;
 import gui.bolscript.dialogs.SaveChangesDialog;
 import gui.bolscript.sequences.SequencePanel;
@@ -21,6 +22,7 @@ import java.awt.EventQueue;
 import java.awt.Image;
 import java.awt.SplashScreen;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -28,11 +30,10 @@ import java.util.regex.Matcher;
 
 import javax.swing.JOptionPane;
 
-import com.sun.org.apache.xalan.internal.xsltc.compiler.Pattern;
-
 import midi.MidiStationSimple;
 import basics.Debug;
 import basics.FileManager;
+import basics.FileReadException;
 import basics.FileWriteException;
 import basics.GUI;
 import basics.ZipTools;
@@ -351,6 +352,44 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 		return compEditors;
 	}
 
+	
+	/**
+	 * 
+	 */
+	public void openSomeExistingFile(File file) {
+
+		Composition comp = null;
+		try {
+			comp = compositionBase.addFile(file);
+		} catch (FileReadException e) {			
+			e.printStackTrace();
+		}
+		if (comp != null) {
+			String path = comp.getLinkLocal();
+			if (!path.startsWith(UserConfig.tablaFolder)) {
+				//want to import?
+				OpenFileDialog question = new OpenFileDialog(browserFrame);
+				question.setVisible(true); // (modal)
+				switch (question.getChoice()) {
+					case (OpenFileDialog.IMPORT):
+						//add the file to a generated place
+						//String filename = compositionBase.generateFilename(comp, Config.bolscriptSuffix);
+						//String filePath = compositionBase.generateFilename(comp, suffix)
+					
+						break;
+					case(OpenFileDialog.JUST_OPEN):
+						//do nothing
+						break;
+				}
+			} else {
+				//is already in tabla folder
+			}
+			openEditor(comp);
+		}
+
+		
+	}
+	
 	/**
 	 * Opens an editor for the coomposition.
 	 * @param comp The composition to be edited.
@@ -380,13 +419,9 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 				editor.setLocation(GUI.topRight(browserFrame));
 				editor.arrangeCompositionFrame();
 
-
-
-
 				// add to list of composition frames and editors
 				compositionFrames.add(compositionFrame); 
 				editors.add(editor);
-
 
 				editor.showLater();
 				compositionFrame.showLater();

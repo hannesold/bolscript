@@ -21,6 +21,7 @@ import bols.BolBaseGeneral;
 import bols.tals.Tal;
 import bols.tals.TalBase;
 import bolscript.config.Config;
+import bolscript.filters.MetaValueFilter;
 import bolscript.filters.VisibleCompositionDonator;
 import bolscript.packets.types.PacketTypeFactory;
 
@@ -326,6 +327,20 @@ public class CompositionBase implements VisibleCompositionDonator, TalBase{
 		return s;
 	}
 
+	public static String generateFilepath(Composition comp) {
+		String path = "";
+		if (comp.isTal()) {
+			path = Config.pathToTals;
+		} else {
+			path = Config.pathToCompositions;
+			String editor = comp.getMetaValues().getString(PacketTypeFactory.EDITOR);
+			if (editor != null && editor.length() > 0) {
+				// add editor path (?)
+			}
+		}
+		return path;
+
+	}
 	public static String generateFilename(Composition comp, String suffix) {
 		StringBuilder s = new StringBuilder();
 		s.append(Config.pathToCompositions);
