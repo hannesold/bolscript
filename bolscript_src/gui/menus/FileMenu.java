@@ -6,6 +6,7 @@ import gui.bolscript.EditorFrame;
 import gui.bolscript.actions.CloseEditor;
 import gui.bolscript.actions.ExitProgram;
 import gui.bolscript.actions.ExportPdf;
+import gui.bolscript.actions.OpenExistingFile;
 import gui.bolscript.actions.OpenNew;
 import gui.bolscript.actions.OpenPreferences;
 import gui.bolscript.actions.RefreshFromTablafolder;
@@ -58,6 +59,11 @@ public class FileMenu extends JMenu {
 	public void init () {
 
 		this.add(new OpenNew());
+		
+		JMenuItem openExistingFile = new JMenuItem(new OpenExistingFile(browser));
+		openExistingFile.setAccelerator(KeyStroke.getKeyStroke(
+		        KeyEvent.VK_O, GuiConfig.MENU_SHORTKEY_MASK));
+		this.add(openExistingFile);
 		
 		this.addSeparator();
 		
