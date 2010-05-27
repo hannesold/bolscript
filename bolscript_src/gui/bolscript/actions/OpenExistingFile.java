@@ -1,7 +1,7 @@
 package gui.bolscript.actions;
 
 import gui.bolscript.BrowserFrame;
-import gui.bolscript.dialogs.OpenFileDialog;
+import gui.bolscript.dialogs.OpenOrImportExistingFileDialog;
 import gui.bolscript.dialogs.SaveOutsideTablaFolder;
 
 import java.awt.FileDialog;
@@ -33,6 +33,7 @@ public class OpenExistingFile extends AbstractAction {
 		fileDialog.setDirectory(Config.homeDir);
 		fileDialog.setFilenameFilter(new SuffixFilter(Config.bolscriptSuffix));
 		fileDialog.setVisible(true);
+		
 		//File Dialog is modal. 
 		//When a location and filename is chosen the program continues here.
 	

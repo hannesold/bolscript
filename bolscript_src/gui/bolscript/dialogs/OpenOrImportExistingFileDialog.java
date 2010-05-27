@@ -12,22 +12,26 @@ import javax.swing.JOptionPane;
 import basics.Debug;
 import basics.GUI;
 
-public class OpenFileDialog extends JDialog implements PropertyChangeListener{
+public class OpenOrImportExistingFileDialog extends JDialog implements PropertyChangeListener{
 	//private EditorFrame editor;
-	public static final Object[] options = new Object[] {"Import to Library and open", "Just open"};
-	public static final int IMPORT = 0;
-	public static final int JUST_OPEN = 1;
+	public static final Object[] options = new Object[] {
+		"Just open",
+		"Import to Library and open" 
+		};
+	public static final int IMPORT = 1;
+	public static final int JUST_OPEN = 0;
 	
 	private JOptionPane optionPane;
 	
-	public OpenFileDialog (BrowserFrame browser) {
+	public OpenOrImportExistingFileDialog (BrowserFrame browser) {
 		super(browser);
 		this.setModal(true);
 		optionPane = new JOptionPane("<html>" +
 				"<span style=\"font-size:105%; font-weight:bold\">Import to your library?</span><br />" +
 				"The file you opened is not in your library yet.<br /> " +
-				"If you choose to import it, a physical copy of the file will be put in your tabla folder," +
-				"so, when you run bolscript the next time it will still appear in your list of compositions.",
+				"If you choose to import it, a physical copy of the file <br />" +
+				"will be put in your tabla folder, so, when you run bolscript <br />" +
+				"the next time it will still appear in your list of compositions.",
 				JOptionPane.QUESTION_MESSAGE ,
 				JOptionPane.YES_NO_CANCEL_OPTION,
 				null,
