@@ -34,7 +34,7 @@ public class SaveAs extends AbstractAction {
 		
 		
 		if (editor.getComposition().getDataState() == DataState.NEW) {
-			path = CompositionBase.generateFilename(editor.getComposition(), Config.bolscriptSuffix);
+			path = CompositionBase.generateFilename(editor.getComposition(), Config.bolscriptSuffix, true);
 		} else path = editor.getComposition().getLinkLocal();
 
 		File currentFile = new File(path);

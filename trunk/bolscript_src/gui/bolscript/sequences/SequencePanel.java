@@ -181,6 +181,19 @@ public class SequencePanel extends HighlightablePanel  {
 		}
 	}
 
+	
+	protected void calculateLayoutVariations() {
+		
+		int maxDisplayableCellsPerRow = 
+			(wantedSize.width - insets.left - insets.right) / cellWidthPlusMargin;
+		layoutCycle = tal.getLayoutChooser().getLayoutCycle(maxDisplayableCellsPerRow,100);
+		// adjust size
+		int widthWithoutInsets = (cellWidthPlusMargin) * (layoutCycle.getExactDimensions(nrOfCells).width) - cellMargin;
+		int heightWithoutInsets = (layoutCycle.getExactDimensions(nrOfCells).height)*rowHeight;
+		Dimension newSize = new Dimension(widthWithoutInsets+insets.right+insets.left, heightWithoutInsets+insets.top+insets.bottom);
+		
+	}
+	
 	protected void render() {
 		nrOfCells = (int) Math.ceil(sequence.getDuration());
 

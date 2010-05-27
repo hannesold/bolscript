@@ -47,6 +47,15 @@ public class LayoutChooser {
 		
 	}
 	
+	/*public LayoutCycle getNextLargerCycle(LayoutCycle currentCycle, int nrOfCells, int maxCellsPerRowWanted) {
+
+			
+			int n = currentCycle.getMaxRowWidth();
+			
+			
+		}
+		
+	}*/
 	/**
 	 * Generates a layoutChooser from a String of the Form found in a bolbase Layout packet.
 	 * as found in the existing tal bolscript files.

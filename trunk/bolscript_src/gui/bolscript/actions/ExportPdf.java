@@ -31,7 +31,7 @@ public class ExportPdf extends AbstractAction {
 		Composition comp = compFrame.getCompositionPanel().getComposition();
 		
 		String path;
-		path = CompositionBase.generateFilename(comp, Config.pdfSuffix);
+		path = CompositionBase.generateFilename(comp, Config.pdfSuffix, true);
 		
 		File currentFile = new File(path);
 		FileDialog fileDialog = new FileDialog(compFrame, "Export Pdf As", FileDialog.SAVE);

@@ -12,7 +12,7 @@ import gui.bolscript.actions.SaveChanges;
 import gui.bolscript.composition.CompositionPanel;
 import gui.bolscript.dialogs.CouldNotBeRemovedDialog;
 import gui.bolscript.dialogs.LoadingTablafolder;
-import gui.bolscript.dialogs.OpenFileDialog;
+import gui.bolscript.dialogs.OpenOrImportExistingFileDialog;
 import gui.bolscript.dialogs.PreferencesDialog;
 import gui.bolscript.dialogs.SaveChangesDialog;
 import gui.bolscript.sequences.SequencePanel;
@@ -352,7 +352,7 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 		return compEditors;
 	}
 
-	
+
 	/**
 	 * 
 	 */
@@ -368,18 +368,23 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 			String path = comp.getLinkLocal();
 			if (!path.startsWith(UserConfig.tablaFolder)) {
 				//want to import?
-				OpenFileDialog question = new OpenFileDialog(browserFrame);
+				OpenOrImportExistingFileDialog question = new OpenOrImportExistingFileDialog(browserFrame);
 				question.setVisible(true); // (modal)
 				switch (question.getChoice()) {
-					case (OpenFileDialog.IMPORT):
-						//add the file to a generated place
-						//String filename = compositionBase.generateFilename(comp, Config.bolscriptSuffix);
-						//String filePath = compositionBase.generateFilename(comp, suffix)
+				case (OpenOrImportExistingFileDialog.IMPORT):
+					//add the file to a generated place
+					String completeNewFilename = CompositionBase.generateFilename(comp, Config.bolscriptSuffix, true);
+					comp.setLinkLocal(completeNewFilename);
 					
-						break;
-					case(OpenFileDialog.JUST_OPEN):
-						//do nothing
-						break;
+					try {
+						compositionBase.saveCompositionToFile(comp, comp.getLinkLocal());
+					} catch (FileWriteException e) {
+						debug.critical("File could not be saved under " + comp.getLinkLocal());
+					}
+					break;
+				case(OpenOrImportExistingFileDialog.JUST_OPEN):
+					//do nothing
+					break;
 				}
 			} else {
 				//is already in tabla folder
@@ -387,9 +392,9 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 			openEditor(comp);
 		}
 
-		
+
 	}
-	
+
 	/**
 	 * Opens an editor for the coomposition.
 	 * @param comp The composition to be edited.
@@ -491,7 +496,7 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 
 		Composition comp = new Composition(template, compositionBase);
 		comp.setDataState(DataState.NEW);
-		comp.setLinkLocal(CompositionBase.generateFilename(comp, Config.bolscriptSuffix));
+		comp.setLinkLocal(CompositionBase.generateFilename(comp, Config.bolscriptSuffix, true));
 		compositionBase.addComposition(comp);
 
 		openEditor(comp);
