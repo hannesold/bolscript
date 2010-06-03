@@ -12,13 +12,17 @@ import java.util.regex.Pattern;
  *
  */
 public class LayoutCycle {
-	int[] cycle;
+	
+	private static Pattern integerRegexp = Pattern.compile("\\d+");
+	
+	private int[] cycle;
 	
 	/**
 	 * row, column coordinates for each cell
 	 */
-	Point[] coordinates;
-	int maxRowLength = 0;
+	private Point[] coordinates;
+	
+	private int maxRowLength = 0;
 	
 	public LayoutCycle() {
 		super();
@@ -47,7 +51,11 @@ public class LayoutCycle {
 	public int getRowLength(int rowNumber) {
 		return cycle[rowNumber % cycle.length];
 	}
-
+	
+	public int getMaxRowLength() {
+		  return maxRowLength;
+	}
+	
 	public void initCoordinates(int upToCellNr) {
 		coordinates = new Point[1];
 		coordinates[0] = new Point(0,0);
@@ -55,8 +63,8 @@ public class LayoutCycle {
 	}
 	
 	/**
-	 * <p>Returns the row and cullumn of a cell when using this layout cycle.<br>
-	 * <b>The first cell is adressed by cell number 0.</b></p>
+	 * <p>Returns the row and column of a cell when using this layout cycle.<br>
+	 * <b>The first cell is addressed by cell number 0.</b></p>
 	 * <p><b>Examples:</b><br>If the layout cycle is (3 cells in first row, 2 cells in second row),
 	 * then getCoordinates(0) returns (0,0), getCoordinates(4) returns (0,1), etc.</p>
 	 * @param cellNumber
@@ -65,12 +73,19 @@ public class LayoutCycle {
 	public Point getCoordinates(int cellNumber) {
 		
 		if (cellNumber < coordinates.length) {
+			//if the coordinates for the cell are already cached they are returned
 			return coordinates[cellNumber];
 		} else {
+			//else the coordinate cache is enlarged 
+			//(a little too big, just to be prepared for the future...)
 			Point[] newCoords = new Point[cellNumber + 100];
-			for (int i=0; i< coordinates.length;i++) {
+			
+			//the existing cache is copied
+			for (int i=0; i< coordinates.length;i++) {				
 				newCoords[i] = coordinates[i];
-			} 
+			}
+			
+			//the remaining cache is generated
 			for (int i=coordinates.length; i < cellNumber + 100; i++) {
 				newCoords[i] = new Point(newCoords[i-1].x, newCoords[i-1].y);
 				newCoords[i].x++;
@@ -115,12 +130,13 @@ public class LayoutCycle {
 		
 	}
 	
+	
 	public static LayoutCycle fromString(String input) throws NumberFormatException {
 		
 		ArrayList<Integer> c = new ArrayList<Integer>();
 		
 		
-		Matcher m = Pattern.compile("\\d+").matcher(input);
+		Matcher m = integerRegexp.matcher(input);
 		
 		while (m.find()) {
 			c.add(Integer.parseInt(m.group(0)));

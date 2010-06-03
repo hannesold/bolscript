@@ -32,7 +32,36 @@ public class LayoutChooserTest {
 		assertEquals(d.width, 16);
 		assertEquals(d.height, 1);
 		
-		
-		
 	}
+	
+	@Test
+	public void getNextLargerOrSmallerCyclesFromTeental () throws Exception {
+		Tal teental = new Teental();
+		
+		LayoutChooser lc = teental.getLayoutChooser();
+				
+		LayoutCycle c = lc.getLayoutCycle(3, 1000);
+		
+		c = lc.getNextLargerCycle(c);		
+		assertEquals(4, c.getMaxRowLength());		
+		c = lc.getNextLargerCycle(c);
+		assertEquals(8, c.getMaxRowLength());
+		c = lc.getNextLargerCycle(c);		
+		assertEquals(16, c.getMaxRowLength());		
+		c = lc.getNextLargerCycle(c);
+		assertEquals(32, c.getMaxRowLength());	
+		c = lc.getNextSmallerCycle(c);
+		assertEquals(16, c.getMaxRowLength());
+		c = lc.getNextSmallerCycle(c);
+		assertEquals(8, c.getMaxRowLength());
+		c = lc.getNextSmallerCycle(c);
+		assertEquals(4, c.getMaxRowLength());
+		c = lc.getNextSmallerCycle(c);
+		assertEquals(2, c.getMaxRowLength());
+		c = lc.getNextSmallerCycle(c);
+		assertEquals(1, c.getMaxRowLength());
+		c = lc.getNextSmallerCycle(c);
+		assertEquals(1, c.getMaxRowLength());
+	}
+	
 }

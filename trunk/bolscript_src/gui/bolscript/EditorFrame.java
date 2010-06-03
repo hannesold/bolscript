@@ -237,10 +237,6 @@ public class EditorFrame extends JFrame implements WindowListener, CompositionCh
 		Debug.temporary(this, r +" clicked in Packet " + containingPacket);
 		
 	}
-	
-	public void viewerFrameResized(ComponentEvent e) {
-		compile();
-	}
 
 	@Override
 	public void caretUpdate(CaretEvent e) {

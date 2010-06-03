@@ -1,6 +1,7 @@
 package bols.tals;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,98 +21,161 @@ public class LayoutChooser {
 	 */
 	private int matrasInTal;
 	private int biggestDescribedLayout = 0;
-	
+	private HashMap<Integer, LayoutCycle> allCachedLayoutCycles; 
+
 	//a list that has to go from 1 to matrasintal at least
-	private ArrayList<LayoutCycle> layoutCycles;
-	
-	
+	private ArrayList<LayoutCycle> storedLayoutCycles;
+
+
 	public LayoutChooser (ArrayList<LayoutCycle> layoutCycles, int matrasInTal) {
-		this.layoutCycles = layoutCycles;	
+		this.storedLayoutCycles = layoutCycles;	
 		this.matrasInTal = matrasInTal;
 		this.biggestDescribedLayout = layoutCycles.size()-1;
-	}
-	
-	public LayoutCycle getLayoutCycle(int maxDisplayableCellsPerRow, int maxCellsPerRowWanted) {
-		
-		int n= Math.max(1, Math.min(maxDisplayableCellsPerRow, maxCellsPerRowWanted));
-		//System.out.println("n = " + n);
-		
-		if (((n/matrasInTal)>=1) && (biggestDescribedLayout < n)) {
-			//System.out.println("generating");
-			//auto mode for sizes bigger than one tal cycle
-			return new LayoutCycle((n/matrasInTal)*matrasInTal);
-		} else {
-			//System.out.println("choosing");
-			return layoutCycles.get(n);
-		}
-		
-	}
-	
-	/*public LayoutCycle getNextLargerCycle(LayoutCycle currentCycle, int nrOfCells, int maxCellsPerRowWanted) {
 
-			
-			int n = currentCycle.getMaxRowWidth();
-			
-			
+		allCachedLayoutCycles = new HashMap<Integer,LayoutCycle>(32);
+	}
+
+	public LayoutCycle getLayoutCycle(int maxDisplayableCellsPerRow, int maxCellsPerRowWanted) {
+
+		int n= Math.max(1, Math.min(maxDisplayableCellsPerRow, maxCellsPerRowWanted));		
+		return getLayoutCycle(n);
+
+	}
+
+	private LayoutCycle getLayoutCycle(int n) {
+		if (allCachedLayoutCycles.containsKey(n)) {
+			return allCachedLayoutCycles.get(n);
+		} else {
+			LayoutCycle chosenCycle;
+			if (((n/matrasInTal)>=1) && (biggestDescribedLayout < n)) {
+				//auto mode for sizes bigger than one tal cycle
+				//generate a new one				
+				chosenCycle = new LayoutCycle((n/matrasInTal)*matrasInTal);				
+			} else {
+				// choose from the list
+				chosenCycle =  storedLayoutCycles.get(n);
+			}
+			allCachedLayoutCycles.put(n,chosenCycle);
+			return chosenCycle;
+
 		}
-		
-	}*/
+	}
+
+	
 	/**
-	 * Generates a layoutChooser from a String of the Form found in a bolbase Layout packet.
-	 * as found in the existing tal bolscript files.
-	 * @param input
-	 * @param matrasInTal
+	 * Searches for the first layoutCycle which has a shorter largest row than the given one.
+	 * @param currentCycle
 	 * @return
 	 */
-	public static LayoutChooser fromString (String input, int matrasInTal) {
-		//System.out.println(matrasInTal);
-		ArrayList<LayoutCycle> layoutCycles = new ArrayList<LayoutCycle>(matrasInTal);
-		
-		for (int i=0; i <= matrasInTal; i++) {
-			layoutCycles.add(null);
-		}
-		
-		String regex = Parser.SN + "*(\\d+)\\s*" +
-		"((?:\\d+\\s*,\\s*)*\\d+\\s*)";
-		Matcher m = Pattern.compile(regex).matcher(input);
-		
-		
-		while (m.find()) {
-			int index = Integer.parseInt(m.group(1));
-			if (index >= layoutCycles.size()) {
-				for (int i=layoutCycles.size(); i < index; i++) {
-					layoutCycles.add(null);
-				}			
-				layoutCycles.add(LayoutCycle.fromString(m.group(2)));
-			} else {
-				layoutCycles.set(index, LayoutCycle.fromString(m.group(2)));
-			}
-			
-			
-		}
-		
-		LayoutCycle nextSmallerExisting = new LayoutCycle(1);
+	public LayoutCycle getNextSmallerCycle(LayoutCycle currentCycle) {
 
-		for (int i=0; i< layoutCycles.size();i++) {
-			if (layoutCycles.get(i)==null){
-				layoutCycles.set(i, nextSmallerExisting);
+		int currentMaxCellsPerRow = currentCycle.getMaxRowLength();
+		if (currentMaxCellsPerRow<=1) {
+			return currentCycle;
+		}		
+		int allowedCellsPerRow = Math.max(1,currentMaxCellsPerRow-1);		
+		LayoutCycle nextCycle = null;
+		int counter = 0;
+		
+		while (nextCycle == null && counter < 1000 && allowedCellsPerRow >=1) {
+			LayoutCycle potentiallyNextCycle = getLayoutCycle(allowedCellsPerRow);
+			
+			if (potentiallyNextCycle.getMaxRowLength() < currentMaxCellsPerRow) {
+				nextCycle = potentiallyNextCycle;
 			} else {
-				nextSmallerExisting = layoutCycles.get(i);
+				allowedCellsPerRow--;
 			}
+			counter++;
 		}
-		
-		return new LayoutChooser(layoutCycles, matrasInTal);
+		return nextCycle;
 	}
 	
-	public String toString () {
-		StringBuffer s = new StringBuffer();
-		
-		for (int i = 0; i < layoutCycles.size(); i++) {
-			s.append(i + " -> " + layoutCycles.get(i).toString() + "\n");
+	/**
+	 * Searches for the first layoutCycle which has a longer largest row than the given one.
+	 * @param currentCycle
+	 * @return
+	 */
+	public LayoutCycle getNextLargerCycle(LayoutCycle currentCycle) {
+
+		int currentMaxCellsPerRow = currentCycle.getMaxRowLength();
+		int allowedCellsPerRow = currentMaxCellsPerRow+1;
+		LayoutCycle nextCycle = null;
+		int counter = 0;
+		while (nextCycle == null && counter < 1000) {
+			LayoutCycle potentiallyNextCycle = getLayoutCycle(allowedCellsPerRow);
+			if (potentiallyNextCycle.getMaxRowLength() > currentMaxCellsPerRow) {
+				nextCycle = potentiallyNextCycle;
+			} else {
+				allowedCellsPerRow++;
+			}
+			counter++;
 		}
-		
-		return s.toString();
+		return nextCycle;
 	}
-	
-	
+
+
+
+
+
+
+
+
+/**
+ * Generates a layoutChooser from a String of the Form found in a bolbase Layout packet.
+ * as found in the existing tal bolscript files.
+ * @param input
+ * @param matrasInTal
+ * @return
+ */
+public static LayoutChooser fromString (String input, int matrasInTal) {
+	//System.out.println(matrasInTal);
+	ArrayList<LayoutCycle> layoutCycles = new ArrayList<LayoutCycle>(matrasInTal);
+
+	for (int i=0; i <= matrasInTal; i++) {
+		layoutCycles.add(null);
+	}
+
+	String regex = Parser.SN + "*(\\d+)\\s*" +
+	"((?:\\d+\\s*,\\s*)*\\d+\\s*)";
+	Matcher m = Pattern.compile(regex).matcher(input);
+
+
+	while (m.find()) {
+		int index = Integer.parseInt(m.group(1));
+		if (index >= layoutCycles.size()) {
+			for (int i=layoutCycles.size(); i < index; i++) {
+				layoutCycles.add(null);
+			}			
+			layoutCycles.add(LayoutCycle.fromString(m.group(2)));
+		} else {
+			layoutCycles.set(index, LayoutCycle.fromString(m.group(2)));
+		}
+
+
+	}
+
+	LayoutCycle nextSmallerExisting = new LayoutCycle(1);
+
+	for (int i=0; i< layoutCycles.size();i++) {
+		if (layoutCycles.get(i)==null){
+			layoutCycles.set(i, nextSmallerExisting);
+		} else {
+			nextSmallerExisting = layoutCycles.get(i);
+		}
+	}
+
+	return new LayoutChooser(layoutCycles, matrasInTal);
+}
+
+public String toString () {
+	StringBuffer s = new StringBuffer();
+
+	for (int i = 0; i < storedLayoutCycles.size(); i++) {
+		s.append(i + " -> " + storedLayoutCycles.get(i).toString() + "\n");
+	}
+
+	return s.toString();
+}
+
+
 }

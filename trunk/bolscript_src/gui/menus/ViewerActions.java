@@ -3,15 +3,20 @@ package gui.menus;
 import javax.swing.AbstractAction;
 
 public class ViewerActions {
-	public AbstractAction decreaseBundling, increaseBundling, decreaseFontsize, increaseFontsize, resetFontsize;
+	public AbstractAction showMore, showLess, decreaseBundling, increaseBundling, decreaseFontsize, increaseFontsize, resetFontsize;
 	public AbstractAction[] setLanguage;
 	
-	public ViewerActions(AbstractAction decreaseBundling,
+	public ViewerActions(
+			AbstractAction showMore,
+			AbstractAction showLess,
+			AbstractAction decreaseBundling,
 			AbstractAction increaseBundling,
 			AbstractAction decreaseFontsize,
 			AbstractAction increaseFontsize, AbstractAction resetFontsize,
 			AbstractAction[] setLanguage) {
 		super();
+		this.showMore = showMore;
+		this.showLess = showLess;
 		this.decreaseBundling = decreaseBundling;
 		this.increaseBundling = increaseBundling;
 		this.decreaseFontsize = decreaseFontsize;
