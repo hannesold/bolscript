@@ -51,6 +51,9 @@ public class GuiConfig {
 	public static int commentFontSize = 12;
 	public static Font commentFont = new Font("Arial", Font.PLAIN, commentFontSize);
 	
+	//Composition panel
+	public static int compositionPanelMarginSide = 10;
+	
 	//Sequence Panels
 	public static Color sequencePanelHighlightColor = new Color (68, 117, 207);
 	public static Color sequencePanelBorderColor = (new JPanel()).getBackground().darker();
@@ -254,6 +257,8 @@ public class GuiConfig {
 	}
 
 	static Image windowsFrameIcon;
+
+
 
 
 	public static Image getWindowsFrameIcon() {

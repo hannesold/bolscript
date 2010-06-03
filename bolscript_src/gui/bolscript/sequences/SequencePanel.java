@@ -55,7 +55,11 @@ public class SequencePanel extends HighlightablePanel  {
 	protected static int rowMargin = 16;
 
 	protected static Insets insets = new Insets(10,20,10,20);
-
+	
+	/**
+	 * The total size of the panel in pixels (is set during after rendering)
+	 */
+	protected Dimension currentTotalSize;
 
 	protected RepresentableSequence sequence;
 
@@ -84,9 +88,9 @@ public class SequencePanel extends HighlightablePanel  {
 	protected Packet containingPacket = null;
 
 	protected MouseListener unitPanelMouseListener = null;
-	
+
 	protected UnitPanelListener unitPanelListener;
-	
+
 	public SequencePanel(RepresentableSequence sequence, Tal tal, Dimension size, int minRows, String fixedLargestWidthBol, int fixedMaxSpeed, int language, float fontSize, Packet containingPacket, UnitPanelListener unitPanelListener) {
 		super();
 		this.setLayout(null);
@@ -126,8 +130,8 @@ public class SequencePanel extends HighlightablePanel  {
 					BolBundle bundlePanel = ((BolBundlePanel) e.getSource()).getBolBundle();
 					dispatchUnitClick(bundlePanel);
 				}
-				
-				
+
+
 			}
 		};
 		render();
@@ -140,8 +144,8 @@ public class SequencePanel extends HighlightablePanel  {
 			unitPanelListener.unitClickedInSequencePanel(r, containingPacket);
 		}
 	}
-	
-	
+
+
 	public boolean isHighlighted() {
 		return highlighted;
 	}
@@ -181,33 +185,62 @@ public class SequencePanel extends HighlightablePanel  {
 		}
 	}
 
-	
-	protected void calculateLayoutVariations() {
-		
-		int maxDisplayableCellsPerRow = 
-			(wantedSize.width - insets.left - insets.right) / cellWidthPlusMargin;
-		layoutCycle = tal.getLayoutChooser().getLayoutCycle(maxDisplayableCellsPerRow,100);
-		// adjust size
-		int widthWithoutInsets = (cellWidthPlusMargin) * (layoutCycle.getExactDimensions(nrOfCells).width) - cellMargin;
-		int heightWithoutInsets = (layoutCycle.getExactDimensions(nrOfCells).height)*rowHeight;
-		Dimension newSize = new Dimension(widthWithoutInsets+insets.right+insets.left, heightWithoutInsets+insets.top+insets.bottom);
-		
+
+	/**
+	 * Returns the Dimension after a smart resizing.
+	 * Call this only after rendering at least once !
+	 * @return
+	 */
+	public Dimension getNextLargerDimension() {
+		if (nrOfCells<=layoutCycle.getRowLength(0)) {
+			//a larger layout makes no sense
+			return currentTotalSize;
+		} else {
+			LayoutCycle nextLargerCycle = tal.getLayoutChooser().getNextLargerCycle(layoutCycle);
+			return calculateTotalDimensions(nextLargerCycle);
+		}
 	}
 	
+	/**
+	 * Returns the Dimension after a smart resizing.
+	 * Call this only after rendering at least once !
+	 * @return
+	 */
+	public Dimension getNextSmallerDimension() {
+		if (nrOfCells<=1) {
+			//a smaller layout makes no sense
+			return currentTotalSize;
+		} else {
+			LayoutCycle nextSmallerCycle = tal.getLayoutChooser().getNextSmallerCycle(layoutCycle);			
+			return calculateTotalDimensions(nextSmallerCycle);
+		}
+	}
+
+	/**
+	 * Calculates the total dimensions of the SequencePanel using a given layoutcycle for calculating the width and height in units of cells.
+	 * This needs nrOfCells, cellWidthPlusMargin, cellMargin, rowHeight and insets to be set (after rendering these should be set).
+	 * @param cycle
+	 * @return
+	 */
+	private Dimension calculateTotalDimensions(LayoutCycle cycle) {
+		Dimension cellFieldDimensions = cycle.getExactDimensions(nrOfCells);
+		int widthWithoutInsets = (cellWidthPlusMargin) * cellFieldDimensions.width - cellMargin;
+		int heightWithoutInsets = cellFieldDimensions.height*rowHeight;
+		Dimension newSize = new Dimension(widthWithoutInsets+insets.right+insets.left, heightWithoutInsets+insets.top+insets.bottom);
+		return newSize;
+	}
+
 	protected void render() {
 		nrOfCells = (int) Math.ceil(sequence.getDuration());
-
-		cellSize = determinCellSize();
-		cellMargin = Math.max(minCellMargin, Math.min(maxCellMargin,cellSize.width/8));
-		//Debug.temporary(this,"cellMargin: " + cellMargin);
-
+		
+		cellSize = determineCellSizeFromSequenceContents();
+		cellMargin = Math.max(minCellMargin, Math.min(maxCellMargin, cellSize.width/8));
 		cellWidthPlusMargin = cellSize.width + cellMargin;
 		rowHeight = cellSize.height + rowMargin;
 
 		// establish layoutCycle
 		// which gives us the row lengths and cell coordinates etc.
-		int maxDisplayableCellsPerRow = (wantedSize.width - insets.left - insets.right) 
-		/ cellWidthPlusMargin;
+		int maxDisplayableCellsPerRow = (wantedSize.width - insets.left - insets.right) / cellWidthPlusMargin;
 		layoutCycle = tal.getLayoutChooser().getLayoutCycle(maxDisplayableCellsPerRow,100);
 		if (layoutCycle == null) Debug.critical(this, "no layoutCycle found ! in chooser \n" + tal.getLayoutChooser());
 
@@ -223,15 +256,13 @@ public class SequencePanel extends HighlightablePanel  {
 		// add bols
 		renderBols();
 
-
+		
 		// adjust size
-		int widthWithoutInsets = (cellWidthPlusMargin) * (layoutCycle.getExactDimensions(nrOfCells).width) - cellMargin;
-		int heightWithoutInsets = (layoutCycle.getExactDimensions(nrOfCells).height)*rowHeight;
-		Dimension newSize = new Dimension(widthWithoutInsets+insets.right+insets.left, heightWithoutInsets+insets.top+insets.bottom);
-		this.setSize(newSize);
-		this.setPreferredSize(newSize);	
-		this.setMaximumSize(newSize);
-		this.setMinimumSize(newSize);
+		currentTotalSize = calculateTotalDimensions(layoutCycle);		
+		this.setSize(currentTotalSize);
+		this.setPreferredSize(currentTotalSize);	
+		this.setMaximumSize(currentTotalSize);
+		this.setMinimumSize(currentTotalSize);
 
 		//adjust color
 		if (GUI.showLayoutStructure) {
@@ -250,7 +281,7 @@ public class SequencePanel extends HighlightablePanel  {
 	 * occuring labels that have to be fitted in on cell.
 	 * @return
 	 */
-	protected Dimension determinCellSize() {
+	protected Dimension determineCellSizeFromSequenceContents() {
 		JLabel label = new JLabel("");
 		label.setFont(GuiConfig.getBolFont(language, fontSize, false));
 		int maxBolLabelHeight=0;

@@ -7,6 +7,8 @@ import gui.bolscript.actions.IncreaseBundling;
 import gui.bolscript.actions.IncreaseFontSize;
 import gui.bolscript.actions.ResetFontSize;
 import gui.bolscript.actions.SetLanguage;
+import gui.bolscript.actions.SmartResizeEnlarge;
+import gui.bolscript.actions.SmartResizeShrink;
 import gui.bolscript.packets.CommentText;
 import gui.bolscript.packets.FootnoteText;
 import gui.bolscript.sequences.SequencePanel;
@@ -26,6 +28,8 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
+import java.util.Map.Entry;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
@@ -79,7 +83,7 @@ public class CompositionPanel extends JLayeredPane {
 	private int language = bols.BolName.SIMPLE;
 	private int renderingWidth;
 
-	private AbstractAction decreaseBundling, increaseBundling, decreaseFontsize, increaseFontsize, resetFontsize;
+	private AbstractAction showMore, showLess, decreaseBundling, increaseBundling, decreaseFontsize, increaseFontsize, resetFontsize;
 	private AbstractAction[] setLanguage;
 	private ViewerActions viewerActions;
 
@@ -217,13 +221,16 @@ public class CompositionPanel extends JLayeredPane {
 
 		ArrayList<AbstractAction> absActions = new ArrayList<AbstractAction>();
 
+		
+		showMore = new SmartResizeEnlarge(this);
+		showLess = new SmartResizeShrink(this);		
 		decreaseBundling = new DecreaseBundling(this);		
 		increaseBundling = new IncreaseBundling(this);
 		decreaseFontsize = new DecreaseFontSize(this);
 		increaseFontsize = new IncreaseFontSize(this);
 		resetFontsize = new ResetFontSize(this);
 
-		absActions.add(decreaseBundling); absActions.add(increaseBundling); absActions.add(decreaseFontsize); absActions.add(increaseFontsize);
+		absActions.add(showMore); absActions.add(showLess); absActions.add(decreaseBundling); absActions.add(increaseBundling); absActions.add(decreaseFontsize); absActions.add(increaseFontsize);
 
 		setLanguage = new SetLanguage[BolName.languagesCount];
 
@@ -236,7 +243,9 @@ public class CompositionPanel extends JLayeredPane {
 			action.setEnabled(false);
 		}
 
-		viewerActions = new ViewerActions(decreaseBundling,increaseBundling,decreaseFontsize,increaseFontsize,resetFontsize,setLanguage);
+		viewerActions = new ViewerActions(
+				
+				showMore, showLess, decreaseBundling,increaseBundling,decreaseFontsize,increaseFontsize,resetFontsize,setLanguage);
 
 	}
 
@@ -263,6 +272,9 @@ public class CompositionPanel extends JLayeredPane {
 			for (int i=0; i < BolName.languagesCount; i++) {
 				setLanguage[i].setEnabled(language!=i);
 			}
+			
+			showMore.setEnabled(true);
+			showLess.setEnabled(true);
 		}
 	}
 
@@ -361,6 +373,8 @@ public class CompositionPanel extends JLayeredPane {
 	public void setRenderingWidth(int width) {
 		renderingWidth = Math.max(50, width);
 	}
+	
+	
 
 	private void prepareRendering(boolean onlyPrepare) {	
 		synchronized(renderTaskNr) {
@@ -376,9 +390,9 @@ public class CompositionPanel extends JLayeredPane {
 
 		int width = this.getParent().getParent().getSize().width;
 		if (width != 0) {
-			setRenderingWidth(width-20);
+			setRenderingWidth(width-GuiConfig.compositionPanelMarginSide*2);
 		} else {
-			setRenderingWidth(this.getParent().getParent().getPreferredSize().width-40);	
+			setRenderingWidth(this.getParent().getParent().getPreferredSize().width-GuiConfig.compositionPanelMarginSide*4);	
 		}
 
 
@@ -434,7 +448,7 @@ public class CompositionPanel extends JLayeredPane {
 						components.add(title);
 						newHeight += components.get(components.size()-1).getPreferredSize().height;
 
-						Dimension variationDim = new Dimension(renderingWidth, this.getSize().height);			
+						Dimension sequenceDimension = new Dimension(renderingWidth, this.getSize().height);			
 
 						RepresentableSequence seq;
 						 seq = ((RepresentableSequence) p.getObject())
@@ -445,7 +459,7 @@ public class CompositionPanel extends JLayeredPane {
 						}*/
 						
 						
-						SequencePanel sequencePanel = new SequencePanel(seq, tal, variationDim, 0,"",0, language, GuiConfig.bolFontSizeStd[language] + fontSizeIncrease, p, unitPanelListener );
+						SequencePanel sequencePanel = new SequencePanel(seq, tal, sequenceDimension, 0,"",0, language, GuiConfig.bolFontSizeStd[language] + fontSizeIncrease, p, unitPanelListener );
 
 						addLineBreak(new Float(newHeight), PageBreakPanel.LOW);
 						components.add(sequencePanel);
@@ -486,6 +500,7 @@ public class CompositionPanel extends JLayeredPane {
 			preparedWorker = null;
 		}
 	}
+	
 	public boolean finishedRendering() {
 		synchronized(renderTaskNr ) {
 			synchronized(finishedRenderTaskNr) {
@@ -754,6 +769,62 @@ public class CompositionPanel extends JLayeredPane {
 		//		Debug.temporary(this, "eventually set to: " + fontSizeIncrease);
 
 	}
+	
+	public void smartResizeSmaller() {
+		Set<Entry<Packet, HighlightablePanel>> map = packetMap.entrySet();
+		int referenceWidth = this.renderingWidth;
+		int newRenderingWidth = referenceWidth;
+		
+		for (Entry<Packet, HighlightablePanel> pair : map) {
+			if (pair.getKey().getType() == PacketTypeFactory.BOLS) {
+				SequencePanel panel = (SequencePanel) pair.getValue();				
+				int candidate = panel.getNextSmallerDimension().width;
+				if (newRenderingWidth == referenceWidth) {
+					newRenderingWidth = Math.min(candidate, referenceWidth);
+				} else if (candidate < referenceWidth-30) {
+					newRenderingWidth = Math.min(referenceWidth, Math.max(newRenderingWidth, candidate));
+				}
+			}
+		}
+		
+		newRenderingWidth = Math.max(50, newRenderingWidth);
+		
+		if (newRenderingWidth < referenceWidth) {
+			resizeCompositionFrame(newRenderingWidth);
+		}
+				
+	}
+	
+	public void smartResizeLarger() {
+		Set<Entry<Packet, HighlightablePanel>> map = packetMap.entrySet();
+		int referenceWidth = this.renderingWidth;
+		int newRenderingWidth = referenceWidth;
+		
+		for (Entry<Packet, HighlightablePanel> pair : map) {
+			if (pair.getKey().getType() == PacketTypeFactory.BOLS) {
+				SequencePanel panel = (SequencePanel) pair.getValue();				
+				int candidate = panel.getNextLargerDimension().width;
+				if (newRenderingWidth == referenceWidth) {
+					newRenderingWidth = Math.max(candidate, referenceWidth);
+				} else if (candidate > referenceWidth+30) {
+					newRenderingWidth = Math.max(referenceWidth, Math.min(newRenderingWidth, candidate));
+				}
+			}
+		}
+		
+		if (newRenderingWidth > referenceWidth) {
+			resizeCompositionFrame(newRenderingWidth);
+		}
+		
+	}
+
+	private void resizeCompositionFrame(int newRenderingWidth) {
+		int newFrameWidth = Math.max(0,compositionFrame.getSize().width - renderingWidth) 
+		+ newRenderingWidth
+		+ GuiConfig.compositionPanelMarginSide*2;			
+		compositionFrame.setSize( newFrameWidth, compositionFrame.getSize().height);
+	}
+	
 	public void resetFontSize() {
 		fontSizeIncrease = 0;
 		updateActionEnabling();

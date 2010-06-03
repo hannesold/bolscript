@@ -9,6 +9,8 @@ import gui.bolscript.actions.IncreaseBundling;
 import gui.bolscript.actions.IncreaseFontSize;
 import gui.bolscript.actions.ResetFontSize;
 import gui.bolscript.actions.SetLanguage;
+import gui.bolscript.actions.SmartResizeEnlarge;
+import gui.bolscript.actions.SmartResizeShrink;
 import gui.bolscript.actions.ToggleConsole;
 
 import java.awt.event.KeyEvent;
@@ -54,6 +56,8 @@ public class ViewMenu extends JMenu {
 			 actions = viewer.getCompositionPanel().getViewerActions();
 		} else {
 			actions = new ViewerActions(
+					new SmartResizeEnlarge(null),
+					new SmartResizeShrink(null),
 					new DecreaseBundling(null),
 					new IncreaseBundling(null),
 					new DecreaseFontSize(null),
@@ -61,6 +65,17 @@ public class ViewMenu extends JMenu {
 					new ResetFontSize(null), 
 					new AbstractAction[0]);
 		}
+		JMenuItem showMore = new JMenuItem(actions.showMore);
+		this.add(showMore);
+		showMore.setAccelerator(KeyStroke.getKeyStroke(
+		        KeyEvent.VK_I, GuiConfig.MENU_SHORTKEY_MASK));
+		JMenuItem showLess = new JMenuItem(actions.showLess);
+		
+		this.add(showLess);
+		showLess.setAccelerator(KeyStroke.getKeyStroke(
+		        KeyEvent.VK_U, GuiConfig.MENU_SHORTKEY_MASK));
+		
+		this.addSeparator();
 		
 		JMenuItem incrFonts = new JMenuItem(actions.increaseFontsize);
 		this.add(incrFonts);
@@ -77,12 +92,12 @@ public class ViewMenu extends JMenu {
 		this.addSeparator();
 		JMenuItem incrBundling = new JMenuItem(actions.increaseBundling);
 		incrBundling.setAccelerator(KeyStroke.getKeyStroke(
-		        KeyEvent.VK_I, GuiConfig.MENU_SHORTKEY_MASK));			
+		        KeyEvent.VK_I, KeyEvent.SHIFT_DOWN_MASK | GuiConfig.MENU_SHORTKEY_MASK));			
 		this.add(incrBundling);
 		
 		JMenuItem decrBundling = new JMenuItem(actions.decreaseBundling);
 		decrBundling.setAccelerator(KeyStroke.getKeyStroke(
-		        KeyEvent.VK_U, GuiConfig.MENU_SHORTKEY_MASK));
+		        KeyEvent.VK_U, KeyEvent.SHIFT_DOWN_MASK | GuiConfig.MENU_SHORTKEY_MASK));
 		this.add(decrBundling);
 		
 		this.addSeparator();
