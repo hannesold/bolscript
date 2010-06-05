@@ -6,6 +6,7 @@ import gui.bolscript.actions.RemoveSelected;
 import gui.bolscript.actions.RevealCompositionInOSFileManager;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -35,7 +36,7 @@ public class CompositionListPanel extends JScrollPane  {
 	CompositionTableModel tableModel = null;
 
 	public CompositionListPanel(CompositionTableModel model) {
-		super();
+		super(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
 		//this.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
 		this.tableModel = model;
 		compositionTable = new JTable(model);
@@ -45,9 +46,15 @@ public class CompositionListPanel extends JScrollPane  {
 		compositionTable.getColumnModel().getColumn(0).setMaxWidth(20);
 		compositionTable.getColumnModel().getColumn(1).setMinWidth(140);
 		compositionTable.getColumnModel().getColumn(2).setMinWidth(90);
+		compositionTable.getColumnModel().getColumn(2).setMaxWidth(140);
 		compositionTable.getColumnModel().getColumn(3).setMinWidth(60);
-		compositionTable.getColumnModel().getColumn(4).setMinWidth(60);
-		compositionTable.getColumnModel().getColumn(5).setWidth(90);
+		compositionTable.getColumnModel().getColumn(3).setMaxWidth(145);
+		compositionTable.getColumnModel().getColumn(4).setMinWidth(80);
+		compositionTable.getColumnModel().getColumn(5).setMinWidth(140);
+		compositionTable.getColumnModel().getColumn(6).setMinWidth(95);
+		compositionTable.getColumnModel().getColumn(6).setMaxWidth(95);
+		compositionTable.getColumnModel().getColumn(7).setMinWidth(95);
+		compositionTable.getColumnModel().getColumn(7).setMaxWidth(95);
 		compositionTable.addMouseListener(GUI.proxyClickListener(Master.master, "clickOnCompositionList"));
 		//compositionTable.setShowGrid(false);
 		compositionTable.setGridColor(GuiConfig.tableBG);
@@ -55,7 +62,9 @@ public class CompositionListPanel extends JScrollPane  {
 		compositionTable.setShowHorizontalLines(false);
 		compositionTable.setShowVerticalLines(true);
 		//compositionTable.set
-		
+		//compositionTable.setPreferredScrollableViewportSize(new Dimension(1000,500));
+		//compositionTable.setPreferredSize(new Dimension(1000,500));
+		compositionTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		
 		compositionTable.addMouseListener(new MouseAdapter()
 		{
@@ -120,6 +129,7 @@ public class CompositionListPanel extends JScrollPane  {
 
 		this.setViewportView(compositionTable);
 		this.getViewport().setBackground(Color.white);
+		
 
 
 		this.setOpaque(false);

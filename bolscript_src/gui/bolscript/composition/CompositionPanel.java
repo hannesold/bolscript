@@ -390,9 +390,11 @@ public class CompositionPanel extends JLayeredPane {
 
 		int width = this.getParent().getParent().getSize().width;
 		if (width != 0) {
-			setRenderingWidth(width-GuiConfig.compositionPanelMarginSide*2);
+			setRenderingWidth(width
+				- GuiConfig.compositionPanelMarginSide*2);
 		} else {
-			setRenderingWidth(this.getParent().getParent().getPreferredSize().width-GuiConfig.compositionPanelMarginSide*4);	
+			setRenderingWidth(this.getParent().getParent().getPreferredSize().width
+				- GuiConfig.compositionPanelMarginSide*4);	
 		}
 
 

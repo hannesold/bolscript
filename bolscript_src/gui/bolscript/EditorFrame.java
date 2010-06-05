@@ -291,7 +291,7 @@ public class EditorFrame extends JFrame implements WindowListener, CompositionCh
 			compile();
 		}
 	}
-
+	
 	@Override
 	public void componentShown(ComponentEvent e) {
 	}
