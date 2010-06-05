@@ -23,14 +23,14 @@ public class CellRenderer extends DefaultTableCellRenderer {
 	public Component getTableCellRendererComponent(JTable table, Object value,
 			boolean isSelected, boolean hasFocus, int row, int column) {
 		
-		JLabel c = new JLabel();
+		JLabel c = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);//new JLabel();
 		c.setText(" "+ value.toString() );
 		
 		c.setOpaque(true);
 		Dimension size = GUI.getPrefferedSize(c, 50);
 		size = new Dimension(size.width + 10, size.height+10);
 		
-		Color bgRows = (row%2==0) ? GuiConfig.colorEvenRows : GuiConfig.colorUnvenRows;
+		Color bgRows = (row % 2 == 0) ? GuiConfig.colorEvenRows : GuiConfig.colorUnvenRows;
 
 		if (isSelected) {
 			c.setBackground(table.getSelectionBackground());
@@ -38,7 +38,6 @@ public class CellRenderer extends DefaultTableCellRenderer {
 		} else {
 			c.setBackground(bgRows);
 			c.setForeground(table.getForeground());
-
 		}
 		
 		if (withToolTips) {
