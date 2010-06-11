@@ -57,7 +57,7 @@ import bolscript.config.GuiConfig;
 import bolscript.config.UserConfig;
 import bolscript.packets.Packet;
 import bolscript.packets.Packets;
-import bolscript.packets.types.PacketTypeFactory;
+import bolscript.packets.types.PacketTypeDefinitions;
 import bolscript.sequences.FootnoteUnit;
 import bolscript.sequences.RepresentableSequence;
 import bolscript.sequences.SpeedUnit;
@@ -412,7 +412,7 @@ public class CompositionPanel extends JLayeredPane {
 		if (packets != null) {
 			Tal tal = Teental.getDefaultTeental();
 			for (Packet p : packets) {
-				if (p.getType() == PacketTypeFactory.TAL) {
+				if (p.getType() == PacketTypeDefinitions.TAL) {
 					//tal = (Tal) p.getObject();
 					tal = talBase.getTalFromName((String) p.getObject());
 
@@ -425,7 +425,7 @@ public class CompositionPanel extends JLayeredPane {
 
 				}
 				if (p.isVisible()) {
-					if (p.getType()==PacketTypeFactory.FOOTNOTE) {
+					if (p.getType()==PacketTypeDefinitions.FOOTNOTE) {
 						//Debug.temporary(this, "found footnotepacket with obj: " + p.getObject());
 						FootnoteText ft = new FootnoteText((FootnoteUnit) p.getObject());
 						addLineBreak(new Float(newHeight), PageBreakPanel.LOW);
@@ -436,13 +436,13 @@ public class CompositionPanel extends JLayeredPane {
 						addLineBreak(new Float(newHeight), PageBreakPanel.LOW);
 						newHeight += components.get(components.size()-1).getPreferredSize().height;
 					} 
-					if ((p.getType()==PacketTypeFactory.COMMENT)) {
+					if ((p.getType()==PacketTypeDefinitions.COMMENT)) {
 						CommentText ct = new CommentText(p);
 						addLineBreak(new Float(newHeight), PageBreakPanel.HIGH);
 						components.add(ct);
 						newHeight += components.get(components.size()-1).getPreferredSize().height;
 
-					} else  if ((p.getType()==PacketTypeFactory.BOLS)) {
+					} else  if ((p.getType()==PacketTypeDefinitions.BOLS)) {
 
 						SequenceTitlePanel title = new SequenceTitlePanel(p.getKey());
 
@@ -778,7 +778,7 @@ public class CompositionPanel extends JLayeredPane {
 		int newRenderingWidth = referenceWidth;
 		
 		for (Entry<Packet, HighlightablePanel> pair : map) {
-			if (pair.getKey().getType() == PacketTypeFactory.BOLS) {
+			if (pair.getKey().getType() == PacketTypeDefinitions.BOLS) {
 				SequencePanel panel = (SequencePanel) pair.getValue();				
 				int candidate = panel.getNextSmallerDimension().width;
 				if (newRenderingWidth == referenceWidth) {
@@ -803,7 +803,7 @@ public class CompositionPanel extends JLayeredPane {
 		int newRenderingWidth = referenceWidth;
 		
 		for (Entry<Packet, HighlightablePanel> pair : map) {
-			if (pair.getKey().getType() == PacketTypeFactory.BOLS) {
+			if (pair.getKey().getType() == PacketTypeDefinitions.BOLS) {
 				SequencePanel panel = (SequencePanel) pair.getValue();				
 				int candidate = panel.getNextLargerDimension().width;
 				if (newRenderingWidth == referenceWidth) {

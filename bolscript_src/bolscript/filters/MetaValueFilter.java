@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import bolscript.compositions.Composition;
 import bolscript.packets.types.PacketType;
-import bolscript.packets.types.PacketTypeFactory;
+import bolscript.packets.types.PacketTypeDefinitions;
 import bolscript.packets.types.PacketType.StorageType;
 
 public class MetaValueFilter extends StringArrayFilter implements Filter {
@@ -19,7 +19,7 @@ public class MetaValueFilter extends StringArrayFilter implements Filter {
 	public MetaValueFilter (int packetTypeId) {
 		super();
 		this.packetTypeId = packetTypeId;
-		this.packetType = PacketTypeFactory.getType(packetTypeId);
+		this.packetType = PacketTypeDefinitions.getType(packetTypeId);
 	}
 	
 	

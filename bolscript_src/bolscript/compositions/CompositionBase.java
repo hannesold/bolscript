@@ -26,7 +26,7 @@ import bols.tals.TalBase;
 import bolscript.config.Config;
 import bolscript.filters.MetaValueFilter;
 import bolscript.filters.VisibleCompositionDonator;
-import bolscript.packets.types.PacketTypeFactory;
+import bolscript.packets.types.PacketTypeDefinitions;
 import bolscript.scanner.Parser;
 
 public class CompositionBase implements VisibleCompositionDonator, TalBase{
@@ -354,7 +354,7 @@ public class CompositionBase implements VisibleCompositionDonator, TalBase{
 			path = Config.pathToTals;
 		} else {
 			path = Config.pathToCompositions;
-			ArrayList<String> list = comp.getMetaValues().getList(PacketTypeFactory.EDITOR);
+			ArrayList<String> list = comp.getMetaValues().getList(PacketTypeDefinitions.EDITOR);
 			if (list.size()>0){
 				String editor =  list.get(0);
 				if (editor != null && editor.length() > 0) {
@@ -390,15 +390,15 @@ public class CompositionBase implements VisibleCompositionDonator, TalBase{
 
 		MetaValues metaValues = comp.getMetaValues();
 
-		if (metaValues.getList(PacketTypeFactory.TAL).size() != 0) {
-			s.append(metaValues.makeString(PacketTypeFactory.TAL));
+		if (metaValues.getList(PacketTypeDefinitions.TAL).size() != 0) {
+			s.append(metaValues.makeString(PacketTypeDefinitions.TAL));
 		} else {
 			s.append("unknown tal");
 		}
-		ArrayList<String> types = metaValues.getList(PacketTypeFactory.TYPE);
+		ArrayList<String> types = metaValues.getList(PacketTypeDefinitions.TYPE);
 		if ( types != null) {
 			if (types.size() != 0) {
-				s.append(seperator + metaValues.makeString(PacketTypeFactory.TYPE));
+				s.append(seperator + metaValues.makeString(PacketTypeDefinitions.TYPE));
 			}
 		} else s.append(seperator + "unknown type");
 		if (!comp.getName().equals("")) {

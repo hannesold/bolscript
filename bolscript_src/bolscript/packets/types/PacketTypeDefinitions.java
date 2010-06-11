@@ -8,7 +8,7 @@ import basics.Debug;
 import bolscript.packets.types.PacketType.StorageType;
 import bolscript.packets.types.PacketType.ParseMode;
 
-public class PacketTypeFactory {
+public class PacketTypeDefinitions {
 	public static final int KEYS = 0;
 	public static final int BOLS = 1;		//other,other
 	public static final int FOOTNOTE = 2;	//multiple, string
@@ -45,7 +45,7 @@ public class PacketTypeFactory {
 	private static boolean initialized = false;
 
 	static {
-		Debug.debug(PacketTypeFactory.class, "init");
+		Debug.debug(PacketTypeDefinitions.class, "init");
 		init();
 	}
 
@@ -55,10 +55,10 @@ public class PacketTypeFactory {
 	public static void init() {
 		if (!initialized) {
 
-			types 			= new PacketType[PacketTypeFactory.nrOfTypes];
+			types 			= new PacketType[PacketTypeDefinitions.nrOfTypes];
 			types[BOLS] 	= new PacketTypeStandard(BOLS, "Bol", "Bols", 				new String[]{},false,0,							StorageType.OTHER,		ParseMode.OTHER,true,true,false,true, bolKeyColor);
 			types[FOOTNOTE] = new PacketTypeStandard(FOOTNOTE,"Footnote", "Footnotes", 	new String[]{}, false,0,						StorageType.STRINGLIST,	ParseMode.NONE,true,true,true,true, metaKeyColor);
-			types[SPEED] 	= new PacketTypeStandard(SPEED, "Speed", "Speeds",			new String[]{"SPEED"},false,-60,					StorageType.STRINGLIST,	ParseMode.OTHER,true,false,true,true, metaKeyColor);
+			types[SPEED] 	= new PacketTypeStandard(SPEED, "Speed", "Speeds",			new String[]{"SPEED"},false,-60,				StorageType.STRINGLIST,	ParseMode.OTHER,true,false,true,true, metaKeyColor);
 			types[FAILED] 	= new PacketTypeStandard(FAILED,"Failed","Failed",			new String[]{},false,0,							StorageType.NONE,		ParseMode.NONE,true,false,true,false, failedKeyColor);
 			types[LAYOUT] 	= new PacketTypeStandard(LAYOUT,"Layout","Layouts",			new String[]{"LAYOUT"},false,0,					StorageType.STRING, 	ParseMode.OTHER,true,false,true,false, metaKeyColor);
 			types[LENGTH] 	= new PacketTypeStandard(LENGTH, "Length", "Lengths", 		new String[]{"LENGTH"},false,0,					StorageType.STRING,		ParseMode.OTHER,true,false,true,false, metaKeyColor);
@@ -69,7 +69,7 @@ public class PacketTypeFactory {
 			types[GHARANA] 	= new PacketTypeStandard(GHARANA,"Gharana", "Gharanas", 	new String[]{"GHARANA","GHARANAS"},false,	0,	StorageType.STRINGLIST,	ParseMode.COMMASEPERATED,true,false,true,true, metaKeyColor);
 			types[EDITOR] 	= new PacketTypeStandard(EDITOR, "Editor", "Editors", 		new String[]{"EDITOR","EDITORS"},false,0,		StorageType.STRINGLIST,	ParseMode.COMMASEPERATED,true,false,true,true, metaKeyColor);
 			types[COMMENT] 	= new PacketTypeStandard(COMMENT, "Comment", "Comments", 	new String[]{"COMMENT","COMMENTS"}, false, 0, 	StorageType.STRINGLIST, ParseMode.STRING, true, true, true, true, metaKeyColor);
-			types[COMPOSER]	= new PacketTypeStandard(COMPOSER, "Composer", "Composers", new String[]{"COMPOSER","COMPOSERS"}, false, 0, 	StorageType.STRINGLIST, ParseMode.COMMASEPERATED, true, false, true, true, metaKeyColor);
+			types[COMPOSER]	= new PacketTypeStandard(COMPOSER, "Composer", "Composers", new String[]{"COMPOSER","COMPOSERS"}, false, 0, StorageType.STRINGLIST, ParseMode.COMMASEPERATED, true, false, true, true, metaKeyColor);
 			types[SOURCE]	= new PacketTypeStandard(SOURCE, "Source", "Sources", 		new String[]{"SOURCE","SOURCES"}, true, -50, 	StorageType.STRINGLIST, ParseMode.STRING, true, false, true, true, metaKeyColor);
 			types[KEYS]		= new PacketTypeStandard(KEYS,"Key","Keys",					new String[]{}, false,0,						StorageType.STRINGLIST,	ParseMode.NONE,true,false,true,true, metaKeyColor);
 			types[SNIPPET]	= new PacketTypeStandard(SNIPPET, "Snippet", "Snippets", 	new String[]{"Snippet","Snippets"},true,-40,	StorageType.STRING,		ParseMode.STRING,true,false,true,true, metaKeyColor);
@@ -108,7 +108,7 @@ public class PacketTypeFactory {
 
 	public static PacketType getType(int type) {
 		if (types[type] == null) {
-			Debug.critical(PacketTypeFactory.class, "type not found: " + type );
+			Debug.critical(PacketTypeDefinitions.class, "type not found: " + type );
 		}
 		return types[type];
 	}

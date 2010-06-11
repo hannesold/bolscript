@@ -21,7 +21,7 @@ import bolscript.packets.Packet;
 import bolscript.packets.Packets;
 import bolscript.packets.TextReference;
 import bolscript.packets.types.PacketType;
-import bolscript.packets.types.PacketTypeFactory;
+import bolscript.packets.types.PacketTypeDefinitions;
 import bolscript.sequences.Representable;
 import bolscript.sequences.RepresentableSequence;
 import bolscript.sequences.SpeedUnit;
@@ -152,17 +152,17 @@ public class BolscriptDocument extends DefaultStyledDocument{
 
 		keyStyleMaps = new HashMap<Integer, Style>();
 		valueStyleMaps = new HashMap<Integer, Style>();
-		PacketType[] metaTypes = PacketTypeFactory.getMetaTypes();
+		PacketType[] metaTypes = PacketTypeDefinitions.getMetaTypes();
 		for (int i = 0; i < metaTypes.length; i++) {
 			keyStyleMaps.put(metaTypes[i].getId(), styleMetaKey);
 			valueStyleMaps.put(metaTypes[i].getId(), styleMetaValue);
 
 		}
-		keyStyleMaps.put(PacketTypeFactory.FAILED, styleFailedKey);
-		valueStyleMaps.put(PacketTypeFactory.FAILED, styleFailedValue);
+		keyStyleMaps.put(PacketTypeDefinitions.FAILED, styleFailedKey);
+		valueStyleMaps.put(PacketTypeDefinitions.FAILED, styleFailedValue);
 		
-		valueStyleMaps.put(PacketTypeFactory.SPEED, styleSpeed);
-		valueStyleMaps.put(PacketTypeFactory.TAL, styleSpeed);
+		valueStyleMaps.put(PacketTypeDefinitions.SPEED, styleSpeed);
+		valueStyleMaps.put(PacketTypeDefinitions.TAL, styleSpeed);
 		
 		Enumeration<?> names = getStyleNames();
 
@@ -250,7 +250,7 @@ public class BolscriptDocument extends DefaultStyledDocument{
 					setCharacterAttributes(p.getTextRefValue().start(), p.getTextRefValue().length(), valStyle, true);
 					
 
-					if (p.getType() == PacketTypeFactory.BOLS) {
+					if (p.getType() == PacketTypeDefinitions.BOLS) {
 
 						RepresentableSequence seq = ((RepresentableSequence) p.getObject());
 						renderSequence(seq, p);

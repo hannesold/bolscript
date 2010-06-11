@@ -35,6 +35,7 @@ public class BolBasePanel extends JPanel {
 		table.setShowGrid(false);
 		table.setShowHorizontalLines(false);
 		table.setShowVerticalLines(true);
+		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		
 		
 		scrollPane = new JScrollPane(table);
@@ -67,11 +68,11 @@ private void initColumnWidths () {
 		columnModel.getColumn(BolName.INITIALS).setWidth(25);
 		columnModel.getColumn(BolName.INITIALS).setMaxWidth(50);
 		columnModel.getColumn(BolBaseTableModel.descriptionColumn).setMinWidth(140);
-		columnModel.getColumn(BolBaseTableModel.descriptionColumn).setWidth(170);
-		columnModel.getColumn(BolBaseTableModel.descriptionColumn).setMaxWidth(270);
+		//columnModel.getColumn(BolBaseTableModel.descriptionColumn).setWidth(170);
+		//columnModel.getColumn(BolBaseTableModel.descriptionColumn).setMaxWidth(270);
 		columnModel.getColumn(BolBaseTableModel.detailsColumn).setMinWidth(70);
-		columnModel.getColumn(BolBaseTableModel.detailsColumn).setWidth(70);
-		columnModel.getColumn(BolBaseTableModel.detailsColumn).setMaxWidth(120);
+		//columnModel.getColumn(BolBaseTableModel.detailsColumn).setWidth(70);
+		//columnModel.getColumn(BolBaseTableModel.detailsColumn).setMaxWidth(120);
 		
 	}
 

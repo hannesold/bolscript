@@ -21,7 +21,7 @@ import bolscript.filters.FullTextSearchFilter;
 import bolscript.filters.MetaValueFilter;
 import bolscript.filters.SpeedFilter;
 import bolscript.filters.StringArrayFilter;
-import bolscript.packets.types.PacketTypeFactory;
+import bolscript.packets.types.PacketTypeDefinitions;
 import bolscript.scanner.Parser;
 
 /**
@@ -62,10 +62,10 @@ public class FilterPanel extends JPanel implements ListSelectionListener, KeyLis
 		listFilters = new ArrayList<MetaValueFilter>();
 		
 	    searchFilter = new FullTextSearchFilter();	   
-	    listFilters.add(new MetaValueFilter(PacketTypeFactory.EDITOR));
-	    listFilters.add(new MetaValueFilter(PacketTypeFactory.GHARANA));
-		listFilters.add(new MetaValueFilter(PacketTypeFactory.TAL));
-		listFilters.add(new MetaValueFilter(PacketTypeFactory.TYPE));	
+	    listFilters.add(new MetaValueFilter(PacketTypeDefinitions.EDITOR));
+	    listFilters.add(new MetaValueFilter(PacketTypeDefinitions.GHARANA));
+		listFilters.add(new MetaValueFilter(PacketTypeDefinitions.TAL));
+		listFilters.add(new MetaValueFilter(PacketTypeDefinitions.TYPE));	
 		listFilters.add(new SpeedFilter());
 		nrOfLists = listFilters.size();
 		
