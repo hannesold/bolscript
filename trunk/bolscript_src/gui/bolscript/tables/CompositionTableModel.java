@@ -14,7 +14,7 @@ import bolscript.compositions.CompositionChangeEvent;
 import bolscript.compositions.CompositionChangedListener;
 import bolscript.compositions.DataState;
 import bolscript.packets.types.PacketType;
-import bolscript.packets.types.PacketTypeFactory;
+import bolscript.packets.types.PacketTypeDefinitions;
 
 public class CompositionTableModel extends AbstractTableModel implements CompositionBaseListener, CompositionChangedListener {
 
@@ -34,7 +34,7 @@ public class CompositionTableModel extends AbstractTableModel implements Composi
 
 	public void init() {
 		metaColumns = new ArrayList<PacketType>();
-		PacketType[] types = PacketTypeFactory.getColumnTypes();
+		PacketType[] types = PacketTypeDefinitions.getColumnTypes();
 		
 		for (int i=0; i < types.length;i++) {
 			metaColumns.add(types[i]);

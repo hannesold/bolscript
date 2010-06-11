@@ -2,7 +2,7 @@ package bolscript.packets;
 
 import java.util.ArrayList;
 
-import bolscript.packets.types.PacketTypeFactory;
+import bolscript.packets.types.PacketTypeDefinitions;
 
 /**
  * Wraps an Arraylist of Packet objects.
@@ -49,7 +49,7 @@ public class Packets extends ArrayList<Packet> {
 		
 		for (int i= callerIndex-1; i>=0; i--) {
 			Packet p = get(i);
-			if (p.getType() == PacketTypeFactory.BOLS &&
+			if (p.getType() == PacketTypeDefinitions.BOLS &&
 					p.getKey().equalsIgnoreCase(bolCandidate)) {
 				return p;	
 			}

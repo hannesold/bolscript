@@ -14,7 +14,7 @@ import bols.tals.Teental;
 import bolscript.config.Config;
 import bolscript.packets.Packet;
 import bolscript.packets.Packets;
-import bolscript.packets.types.PacketTypeFactory;
+import bolscript.packets.types.PacketTypeDefinitions;
 import bolscript.scanner.Parser;
 import bolscript.sequences.RepresentableSequence;
 
@@ -46,7 +46,7 @@ public class ReaderTest {
 		String s = "A: Dha ge ti re ki te\n B: Dhin Na Ge \"Footnote A for test\" Na";
 		Packets packets = Parser.compilePacketsFromString(s);
 		for (Packet p:packets) {
-			if (p.getType() == PacketTypeFactory.FOOTNOTE) {
+			if (p.getType() == PacketTypeDefinitions.FOOTNOTE) {
 				assertEquals("A should remain and not be inserted", "Footnote A for test", p.getValue());
 			}
 		}

@@ -2,7 +2,7 @@ package bolscript.packets;
 
 import basics.Debug;
 import bolscript.packets.types.PacketType;
-import bolscript.packets.types.PacketTypeFactory;
+import bolscript.packets.types.PacketTypeDefinitions;
 import bolscript.sequences.Representable;
 import bolscript.sequences.RepresentableSequence;
 
@@ -177,7 +177,7 @@ public class Packet {
 		/*if (PacketTypeFactory.getType(type) == null) {
 			PacketTypeFactory.init();
 		}*/
-		this.packetType = PacketTypeFactory.getType(type);
+		this.packetType = PacketTypeDefinitions.getType(type);
 		if (this.packetType == null) {
 			Debug.critical(this, "type "+type+" could not be set!!");
 		}
@@ -255,7 +255,7 @@ public class Packet {
 		//TODO implement smarter binary search or so
 		Debug.temporary(this, "getUnitAtCaretPosition, textRefValue: "+ textRefValue + ", caretPosition " + caretPosition);
 		//Debug.temporary(this, "packetType "+ packetType+ ", caretPosition " + caretPosition);
-		if (packetType.getId() != PacketTypeFactory.BOLS || object == null || textRefValue == null) {
+		if (packetType.getId() != PacketTypeDefinitions.BOLS || object == null || textRefValue == null) {
 			
 			return null;
 		}

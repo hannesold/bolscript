@@ -4,7 +4,7 @@ import java.io.File;
 
 import basics.FileReadException;
 import bolscript.compositions.Composition;
-import bolscript.packets.types.PacketTypeFactory;
+import bolscript.packets.types.PacketTypeDefinitions;
 import bolscript.sequences.RepresentableSequence;
 
 public class TalDynamic extends Composition implements Tal {
@@ -52,7 +52,7 @@ public class TalDynamic extends Composition implements Tal {
 	}	
 	
 	public String toString() {
-		return metaValues.getString(PacketTypeFactory.NAME) + ", " + talInfo.getLength() + " beats";
+		return metaValues.getString(PacketTypeDefinitions.NAME) + ", " + talInfo.getLength() + " beats";
 	}
 	
 

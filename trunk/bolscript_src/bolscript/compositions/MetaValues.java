@@ -7,7 +7,7 @@ import java.util.HashMap;
 import basics.Debug;
 import basics.Tools;
 import bolscript.packets.types.PacketType;
-import bolscript.packets.types.PacketTypeFactory;
+import bolscript.packets.types.PacketTypeDefinitions;
 import bolscript.packets.types.PacketType.StorageType;
 
 public class MetaValues {
@@ -15,7 +15,7 @@ public class MetaValues {
 	private HashMap<Integer, Object> values;
 	
 	public MetaValues() { 
-		PacketType[] metaTypes = PacketTypeFactory.getMetaTypes();
+		PacketType[] metaTypes = PacketTypeDefinitions.getMetaTypes();
 		values = new HashMap<Integer,Object>(metaTypes.length);
 		clear();
 	}
@@ -36,18 +36,18 @@ public class MetaValues {
 	}
 	
 	public void setString(Integer key, String string) {
-		if (PacketTypeFactory.getType(key).getStorageType() == StorageType.STRING) {
+		if (PacketTypeDefinitions.getType(key).getStorageType() == StorageType.STRING) {
 			values.put(key,string);
 		} else {
-			Debug.critical(this, PacketTypeFactory.getType(key).getDisplayNameSingular() +" is not supposed to be stored as string");
+			Debug.critical(this, PacketTypeDefinitions.getType(key).getDisplayNameSingular() +" is not supposed to be stored as string");
 		}
 	}
 	
 	public void setList(Integer key, ArrayList<String> list) {
-		if (PacketTypeFactory.getType(key).getStorageType() == StorageType.STRINGLIST) {
+		if (PacketTypeDefinitions.getType(key).getStorageType() == StorageType.STRINGLIST) {
 			values.put(key,list);
 		} else {
-			Debug.critical(this, PacketTypeFactory.getType(key).getDisplayNameSingular() + " is not supposed to be stored as list");
+			Debug.critical(this, PacketTypeDefinitions.getType(key).getDisplayNameSingular() + " is not supposed to be stored as list");
 		}
 	}
 	public String getString(Integer key) {
@@ -55,9 +55,9 @@ public class MetaValues {
 	}
 	
 	public String makeString(Integer key) {
-		if (PacketTypeFactory.getType(key).getStorageType() == StorageType.STRINGLIST) {
+		if (PacketTypeDefinitions.getType(key).getStorageType() == StorageType.STRINGLIST) {
 			return Tools.toString(getList(key));
-		} else if (PacketTypeFactory.getType(key).getStorageType() == StorageType.STRING){
+		} else if (PacketTypeDefinitions.getType(key).getStorageType() == StorageType.STRING){
 			return getString(key);
 		} else return "";
 	}
@@ -68,10 +68,10 @@ public class MetaValues {
 
 
 	public void setDefault() {
-		for (int i = 0; i< PacketTypeFactory.nrOfTypes; i++) {
-			if (PacketTypeFactory.getType(i).getStorageType() == StorageType.STRINGLIST) {
+		for (int i = 0; i< PacketTypeDefinitions.nrOfTypes; i++) {
+			if (PacketTypeDefinitions.getType(i).getStorageType() == StorageType.STRINGLIST) {
 				setList(i, new ArrayList<String>());
-			} else if (PacketTypeFactory.getType(i).getStorageType() == StorageType.STRING){
+			} else if (PacketTypeDefinitions.getType(i).getStorageType() == StorageType.STRING){
 				setString(i, "");
 			}
 		}

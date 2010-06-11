@@ -9,7 +9,7 @@ import bols.tals.Tal;
 import bols.tals.Vibhag;
 import bolscript.packets.Packet;
 import bolscript.packets.Packets;
-import bolscript.packets.types.PacketTypeFactory;
+import bolscript.packets.types.PacketTypeDefinitions;
 import bolscript.scanner.Parser;
 import bolscript.sequences.RepresentableSequence;
 
@@ -39,18 +39,18 @@ public class TalInfo implements Tal {
 		//gather aditional infos needed for tal
 		for (int i=0; i<packets.size(); i++) {
 			Packet p = packets.get(i);
-			if (p.getType() == PacketTypeFactory.LENGTH)  {
+			if (p.getType() == PacketTypeDefinitions.LENGTH)  {
 				String s = p.getValue().replaceAll(Parser.SN, "");
 				int length = Integer.parseInt(s);
 				this.setLength(length);
-			} else if  ((p.getType() == PacketTypeFactory.BOLS) && 
+			} else if  ((p.getType() == PacketTypeDefinitions.BOLS) && 
 					(p.getKey().equalsIgnoreCase("Theka"))) {
 				//get the Theka
 				this.setTheka((RepresentableSequence) p.getObject());
-			} else if (p.getType() == PacketTypeFactory.LAYOUT) {
+			} else if (p.getType() == PacketTypeDefinitions.LAYOUT) {
 				// do this after length!! So we postpone it and do it after the for loop
 				layoutPacket = p;
-			} else if (p.getType() == PacketTypeFactory.VIBHAGS) {
+			} else if (p.getType() == PacketTypeDefinitions.VIBHAGS) {
 				Matcher m = Pattern.compile(Parser.SN +"*(\\d+)\\s*([kK]|Kali|Khali|kali|khali)?").matcher(p.getValue());
 
 				int k = 0;
@@ -80,7 +80,7 @@ public class TalInfo implements Tal {
 
 				if (vibs.length >0) {
 					this.setVibhags(vibs);
-				} else p.setType(PacketTypeFactory.FAILED);
+				} else p.setType(PacketTypeDefinitions.FAILED);
 			}
 
 		}
@@ -102,7 +102,7 @@ public class TalInfo implements Tal {
 	}
 	
 	public String getName() {
-		return owner.getMetaValues().getString(PacketTypeFactory.NAME);
+		return owner.getMetaValues().getString(PacketTypeDefinitions.NAME);
 	}
 	
 	public int getLength() {
@@ -146,7 +146,7 @@ public class TalInfo implements Tal {
 		
 	}	
 	public String toString() {
-		return owner.getMetaValues().getString(PacketTypeFactory.NAME) + ", " + length + " beats";
+		return owner.getMetaValues().getString(PacketTypeDefinitions.NAME) + ", " + length + " beats";
 	}
 	
 

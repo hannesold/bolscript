@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import bolscript.compositions.Composition;
-import bolscript.packets.types.PacketTypeFactory;
+import bolscript.packets.types.PacketTypeDefinitions;
 
 public class SpeedFilter extends MetaValueFilter implements Filter {
 
 	public SpeedFilter () {
-		super(PacketTypeFactory.SPEED);
+		super(PacketTypeDefinitions.SPEED);
 	}
 	
 	/**

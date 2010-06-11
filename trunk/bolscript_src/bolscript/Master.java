@@ -50,7 +50,7 @@ import bolscript.config.PreferenceKeys;
 import bolscript.config.UserConfig;
 import bolscript.packets.types.HistoryEntry;
 import bolscript.packets.types.HistoryOperationType;
-import bolscript.packets.types.PacketTypeFactory;
+import bolscript.packets.types.PacketTypeDefinitions;
 public class Master implements ConfigChangeListener{//implements ApplicationListener{//extends JFrame implements WindowListener {
 
 	public static Master master;
@@ -119,7 +119,7 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 
 		GUI.init();
 
-		PacketTypeFactory.init();
+		PacketTypeDefinitions.init();
 
 		//force previous uninstall!
 		/* 

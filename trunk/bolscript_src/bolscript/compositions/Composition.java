@@ -2,12 +2,12 @@ package bolscript.compositions;
 
 
 
-import static bolscript.packets.types.PacketTypeFactory.KEYS;
-import static bolscript.packets.types.PacketTypeFactory.NAME;
-import static bolscript.packets.types.PacketTypeFactory.SNIPPET;
-import static bolscript.packets.types.PacketTypeFactory.SPEED;
-import static bolscript.packets.types.PacketTypeFactory.TAL;
-import static bolscript.packets.types.PacketTypeFactory.TYPE;
+import static bolscript.packets.types.PacketTypeDefinitions.KEYS;
+import static bolscript.packets.types.PacketTypeDefinitions.NAME;
+import static bolscript.packets.types.PacketTypeDefinitions.SNIPPET;
+import static bolscript.packets.types.PacketTypeDefinitions.SPEED;
+import static bolscript.packets.types.PacketTypeDefinitions.TAL;
+import static bolscript.packets.types.PacketTypeDefinitions.TYPE;
 
 import java.awt.EventQueue;
 import java.io.File;
@@ -32,7 +32,7 @@ import bolscript.packets.Packets;
 import bolscript.packets.types.HistoryEntry;
 import bolscript.packets.types.HistoryOperationType;
 import bolscript.packets.types.PacketType;
-import bolscript.packets.types.PacketTypeFactory;
+import bolscript.packets.types.PacketTypeDefinitions;
 import bolscript.packets.types.PacketType.ParseMode;
 import bolscript.packets.types.PacketType.StorageType;
 import bolscript.scanner.Parser;
@@ -194,8 +194,8 @@ public class Composition implements DataStatePosessor{
 		searchBuilderChanged = true;
 
 		// add metaValues
-		for (int i=0; i < PacketTypeFactory.nrOfTypes; i++) {
-			if (PacketTypeFactory.getType(i).isSearchable()) {
+		for (int i=0; i < PacketTypeDefinitions.nrOfTypes; i++) {
+			if (PacketTypeDefinitions.getType(i).isSearchable()) {
 				addSearchString(metaValues.makeString(i));
 			}
 		}
@@ -216,7 +216,7 @@ public class Composition implements DataStatePosessor{
 		if (editorPackets != null) {
 			//add bols to searchstring
 			for (Packet p: editorPackets) {
-				if (p.getType() == PacketTypeFactory.BOLS) {
+				if (p.getType() == PacketTypeDefinitions.BOLS) {
 					
 					if (p.getObject() != null) {
 						RepresentableSequence r = (RepresentableSequence) p.getObject();
@@ -322,13 +322,13 @@ public class Composition implements DataStatePosessor{
 			PacketType packetType = packets.get(i).getPType();
 			int type = packetType.getId();
 
-			if (type != PacketTypeFactory.FAILED) metaValues.addString(KEYS, p.getKey());
+			if (type != PacketTypeDefinitions.FAILED) metaValues.addString(KEYS, p.getKey());
 
 			if (obj!=null) {
 
 				switch (type) {
 
-				case PacketTypeFactory.TAL:
+				case PacketTypeDefinitions.TAL:
 					String talName = (String) obj;
 					if (Master.master != null) {
 						Tal tal = talBase.getTalFromName(talName);
@@ -339,11 +339,11 @@ public class Composition implements DataStatePosessor{
 					metaValues.addString(TAL, talName);
 					break;
 
-				case PacketTypeFactory.SPEED:
+				case PacketTypeDefinitions.SPEED:
 					addSpeed((Rational) obj);
 					break;
 
-				case PacketTypeFactory.BOLS:	
+				case PacketTypeDefinitions.BOLS:	
 					RepresentableSequence seq = ((RepresentableSequence) obj);
 					RepresentableSequence flat = seq.flatten();
 					
@@ -392,7 +392,7 @@ public class Composition implements DataStatePosessor{
 		ArrayList<String> types =  metaValues.getList(TYPE);
 		if (types.size() == 1) {
 			//check if the entry has the value Tal, Tals or Tala or so
-			PacketType associatedType = PacketTypeFactory.getType(types.get(0).toUpperCase());
+			PacketType associatedType = PacketTypeDefinitions.getType(types.get(0).toUpperCase());
 			if (associatedType != null) if ( associatedType.getId() == TAL) {
 				
 				if (talInfo == null) talInfo = new TalInfo(this);
@@ -413,7 +413,7 @@ public class Composition implements DataStatePosessor{
 		//after processing all packets gather missing information
 		if (isTal && (metaValues.getList(TAL).size() == 0) && (!name.equals(""))) {
 			//if this is of type tal and no tal is set, then add the tal itself.
-			metaValues.addString(PacketTypeFactory.TAL, name);
+			metaValues.addString(PacketTypeDefinitions.TAL, name);
 		}
 		
 		if (metaValues.getString(SNIPPET).equals("") && firstBolPacket != null ){
@@ -432,8 +432,8 @@ public class Composition implements DataStatePosessor{
 
 		populateHistory();
 		if (history != null) {
-			metaValues.setString(PacketTypeFactory.CREATED, history.getCreationDateAsString());
-			metaValues.setString(PacketTypeFactory.LAST_MODIFIED, history.getModifiedDateAsString());
+			metaValues.setString(PacketTypeDefinitions.CREATED, history.getCreationDateAsString());
+			metaValues.setString(PacketTypeDefinitions.LAST_MODIFIED, history.getModifiedDateAsString());
 		}
 
 		rebuildFulltextSearch();
@@ -486,7 +486,7 @@ public class Composition implements DataStatePosessor{
 					
 				}
 				switch (p.getType()) {
-					case PacketTypeFactory.HISTORY:
+					case PacketTypeDefinitions.HISTORY:
 					history = (HistoryEntries) p.getObject();
 					break;
 
@@ -506,7 +506,7 @@ public class Composition implements DataStatePosessor{
 	 * Returns the first entered 'Editor', or null if there are none.
 	 */
 	public String getEnteredUser() {
-		ArrayList<String> users = metaValues.getList(PacketTypeFactory.EDITOR);
+		ArrayList<String> users = metaValues.getList(PacketTypeDefinitions.EDITOR);
 		if (users !=null) {
 			if (users.size()>0) {
 				return users.get(0);
@@ -525,7 +525,7 @@ public class Composition implements DataStatePosessor{
 			Debug.temporary(this,"history == null");
 			history = new HistoryEntries();
 			
-			PacketType historyType = PacketTypeFactory.getType(PacketTypeFactory.HISTORY);
+			PacketType historyType = PacketTypeDefinitions.getType(PacketTypeDefinitions.HISTORY);
 			Packet historyPacket = new Packet(historyType.getKeys()[0], "", historyType.getId(), false);
 			historyPacket.setObject(history);
 			
