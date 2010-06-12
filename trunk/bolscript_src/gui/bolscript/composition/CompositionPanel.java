@@ -90,8 +90,8 @@ public class CompositionPanel extends JLayeredPane {
 	Boolean rendering = new Boolean(false);
 	Long renderTaskNr = new Long(0);
 	Long finishedRenderTaskNr = new Long(0);
-	
-	
+
+
 	/**
 	 * The talBase is queried for retrieving a Tal Object to a Name String 
 	 */
@@ -144,7 +144,7 @@ public class CompositionPanel extends JLayeredPane {
 
 
 	private CompositionFrame compositionFrame = null;
-	
+
 	public CompositionPanel (Dimension size, int language, TalBase talBase, CompositionFrame compositionFrame) {
 		super();
 		this.language = language;
@@ -221,7 +221,7 @@ public class CompositionPanel extends JLayeredPane {
 
 		ArrayList<AbstractAction> absActions = new ArrayList<AbstractAction>();
 
-		
+
 		showMore = new SmartResizeEnlarge(this);
 		showLess = new SmartResizeShrink(this);		
 		decreaseBundling = new DecreaseBundling(this);		
@@ -244,7 +244,7 @@ public class CompositionPanel extends JLayeredPane {
 		}
 
 		viewerActions = new ViewerActions(
-				
+
 				showMore, showLess, decreaseBundling,increaseBundling,decreaseFontsize,increaseFontsize,resetFontsize,setLanguage);
 
 	}
@@ -272,7 +272,7 @@ public class CompositionPanel extends JLayeredPane {
 			for (int i=0; i < BolName.languagesCount; i++) {
 				setLanguage[i].setEnabled(language!=i);
 			}
-			
+
 			showMore.setEnabled(true);
 			showLess.setEnabled(true);
 		}
@@ -373,8 +373,8 @@ public class CompositionPanel extends JLayeredPane {
 	public void setRenderingWidth(int width) {
 		renderingWidth = Math.max(50, width);
 	}
-	
-	
+
+
 
 	private void prepareRendering(boolean onlyPrepare) {	
 		synchronized(renderTaskNr) {
@@ -384,17 +384,17 @@ public class CompositionPanel extends JLayeredPane {
 		if (compositionFrame != null) {
 			unitPanelListener = compositionFrame.getEditor();
 		}
-		
+
 		int newHeight = 0;
 		//Debug.critical(this, "determined renderingwidth: " + this.getParent().getParent().getSize().width);
 
 		int width = this.getParent().getParent().getSize().width;
 		if (width != 0) {
 			setRenderingWidth(width
-				- GuiConfig.compositionPanelMarginSide*2);
+					- GuiConfig.compositionPanelMarginSide*2);
 		} else {
 			setRenderingWidth(this.getParent().getParent().getPreferredSize().width
-				- GuiConfig.compositionPanelMarginSide*4);	
+					- GuiConfig.compositionPanelMarginSide*4);	
 		}
 
 
@@ -408,7 +408,7 @@ public class CompositionPanel extends JLayeredPane {
 		//Packet currentSpeedPacket = new Packet("Speed","1",PacketTypeFactory.SPEED, false);
 		//currentSpeedPacket.setObject(new Rational(1));		
 		//Rational currentSpeed = (Rational) currentSpeedPacket.getObject();
-		
+
 		if (packets != null) {
 			Tal tal = Teental.getDefaultTeental();
 			for (Packet p : packets) {
@@ -453,14 +453,14 @@ public class CompositionPanel extends JLayeredPane {
 						Dimension sequenceDimension = new Dimension(renderingWidth, this.getSize().height);			
 
 						RepresentableSequence seq;
-						 seq = ((RepresentableSequence) p.getObject())
-								.flatten()
-								.getBundled(bundlingMap,bundlingDepth, true);
+						seq = ((RepresentableSequence) p.getObject())
+						.flatten()
+						.getBundled(bundlingMap,bundlingDepth, true);
 						/*}old parsemode: {
 							seq = ((RepresentableSequence) p.getObject()).getBundled(bundlingMap,bundlingDepth, true);
 						}*/
-						
-						
+
+
 						SequencePanel sequencePanel = new SequencePanel(seq, tal, sequenceDimension, 0,"",0, language, GuiConfig.bolFontSizeStd[language] + fontSizeIncrease, p, unitPanelListener );
 
 						addLineBreak(new Float(newHeight), PageBreakPanel.LOW);
@@ -488,7 +488,7 @@ public class CompositionPanel extends JLayeredPane {
 
 		addLineBreak(new Float(newSize.height), PageBreakPanel.LOW);
 
-		
+
 		if (!onlyPrepare) {
 			EventQueue.invokeLater(new Worker(this, components, newSize));
 		} else {
@@ -502,7 +502,7 @@ public class CompositionPanel extends JLayeredPane {
 			preparedWorker = null;
 		}
 	}
-	
+
 	public boolean finishedRendering() {
 		synchronized(renderTaskNr ) {
 			synchronized(finishedRenderTaskNr) {
@@ -510,7 +510,7 @@ public class CompositionPanel extends JLayeredPane {
 			}
 		}
 	}
-	
+
 	private void addLineBreak(Float lineBreak, int quality) {
 		this.pageBreaksFloat.add(lineBreak);
 		PageBreakPanel newPageBreak = new PageBreakPanel(lineBreak,renderingWidth+10, quality);
@@ -518,13 +518,190 @@ public class CompositionPanel extends JLayeredPane {
 
 	}
 
+	public void showPageMarks() {
+
+	}
+
+
+	private static Rectangle getPdfPageSize() {
+		Rectangle pageSize = null;
+		Document document = new Document();
+
+		try {
+			// step 2:
+			// we create a writer
+			PdfWriter writer;
+			writer = PdfWriter.getInstance(document, new FileOutputStream("pdf_tests.pdf"));
+			// step 3: we open the document
+			document.open();
+			// step 4: we add a table to the document
+
+			PdfContentByte cb = writer.getDirectContent();
+
+			pageSize = writer.getPageSize();
+			writer.close();
+		} catch (Exception ex) {
+
+		}
+		float pageWidth =  pageSize.getWidth() -defaultPdfPageMargins.left - defaultPdfPageMargins.right;
+		float pageHeight =  pageSize.getHeight() -defaultPdfPageMargins.top - defaultPdfPageMargins.bottom;
+
+		return pageSize;
+	}
+
+	private static Insets defaultPdfPageMargins = new Insets(20,10,30,10);
+	private class PdfInfo {
+
+		private double pdfPageWidth, pdfPageHeight;	
+		private Insets pdfPageMargins;
+
+
+		/**
+		 * Multiply a pixel with scalingFactor, to get its size in pdf scale.
+		 */
+		private double scalingFactor;		
+
+		public PdfInfo(Rectangle pdfPageSize, Insets pdfPageMargins, Dimension panelSize) {
+			this.pdfPageWidth = pdfPageSize.getWidth();
+			this.pdfPageHeight = pdfPageSize.getHeight();
+			this.pdfPageMargins = pdfPageMargins;
+
+			scalingFactor = (double) getInnerPdfPageWidth() /(double)panelSize.width;			
+		}
+
+		public double getScalingFactor() {
+			return scalingFactor;			
+		}
+
+		public float realPixelsToPdfPixels(double pixels) {
+			return (float) (pixels*scalingFactor);
+		}
+		public float pdfPixelsToRealPixels(double pixels) {
+			return (float) (pixels/scalingFactor);
+		}
+
+		public float getInnerPdfPageWidth() {
+			return (float) pdfPageWidth - defaultPdfPageMargins.left - defaultPdfPageMargins.right;
+		}
+
+		public float getInnerPdfPageHeight() {
+			return (float) pdfPageHeight -defaultPdfPageMargins.top - defaultPdfPageMargins.bottom;
+		}
+
+		public float getLeftPdfMargin() {
+			return pdfPageMargins.left;			
+		}
+		public float getBottomPdfMargin() {
+			return pdfPageMargins.bottom;			
+		}
+
+		public float getPdfPageWidth() {
+			return (float) pdfPageWidth;
+		}
+		public float getPdfPageHeight() {
+			return (float) pdfPageHeight;
+		}
+
+		public float getPageWidthInRealPixels() {
+			return (float) (pdfPageWidth /scalingFactor);
+		}
+
+		public float getPageHeightInRealPixels() {
+			return (float) (pdfPageHeight /scalingFactor);
+		}
+
+		public double getInnerPageWidthInRealPixels() {
+			return (float) (getInnerPdfPageWidth() /scalingFactor);
+		}
+
+
+	}
+
+
+	private void markActivePagebreaks() {
+		
+		Rectangle pageSize = getPdfPageSize();
+		Dimension cSize = this.getPreferredSize();//new Dimension(compositionPanel.getPreferredSize().width, compositionPanel.getPreferredSize().height);
+
+		PdfInfo pdfMap = new PdfInfo(pageSize, defaultPdfPageMargins, cSize);
+
+		Debug.debug(this, "Page size " + pageSize);
+		Debug.debug(this, "compPanel size " + cSize);
+		Debug.temporary(this, "starting to print");
+
+		float spaceLeftInPdf = pdfMap.realPixelsToPdfPixels(cSize.getHeight());
+		Debug.temporary(this, "space left: " +spaceLeftInPdf);
+
+		float pageNr = 1;
+		float lastPositionOnPage = 0;
+		int counter = 0;
+		float exactness = 3;
+
+		for (int j=0; j < pageBreaksFloat.size()-1; j++) {
+			pageBreakPanels.get(j).setActive(false);
+		}
+		
+		while (spaceLeftInPdf>exactness && counter < 100) {
+			counter ++;
+
+			float previousLastPos = lastPositionOnPage;
+			lastPositionOnPage += pdfMap.getInnerPdfPageHeight();
+
+			//TODO clean up this mess need clear seperation of pagebreaksfloat and gui
+			//find closest lineBreak (max deviation 50)
+			int i;
+			
+			for (i=0; i < pageBreaksFloat.size()-1; i++) {
+				if (lastPositionOnPage < pdfMap.realPixelsToPdfPixels(pageBreaksFloat.get(i+1))) {
+					//we have found a maximal pagebreak candidate, 
+					//i.e. the next candidate would be too late
+
+					Debug.temporary(this, "found linebreak nr "+i+ " : " + pdfMap.realPixelsToPdfPixels(pageBreaksFloat.get(i)));
+
+					if (pageBreakPanels.get(i).quality == PageBreakPanel.LOW) {
+						//try to find a better linebreak in the neighbourhood...
+						Debug.temporary(this, "backtracing to see if better linebreak is close");
+						float yOriginal = pageBreaksFloat.get(i);
+						float searchRadius = 100; // in pixels
+
+						for (int j=i-1; j > 0; j--) {
+							if (yOriginal - pageBreaksFloat.get(j).floatValue() < searchRadius) {
+								if (pageBreakPanels.get(j).quality > pageBreakPanels.get(i).quality) {
+									i = j;
+									Debug.temporary(this, "backtracing found better");
+									break;
+								}
+							} else break;
+						}
+					}
+					break;
+				}
+			}
+
+
+			if (i>0 && i<pageBreaksFloat.size()-1) {
+				//set to lineBreak.
+				lastPositionOnPage = (float) Math.floor(pdfMap.realPixelsToPdfPixels(pageBreaksFloat.get(i)));
+			} else if (i==pageBreaksFloat.size()-1) {
+				//end of contentPanel
+				lastPositionOnPage = (float) Math.floor(pdfMap.realPixelsToPdfPixels(pageBreaksFloat.get(pageBreaksFloat.size()-1)));
+			}					
+			pageBreakPanels.get(i).setActive(true);
+
+			float coveredByThisPage = lastPositionOnPage - previousLastPos;//pageHeight - (previousLasPos+pageHeight - lastPositionOnPage);
+
+			spaceLeftInPdf -= coveredByThisPage;
+			Debug.temporary(this, "space left: " +spaceLeftInPdf);
+			pageNr++;
+		}
+	}
+	
 	/**
 	 * Creates a PDF document
+	 * @param createPdf TODO
 	 */
-	public void createPdf(String filename, boolean shapes) {
-		if (filename!=null) {
-			Insets margins = new Insets(20,10,30,10);
-
+	public void createPdf(String filename, boolean shapes, boolean createPdf) {
+		if (filename!=null) {			
 			Color backupBg = this.getBackground();
 			contentPanel.setBackground(Color.WHITE);
 			Border backupBorder = contentPanel.getBorder();
@@ -552,21 +729,19 @@ public class CompositionPanel extends JLayeredPane {
 				PdfContentByte cb = writer.getDirectContent();
 
 				Rectangle pageSize = writer.getPageSize();
-
-
 				Dimension cSize = this.getPreferredSize();//new Dimension(compositionPanel.getPreferredSize().width, compositionPanel.getPreferredSize().height);
+
+				PdfInfo pdfMap = new PdfInfo(pageSize, defaultPdfPageMargins, cSize);
+
 				Debug.debug(this, "Page size " + pageSize);
 				Debug.debug(this, "compPanel size " + cSize);
 
-				float pageWidth =  pageSize.getWidth() -margins.left - margins.right;
-				float pageHeight =  pageSize.getHeight() -margins.top - margins.bottom;
-
 				Debug.temporary(this, "starting to print");
 
-				float scalingFactor = pageWidth /(float)getPreferredSize().width;
 
-				float spaceLeft = scalingFactor * (float) this.getPreferredSize().height;
-				Debug.temporary(this, "space left: " +spaceLeft);
+				float spaceLeftInPdf = pdfMap.realPixelsToPdfPixels(cSize.getHeight());
+
+				Debug.temporary(this, "space left: " +spaceLeftInPdf);
 
 				float pageNr = 1;
 
@@ -576,26 +751,30 @@ public class CompositionPanel extends JLayeredPane {
 
 				float exactness = 3;
 
-				while (spaceLeft>exactness && counter < 100) {
+				while (spaceLeftInPdf>exactness && counter < 100) {
 					counter ++;
 
 					float previousLastPos = lastPositionOnPage;
-					lastPositionOnPage += pageHeight;
+					lastPositionOnPage += pdfMap.getInnerPdfPageHeight();
 
 					//TODO clean up this mess need clear seperation of pagebreaksfloat and gui
 					//find closest lineBreak (max deviation 50)
 					int i;
 					for (i=0; i < pageBreaksFloat.size()-1; i++) {
-						if (lastPositionOnPage < pageBreaksFloat.get(i+1)*scalingFactor) {
-							Debug.temporary(this, "found linebreak nr "+i+ " : " + pageBreaksFloat.get(i)*scalingFactor);
+						if (lastPositionOnPage < pdfMap.realPixelsToPdfPixels(pageBreaksFloat.get(i+1))) {
+							//we have found a maximal pagebreak candidate, 
+							//i.e. the next candidate would be too late
+
+							Debug.temporary(this, "found linebreak nr "+i+ " : " + pdfMap.realPixelsToPdfPixels(pageBreaksFloat.get(i)));
+
 							if (pageBreakPanels.get(i).quality == PageBreakPanel.LOW) {
+								//try to find a better linebreak in the neighbourhood...
 								Debug.temporary(this, "backtracing to see if better linebreak is close");
 								float yOriginal = pageBreaksFloat.get(i);
 								float searchRadius = 100; // in pixels
 
 								for (int j=i-1; j > 0; j--) {
-
-									if ((yOriginal - pageBreaksFloat.get(j).floatValue() ) < searchRadius) {
+									if (yOriginal - pageBreaksFloat.get(j).floatValue() < searchRadius) {
 										if (pageBreakPanels.get(j).quality > pageBreakPanels.get(i).quality) {
 											i = j;
 											Debug.temporary(this, "backtracing found better");
@@ -604,7 +783,6 @@ public class CompositionPanel extends JLayeredPane {
 									} else break;
 								}
 							}
-
 							break;
 						}
 					}
@@ -612,34 +790,46 @@ public class CompositionPanel extends JLayeredPane {
 
 					if (i>0 && i<pageBreaksFloat.size()-1) {
 						//set to lineBreak.
-						lastPositionOnPage = (float) Math.floor(pageBreaksFloat.get(i)*scalingFactor);
+						lastPositionOnPage = (float) Math.floor(pdfMap.realPixelsToPdfPixels(pageBreaksFloat.get(i)));
 					} else if (i==pageBreaksFloat.size()-1) {
 						//end of contentPanel
-						lastPositionOnPage = (float) Math.floor(pageBreaksFloat.get(pageBreaksFloat.size()-1)*scalingFactor);
-					}
+						lastPositionOnPage = (float) Math.floor(pdfMap.realPixelsToPdfPixels(pageBreaksFloat.get(pageBreaksFloat.size()-1)));
+					}					
+					pageBreakPanels.get(i).setActive(true);
+
 					float coveredByThisPage = lastPositionOnPage - previousLastPos;//pageHeight - (previousLasPos+pageHeight - lastPositionOnPage);
 
 
-					PdfTemplate template = cb.createTemplate(pageWidth, lastPositionOnPage);//pageHeight*pageNr);
+					PdfTemplate template = cb.createTemplate(pdfMap.getInnerPdfPageWidth(), lastPositionOnPage);//pageHeight*pageNr);
 
 					Graphics2D g;
 					if (language==BolName.DEVANAGERI) {
-						g = template.createGraphicsShapes(pageWidth, lastPositionOnPage);//pageHeight*pageNr);
+						g = template.createGraphicsShapes(
+								pdfMap.getInnerPdfPageWidth(), lastPositionOnPage);//pageHeight*pageNr);
 					} else {
-						g = template.createGraphics(pageWidth, lastPositionOnPage);//pageHeight*pageNr);
+						g = template.createGraphics(
+								pdfMap.getInnerPdfPageWidth(), lastPositionOnPage);//pageHeight*pageNr);
 					}
 
-					g.scale(scalingFactor, scalingFactor);
+					g.scale(pdfMap.getScalingFactor(), 
+							pdfMap.getScalingFactor());
+
 					contentPanel.print(g);
-					g.clearRect(0, 0, (int) Math.ceil(pageWidth/scalingFactor), (int)Math.floor(previousLastPos/scalingFactor));
+					g.clearRect(0, 0, 
+							(int)Math.ceil(pdfMap.getInnerPageWidthInRealPixels()), 
+							(int)Math.floor(pdfMap.pdfPixelsToRealPixels(previousLastPos)));
 
 					g.dispose();
 
-					cb.addTemplate(template, margins.left, margins.bottom + pageHeight - coveredByThisPage);
+					cb.addTemplate(template, 
+							pdfMap.getLeftPdfMargin(), 
+							pdfMap.getBottomPdfMargin() 
+							+ pdfMap.getInnerPdfPageHeight()
+							- coveredByThisPage);
 
 					document.newPage();
-					spaceLeft -= coveredByThisPage;
-					Debug.temporary(this, "space left: " +spaceLeft);
+					spaceLeftInPdf -= coveredByThisPage;
+					Debug.temporary(this, "space left: " +spaceLeftInPdf);
 					pageNr++;
 				}
 			} catch (DocumentException de) {
@@ -656,7 +846,7 @@ public class CompositionPanel extends JLayeredPane {
 			contentPanel.setBorder(backupBorder);
 		}
 	}
-	
+
 	private class Worker implements Runnable {
 
 		private Dimension size;
@@ -690,17 +880,20 @@ public class CompositionPanel extends JLayeredPane {
 			}
 
 			GUI.setAllSizes(metaPanel, size);
+			showLineBreaks(true);
 			GUI.setAllSizes(contentPanel, size);
 			GUI.setAllSizes(comp, size);
 
+			markActivePagebreaks();
+			
 			//causes the right refreshing for some reason
 			comp.setBorder(new LineBorder(Color.red,1));
-			
-			
+
+
 			highlightPacketNow(packetAtCaretPosition);
-			
+
 			synchronized(finishedRenderTaskNr) {
-			finishedRenderTaskNr++;
+				finishedRenderTaskNr++;
 			}
 		}
 	}
@@ -771,12 +964,12 @@ public class CompositionPanel extends JLayeredPane {
 		//		Debug.temporary(this, "eventually set to: " + fontSizeIncrease);
 
 	}
-	
+
 	public void smartResizeSmaller() {
 		Set<Entry<Packet, HighlightablePanel>> map = packetMap.entrySet();
 		int referenceWidth = this.renderingWidth;
 		int newRenderingWidth = referenceWidth;
-		
+
 		for (Entry<Packet, HighlightablePanel> pair : map) {
 			if (pair.getKey().getType() == PacketTypeDefinitions.BOLS) {
 				SequencePanel panel = (SequencePanel) pair.getValue();				
@@ -788,20 +981,20 @@ public class CompositionPanel extends JLayeredPane {
 				}
 			}
 		}
-		
+
 		newRenderingWidth = Math.max(50, newRenderingWidth);
-		
+
 		if (newRenderingWidth < referenceWidth) {
 			resizeCompositionFrame(newRenderingWidth);
 		}
-				
+
 	}
-	
+
 	public void smartResizeLarger() {
 		Set<Entry<Packet, HighlightablePanel>> map = packetMap.entrySet();
 		int referenceWidth = this.renderingWidth;
 		int newRenderingWidth = referenceWidth;
-		
+
 		for (Entry<Packet, HighlightablePanel> pair : map) {
 			if (pair.getKey().getType() == PacketTypeDefinitions.BOLS) {
 				SequencePanel panel = (SequencePanel) pair.getValue();				
@@ -813,11 +1006,11 @@ public class CompositionPanel extends JLayeredPane {
 				}
 			}
 		}
-		
+
 		if (newRenderingWidth > referenceWidth) {
 			resizeCompositionFrame(newRenderingWidth);
 		}
-		
+
 	}
 
 	private void resizeCompositionFrame(int newRenderingWidth) {
@@ -826,7 +1019,7 @@ public class CompositionPanel extends JLayeredPane {
 		+ GuiConfig.compositionPanelMarginSide*2;			
 		compositionFrame.setSize( newFrameWidth, compositionFrame.getSize().height);
 	}
-	
+
 	public void resetFontSize() {
 		fontSizeIncrease = 0;
 		updateActionEnabling();
@@ -840,7 +1033,7 @@ public class CompositionPanel extends JLayeredPane {
 
 	public void setCompositionFrame(CompositionFrame compositionFrame) {
 		this.compositionFrame =compositionFrame;
-		
+
 	}
 
 
