@@ -7,6 +7,7 @@ import gui.bolscript.actions.DecreaseBundling;
 import gui.bolscript.actions.DecreaseFontSize;
 import gui.bolscript.actions.IncreaseBundling;
 import gui.bolscript.actions.IncreaseFontSize;
+import gui.bolscript.actions.PrintPreview;
 import gui.bolscript.actions.ResetFontSize;
 import gui.bolscript.actions.SetLanguage;
 import gui.bolscript.actions.SmartResizeEnlarge;
@@ -16,6 +17,7 @@ import gui.bolscript.actions.ToggleConsole;
 import java.awt.event.KeyEvent;
 
 import javax.swing.AbstractAction;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
@@ -63,7 +65,8 @@ public class ViewMenu extends JMenu {
 					new DecreaseFontSize(null),
 					new IncreaseFontSize(null),
 					new ResetFontSize(null), 
-					new AbstractAction[0]);
+					new AbstractAction[0],
+					new PrintPreview(null));
 		}
 		JMenuItem showMore = new JMenuItem(actions.showMore);
 		this.add(showMore);
@@ -100,8 +103,16 @@ public class ViewMenu extends JMenu {
 		        KeyEvent.VK_U, KeyEvent.SHIFT_DOWN_MASK | GuiConfig.MENU_SHORTKEY_MASK));
 		this.add(decrBundling);
 		
+
+		
 		this.addSeparator();
 		addLanguages();
+		
+		this.addSeparator();
+		JCheckBoxMenuItem printPreview = new JCheckBoxMenuItem(actions.printPreview);
+		printPreview.setAccelerator(KeyStroke.getKeyStroke(
+				KeyEvent.VK_P, KeyEvent.ALT_DOWN_MASK | GuiConfig.MENU_SHORTKEY_MASK));
+		this.add(printPreview);
 
 	}
 	

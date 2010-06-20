@@ -5,6 +5,7 @@ import gui.bolscript.actions.DecreaseBundling;
 import gui.bolscript.actions.DecreaseFontSize;
 import gui.bolscript.actions.IncreaseBundling;
 import gui.bolscript.actions.IncreaseFontSize;
+import gui.bolscript.actions.PrintPreview;
 import gui.bolscript.actions.ResetFontSize;
 import gui.bolscript.actions.SetLanguage;
 import gui.bolscript.actions.SmartResizeEnlarge;
@@ -25,7 +26,6 @@ import java.awt.Insets;
 import java.awt.event.KeyEvent;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
@@ -40,13 +40,11 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
-import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 
 import basics.Debug;
 import basics.GUI;
-import basics.Rational;
 import bols.BolName;
 import bols.BundlingDepthToSpeedMap;
 import bols.tals.Tal;
@@ -60,7 +58,6 @@ import bolscript.packets.Packets;
 import bolscript.packets.types.PacketTypeDefinitions;
 import bolscript.sequences.FootnoteUnit;
 import bolscript.sequences.RepresentableSequence;
-import bolscript.sequences.SpeedUnit;
 
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
@@ -83,14 +80,13 @@ public class CompositionPanel extends JLayeredPane {
 	private int language = bols.BolName.SIMPLE;
 	private int renderingWidth;
 
-	private AbstractAction showMore, showLess, decreaseBundling, increaseBundling, decreaseFontsize, increaseFontsize, resetFontsize;
+	private AbstractAction showMore, showLess, decreaseBundling, increaseBundling, decreaseFontsize, increaseFontsize, resetFontsize, printPreview;
 	private AbstractAction[] setLanguage;
 	private ViewerActions viewerActions;
 
 	Boolean rendering = new Boolean(false);
 	Long renderTaskNr = new Long(0);
 	Long finishedRenderTaskNr = new Long(0);
-
 
 	/**
 	 * The talBase is queried for retrieving a Tal Object to a Name String 
@@ -145,6 +141,8 @@ public class CompositionPanel extends JLayeredPane {
 
 	private CompositionFrame compositionFrame = null;
 
+	private boolean pdfPreviewMode;
+
 	public CompositionPanel (Dimension size, int language, TalBase talBase, CompositionFrame compositionFrame) {
 		super();
 		this.language = language;
@@ -160,6 +158,7 @@ public class CompositionPanel extends JLayeredPane {
 
 		fontSizeIncrease = 0;
 		bundlingDepth = 0;
+		pdfPreviewMode = false;
 
 		this.contentPanel = new JPanel(null);
 		contentPanel.setOpaque(true);
@@ -229,8 +228,9 @@ public class CompositionPanel extends JLayeredPane {
 		decreaseFontsize = new DecreaseFontSize(this);
 		increaseFontsize = new IncreaseFontSize(this);
 		resetFontsize = new ResetFontSize(this);
-
-		absActions.add(showMore); absActions.add(showLess); absActions.add(decreaseBundling); absActions.add(increaseBundling); absActions.add(decreaseFontsize); absActions.add(increaseFontsize);
+		printPreview = new PrintPreview(this);
+		
+		absActions.add(showMore); absActions.add(showLess); absActions.add(decreaseBundling); absActions.add(increaseBundling); absActions.add(decreaseFontsize); absActions.add(increaseFontsize); absActions.add(printPreview);
 
 		setLanguage = new SetLanguage[BolName.languagesCount];
 
@@ -244,8 +244,7 @@ public class CompositionPanel extends JLayeredPane {
 		}
 
 		viewerActions = new ViewerActions(
-
-				showMore, showLess, decreaseBundling,increaseBundling,decreaseFontsize,increaseFontsize,resetFontsize,setLanguage);
+				showMore, showLess, decreaseBundling,increaseBundling,decreaseFontsize,increaseFontsize,resetFontsize,setLanguage, printPreview);
 
 	}
 
@@ -275,6 +274,9 @@ public class CompositionPanel extends JLayeredPane {
 
 			showMore.setEnabled(true);
 			showLess.setEnabled(true);
+			printPreview.setEnabled(true);
+			
+			
 		}
 	}
 
@@ -296,43 +298,6 @@ public class CompositionPanel extends JLayeredPane {
 		}
 		return languageMenu;
 	}
-
-
-
-	/**
-	 * Generates a JMenu containing view-specific MenuItems using Actions of this CompositionPanel,
-	 * handling font size and bol bundling.
-	 * @return a view menu
-	 */
-	public JMenu getViewMenu() {
-
-		JMenu viewMenu = new JMenu("View");
-		JMenuItem incrFonts = new JMenuItem(increaseFontsize);
-		viewMenu.add(incrFonts);
-		incrFonts.setAccelerator(KeyStroke.getKeyStroke(
-				KeyEvent.VK_I, KeyEvent.ALT_DOWN_MASK | GuiConfig.MENU_SHORTKEY_MASK));
-
-		JMenuItem decrFonts = new JMenuItem (decreaseFontsize);
-		decrFonts.setAccelerator(KeyStroke.getKeyStroke(
-				KeyEvent.VK_U, KeyEvent.ALT_DOWN_MASK | GuiConfig.MENU_SHORTKEY_MASK));
-		viewMenu.add(decrFonts);
-
-		viewMenu.add(resetFontsize);
-
-		viewMenu.addSeparator();
-		JMenuItem incrBundling = new JMenuItem(increaseBundling);
-		incrBundling.setAccelerator(KeyStroke.getKeyStroke(
-				KeyEvent.VK_I, GuiConfig.MENU_SHORTKEY_MASK));			
-		viewMenu.add(incrBundling);
-
-		JMenuItem decrBundling = new JMenuItem(decreaseBundling);
-		decrBundling.setAccelerator(KeyStroke.getKeyStroke(
-				KeyEvent.VK_U, GuiConfig.MENU_SHORTKEY_MASK));
-		viewMenu.add(decrBundling);
-		return viewMenu;
-	}
-
-
 
 	public Composition getComposition() {
 		return composition;
@@ -638,7 +603,7 @@ public class CompositionPanel extends JLayeredPane {
 		float exactness = 3;
 
 		for (int j=0; j < pageBreaksFloat.size()-1; j++) {
-			pageBreakPanels.get(j).setActive(false);
+			pageBreakPanels.get(j).setActive(false, -1);
 		}
 		
 		while (spaceLeftInPdf>exactness && counter < 100) {
@@ -686,7 +651,7 @@ public class CompositionPanel extends JLayeredPane {
 				//end of contentPanel
 				lastPositionOnPage = (float) Math.floor(pdfMap.realPixelsToPdfPixels(pageBreaksFloat.get(pageBreaksFloat.size()-1)));
 			}					
-			pageBreakPanels.get(i).setActive(true);
+			pageBreakPanels.get(i).setActive(true, (int) pageNr+1);
 
 			float coveredByThisPage = lastPositionOnPage - previousLastPos;//pageHeight - (previousLasPos+pageHeight - lastPositionOnPage);
 
@@ -702,7 +667,7 @@ public class CompositionPanel extends JLayeredPane {
 	 */
 	public void createPdf(String filename, boolean shapes, boolean createPdf) {
 		if (filename!=null) {			
-			Color backupBg = this.getBackground();
+			
 			contentPanel.setBackground(Color.WHITE);
 			Border backupBorder = contentPanel.getBorder();
 			contentPanel.setBorder(null);
@@ -710,6 +675,8 @@ public class CompositionPanel extends JLayeredPane {
 			//highlightPacketNow(null);
 			contentPanel.setOpaque(false);
 
+			metaPanel.setVisible(false);
+			
 			Debug.temporary(this, "compPanel createPDF started");
 			// step 1: creation of a document-object
 			Document document = new Document();
@@ -795,7 +762,7 @@ public class CompositionPanel extends JLayeredPane {
 						//end of contentPanel
 						lastPositionOnPage = (float) Math.floor(pdfMap.realPixelsToPdfPixels(pageBreaksFloat.get(pageBreaksFloat.size()-1)));
 					}					
-					pageBreakPanels.get(i).setActive(true);
+					pageBreakPanels.get(i).setActive(true, 1);
 
 					float coveredByThisPage = lastPositionOnPage - previousLastPos;//pageHeight - (previousLasPos+pageHeight - lastPositionOnPage);
 
@@ -841,7 +808,7 @@ public class CompositionPanel extends JLayeredPane {
 			// step 5: we close the document
 			document.close();
 
-			contentPanel.setBackground(backupBg);
+			contentPanel.setBackground(GuiConfig.compositionPanelBackgroundColor);
 			contentPanel.setOpaque(true);
 			contentPanel.setBorder(backupBorder);
 		}
@@ -880,7 +847,7 @@ public class CompositionPanel extends JLayeredPane {
 			}
 
 			GUI.setAllSizes(metaPanel, size);
-			showLineBreaks(true);
+			showLineBreaks(pdfPreviewMode);
 			GUI.setAllSizes(contentPanel, size);
 			GUI.setAllSizes(comp, size);
 
@@ -895,7 +862,11 @@ public class CompositionPanel extends JLayeredPane {
 			synchronized(finishedRenderTaskNr) {
 				finishedRenderTaskNr++;
 			}
+			if (pdfPreviewMode) {
+				metaPanel.setVisible(true);
+			}
 		}
+		
 	}
 
 	public int getLanguage() {
@@ -1034,6 +1005,21 @@ public class CompositionPanel extends JLayeredPane {
 	public void setCompositionFrame(CompositionFrame compositionFrame) {
 		this.compositionFrame =compositionFrame;
 
+	}
+
+	public boolean isInPdfPreviewMode() {
+		return pdfPreviewMode;
+	}
+	public void setPdfPreviewMode(boolean newSetting) {
+		this.pdfPreviewMode = newSetting;
+		
+		this.showLineBreaks(pdfPreviewMode);		
+		if (pdfPreviewMode) {
+			contentPanel.setBackground(Color.white);
+		} else {
+			contentPanel.setBackground(GuiConfig.compositionPanelBackgroundColor);
+		}		
+		
 	}
 
 

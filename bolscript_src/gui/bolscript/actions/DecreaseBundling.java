@@ -13,9 +13,10 @@ import bolscript.config.Config;
 public class DecreaseBundling extends AbstractAction {
 	CompositionPanel compPanel;
 
+
 	public DecreaseBundling(CompositionPanel compPanel) {
 		this.compPanel = compPanel;
-		this.putValue(NAME, "Decrease bundling");
+		this.putValue(NAME, "Decrease bundling");		
 	}
 	
 	public void actionPerformed(ActionEvent e) {
