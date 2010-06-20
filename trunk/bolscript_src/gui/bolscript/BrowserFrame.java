@@ -9,26 +9,43 @@ import gui.menus.MenuUpdater;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetDragEvent;
+import java.awt.dnd.DropTargetDropEvent;
+import java.awt.dnd.DropTargetEvent;
+import java.awt.dnd.DropTargetListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
+import javax.swing.border.LineBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
 import bolscript.Master;
+import bolscript.config.Config;
+import bolscript.config.GuiConfig;
 
-public class BrowserFrame extends JFrame implements WindowListener{
+public class BrowserFrame extends JFrame implements WindowListener, DropTargetListener{
 	private CompositionListPanel compositionListPanel;
 	private FilterPanel filterPanel;
 	private SearchPanel searchPanel;
 	private MenuUpdater menuUpdater;
+	
+	private DropTarget dropTarget;
 	
 	//private CompositionTableModel tableModel;
 	public BrowserFrame(Dimension size, CompositionTableModel model, FilterPanel filterPanel) {
@@ -56,6 +73,10 @@ public class BrowserFrame extends JFrame implements WindowListener{
 		splitPane.setLeftComponent(headPanel);
 		splitPane.setRightComponent(lowerPanel);
 		this.setContentPane(splitPane);
+		
+		if (dropTarget == null) {
+            dropTarget = new DropTarget(this, this);
+        }
 		
 		initMenuBar();
 		this.pack();
@@ -115,4 +136,71 @@ public class BrowserFrame extends JFrame implements WindowListener{
 	public void windowDeiconified(WindowEvent e) {}
 	public void windowIconified(WindowEvent e) {}
 	public void windowOpened(WindowEvent e) {}
+
+
+	@Override
+	public void dragEnter(DropTargetDragEvent evt) {
+		this.compositionListPanel.setBorder(new LineBorder(GuiConfig.sequencePanelHighlightColor, 5));
+		
+		
+	}
+
+
+	@Override
+	public void dragExit(DropTargetEvent dte) {
+		this.compositionListPanel.setBorder(null);
+		
+	}
+
+
+	@Override
+	public void dragOver(DropTargetDragEvent dtde) {
+		
+	}
+
+
+	@Override
+	public void drop(DropTargetDropEvent evt) {
+		 List<File> potentialBolscriptFiles = new ArrayList<File>();
+		 int action = evt.getDropAction(); 
+		 evt.acceptDrop(action);
+		 
+        try {
+            Transferable data = evt.getTransferable();
+            DataFlavor flavors[] = data.getTransferDataFlavors();
+            if (data.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
+                List<File> list = (List<File>) data.getTransferData(
+                    DataFlavor.javaFileListFlavor);
+               
+                for (File file : list) {
+                	if (file.getName().toLowerCase().endsWith(Config.bolscriptSuffix)) {
+                		potentialBolscriptFiles.add(file);
+                	}
+                }
+                if (potentialBolscriptFiles.size()>0) {                	
+                	Master.master.openSomeExistingFiles(potentialBolscriptFiles);
+                }
+            }
+        } catch (UnsupportedFlavorException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+        	if (potentialBolscriptFiles.size()>0) {
+        		evt.dropComplete(true);
+        	} else {
+        		evt.dropComplete(false);
+        	}        	
+            //repaint();
+        }
+        this.compositionListPanel.setBorder(null);
+		
+	}
+
+
+	@Override
+	public void dropActionChanged(DropTargetDragEvent dtde) {
+		// TODO Auto-generated method stub
+		
+	}
 }

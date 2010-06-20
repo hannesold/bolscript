@@ -26,6 +26,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.regex.Matcher;
 
 import javax.swing.JOptionPane;
@@ -352,6 +353,11 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 		return compEditors;
 	}
 
+	public void openSomeExistingFiles(List<File> files) {
+		for(File file :files) {
+			openSomeExistingFile(file);
+		}
+	}
 
 	/**
 	 * 
@@ -555,6 +561,8 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 	public CompositionBase getCompositionBase() {
 		return compositionBase;
 	}
+
+	
 
 
 
