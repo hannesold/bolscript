@@ -53,6 +53,7 @@ public class GuiConfig {
 	
 	//Composition panel
 	public static int compositionPanelMarginSide = 10;
+	public static Color compositionPanelBackgroundColor = (new JPanel()).getBackground();
 	
 	//Sequence Panels
 	public static Color sequencePanelHighlightColor = new Color (68, 117, 207);
