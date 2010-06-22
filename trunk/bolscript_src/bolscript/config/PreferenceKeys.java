@@ -1,6 +1,14 @@
 package bolscript.config;
 
+import java.util.HashMap;
+
 public class PreferenceKeys {
+	
+	public class DeprecatedKeys {
+		public static final String TABLA_FOLDER = "tablaFolder";
+		
+	}
+	
 	public static final String USER_ID = "USER_ID";
 	
 	public static final String STD_BUNDLING_DEPTH = "stdBundlingDepth";
@@ -9,9 +17,15 @@ public class PreferenceKeys {
 
 	public static final String STANDARD_LANGUAGE = "standardLanguage";
 
-
 	public static final String STD_FONT_SIZE_INCREASE = "stdFontSizeIncrease";
 
 	public static final String LIBRARY_FOLDER = "libraryFolder";
 	
+	/*private static HashMap<String, String> deprecatedMap = new HashMap<String,String>();
+	static {
+		deprecatedMap.put(DeprecatedKeys.TABLA_FOLDER, LIBRARY_FOLDER);
+	}
+	public static String deprecatedKeyToCurrentKey(String oldKey) {
+		return deprecatedMap.get(oldKey);
+	}*/
 }

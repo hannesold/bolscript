@@ -73,10 +73,8 @@ public class BrowserFrame extends JFrame implements WindowListener, DropTargetLi
 		splitPane.setLeftComponent(headPanel);
 		splitPane.setRightComponent(lowerPanel);
 		this.setContentPane(splitPane);
-		
-		if (dropTarget == null) {
-            dropTarget = new DropTarget(this, this);
-        }
+				
+		dropTarget = new DropTarget(this, this);
 		
 		initMenuBar();
 		this.pack();
