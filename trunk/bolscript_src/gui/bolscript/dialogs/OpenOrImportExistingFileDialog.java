@@ -5,12 +5,15 @@ import gui.bolscript.BrowserFrame;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
+import java.util.List;
 
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
 import basics.Debug;
 import basics.GUI;
+import bolscript.compositions.Composition;
 
 public class OpenOrImportExistingFileDialog extends JDialog implements PropertyChangeListener{
 	//private EditorFrame editor;
@@ -23,15 +26,40 @@ public class OpenOrImportExistingFileDialog extends JDialog implements PropertyC
 	
 	private JOptionPane optionPane;
 	
-	public OpenOrImportExistingFileDialog (BrowserFrame browser) {
+	public OpenOrImportExistingFileDialog (BrowserFrame browser, List<Composition> comps) {
 		super(browser);
 		this.setModal(true);
-		optionPane = new JOptionPane("<html>" +
-				"<span style=\"font-size:105%; font-weight:bold\">Import to your library?</span><br />" +
-				"The file you opened is not in your library yet.<br /> " +
-				"If you choose to import it, a physical copy of the file <br />" +
-				"will be put in your tabla folder, so, when you run bolscript <br />" +
-				"the next time it will still appear in your list of compositions.",
+		
+		
+		
+		
+		String message = "";
+		if (comps.size() >1) {
+			message= "<html>" +
+			"<span style=\"font-size:105%; font-weight:bold\">Import to your library?</span><br />" +
+			"The following files you opened are not in your library yet:<br /> " +
+			comps.get(0).getName()
+			+
+			"If you choose to import them, a physical copy of each<br />" +
+			"will be placed in your library folder, so, when you run bolscript<br />" +
+			"the next time it will still appear in your list of compositions.";
+		} else {
+			String descriptions = new String();		
+			descriptions += "<ul>";
+			for(Composition comp:comps) {
+				descriptions += "<li>"+comp.getName()+"</li>";
+			}
+			descriptions +="</ul>";
+			message= "<html>" +
+			"<span style=\"font-size:105%; font-weight:bold\">Import to your library?</span><br />" +
+			"The file you opened is not in your library yet:<br /> " +
+			descriptions
+			+
+			"If you choose to import it, a physical copy of it <br />" +
+			"will be placed in your library, so, when you run bolscript <br />" +
+			"the next time it will still appear in your list of compositions.";
+		}
+		optionPane = new JOptionPane(message,
 				JOptionPane.QUESTION_MESSAGE ,
 				JOptionPane.YES_NO_CANCEL_OPTION,
 				null,

@@ -12,6 +12,6 @@ public class PreferenceKeys {
 
 	public static final String STD_FONT_SIZE_INCREASE = "stdFontSizeIncrease";
 
-	public static final String TABLA_FOLDER = "tablaFolder";
+	public static final String LIBRARY_FOLDER = "libraryFolder";
 	
 }

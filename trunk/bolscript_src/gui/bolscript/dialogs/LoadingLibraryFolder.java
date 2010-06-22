@@ -7,9 +7,9 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-public class LoadingTablafolder extends JFrame {
+public class LoadingLibraryFolder extends JFrame {
 Dimension minDimension =new Dimension(300,200);
-	public LoadingTablafolder() {
+	public LoadingLibraryFolder() {
 		super();
 		this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		//this.setSize(dimension);
@@ -22,7 +22,7 @@ Dimension minDimension =new Dimension(300,200);
 		JPanel contentPane = new JPanel();
 		contentPane.setLayout(new BorderLayout());
 		
-		JLabel label = new JLabel("<html><p>Loading Tablafolder...</p></html>");
+		JLabel label = new JLabel("<html><p>Loading Library from folder...</p></html>");
 		contentPane.add(label,BorderLayout.CENTER);
 		
 		contentPane.setPreferredSize(minDimension);

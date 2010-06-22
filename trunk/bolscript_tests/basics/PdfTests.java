@@ -33,7 +33,7 @@ import com.lowagie.text.pdf.PdfWriter;
 			// we create a writer
 			PdfWriter writer;
 			
-			writer = PdfWriter.getInstance(document, new FileOutputStream(UserConfig.tablaFolder +Config.fileSeperator  + "pdf_test.pdf"));
+			writer = PdfWriter.getInstance(document, new FileOutputStream(UserConfig.libraryFolder +Config.fileSeperator  + "pdf_test.pdf"));
 			Rectangle pageSize = writer.getPageSize();
 			
 			float pageWidth =  pageSize.getWidth();

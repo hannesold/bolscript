@@ -11,7 +11,7 @@ import gui.bolscript.actions.OmmitChangesAndClose;
 import gui.bolscript.actions.SaveChanges;
 import gui.bolscript.composition.CompositionPanel;
 import gui.bolscript.dialogs.CouldNotBeRemovedDialog;
-import gui.bolscript.dialogs.LoadingTablafolder;
+import gui.bolscript.dialogs.LoadingLibraryFolder;
 import gui.bolscript.dialogs.OpenOrImportExistingFileDialog;
 import gui.bolscript.dialogs.PreferencesDialog;
 import gui.bolscript.dialogs.SaveChangesDialog;
@@ -74,7 +74,7 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 	private FilterPanel filterPanel;
 	private SearchPanel searchPanel;
 
-	private LoadingTablafolder loadingFrame ;
+	private LoadingLibraryFolder loadingFrame ;
 
 	static Debug debug = new Debug(Master.class);
 
@@ -156,9 +156,6 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 	}
 
 	public void showLoadingframeThenLoad() {
-		//loadingFrame = new LoadingTablafolder();
-		//loadingFrame.setVisible(true);
-
 		EventQueue.invokeLater(new Runnable() { public void run() {
 			initGui();
 		}});
@@ -222,18 +219,18 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 	}
 
 	/**
-	 * Is called whenever Config has changed (at the moment when tablaFolder was changed)
+	 * Is called whenever Config has changed (at the moment when libraryFolder was changed)
 	 */
 	public void configChanged(ConfigChangeEvent e) {
-		if (e.hasChanged(PreferenceKeys.TABLA_FOLDER)) {
-			refreshFromTablafolder();
+		if (e.hasChanged(PreferenceKeys.LIBRARY_FOLDER)) {
+			refreshFromLibraryFolder();
 		}
 	}
 
 	/**
-	 * Re-Inits BolBase and refreshes compositionbase from the tablaFolder
+	 * Re-Inits BolBase and refreshes compositionbase from the libraryFolder
 	 */
-	public void refreshFromTablafolder() {
+	public void refreshFromLibraryFolder() {
 		BolBase.init(this.getClass());
 		compositionBase.addFolderRecursivelyAndGetOutdated(Config.pathToTals);
 		ArrayList<Composition> outdated = 
@@ -372,9 +369,9 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 		}
 		if (comp != null) {
 			String path = comp.getLinkLocal();
-			if (!path.startsWith(UserConfig.tablaFolder)) {
+			if (!path.startsWith(UserConfig.libraryFolder)) {
 				//want to import?
-				OpenOrImportExistingFileDialog question = new OpenOrImportExistingFileDialog(browserFrame);
+				OpenOrImportExistingFileDialog question = new OpenOrImportExistingFileDialog(browserFrame, null);
 				question.setVisible(true); // (modal)
 				switch (question.getChoice()) {
 				case (OpenOrImportExistingFileDialog.IMPORT):
@@ -393,7 +390,7 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 					break;
 				}
 			} else {
-				//is already in tabla folder
+				//is already in library
 			}
 			openEditor(comp);
 		}
@@ -538,7 +535,7 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 			if (configStored) {
 				System.exit(0);
 			} else {
-				JOptionPane.showMessageDialog(browserFrame, "Sorry, the configuration could not be stored, you will have to reenter the tabla folder at the next program launch.", "Configuration not stored", JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog(browserFrame, "Sorry, the configuration could not be stored, you will have to reenter your library folder at the next program launch.", "Configuration not stored", JOptionPane.WARNING_MESSAGE);
 				System.exit(0);
 			}
 		}

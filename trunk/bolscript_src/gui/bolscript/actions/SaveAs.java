@@ -1,7 +1,7 @@
 package gui.bolscript.actions;
 
 import gui.bolscript.EditorFrame;
-import gui.bolscript.dialogs.SaveOutsideTablaFolder;
+import gui.bolscript.dialogs.SaveOutsideLibraryFolder;
 
 import java.awt.FileDialog;
 import java.awt.event.ActionEvent;
@@ -57,17 +57,17 @@ public class SaveAs extends AbstractAction {
 				String dirPath = fileDialog.getDirectory();
 				String compPath = new File(Config.pathToCompositions).getAbsolutePath();
 				if (!dirPath.startsWith(compPath)) {
-					SaveOutsideTablaFolder question = new SaveOutsideTablaFolder(editor);
+					SaveOutsideLibraryFolder question = new SaveOutsideLibraryFolder(editor);
 					question.setVisible(true); // (modal)
 					switch (question.getChoice()) {
-						case(SaveOutsideTablaFolder.CANCEL):
+						case(SaveOutsideLibraryFolder.CANCEL):
 							fileDialog.dispose();
 							return;
-						case (SaveOutsideTablaFolder.CHANGE_FOLDER):
+						case (SaveOutsideLibraryFolder.CHANGE_FOLDER):
 							fileDialog.dispose();
 							actionPerformed(e);
 							return;
-						case (SaveOutsideTablaFolder.PROCEED):
+						case (SaveOutsideLibraryFolder.PROCEED):
 							break;
 					}
 				}

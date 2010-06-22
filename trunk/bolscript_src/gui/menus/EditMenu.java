@@ -8,7 +8,7 @@ import gui.bolscript.actions.ExitProgram;
 import gui.bolscript.actions.OpenNew;
 import gui.bolscript.actions.OpenPreferences;
 import gui.bolscript.actions.Redo;
-import gui.bolscript.actions.RefreshFromTablafolder;
+import gui.bolscript.actions.RefreshFromLibraryfolder;
 import gui.bolscript.actions.SaveAs;
 import gui.bolscript.actions.SaveChanges;
 import gui.bolscript.actions.Undo;

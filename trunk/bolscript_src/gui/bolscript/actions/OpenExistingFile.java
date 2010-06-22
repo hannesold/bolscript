@@ -1,16 +1,14 @@
 package gui.bolscript.actions;
 
 import gui.bolscript.BrowserFrame;
-import gui.bolscript.dialogs.OpenOrImportExistingFileDialog;
-import gui.bolscript.dialogs.SaveOutsideTablaFolder;
 
 import java.awt.FileDialog;
 import java.awt.event.ActionEvent;
 import java.io.File;
+import java.util.ArrayList;
 
 import javax.swing.AbstractAction;
 
-import basics.Debug;
 import basics.SuffixFilter;
 import bolscript.Master;
 import bolscript.config.Config;
@@ -38,8 +36,10 @@ public class OpenExistingFile extends AbstractAction {
 		//When a location and filename is chosen the program continues here.
 	
 		if (fileDialog.getFile() != null) {
+			ArrayList<File> files = new ArrayList<File>();
 			File file = new File(fileDialog.getDirectory() + Config.fileSeperator + fileDialog.getFile());
-			Master.master.openSomeExistingFile(file);
+			files.add(file);
+			Master.master.openSomeExistingFiles(files);
 			
 			/*try {
 				String dirPath = fileDialog.getDirectory();

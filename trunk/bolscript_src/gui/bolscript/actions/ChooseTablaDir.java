@@ -26,7 +26,7 @@ public class ChooseTablaDir extends AbstractAction {
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		String path = new String(UserConfig.tablaFolder);
+		String path = new String(UserConfig.libraryFolder);
 		File folder = new File(path);
 		if (!folder.exists()) {
 			path = System.getProperty("user.dir");
@@ -36,7 +36,7 @@ public class ChooseTablaDir extends AbstractAction {
 		Debug.debug(this, "os.name: " + System.getProperty("os.name").toLowerCase() );
 		if (Config.OS == Config.MAC) {
 			System.setProperty("apple.awt.fileDialogForDirectories", "true");
-			FileDialog fileDialog = new FileDialog(owner, "Set Tabla Folder", FileDialog.LOAD);
+			FileDialog fileDialog = new FileDialog(owner, "Set Library Folder", FileDialog.LOAD);
 			fileDialog.setDirectory(path);
 			fileDialog.setVisible(true);
 			
@@ -54,8 +54,8 @@ public class ChooseTablaDir extends AbstractAction {
 			System.setProperty("apple.awt.fileDialogForDirectories", "false");
 		} else {
 			JFileChooser fileDialog = new JFileChooser();
-			fileDialog.setCurrentDirectory(new File(UserConfig.tablaFolder));
-			fileDialog.setDialogTitle("Choose Tabla Folder");
+			fileDialog.setCurrentDirectory(new File(UserConfig.libraryFolder));
+			fileDialog.setDialogTitle("Choose Library Folder");
 			FileFilter filter = new FolderFilter();
 			fileDialog.setDialogType(JFileChooser.OPEN_DIALOG);
 			fileDialog.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
