@@ -31,10 +31,10 @@ import bolscript.config.UserConfig;
 public class PreferencesDialog extends JDialog implements WindowListener, ConfigChangeListener{
 
 	JPanel userNameContainerPanel;
-	JTextField txtTablaFolder;
+	JTextField txtLibraryFolder;
 	JTextField txtUserName;
 	JLabel userNameWarning;
-	JButton btnTablaFolderChooser;
+	JButton btnLibraryFolderChooser;
 	JButton ok;
 	ChooseTablaDir chooseAction;
 	String previousTxtUserNameText;
@@ -50,39 +50,39 @@ public class PreferencesDialog extends JDialog implements WindowListener, Config
 	@SuppressWarnings("serial")
 	public void init() {
 		JPanel panel = new JPanel();
-		JLabel tablaFolderExplanation = new JLabel(
+		JLabel libraryFolderExplanation = new JLabel(
 				"<html>" +
 				"<div style=\"width:480px; padding: 20px 80px 20px 40px; background: white; font-family:Arial; font-size:14pt; \">" +
-				"<h2 style=\"padding-bottom: 10px;\">Choose a <b>Tabla Folder</b>!</h2>" +
+				"<h2 style=\"padding-bottom: 10px;\">Choose a <b>Library Folder</b>!</h2>" +
 				"When working with bolscript:"+
 				"<ul>"+
-				"<li style=\"padding-bottom: 10px;\">store <i>all your compositions</i> in the <b>compositions</b> subfolder of your tablafolder." +
-				"<li style=\"padding-bottom: 10px;\">to customize the available bols edit your <b>bolbase.bolbase.txt</b> in the <b>settings</b> subfolder of your tablafolder with wordpad (windows) or textedit (mac).</li>" +
+				"<li style=\"padding-bottom: 10px;\">store <i>all your compositions</i> in the <b>compositions</b> subfolder of your library." +
+				"<li style=\"padding-bottom: 10px;\">to customize the available bols edit your <b>bolbase.bolbase.txt</b> in the <b>settings</b> subfolder of your library with wordpad (windows) or textedit (mac).</li>" +
 				"</ul>" +
 				"<p style=\"font-size: 12pt;\">The subfolders will be constructed and filled with demo compositions " +
-				"automatically if you choose an empty/new tabla folder.</p>" +
+				"automatically if you choose an empty/new library folder.</p>" +
 				"</div>" +
 		"</html>");
 
-		JLabel txtTablaFolderLabel = new JLabel("Tabla Folder");
+		JLabel txtLibraryFolderLabel = new JLabel("Library Folder");
 
-		txtTablaFolder = new JTextField();
-		txtTablaFolder.setEditable(false);
+		txtLibraryFolder = new JTextField();
+		txtLibraryFolder.setEditable(false);
 		Debug.debug(this, "setting text");
-		txtTablaFolder.setText(UserConfig.tablaFolder);
-		txtTablaFolder.setPreferredSize(new Dimension(340, txtTablaFolder.getPreferredSize().height));
+		txtLibraryFolder.setText(UserConfig.libraryFolder);
+		txtLibraryFolder.setPreferredSize(new Dimension(340, txtLibraryFolder.getPreferredSize().height));
 		chooseAction = new ChooseTablaDir(this);
 
-		btnTablaFolderChooser = new JButton(new AbstractAction("Choose") {	
+		btnLibraryFolderChooser = new JButton(new AbstractAction("Choose") {	
 			@Override
 			public void actionPerformed(ActionEvent e) { chooseDir(e); }
 		});
 
-		txtTablaFolderLabel.setLabelFor(txtTablaFolder);
+		txtLibraryFolderLabel.setLabelFor(txtLibraryFolder);
 		JPanel tablaDirPanel = new JPanel();
-		tablaDirPanel.add(txtTablaFolderLabel);
-		tablaDirPanel.add(txtTablaFolder);
-		tablaDirPanel.add(btnTablaFolderChooser);
+		tablaDirPanel.add(txtLibraryFolderLabel);
+		tablaDirPanel.add(txtLibraryFolder);
+		tablaDirPanel.add(btnLibraryFolderChooser);
 
 
 
@@ -144,7 +144,7 @@ public class PreferencesDialog extends JDialog implements WindowListener, Config
 			}
 		});
 
-		if (UserConfig.firstRun &! UserConfig.hasChosenTablaFolderThisRun) {
+		if (UserConfig.firstRun &! UserConfig.hasChosenLibraryFolderThisRun) {
 			ok.setEnabled(false);
 
 		}
@@ -152,9 +152,9 @@ public class PreferencesDialog extends JDialog implements WindowListener, Config
 		this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
 		buttonPanel.add(ok);
-		JPanel tablaFolderPanel = new JPanel(new BorderLayout());
-		tablaFolderPanel.add(tablaFolderExplanation, BorderLayout.NORTH);
-		tablaFolderPanel.add(tablaDirPanel, BorderLayout.CENTER);
+		JPanel libraryFolderPanel = new JPanel(new BorderLayout());
+		libraryFolderPanel.add(libraryFolderExplanation, BorderLayout.NORTH);
+		libraryFolderPanel.add(tablaDirPanel, BorderLayout.CENTER);
 
 		userNameContainerPanel = new JPanel(new BorderLayout());
 		userNameContainerPanel.add(userNameExplanation, BorderLayout.NORTH);
@@ -162,7 +162,7 @@ public class PreferencesDialog extends JDialog implements WindowListener, Config
 
 
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-		panel.add(tablaFolderPanel);
+		panel.add(libraryFolderPanel);
 		panel.add(userNameContainerPanel);
 
 		if (MidiStationSimple.getStandard() !=null) {
@@ -184,7 +184,7 @@ public class PreferencesDialog extends JDialog implements WindowListener, Config
 	protected void refreshFromConfig() {
 		txtUserName.setText(UserConfig.getUserId());
 		setUserNameWarnings(false);
-		//tablafolder changes are tracked well enough by other mechanisms
+		//library folder changes are tracked well enough by other mechanisms
 	}
 
 	/**
@@ -195,9 +195,9 @@ public class PreferencesDialog extends JDialog implements WindowListener, Config
 		chooseAction.actionPerformed(e);
 		String chosenFolder = chooseAction.getChosenFolder();
 		if ((chosenFolder != null)
-				&! chosenFolder.equals(UserConfig.tablaFolder)) {
-			UserConfig.setTablaFolder(chooseAction.getChosenFolder());
-			Config.fireConfigChangedEvent(PreferenceKeys.TABLA_FOLDER);
+				&! chosenFolder.equals(UserConfig.libraryFolder)) {
+			UserConfig.setLibraryFolder(chooseAction.getChosenFolder());
+			Config.fireConfigChangedEvent(PreferenceKeys.LIBRARY_FOLDER);
 			changed = true;
 			ok.setEnabled(true);
 		}
@@ -228,8 +228,8 @@ public class PreferencesDialog extends JDialog implements WindowListener, Config
 	 * Gets called by Config.fireConfigChangedEvent()
 	 */
 	public void configChanged(ConfigChangeEvent e) {
-		if (e.hasChanged(PreferenceKeys.TABLA_FOLDER)) {
-			txtTablaFolder.setText(UserConfig.tablaFolder);
+		if (e.hasChanged(PreferenceKeys.LIBRARY_FOLDER)) {
+			txtLibraryFolder.setText(UserConfig.libraryFolder);
 		}
 		if (e.hasChanged(PreferenceKeys.USER_ID)) {
 			txtUserName.setText(UserConfig.getUserId());

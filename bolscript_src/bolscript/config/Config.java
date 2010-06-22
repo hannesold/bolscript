@@ -112,8 +112,8 @@ public class Config {
 		return jarPath;
 	}
 	
-	public static void extractDefaultTablafolder(String targetFolder) throws Exception {
-		Debug.temporary(Config.class, "extracting default tabla folder to target folder");
+	public static void extractDefaultLibraryFolder(String targetFolder) throws Exception {
+		Debug.temporary(Config.class, "extracting default library to target folder");
 
 		String jarPath = getJarPath();
 		Debug.temporary(Config.class, "jarPath " + jarPath);
@@ -139,7 +139,7 @@ public class Config {
 		Debug.temporary(Config.class, "opening zipfile: " + resourcesTempPath);
 		ZipFile resources = new ZipFile(tempFile);
 
-		ZipTools.extractSubentries(targetFolder, resources, resources.getEntry("tablafolder_default"));
+		ZipTools.extractSubentries(targetFolder, resources, resources.getEntry("libraryfolder_default"));
 		
 		resources.close();
 		

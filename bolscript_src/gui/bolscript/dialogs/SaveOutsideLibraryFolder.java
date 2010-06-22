@@ -12,7 +12,7 @@ import javax.swing.JOptionPane;
 import basics.Debug;
 import basics.GUI;
 
-public class SaveOutsideTablaFolder extends JDialog implements PropertyChangeListener{
+public class SaveOutsideLibraryFolder extends JDialog implements PropertyChangeListener{
 	private EditorFrame editor;
 	public static final Object[] options = new Object[] {"Proceed", "Change Folder", "Cancel"};
 	public static final int PROCEED = 0;
@@ -21,7 +21,7 @@ public class SaveOutsideTablaFolder extends JDialog implements PropertyChangeLis
 	
 	private JOptionPane optionPane;
 	
-	public SaveOutsideTablaFolder (EditorFrame editor) {
+	public SaveOutsideLibraryFolder (EditorFrame editor) {
 		super(editor);
 		this.setModal(true);
 		optionPane = new JOptionPane(				"<html>" +

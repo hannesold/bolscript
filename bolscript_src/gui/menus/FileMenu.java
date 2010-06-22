@@ -9,7 +9,7 @@ import gui.bolscript.actions.ExportPdf;
 import gui.bolscript.actions.OpenExistingFile;
 import gui.bolscript.actions.OpenNew;
 import gui.bolscript.actions.OpenPreferences;
-import gui.bolscript.actions.RefreshFromTablafolder;
+import gui.bolscript.actions.RefreshFromLibraryfolder;
 import gui.bolscript.actions.RemoveSelected;
 import gui.bolscript.actions.RevealCompositionInOSFileManager;
 import gui.bolscript.actions.SaveAs;
@@ -111,7 +111,7 @@ public class FileMenu extends JMenu {
 		this.add(revealer);
 		
 		this.addSeparator();
-		this.add(new RefreshFromTablafolder());
+		this.add(new RefreshFromLibraryfolder());
 		
 		JMenuItem toggleErrorConsole = new JMenuItem(ToggleConsole.getStandard());
 		toggleErrorConsole.setAccelerator(KeyStroke.getKeyStroke(

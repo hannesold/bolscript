@@ -37,7 +37,7 @@ public class FontTests implements WindowListener, ListSelectionListener{
 	private  JPanel examplePanel;
 	private  JList fontSelector, fontSelectorLocal;
 	
-	private String pathToFonts = UserConfig.tablaFolder + Config.fileSeperator + "settings";
+	private String pathToFonts = UserConfig.libraryFolder + Config.fileSeperator + "settings";
 	
 	JFrame exampleFrame = new JFrame("Examples");
 	RepresentableSequence completeSequence;

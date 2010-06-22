@@ -12,7 +12,7 @@ import static bolscript.config.PreferenceKeys.*;
 
 public class UserConfig {
 
-	public static String tablaFolder = null;
+	public static String libraryFolder = null;
 	
 	public static String pdfExportPath = null;
 	
@@ -40,7 +40,7 @@ public class UserConfig {
 	public static Preferences preferences;
 
 	public static boolean firstRun = true;
-	public static boolean hasChosenTablaFolderThisRun = false;
+	public static boolean hasChosenLibraryFolderThisRun = false;
 	
 	public UserConfig() {
 	}
@@ -57,8 +57,8 @@ public class UserConfig {
 	 * @throws Exception
 	 */
 	public static void storePreferences() throws Exception{
-		if (tablaFolder != null) {
-			UserConfig.preferences.put(TABLA_FOLDER, tablaFolder);
+		if (libraryFolder != null) {
+			UserConfig.preferences.put(LIBRARY_FOLDER, libraryFolder);
 		}
 		if (pdfExportPath != null) {
 			UserConfig.preferences.put(PDF_EXPORT_PATH,pdfExportPath);
@@ -92,8 +92,8 @@ public class UserConfig {
 	}
 	
 	/**
-	 * Most importantly attempts to load the String tablaFolder from the Properties file,
-	 * then calling setTablaFolder.
+	 * Most importantly attempts to load the String libraryFolder from the Properties file,
+	 * then calling setLibraryFolder.
 	 */
 	static boolean initFromStoredPreferences() {
 		UserConfig.preferences = Preferences.userNodeForPackage(Config.class);
@@ -102,17 +102,17 @@ public class UserConfig {
 		
 		try {
 	
-			tablaFolder = preferences.get(TABLA_FOLDER, null);
+			libraryFolder = preferences.get(LIBRARY_FOLDER, null);
 	
-			if (tablaFolder == null) {
+			if (libraryFolder == null) {
 				UserConfig.firstRun = true;
-				tablaFolder = Config.homeDir;
+				libraryFolder = Config.homeDir;
 				pdfExportPath = null;
 			} else {
-				UserConfig.setTablaFolder(tablaFolder);
+				UserConfig.setLibraryFolder(libraryFolder);
 				UserConfig.firstRun = false;
 			}
-			pdfExportPath = preferences.get(PDF_EXPORT_PATH, tablaFolder);			
+			pdfExportPath = preferences.get(PDF_EXPORT_PATH, libraryFolder);			
 			
 			setUserIdAfterValidation(preferences.get(USER_ID, DEFAULT_USER_ID));
 			
@@ -134,18 +134,18 @@ public class UserConfig {
 	}
 
 	/**
-	 * Sets and initialises the tablaFolder and the resulting subfolders settings compositions fonts etc,
+	 * Sets and initialises the libraryFolder and the resulting subfolders settings compositions fonts etc,
 	 * checking each for existence and creating the nonexistent.
 	 * Especially pathToDevanageriFont is established.
 	 * 
 	 * @param chosenFolder
 	 */
-	public static void setTablaFolder(String chosenFolder) {
-		hasChosenTablaFolderThisRun = true;
-		Debug.temporary(Config.class, "setTablaFolder : " + chosenFolder + " (old: " + tablaFolder + ")");
-		//if (!tablaFolder.equals(chosenFolder)) {
-		tablaFolder = chosenFolder;
-		preferences.put(TABLA_FOLDER, tablaFolder);
+	public static void setLibraryFolder(String chosenFolder) {
+		hasChosenLibraryFolderThisRun = true;
+		Debug.temporary(Config.class, "setLibraryFolder : " + chosenFolder + " (old: " + libraryFolder + ")");
+		//if (!libraryFolder.equals(chosenFolder)) {
+		libraryFolder = chosenFolder;
+		preferences.put(LIBRARY_FOLDER, libraryFolder);
 	
 	
 		File s = new File(chosenFolder + Config.fileSeperator + "settings");
@@ -187,9 +187,9 @@ public class UserConfig {
 		if (!allEssentialsExist) {
 			//defaults are copied non-destructively from the jar archives resources.zip
 			try {
-				Config.extractDefaultTablafolder(chosenFolder);
+				Config.extractDefaultLibraryFolder(chosenFolder);
 			} catch (Exception e) {
-				Debug.critical(Config.class, "Default tabla folder could not be extracted.");
+				Debug.critical(Config.class, "Default library could not be extracted.");
 				Debug.critical(Config.class, e);
 			}
 		}

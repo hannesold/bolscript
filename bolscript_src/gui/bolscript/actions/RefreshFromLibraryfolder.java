@@ -15,14 +15,14 @@ import basics.Debug;
 import bolscript.Master;
 import bolscript.compositions.Composition;
 
-public class RefreshFromTablafolder extends AbstractAction {
+public class RefreshFromLibraryfolder extends AbstractAction {
 	
-	public RefreshFromTablafolder() {
-		this.putValue(NAME, "Refresh Tabla Folder");
+	public RefreshFromLibraryfolder() {
+		this.putValue(NAME, "Refresh Library");
 	}
 	
 	public void actionPerformed(ActionEvent e) {
-		Master.master.refreshFromTablafolder();
+		Master.master.refreshFromLibraryFolder();
 	}
 	
 	
