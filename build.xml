@@ -40,22 +40,22 @@
 		<javac srcdir="bolscript_src/bolscript/scanner/" destdir="bin" />
 	</target>
 
-	<target name="generate_default_tablafolder_from_my_tablafolder">
-		<delete dir="${dir.resources.tablafolder_default}" />
-		<copy todir="${dir.resources.tablafolder_default}/compositions/demos" overwrite="true">
-			<fileset dir="${dir.mytablafolder}/compositions/demos">
+	<target name="generate_default_libraryfolder_from_mylibraryfolder">
+		<delete dir="${dir.resources.libraryfolder_default}" />
+		<copy todir="${dir.resources.libraryfolder_default}/compositions/demos" overwrite="true">
+			<fileset dir="${dir.mylibraryfolder}/compositions/demos">
 			</fileset>
 		</copy>
-		<copy todir="${dir.resources.tablafolder_default}/compositions/tals" overwrite="true">
-			<fileset dir="${dir.mytablafolder}/compositions/tals">
+		<copy todir="${dir.resources.libraryfolder_default}/compositions/tals" overwrite="true">
+			<fileset dir="${dir.mylibraryfolder}/compositions/tals">
 			</fileset>
 		</copy>
-		<copy todir="${dir.resources.tablafolder_default}/settings" overwrite="true">
-			<fileset dir="${dir.mytablafolder}/settings" />
+		<copy todir="${dir.resources.libraryfolder_default}/settings" overwrite="true">
+			<fileset dir="${dir.mylibraryfolder}/settings" />
 		</copy>
 	</target>
 
-	<target name="zip_resources" depends="generate_default_tablafolder_from_my_tablafolder">
+	<target name="zip_resources" depends="generate_default_libraryfolder_from_mylibraryfolder">
 		<!-- zip all resources that shall be bundled in the distributed jar as resources.zip -->
 		<zip destfile="${resources.zip.completepath}" basedir="${dir.resources}" excludes="**/*.icns">
 		</zip>

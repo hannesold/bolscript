@@ -102,7 +102,9 @@ public class UserConfig {
 		
 		try {
 	
-			libraryFolder = preferences.get(LIBRARY_FOLDER, null);
+			libraryFolder = preferences.get(LIBRARY_FOLDER, 
+					preferences.get(PreferenceKeys.DeprecatedKeys.TABLA_FOLDER,
+							null));
 	
 			if (libraryFolder == null) {
 				UserConfig.firstRun = true;

@@ -6,24 +6,36 @@ import gui.bolscript.actions.RemoveSelected;
 import gui.bolscript.actions.RevealCompositionInOSFileManager;
 
 import java.awt.Color;
-import java.awt.Dimension;
+import java.awt.Graphics2D;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.imageio.ImageIO;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JMenuItem;
+import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.RowSorter;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SortOrder;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
+import javax.swing.TransferHandler;
 import javax.swing.table.TableRowSorter;
 
-import basics.Debug;
 import basics.GUI;
 import bolscript.Master;
 import bolscript.compositions.Composition;
@@ -32,9 +44,112 @@ import bolscript.config.GuiConfig;
 
 public class CompositionListPanel extends JScrollPane  {
 
+	private class CompositionListTransferHandler extends TransferHandler {
+
+		
+		CompositionListPanel panel;
+		CompositionListTransferHandler(CompositionListPanel panel) {
+			this.panel = panel;
+		}
+		
+		/**
+		 * To bad, this is not working...
+		 */
+        @Override
+		public Icon getVisualRepresentation(Transferable t) {
+			List<Composition> comps = panel.getSelectedCompositions();
+			if (comps.size()==1) {
+				JLabel label = new JLabel(comps.get(0).getName());
+				JPanel p = new JPanel();
+				p.add(label);
+
+				ImageIcon icon = new ImageIcon();				
+				BufferedImage bi = new BufferedImage( p.getPreferredSize().width, p.getPreferredSize().height, BufferedImage.TYPE_INT_RGB );
+				icon.setImage(bi);
+				Graphics2D g2d = bi.createGraphics();
+				p.paint(g2d);				
+				return icon;
+			}
+			return super.getVisualRepresentation(t);
+		}
+
+		@Override
+        protected Transferable createTransferable(JComponent c) {
+            if (JTable.class.isInstance(c)) {
+            	JTable table = (JTable) c;
+            	List<Composition> selectedComps = panel.getSelectedCompositions();
+                return new CompositionListTransferable(selectedComps);            	
+            } else return null;            
+        }
+
+        @Override
+        public int getSourceActions(JComponent c) {
+            return TransferHandler.COPY;
+        }
+    }
+
+    private class CompositionListTransferable implements Transferable {
+
+        private List<Composition> comps;
+        private ArrayList<DataFlavor> availableFlavors;
+        private DataFlavor plainTextFlavor;
+        
+        public CompositionListTransferable(List<Composition> comps) {
+            this.comps = comps;
+            this.availableFlavors = new ArrayList<DataFlavor>();
+            plainTextFlavor = DataFlavor.getTextPlainUnicodeFlavor();
+            
+            String plainTextMime = plainTextFlavor.getMimeType();
+            
+            if (comps.size()==0) {            	
+            } else if (comps.size()==1) {
+            	//availableFlavors.add(DataFlavor.getTextPlainUnicodeFlavor());
+            	availableFlavors.add(DataFlavor.stringFlavor);
+            	availableFlavors.add(plainTextFlavor);
+            	availableFlavors.add(DataFlavor.javaFileListFlavor);
+            } else {
+            	availableFlavors.add(DataFlavor.javaFileListFlavor);
+            }
+        }
+        
+        @Override
+        public DataFlavor[] getTransferDataFlavors() {
+        	return availableFlavors.toArray(new DataFlavor[availableFlavors.size()]);
+        }        
+        
+        @Override
+        public boolean isDataFlavorSupported(DataFlavor flavor) {
+        	return availableFlavors.contains(flavor);
+        }
+
+        @Override
+        public Object getTransferData(DataFlavor flavor)
+                throws UnsupportedFlavorException, IOException {
+        	if (!isDataFlavorSupported(flavor)) {
+        		throw new UnsupportedFlavorException(flavor);                
+            }
+        	if (flavor.equals(DataFlavor.javaFileListFlavor)) {
+        		ArrayList<File> files = new ArrayList<File>();
+                for (Composition comp:comps) {
+                	try {
+                		files.add(new File(comp.getLinkLocal()));
+                	} catch (Exception ex){
+                		
+                	}
+                }
+                return files;
+        	}  else if (flavor.equals(DataFlavor.stringFlavor)) {
+        		return comps.get(0).getCompleteDataForStoring();  
+        	}        		
+        	 else {
+        		throw new UnsupportedFlavorException(flavor);
+        	}
+        }
+    }
 	JTable compositionTable = null;
 	CompositionTableModel tableModel = null;
 
+	
 	public CompositionListPanel(CompositionTableModel model) {
 		super(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
 		//this.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
@@ -130,6 +245,8 @@ public class CompositionListPanel extends JScrollPane  {
 		this.setViewportView(compositionTable);
 		this.getViewport().setBackground(Color.white);
 		
+		compositionTable.setDragEnabled(true);
+		compositionTable.setTransferHandler(new CompositionListTransferHandler(this));
 
 
 		this.setOpaque(false);
