@@ -456,7 +456,7 @@ public class Composition implements DataStatePosessor{
 				p.getTextRefValue().move(-textReferenceShift);
 			}
 			if (!p.getPType().displayForEditingInTextEditor()) {
-				Debug.temporary(this, "found noneditable packet: " + p );
+				//Debug.temporary(this, "found noneditable packet: " + p );
 				
 				//add to non-editable packets
 				nonEditorPackets.add(p);
@@ -482,7 +482,7 @@ public class Composition implements DataStatePosessor{
 						editorRawData = editorRawData.substring(0, Math.max(0,p.getTextReference().start()));
 					}
 					
-					Debug.temporary(this, "removed from rawData:\n" + p.getValue());
+					//Debug.temporary(this, "removed from rawData:\n" + p.getValue());
 					
 				}
 				switch (p.getType()) {
@@ -520,9 +520,9 @@ public class Composition implements DataStatePosessor{
 	 * and extractInfoFromPackets to have been run.
 	 */
 	protected void populateHistory() {
-		Debug.temporary(this,"populateHistory");
+		//Debug.temporary(this,"populateHistory");
 		if (history == null) {
-			Debug.temporary(this,"history == null");
+			//Debug.temporary(this,"history == null");
 			history = new HistoryEntries();
 			
 			PacketType historyType = PacketTypeDefinitions.getType(PacketTypeDefinitions.HISTORY);
@@ -530,7 +530,7 @@ public class Composition implements DataStatePosessor{
 			historyPacket.setObject(history);
 			
 			nonEditorPackets.add(historyPacket);
-			Debug.temporary(this,"adding history packet, size now " + nonEditorPackets.size());
+			//Debug.temporary(this,"adding history packet, size now " + nonEditorPackets.size());
 		}
 		
 		if (history.size() == 0) {

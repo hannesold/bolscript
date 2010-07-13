@@ -372,7 +372,7 @@ public class Parser {
 				try {
 					Rational speed = Rational.parseNonNegRational(input);
 					p.setObject(speed);
-					debug.debug("read speed " + speed);
+					//debug.debug("read speed " + speed);
 				} catch (Exception e) {
 					debug.debug("failed to parse Speed, will be ignored!");
 					p.setType(PacketTypeDefinitions.FAILED);
@@ -381,7 +381,7 @@ public class Parser {
 			case PacketTypeDefinitions.HISTORY:
 				String[] lines = p.getValue().replaceAll(SNatBeginningOrEnd, "").split(Parser.N);
 				
-				Debug.temporary(Parser.class, "parsing History-entries: \"" + p.getValue() +"\"");
+				//Debug.temporary(Parser.class, "parsing History-entries: \"" + p.getValue() +"\"");
 				HistoryEntries historyEntries = new HistoryEntries();
 				
 				for (int i=0; i < lines.length; i++) {					
@@ -389,7 +389,7 @@ public class Parser {
 					
 					HistoryEntry entry = null;
 					try {
-						Debug.temporary(Parser.class, "parsing History-entry-candidate: " + input);
+						//Debug.temporary(Parser.class, "parsing History-entry-candidate: " + input);
 						entry = HistoryEntry.fromString(input);
 					} catch (ParseException e) {
 						Debug.critical(Parser.class, e);
