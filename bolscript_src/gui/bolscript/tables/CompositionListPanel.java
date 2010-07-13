@@ -4,6 +4,7 @@ package gui.bolscript.tables;
 import gui.bolscript.actions.OpenComposition;
 import gui.bolscript.actions.RemoveSelected;
 import gui.bolscript.actions.RevealCompositionInOSFileManager;
+import gui.bolscript.composition.CompositionDataFlavor;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -13,14 +14,11 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
@@ -78,6 +76,7 @@ public class CompositionListPanel extends JScrollPane  {
             if (JTable.class.isInstance(c)) {
             	JTable table = (JTable) c;
             	List<Composition> selectedComps = panel.getSelectedCompositions();
+            	
                 return new CompositionListTransferable(selectedComps);            	
             } else return null;            
         }
@@ -87,6 +86,13 @@ public class CompositionListPanel extends JScrollPane  {
             return TransferHandler.COPY;
         }
     }
+	/*boolean isDragging = false;
+	public void setIsDragging(boolean yesno) {
+		isDragging = yesno;
+	}
+	public boolean IsDragging() {
+		return isDragging;
+	}*/
 
     private class CompositionListTransferable implements Transferable {
 
@@ -110,6 +116,8 @@ public class CompositionListPanel extends JScrollPane  {
             } else {
             	availableFlavors.add(DataFlavor.javaFileListFlavor);
             }
+            availableFlavors.add(CompositionDataFlavor.getFlavor());
+            
         }
         
         @Override
@@ -125,6 +133,7 @@ public class CompositionListPanel extends JScrollPane  {
         @Override
         public Object getTransferData(DataFlavor flavor)
                 throws UnsupportedFlavorException, IOException {
+        	
         	if (!isDataFlavorSupported(flavor)) {
         		throw new UnsupportedFlavorException(flavor);                
             }
@@ -144,6 +153,7 @@ public class CompositionListPanel extends JScrollPane  {
         	 else {
         		throw new UnsupportedFlavorException(flavor);
         	}
+        	
         }
     }
 	JTable compositionTable = null;

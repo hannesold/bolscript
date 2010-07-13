@@ -362,8 +362,10 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 	public void openSomeExistingFile(File file) {
 
 		Composition comp = null;
+		ArrayList<Composition> comps = new ArrayList<Composition>();
 		try {
-			comp = compositionBase.addFile(file);
+			comp = compositionBase.addFile(file);			
+			comps.add(comp);
 		} catch (FileReadException e) {			
 			e.printStackTrace();
 		}
@@ -371,7 +373,7 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 			String path = comp.getLinkLocal();
 			if (!path.startsWith(UserConfig.libraryFolder)) {
 				//want to import?
-				OpenOrImportExistingFileDialog question = new OpenOrImportExistingFileDialog(browserFrame, null);
+				OpenOrImportExistingFileDialog question = new OpenOrImportExistingFileDialog(browserFrame, comps);
 				question.setVisible(true); // (modal)
 				switch (question.getChoice()) {
 				case (OpenOrImportExistingFileDialog.IMPORT):

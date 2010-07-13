@@ -487,108 +487,13 @@ public class CompositionPanel extends JLayeredPane {
 
 	}
 
-
-	private static Rectangle getPdfPageSize() {
-		Rectangle pageSize = null;
-		Document document = new Document();
-
-		try {
-			// step 2:
-			// we create a writer
-			PdfWriter writer;
-			writer = PdfWriter.getInstance(document, new FileOutputStream("pdf_tests.pdf"));
-			// step 3: we open the document
-			document.open();
-			// step 4: we add a table to the document
-
-			PdfContentByte cb = writer.getDirectContent();
-
-			pageSize = writer.getPageSize();
-			writer.close();
-		} catch (Exception ex) {
-
-		}
-		float pageWidth =  pageSize.getWidth() -defaultPdfPageMargins.left - defaultPdfPageMargins.right;
-		float pageHeight =  pageSize.getHeight() -defaultPdfPageMargins.top - defaultPdfPageMargins.bottom;
-
-		return pageSize;
-	}
-
-	private static Insets defaultPdfPageMargins = new Insets(20,10,30,10);
-	private class PdfInfo {
-
-		private double pdfPageWidth, pdfPageHeight;	
-		private Insets pdfPageMargins;
-
-
-		/**
-		 * Multiply a pixel with scalingFactor, to get its size in pdf scale.
-		 */
-		private double scalingFactor;		
-
-		public PdfInfo(Rectangle pdfPageSize, Insets pdfPageMargins, Dimension panelSize) {
-			this.pdfPageWidth = pdfPageSize.getWidth();
-			this.pdfPageHeight = pdfPageSize.getHeight();
-			this.pdfPageMargins = pdfPageMargins;
-
-			scalingFactor = (double) getInnerPdfPageWidth() /(double)panelSize.width;			
-		}
-
-		public double getScalingFactor() {
-			return scalingFactor;			
-		}
-
-		public float realPixelsToPdfPixels(double pixels) {
-			return (float) (pixels*scalingFactor);
-		}
-		public float pdfPixelsToRealPixels(double pixels) {
-			return (float) (pixels/scalingFactor);
-		}
-
-		public float getInnerPdfPageWidth() {
-			return (float) pdfPageWidth - defaultPdfPageMargins.left - defaultPdfPageMargins.right;
-		}
-
-		public float getInnerPdfPageHeight() {
-			return (float) pdfPageHeight -defaultPdfPageMargins.top - defaultPdfPageMargins.bottom;
-		}
-
-		public float getLeftPdfMargin() {
-			return pdfPageMargins.left;			
-		}
-		public float getBottomPdfMargin() {
-			return pdfPageMargins.bottom;			
-		}
-
-		public float getPdfPageWidth() {
-			return (float) pdfPageWidth;
-		}
-		public float getPdfPageHeight() {
-			return (float) pdfPageHeight;
-		}
-
-		public float getPageWidthInRealPixels() {
-			return (float) (pdfPageWidth /scalingFactor);
-		}
-
-		public float getPageHeightInRealPixels() {
-			return (float) (pdfPageHeight /scalingFactor);
-		}
-
-		public double getInnerPageWidthInRealPixels() {
-			return (float) (getInnerPdfPageWidth() /scalingFactor);
-		}
-
-
-	}
-
-
+	
 	private void markActivePagebreaks() {
 		
-		Rectangle pageSize = getPdfPageSize();
+		Rectangle pageSize = PdfInfo.getPdfPageSize();
 		Dimension cSize = this.getPreferredSize();//new Dimension(compositionPanel.getPreferredSize().width, compositionPanel.getPreferredSize().height);
 
-		PdfInfo pdfMap = new PdfInfo(pageSize, defaultPdfPageMargins, cSize);
+		PdfInfo pdfMap = new PdfInfo(pageSize, PdfInfo.defaultPdfPageMargins, cSize);
 
 		Debug.debug(this, "Page size " + pageSize);
 		Debug.debug(this, "compPanel size " + cSize);
@@ -698,7 +603,7 @@ public class CompositionPanel extends JLayeredPane {
 				Rectangle pageSize = writer.getPageSize();
 				Dimension cSize = this.getPreferredSize();//new Dimension(compositionPanel.getPreferredSize().width, compositionPanel.getPreferredSize().height);
 
-				PdfInfo pdfMap = new PdfInfo(pageSize, defaultPdfPageMargins, cSize);
+				PdfInfo pdfMap = new PdfInfo(pageSize, PdfInfo.defaultPdfPageMargins, cSize);
 
 				Debug.debug(this, "Page size " + pageSize);
 				Debug.debug(this, "compPanel size " + cSize);
