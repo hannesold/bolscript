@@ -144,13 +144,14 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 
 		prefsDialog = new PreferencesDialog();
 
-		if (UserConfig.firstRun) {
-			Debug.temporary(this, "first run");
-			prefsDialog.setModal(true);
-			prefsDialog.setVisible(true);
-		}
+
 
 		EventQueue.invokeLater(new Runnable() { public void run() {
+			if (UserConfig.firstRun) {
+				Debug.temporary(this, "first run");
+				prefsDialog.setModal(true);
+				prefsDialog.setVisible(true);
+			}
 			showLoadingframeThenLoad();
 		}});
 	}
