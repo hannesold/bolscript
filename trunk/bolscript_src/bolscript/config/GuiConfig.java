@@ -175,13 +175,16 @@ public class GuiConfig {
 			Debug.temporary(Config.class, "Devanageri font loaded: " + bolFontsBold[BolName.DEVANAGERI]);
 		} catch (FileNotFoundException e) {
 			Debug.critical(Config.class, "Devanageri Font not found in '" + Config.pathToDevanageriFont + "', using default.");
-			e.printStackTrace();
+			//e.printStackTrace();
 		} catch (FontFormatException e) {
 			Debug.critical(Config.class, "Devanageri Font could not load: " + Config.pathToDevanageriFont+ "', using default.");
-			e.printStackTrace();
+			//e.printStackTrace();
 		} catch (IOException e) {
 			Debug.critical(Config.class, "Devanageri Font could not load: " + Config.pathToDevanageriFont+ "', using default.");
-			e.printStackTrace();
+			//e.printStackTrace();
+		} catch (Exception e) {
+			Debug.critical(Config.class, "Devanageri Font could not load: " + Config.pathToDevanageriFont+ "', using default.");
+			//e.printStackTrace();
 		}
 	}
 
