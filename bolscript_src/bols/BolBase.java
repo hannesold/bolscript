@@ -15,6 +15,7 @@ import basics.FileManager;
 import basics.FileReadException;
 import basics.Rational;
 import basics.Tools;
+import bols.BolName.CaseSensitivityModes;
 import bolscript.config.Config;
 import bolscript.scanner.Parser;
 
@@ -132,7 +133,21 @@ public class BolBase extends BolBaseGeneral {
 
 
 	}
-
+	/**
+	 * Seperates the parts of an entry in the bolbase
+	 */
+	private static String bolbaseDefinitionSeperator = "\\s*;\\s*";
+	
+	/**
+	 * Matches something like 'BolName1 + BolName2', where two groups are matches 1: BolName1 and 2: BolName2 
+	 */
+	private static Pattern combinedPattern = Pattern.compile(Parser.BOLNAME_GROUP+"\\s*\\+\\s*"+Parser.BOLNAME_GROUP);
+	
+	/**
+	 * Matches a bundle. Basically the same matching a bolname.
+	 */
+	private static Pattern bundlePattern = Pattern.compile(Parser.BOLNAME_GROUP);
+	
 	private void addBolNamesFromFile(String filename) throws FileReadException {
 		HashMap<String, Integer> handMap = new HashMap<String, Integer> ();
 		handMap.put("LEFT", BolName.LEFT);
@@ -144,16 +159,14 @@ public class BolBase extends BolBaseGeneral {
 		ArrayList<PotentialBundle> potentialBundles = new ArrayList<PotentialBundle>();
 
 		Scanner scanner = new Scanner(FileManager.getContents(new File(filename), Config.bolBaseEncoding));
-
-		String seperator = "\\s*;\\s*";
-
+	
 		while (scanner.hasNextLine()) {
 
 			String line = scanner.nextLine();
 			//Debug.temporary(this.getClass(),line);
 			if (!line.startsWith("#")) {
 				//String line = scanner.nextLine();
-				String [] entries = line.split(seperator);
+				String [] entries = line.split(bolbaseDefinitionSeperator);
 				Debug.temporary(getClass(), Tools.toString(entries));
 				String description = "";
 
@@ -161,7 +174,12 @@ public class BolBase extends BolBaseGeneral {
 					String[] labels = new String[BolName.languagesCount];
 					for (int i = 0; i < labels.length; i++) {
 
-						labels[i] = BolName.formatString(entries[i].replaceAll(Parser.SNatBeginningOrEnd, ""), i);
+						//labels[i] = BolName.formatString(entries[i].replaceAll(Parser.SNatBeginningOrEnd, ""), i);
+						labels[i] = entries[i].replaceAll(Parser.SNatBeginningOrEnd, "");
+						if (labels[i].equals("Sa")) {
+							String blub = labels[i];
+							blub = blub + "";
+						}
 
 					}
 					//Debug.temporary(this, "exact name scanned: '" + labels[BolName.EXACT]+"'");
@@ -183,7 +201,7 @@ public class BolBase extends BolBaseGeneral {
 								//check if it is combined bol or a bundle
 
 								//	Debug.temporary(this, newBolName + " looking for combined bols");
-								Pattern combinedPattern = Pattern.compile("([A-Za-z0-9]+)\\s*\\+\\s*([A-Za-z0-9]+)");
+								
 								Matcher combinedMatcher = combinedPattern.matcher(typeField);
 
 								if (combinedMatcher.find()) {
@@ -207,8 +225,7 @@ public class BolBase extends BolBaseGeneral {
 									PotentialBundle potentialBundle = new PotentialBundle();
 									potentialBundle.labels = entries;
 									potentialBundle.description = description;
-
-									Pattern bundlePattern = Pattern.compile("[A-Za-z0-9]+");
+									
 									Matcher m = bundlePattern.matcher(typeField);
 									potentialBundle.bolNameStrings = new ArrayList<String>();
 									while (m.find()) {
@@ -285,6 +302,10 @@ public class BolBase extends BolBaseGeneral {
 				}
 			}
 		}
+		
+		// Assign case sensitivities...
+		
+		
 	}
 
 
@@ -376,7 +397,7 @@ public class BolBase extends BolBaseGeneral {
 
 		Debug.temporary(this, "checking out " + input);
 
-		char[] inputChars = input.toLowerCase().toCharArray();
+		char[] inputChars = input.toCharArray();
 
 		//int[] resemblence = new int[bolNames.size()];
 		int maxResemblence = -1;
@@ -385,13 +406,30 @@ public class BolBase extends BolBaseGeneral {
 		for (int i=0; i<bolNames.size();i++) {
 			BolName bolName = bolNames.get(i);
 			if (!bolName.isWellDefinedInBolBase()) continue;
-			char[] exact = bolNames.get(i).getName(BolName.EXACT).toLowerCase().toCharArray();
-
+			char[] bolNameChars = bolNames.get(i).getName(BolName.EXACT).toCharArray();
+		
 			//Debug.temporary(this, "comparing " + input.toLowerCase() + " to " + bolNames.get(i).getName(BolName.EXACT).toLowerCase());
 
-			for (int j = 0 ;j < Math.min(inputChars.length,exact.length);j++) {
+			for (int j = 0 ;j < Math.min(inputChars.length,bolNameChars.length);j++) {
 				//Debug.temporary(this,"comparing " + inputChars[j] + " to " + exact[j]); 
-				if (exact[j]==inputChars[j]) {
+				char a = inputChars[j];
+				char b = bolNameChars[j];
+				
+				boolean currentCharacterMatches = false;
+				switch (bolName.getCaseSensitivityMode()) {
+					case None:
+						currentCharacterMatches = Character.toLowerCase(a) == Character.toLowerCase(b);
+						break;
+					case FirstLetter:						
+						if (j > 0) {
+							currentCharacterMatches = Character.toLowerCase(a) == Character.toLowerCase(b);
+						} else currentCharacterMatches = a==b;
+						break;
+					case ExactMatch:
+						currentCharacterMatches = a==b;
+						break;
+				}
+				if (currentCharacterMatches) {
 					//Debug.temporary(this,"match");	
 					if (j > maxResemblence) {
 						bestBol = i;
