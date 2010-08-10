@@ -86,21 +86,79 @@ public abstract class BolBaseGeneral {
 	/**
 	 * Adds a BolName to the BolBase, overwrites any existing with an equal exact name.
 	 * @param bolName
+	 * @param addIfDifferentCase TODO
+	 */
+	public void addBolName(BolName bolName, boolean addIfDifferentCase) {
+		addBolName(bolName);
+	}
+
+	/**
+	 * Adds a BolName to the BolBase, overwrites any existing with an equal exact name.
+	 * @param bolName
 	 */
 	public void addBolName(BolName bolName) {
-		BolName existing = getBolName(bolName.getName(BolName.EXACT));
-		if (existing != null) {
-			bolNames.remove(existing);
-			if (existing.isWellDefinedInBolBase()) {
-				wellDefinedBolNames.remove(existing);
+		boolean abort = false;
+
+		String exactName = bolName.getName(BolName.EXACT);
+
+		ArrayList<BolName> existingCandidates = new ArrayList<BolName>();
+		BolName existingExactMatch = null;
+		for(BolName existingBolName : bolNames) {
+			if (existingBolName.matchesExactName(exactName, BolName.CaseSensitivityModes.None)) {
+				existingCandidates.add(existingBolName);
+			}
+			if (existingBolName.matchesExactName(exactName, BolName.CaseSensitivityModes.ExactMatch)) {
+				existingExactMatch = existingBolName;
 			}
 		}
+		if (existingCandidates.size() == 0) {	
 
-		bolNames.add(bolName);
-		if (bolName.isWellDefinedInBolBase()) {
-			wellDefinedBolNames.add(bolName);
+		} else if (existingExactMatch != null) {
+			bolNames.remove(existingExactMatch);
+			if (existingExactMatch.isWellDefinedInBolBase()) {
+				wellDefinedBolNames.remove(existingExactMatch);
+			}			
+			// is this ok?
+			bolName.setCaseSensitivityMode(existingExactMatch.getCaseSensitivityMode());
+
+		}  else {
+			//determine a case sensitivity mode, at which all existing are 
+			//distinguishable from the new bolname
+			BolName.CaseSensitivityModes[] modeStrictnesses = new BolName.CaseSensitivityModes[]{
+					BolName.CaseSensitivityModes.FirstLetter,
+					BolName.CaseSensitivityModes.ExactMatch
+			};
+			boolean areDistinguishable = false; 
+			int strictnessIndex = 0;
+			while (areDistinguishable == false && strictnessIndex < modeStrictnesses.length) {
+				areDistinguishable = true;
+				for (BolName existing : existingCandidates) {
+					if (existing.matchesExactName(exactName, modeStrictnesses[strictnessIndex])) {
+						areDistinguishable = false;
+					}
+				}
+				if (!areDistinguishable) strictnessIndex++;
+			}
+			if (!areDistinguishable) {
+				Debug.debug(this, "BolName " + bolName.toString(BolName.EXACT) + 
+						" will not be added, because no case strictness " +
+				"was strong enough to distinguish it from existing bolnames.");
+				abort = true;
+			} else {
+				//all are set to the determined mode
+				BolName.CaseSensitivityModes determinedMode = modeStrictnesses[strictnessIndex];
+				for (BolName existing : existingCandidates) {
+					existing.setCaseSensitivityMode(determinedMode);
+				}
+				bolName.setCaseSensitivityMode(determinedMode);
+			}
 		}
-
+		if (!abort){
+			bolNames.add(bolName);
+			if (bolName.isWellDefinedInBolBase()) {
+				wellDefinedBolNames.add(bolName);
+			}
+		}
 	}
 
 
@@ -110,19 +168,16 @@ public abstract class BolBaseGeneral {
 
 
 	/**
-	 * Returns the BolName with the given exact Name (but ignoring cases)
-	 * or null if none was found.
+	 * Returns the BolName with the given exact Name. If none is found a second attempt is made 
+	 * ignoring the case.
+	 * Returns null if none was found.
 	 * @param exactName
 	 * @return
 	 */
-	public BolName getBolName(String exactName) {
-
-		for (int i=0; i < bolNames.size(); i++) {
-			if (bolNames.get(i).getName(BolName.EXACT).equalsIgnoreCase(exactName)) {
-				return bolNames.get(i);
-			}
-		}
-
+	public BolName getBolName(String exactName) {		
+		for(BolName bolName: bolNames) {
+			if (bolName.matchesExactName(exactName)) return bolName;
+		}		
 		return null;
 	}
 

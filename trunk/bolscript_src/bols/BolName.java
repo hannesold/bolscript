@@ -13,6 +13,7 @@ import basics.Tools;
  * @author Hannes
  */
 public class BolName implements NamedInLanguages {
+	
 	public static final int EXACT = 0;
 	public static final int SIMPLE = 1;
 	public static final int DEVANAGERI = 2;
@@ -37,6 +38,62 @@ public class BolName implements NamedInLanguages {
 	private BolName leftHand = null;
 	private BolName rightHand = null;
 	private String description = null;
+	
+	public enum CaseSensitivityModes {
+		None,
+		FirstLetter,
+		ExactMatch
+	}
+	
+	private CaseSensitivityModes caseSensitivityMode = CaseSensitivityModes.None;
+	
+	
+	public CaseSensitivityModes getCaseSensitivityMode() {
+		return caseSensitivityMode;
+	}
+
+	public void setCaseSensitivityMode(CaseSensitivityModes caseSensitivityMode) {
+		this.caseSensitivityMode = caseSensitivityMode;
+	}
+
+	/**
+	 * Compares the bolnames exact version to the one given as a parameter, based
+	 * on the BolName's CaseSensitivityMode
+	 * @param exactName
+	 * @return
+	 */
+	public boolean matchesExactName(String exactName) {
+		return matchesExactName(exactName, caseSensitivityMode);
+	}
+
+	/**
+	 * Compares the bolnames exact version to the one given as a parameter, based
+	 * on the given CaseSensitivityMode
+	 * @param exactName
+	 * @param caseSensitivityMode TODO
+	 * @return
+	 */
+	public boolean matchesExactName(String exactName, CaseSensitivityModes caseSensitivityMode) {
+		if (labels[EXACT].length() != exactName.length()) return false;
+		
+		switch (caseSensitivityMode) {
+			case None:
+				return this.labels[EXACT].equalsIgnoreCase(exactName);
+			case FirstLetter:
+				try {
+
+					if (labels[EXACT].charAt(0) == exactName.charAt(0)) {
+						if (labels[EXACT].length() >=2) {
+							return labels[EXACT].substring(1).equalsIgnoreCase(exactName.substring(1));
+						} else return true;
+					}
+				} catch (Exception ex) {
+					return false;
+				}
+			default:
+				return labels[EXACT].equals(exactName);
+		}
+	}
 	
 	public BolName () {
 		this("Unknown");
@@ -182,6 +239,7 @@ public class BolName implements NamedInLanguages {
 	 * @param s
 	 * @param language
 	 * @return the formatted String
+	 * @deprecated
 	 */
 	public static String formatString(String s, int language) {
 		switch (language) {	

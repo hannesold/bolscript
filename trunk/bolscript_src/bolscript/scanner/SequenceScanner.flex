@@ -44,11 +44,12 @@ Identifier = [:jletter:] [:jletterdigit:]*
 DecIntegerLiteral = 0 | [1-9][0-9]*
 PosInteger = [1-9][0-9]*
 
+
 /* bolscript preUnits */
  
-
-BolCandidate = {Pause}|([A-Za-z]*[A-WY-Za-wy-z]{Numeration}?({WhiteSpace}*{Questioned})?({WhiteSpace}*{Emphasized})?)
+BolCandidate = {Pause}|([A-Za-z]*[A-WY-Za-wy-z]({OtherVariants}|{Numeration})*({WhiteSpace}*{Questioned})?({WhiteSpace}*{Emphasized})?)
 Numeration = [0-9]+ 
+OtherVariants = [.']
 Questioned = "?"+
 Emphasized = "!"+
 

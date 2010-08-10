@@ -18,7 +18,6 @@ import bolscript.packets.types.HistoryEntry;
 import bolscript.packets.types.PacketType;
 import bolscript.packets.types.PacketTypeDefinitions;
 import bolscript.packets.types.PacketType.ParseMode;
-import bolscript.sequences.BolCandidateUnit;
 import bolscript.sequences.FootnoteUnit;
 import bolscript.sequences.ReferencedBolPacketUnit;
 import bolscript.sequences.RepresentableSequence;
@@ -47,10 +46,24 @@ public class Parser {
 	 * Regex: Whitespaces and newline characters
 	 */
 	public static final String SN = "(?:\\s|[\n\r\f])";
+	
+	public static final String BOL_CANDIDATE_CORE = "[A-Za-z\\-]+";	
+	public static final String BOL_VARIANTS = "[0123456789.']*";	
+	public static final String BOLNAME_GROUP = "("+Parser.BOL_CANDIDATE_CORE + BOL_VARIANTS+ ")";
+	public static final String BOL_FOR_DETERMINING_AT_CARET = BOL_CANDIDATE_CORE + BOL_VARIANTS + "(\\?)?!?";
+	public static final String QUESTION_GROUP = "("+SN+"*\\?)";
+	public static final String EXCLAMATION_GROUP = "("+SN+"*!)"; 
+	public static final String BOL_CANDIDATE_REGEX = 
+		BOLNAME_GROUP 
+		+ QUESTION_GROUP+"?"
+		+ EXCLAMATION_GROUP+"?";
+	
 	/**
-	 * this has 
+	 * A Regexp consisting of three groups: 0 the bolname, 1 an optional question mark, 2 an optional exclamation mark
 	 */
-	public static final String BOL = "[A-Za-z\\-]+(\\d)*(\\?)?!?";
+	public static final Pattern BolCandidatePattern = Pattern.compile(BOL_CANDIDATE_REGEX);
+	
+	
 	/**
 	 * Regex: Whitespaces or newlines at beginning or end of sequence.
 	 */
@@ -470,8 +483,8 @@ public class Parser {
 		int rightBorder = Math.min(input.length(), caretPosition+RANGE);
 
 		//debug.temporary("char after(?) caretPosition: " + input.charAt(caretPosition));
-		String leftOfCaret = "(?<=\\(|\\)|"+SN+"|^)("+BOL+")?$";
-		String rightOfCaret = "^"+ BOL + "(?>=\\(|\\)|"+SN+"|$)";
+		String leftOfCaret = "(?<=\\(|\\)|"+SN+"|^)("+BOL_FOR_DETERMINING_AT_CARET+")?$";
+		String rightOfCaret = "^"+ BOL_FOR_DETERMINING_AT_CARET + "(?>=\\(|\\)|"+SN+"|$)";
 		String leftSubstring = input.substring(leftBorder, caretPosition);
 		//debug.temporary("left substring = " + leftSubstring);
 		String rightSubstring = input.substring(caretPosition, rightBorder);
@@ -494,13 +507,17 @@ public class Parser {
 
 		String candidate = leftSnippet + rightSnippet;
 
-		Matcher m = BolCandidateUnit.pattern.matcher(candidate);
+		Matcher m = Parser.BolCandidatePattern.matcher(candidate);
 		if (m.find()) {
 			candidate = m.group(1);
 			//candidate is now the textsnippet to be searched for 
 			return candidate;
 		} else return null;
 	}
+
+
+
+
 
 
 

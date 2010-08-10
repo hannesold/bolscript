@@ -1,8 +1,6 @@
 package bolscript.sequences;
 
-import java.util.regex.Pattern;
 
-import bolscript.scanner.Parser;
 import bolscript.scanner.SequenceToken;
 
 /**
@@ -12,8 +10,5 @@ import bolscript.scanner.SequenceToken;
  *
  */
 public class BolCandidateUnit extends Unit implements Representable {
-	
-	public static String BOL_CANDIDATE_REGEX = "([A-Za-z\\-]+\\d*)("+Parser.SN+"*\\?)?("+Parser.SN+"*!)?";
-	public static Pattern pattern = Pattern.compile(BOL_CANDIDATE_REGEX);
 
 }

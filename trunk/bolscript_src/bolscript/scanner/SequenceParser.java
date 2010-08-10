@@ -13,7 +13,6 @@ import bols.PlayingStyle;
 import bolscript.packets.Packet;
 import bolscript.packets.Packets;
 import bolscript.packets.TextReference;
-import bolscript.sequences.BolCandidateUnit;
 import bolscript.sequences.BracketClosedUnit;
 import bolscript.sequences.BracketOpenUnit;
 import bolscript.sequences.CommaUnit;
@@ -291,7 +290,7 @@ public class SequenceParser {
 
 	private Representable parseBolCandidate(Packet currentPacket, SequenceToken token) {
 
-		Matcher m = BolCandidateUnit.pattern.matcher(token.text);
+		Matcher m = Parser.BolCandidatePattern.matcher(token.text);
 		if (m.find()) {
 			String name = m.group(1);
 			boolean questioned = m.group(2) != null;
