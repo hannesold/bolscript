@@ -1,0 +1,30 @@
+$HISTORY:
+2010.02.10 20 36 created by Hannes
+2010.02.14 16 22 modified by Hannes
+2010.02.14 16 24 modified by Hannes
+
+Editor: Hannes
+Gharana: Punjab
+Source: Peter Altenberg / Bremen
+Type: Tal
+Tal: Ektal
+
+Name: Ektal
+Length: 12
+
+Theka:
+Dhin dhin 2 Dha Ge Tir Kit 1 Tu Na
+1 Kat Ta 2 Dha Ge Tir Kit 1 Dhin Na
+
+Vibhags:
+2 + 2k + 2 + 2k + 2 + 2
+
+Layout:
+1 1
+2 2
+6 6
+12 12
+
+
+
+

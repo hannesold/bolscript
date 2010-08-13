@@ -1,0 +1,32 @@
+$HISTORY:
+2010.02.10 20 37 created by Hannes
+2010.02.14 16 22 modified by Hannes
+
+Editor: Hannes
+Type: Tal
+Gharana: Punjab
+
+Source: Robert S. Gottlieb / The Major Traditions of North Indian Tabla Drumming Vol.1 / 1977
+
+Length: 
+10
+
+Name: Jhaptal
+Tal: 
+Jhaptal
+
+Theka:
+Dhin! Na Dhin! Dhin Na
+Tin! Na Dhin! Dhin Na
+
+Vibhags:
+2 + 3 + 2K + 3
+
+Layout:
+1 1
+2 2
+3 2, 3
+5 5
+
+
+

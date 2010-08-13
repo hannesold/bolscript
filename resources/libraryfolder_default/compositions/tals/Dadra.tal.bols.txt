@@ -1,0 +1,26 @@
+$HISTORY:
+2010.02.10 20 35 created by Hannes
+2010.02.14 16 22 modified by Hannes
+
+Editor: Hannes
+Gharana: Punjab
+Type:Tal
+Name: Dadra
+Source: Robert S. Gottlieb / The Major Traditions of North Indian Tabla Drumming Vol.1 / 1977
+Tal: Dadra
+
+Theka:
+dha dhin na dha tin na
+
+Vibhags:
+3 + 3K
+
+Length:
+6
+
+Layout:
+3 3
+6 6
+
+
+

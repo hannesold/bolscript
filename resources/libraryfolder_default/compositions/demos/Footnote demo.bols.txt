@@ -1,0 +1,19 @@
+$HISTORY:
+2009.10.24 14 20 created by Hannes
+2010.02.13 22 51 modified by Hannes
+
+Editor: Hannes
+Type: Demo
+Tal: Teental
+Name: Footnote Demo
+Source: Bolscript Demos
+
+Speed:2
+Theme:
+Dha Ge "hello" Ti Te "world" Dha Dha Tun Na
+
+Footnotes are not copied:
+Theme
+
+More footnotes : 
+Dha Ge "and here" ti te "is" Dhin"more" Dhin

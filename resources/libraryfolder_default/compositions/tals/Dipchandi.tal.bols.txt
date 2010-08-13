@@ -1,0 +1,32 @@
+$HISTORY:
+2010.02.10 20 48 created by Hannes
+2010.02.14 16 22 modified by Hannes
+2010.02.14 16 22 modified by Hannes
+
+Editor: Hannes
+Gharana: Punjab
+Source: Robert S. Gottlieb / The Major Traditions of North Indian Tabla Drumming Vol.1 / 1977
+
+Type: Tal
+
+Tal: Dipchandi
+Name: Dipchandi
+
+Length: 14
+
+Theka:
+dha dhin - dha dha tin - ta2 tin - dha dha dhin -
+
+Vibhags:
+3 + 4 + 3K + 4
+
+Layout:
+1 1
+2 2
+3 3, 3, 1
+4 3, 4, 3, 4
+7 7
+14 14
+28 14
+
+ 
