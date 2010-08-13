@@ -1,0 +1,83 @@
+$HISTORY:
+2010.02.13 00 02 created by Hannes
+2010.02.13 00 12 modified by Hannes
+2010.02.13 22 40 modified by Hannes
+2010.03.11 20 43 modified by Hannes
+2010.03.24 20 20 modified by Hannes
+2010.03.24 20 21 modified by Hannes
+2010.03.31 17 01 modified by Hannes
+
+Editor: Hannes
+Gharana: Punjab
+Type: Kaida demo
+Composer:
+Jatinder Thakur, Vienna
+Source: Jatinder Thakur / Vienna
+
+Comment:
+This  is a simple kaida which demonstrates basic bolscript snytax
+
+Tal: Teental
+Speed: 2
+
+Theme:
+dha - ge ghe ti re ki te 
+dha - ti re ki te dha - 
+dha - ge ghe ti re ki te
+dha - dha - tun - na - 
+
+Comment:
+All Variations are followed by the theme and khali
+
+Variation 1:
+dha - ge ghe ti re ki te
+dha - ge ghe ti re ki te
+dha - ge ghe ti re ki te
+dha - ti re ki te dha - 
+
+$line1:
+dha - ge ge ti re ki te
+$line2:
+dha - ti re ki te dha -
+
+Variation 2:
+line1
+line2
+line1
+line2
+
+Variation 3:
+line1
+line2
+line2
+line2
+
+Variation 4:
+line1
+line2
+dha - dha - ti re ki te
+line2
+
+Variation 5:
+line1
+line2
+- - ti re ki te dha -
+line2
+
+Variation 6:
+line1
+line2
+(- - ti re ki te dha -)x2
+
+Variation 7:
+line1
+(dha - ti re ki te)x4
+
+Tihai:
+(dha - ge ghe ti re ki te 
+dha - (ti re ki te dha - dha - - - )x3 
+dha - - -)x3<3
+
+
+
+

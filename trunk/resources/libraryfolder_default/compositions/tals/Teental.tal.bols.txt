@@ -1,0 +1,32 @@
+$HISTORY:
+2009.09.18 23 18 created by Hannes
+2010.02.14 16 23 modified by Hannes
+
+Editor: Hannes
+Type: Tal 
+Gharanas: Punjab
+Name: Teental
+Source: Robert S. Gottlieb / The Major Traditions of North Indian Tabla Drumming Vol.1 / 1977
+
+Length: 
+16
+
+Tal:
+Teental
+
+Theka:
+Dha Dhin Dhin Dha,
+Dha Dhin Dhin Dha, 
+Na Tin Tin Na, 
+Na Dhin Dhin Dha, 
+
+Vibhags:
+4 + 4 + 4K + 4
+
+Layout:
+1 1
+2 2
+4 4
+8 8
+16 16
+32 16

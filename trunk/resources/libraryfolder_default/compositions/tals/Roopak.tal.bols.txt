@@ -1,0 +1,25 @@
+$HISTORY:
+2010.02.10 20 37 created by Hannes
+2010.02.14 16 23 modified by Hannes
+
+Editor: Hannes
+Type: Tal
+Gharana: Punjab
+Source: Robert S. Gottlieb / The Major Traditions of North Indian Tabla Drumming Vol.1 / 1977
+
+Name: Rupak
+Length: 7
+Tal: Rupak
+Speed: 1
+
+Theka:
+Tin Tin Na Dhin Na Dhin Na
+
+Vibhags:
+3K + 2 + 2
+
+Layout:
+1 1
+2 2, 1, 2, 2
+3 3, 2, 2
+

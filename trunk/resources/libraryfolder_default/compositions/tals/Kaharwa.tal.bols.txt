@@ -1,0 +1,26 @@
+$HISTORY:
+2010.02.10 20 53 created by Hannes
+2010.02.14 16 23 modified by Hannes
+
+Editor: Hannes
+Gharana: Punjab
+Type: Tal
+
+Tal: Kaharwa
+Name: Kaharwa
+Source: Robert S. Gottlieb / The Major Traditions of North Indian Tabla Drumming Vol.1 / 1977
+
+Theka:
+dha ge na ti2 na ke dhin na
+
+Vibhags:
+2 + 2 + 2k + 2
+
+Layout:
+1 1
+2 2
+4 4
+8 8
+16 16
+32 32
+
