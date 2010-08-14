@@ -147,6 +147,18 @@ public class Config {
 		tempFile.delete();
 
 	}
+	
+	public static VersionInfo getVersionInfo(String jarPath) {
+		try {
+		
+			Debug.temporary(Config.class, "attempt to read version info from jarPath " + jarPath);
+			JarFile jar = new JarFile(jarPath);		
+			VersionInfo versionInfo = new VersionInfo(jar.getManifest());
+			return versionInfo;
+		} catch (Exception ex ){
+			return null;
+		}
+	}
 
 	
 }
