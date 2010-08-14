@@ -11,6 +11,9 @@ import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import bolscript.config.Config;
+import bolscript.config.VersionInfo;
+
 import com.sun.syndication.feed.synd.SyndContent;
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndFeed;
@@ -78,7 +81,14 @@ public class UpdateManager {
         while (matcher.find()){
         	download.setDownloadLink(matcher.group(1));
         }
-        	
+        try {
+        	String jarPath = Config.getJarPath();
+			VersionInfo currentVersionInfo = Config.getVersionInfo(Config.getJarPath());
+			int buildNr = currentVersionInfo.getBuildNumber();
+			
+		} catch (Exception e) {			
+			e.printStackTrace();
+		}
         
         return download;
 	}

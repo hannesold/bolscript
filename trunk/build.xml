@@ -68,6 +68,9 @@
 				<attribute name="Main-Class" value="bolscript.MasterMac" />
 				<attribute name="Class-Path" value="." />
 				<attribute name="Implementation-Version" value="${version.num}-b${build.number}" />
+				<attribute name="Version-Number" value="${version.num}" />
+				<attribute name="Build-Number" value="${build.number}" />
+				<attribute name="Built-For-OS" value="mac" />
 				<attribute name="Built-Date" value="${TODAY}" />
 				<attribute name="Built-By" value="${user.name}" />
 				<attribute name="SplashScreen-Image" value="${resources.splashname}" />
@@ -119,6 +122,9 @@
 				<attribute name="Class-Path" value="."/>
 				<attribute name="Implementation-Version" 
 			             value="${version.num}-b${build.number}"/>
+				<attribute name="Version-Number" value="${version.num}" />
+				<attribute name="Build-Number" value="${build.number}" />
+				<attribute name="Built-For-OS" value="any" />				
 				<attribute name="Built-Date" value="${TODAY}"/>
 				<attribute name="Built-By" value="${user.name}"/>
 				<attribute name="SplashScreen-Image" value="${resources.splashname}" />
