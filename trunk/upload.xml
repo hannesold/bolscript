@@ -6,7 +6,7 @@
 	<property file="version.num"/>
 	<property file="build.num" />
 	<property file="build.properties" />
-	<property file="login.properties" />
+	<property file="private.properties" />
 	<property file="changelog.properties" />
 	<property name="project.path" value="/Users/hannes/Projekte/Workspace/bolscript googlecode" />
 	<property file="changelog.properties" />
@@ -21,7 +21,7 @@
 							password="${login.password}" 
 							projectname="${login.project.name}" 
 							filename="${project.path}/${changeLogFile.completepath}" 
-							targetfilename="Changelog.html"
+							targetfilename="Changelog ${build.number}.html"
 							summary="Recent Changes up to v${version.num} build ${build.number}"
 							labels="" 
 						/>
