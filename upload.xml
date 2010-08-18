@@ -7,8 +7,40 @@
 	<property file="build.num" />
 	<property file="build.properties" />
 	<property file="login.properties" />
-
+	<property file="changelog.properties" />
 	<property name="project.path" value="/Users/hannes/Projekte/Workspace/bolscript googlecode" />
+	<property file="changelog.properties" />
+
+	<target name="changelog_finalize_upload_renew">
+		<replace file="${project.path}/${changeLogFile.completepath}">
+			<replacefilter token="${changeLogVersionNumberToken}" value="${version.num}" />
+			<replacefilter token="${changeLogBuildNumberToken}" value="${build.number}" />			
+		</replace>
+		<gcupload 
+							username="${login.username}" 
+							password="${login.password}" 
+							projectname="${login.project.name}" 
+							filename="${project.path}/${changeLogFile.completepath}" 
+							targetfilename="Changelog.html"
+							summary="Recent Changes up to v${version.num} build ${build.number}"
+							labels="" 
+						/>
+		<replace file="${project.path}/${changeLogFile.completepath}">
+			<replacefilter token="${changeLogVersionInsertionPoint}" value="${changeLogVersionTemplate}"/>
+		</replace>
+	</target>
+	
+	<target name="changelog_renew">		
+		<replace file="${project.path}/${changeLogFile.completepath}">
+			<replacefilter token="${changeLogVersionNumberToken}" value="${version.num}" />
+			<replacefilter token="${changeLogBuildNumberToken}" value="${build.number}" />			
+		</replace>
+
+		<replace file="${project.path}/${changeLogFile.completepath}">
+			<replacefilter token="${changeLogVersionInsertionPoint}" value="${changeLogVersionTemplate}"/>
+		</replace>
+	</target>
+	
 	<target name="upload_nightly_to_google">
 
 		<gcupload 
