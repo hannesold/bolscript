@@ -6,6 +6,7 @@ import gui.bolscript.CompositionFrame;
 import gui.bolscript.EditorFrame;
 import gui.bolscript.FilterPanel;
 import gui.bolscript.SearchPanel;
+import gui.bolscript.UpdateFrame;
 import gui.bolscript.actions.CloseEditor;
 import gui.bolscript.actions.OmmitChangesAndClose;
 import gui.bolscript.actions.SaveChanges;
@@ -18,6 +19,7 @@ import gui.bolscript.dialogs.SaveChangesDialog;
 import gui.bolscript.sequences.SequencePanel;
 import gui.bolscript.tables.CompositionTableModel;
 
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Image;
 import java.awt.SplashScreen;
@@ -28,8 +30,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.JOptionPane;
+
+import org.junit.Test;
 
 import midi.MidiStationSimple;
 import basics.Debug;
@@ -52,6 +57,7 @@ import bolscript.config.UserConfig;
 import bolscript.packets.types.HistoryEntry;
 import bolscript.packets.types.HistoryOperationType;
 import bolscript.packets.types.PacketTypeDefinitions;
+import bolscript.scanner.Parser;
 public class Master implements ConfigChangeListener{//implements ApplicationListener{//extends JFrame implements WindowListener {
 
 	public static Master master;
@@ -67,6 +73,8 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 	BrowserFrame browserFrame;
 	BolBaseFrame bolBaseFrame;
 
+	UpdateFrame updateFrame;
+	
 	PreferencesDialog prefsDialog;
 
 	CompositionPanel compositionPanel;
@@ -152,6 +160,13 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 				prefsDialog.setModal(true);
 				prefsDialog.setVisible(true);
 			}
+
+
+				
+
+				
+				
+			
 			showLoadingframeThenLoad();
 		}});
 	}
@@ -560,6 +575,29 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 
 	public CompositionBase getCompositionBase() {
 		return compositionBase;
+	}
+
+	public void checkForUpdates() {
+		File file = new File("/Users/hannes/Projekte/Workspace/bolscript googlecode/Changelog.html");
+		String changelog = "";
+		try {
+			changelog = FileManager.getContents(file, Config.compositionEncoding);
+			String styleRemover = Pattern.quote("<style")+ "(.|"+Parser.N+")*"+Pattern.quote("/style>");
+			changelog = changelog.replaceAll(styleRemover, "");
+			
+		} catch (FileReadException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		UpdateInfo updateInfo = new UpdateInfo();
+		updateInfo.setChangelog(changelog);
+		updateInfo.setDownloadLink("blub");
+		
+		updateFrame = new UpdateFrame(updateInfo);
+		
+		updateFrame.setPreferredSize(new Dimension(400,500));
+		updateFrame.setVisible(true);
+		
 	}
 
 	

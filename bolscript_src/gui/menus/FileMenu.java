@@ -3,6 +3,7 @@ package gui.menus;
 import gui.bolscript.BrowserFrame;
 import gui.bolscript.CompositionFrame;
 import gui.bolscript.EditorFrame;
+import gui.bolscript.actions.CheckForUpdates;
 import gui.bolscript.actions.CloseEditor;
 import gui.bolscript.actions.ExitProgram;
 import gui.bolscript.actions.ExportPdf;
@@ -16,14 +17,11 @@ import gui.bolscript.actions.SaveAs;
 import gui.bolscript.actions.SaveChanges;
 import gui.bolscript.actions.ToggleConsole;
 
-import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
-import javax.swing.event.MenuEvent;
-import javax.swing.event.MenuListener;
 
 import bolscript.Master;
 import bolscript.config.Config;
@@ -120,13 +118,16 @@ public class FileMenu extends JMenu {
 		this.addSeparator();
 		this.add(toggleErrorConsole);
 		
+		this.addSeparator();
+		this.add(new CheckForUpdates());		
 		
 		if (!Master.master.isRunningAsMacApplication()) {
 			/**
 			 * When running as mac application the preferences and quit menu items are in the application menu,
 			 * not in the file menu.
 			 */
-			this.add(new OpenPreferences());		
+			this.add(new OpenPreferences());
+
 			this.addSeparator();
 			this.add(new ExitProgram());
 		} 

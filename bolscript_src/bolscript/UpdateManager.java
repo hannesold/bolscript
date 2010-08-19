@@ -25,6 +25,12 @@ import com.sun.syndication.io.XmlReader;
 public class UpdateManager {
 
 	public void CheckForUpdates() {
+		VersionInfo currentVersionInfo;
+		try {
+			currentVersionInfo = Config.getVersionInfoFromJar(Config.getJarPath());		
+		} catch (Exception e) {			
+			e.printStackTrace();
+		}
 		
 		ArrayList<Download> downloads = new ArrayList<Download>();
 		URL url = null;
@@ -49,15 +55,15 @@ public class UpdateManager {
 			    }
 
 			} catch (IllegalArgumentException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			} catch (FeedException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			} catch (IOException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
-			}			
+			}	
+			//sort downloads by buildnr
+			//remove downloads with wrong opsys
+			
 		}
 
 
@@ -75,20 +81,30 @@ public class UpdateManager {
         
         String contents = ((SyndContent) entry.getContents().get(0)).getValue();
         
+        String versionNrAndBuildRegexString = "(\\d\\.\\d+)(?:\\s|build|Build|b|\\.)+(\\d+)";
+        int versionNrGroupIndex=1;
+        int buildNrGroupIndex=2;
+        Pattern versionNrAndBuildRegex = Pattern.compile(versionNrAndBuildRegexString);
+        Matcher versionMatcher = versionNrAndBuildRegex.matcher(contents);
+        boolean versionFound = versionMatcher.find();
+        if (versionFound) {
+        	download.getVersionInfo().setVersionNumber(versionMatcher.group(versionNrGroupIndex));
+        	download.getVersionInfo().setBuildNumber(Integer.parseInt(versionMatcher.group(buildNrGroupIndex)));
+        }
+        
         String downloadLinkRegexString = "(?<=" + Pattern.quote("href=\"") +")"+ "([^\"]+)";
         Pattern downloadLinkPattern = Pattern.compile(downloadLinkRegexString);
         Matcher matcher = downloadLinkPattern.matcher(contents);
         while (matcher.find()){
         	download.setDownloadLink(matcher.group(1));
         }
-        try {
-        	String jarPath = Config.getJarPath();
-			VersionInfo currentVersionInfo = Config.getVersionInfo(Config.getJarPath());
-			int buildNr = currentVersionInfo.getBuildNumber();
-			
-		} catch (Exception e) {			
-			e.printStackTrace();
-		}
+        
+        Pattern opSysPattern = Pattern.compile("OpSys-(Windows|OSX)");
+        Matcher opSysMatcher = opSysPattern.matcher(contents);
+        if (opSysMatcher.find()){
+        	download.getVersionInfo().setBuiltForOperatingSystem(VersionInfo.parseOperatingSystem(opSysMatcher.group(1)));
+        }
+        
         
         return download;
 	}

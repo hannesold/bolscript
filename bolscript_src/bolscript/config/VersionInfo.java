@@ -2,9 +2,9 @@ package bolscript.config;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
@@ -13,8 +13,13 @@ public class VersionInfo {
 	private int buildNumber;
 	private String versionNumber = null;
 	private String completeVersionString = null;
-	private String builtForOperatingSystem = null;
+	//private String builtForOperatingSystem = null;
+	private int operatingSystem = Config.WINDOWS;
 	private Date buildDate = null;
+	
+	public VersionInfo() {
+	
+	}
 	
 	public VersionInfo(Manifest manifest) {
 		
@@ -39,7 +44,8 @@ public class VersionInfo {
 				completeVersionString = keyValMap.get(ManifestKeys.completeVersionString);
 			}
 			if (keyValMap.containsKey(ManifestKeys.builtForOperatingSystem)) {
-				builtForOperatingSystem = keyValMap.get(ManifestKeys.builtForOperatingSystem);
+				String opSysAsString = keyValMap.get(ManifestKeys.builtForOperatingSystem);
+				operatingSystem = parseOperatingSystem(opSysAsString);
 			}
 			if (keyValMap.containsKey(ManifestKeys.buildDate)) {
 				try {
@@ -52,6 +58,21 @@ public class VersionInfo {
 		} catch (Exception ex) {}
 		
 	}
+	public static int parseOperatingSystem(String opSysAsString) {
+		String regexForWindows = "(W|w)(i|I)(n|N).*";
+		String regexForMac = "OSX.*|OS X.*|Mac.*|mac.*";
+		if (opSysAsString.matches(regexForWindows)) {
+			return Config.WINDOWS;
+		} else if (opSysAsString.matches(regexForMac)) {
+			return Config.MAC;
+		} else return Config.WINDOWS;
+	}
+	
+	public String getOperatingSystemAsString() {		
+		if (operatingSystem == Config.MAC) return "OSX";
+		return "WINDOWS";		
+	}
+
 	public int getBuildNumber() {
 		return buildNumber;
 	}
@@ -70,11 +91,11 @@ public class VersionInfo {
 	public void setCompleteVersionString(String completeVersionString) {
 		this.completeVersionString = completeVersionString;
 	}
-	public String getBuiltForOperatingSystem() {
-		return builtForOperatingSystem;
+	public int getBuiltForOperatingSystem() {
+		return operatingSystem;
 	}
-	public void setBuiltForOperatingSystem(String builtForOperatingSystem) {
-		this.builtForOperatingSystem = builtForOperatingSystem;
+	public void setBuiltForOperatingSystem(int operatingSystem) {
+		this.operatingSystem = operatingSystem;
 	}
 	public Date getBuildDate() {
 		return buildDate;
