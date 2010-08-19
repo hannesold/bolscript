@@ -2,15 +2,22 @@ package bolscript;
 
 import java.util.Date;
 
+import bolscript.config.VersionInfo;
+
 public class Download {
 	private String downloadLink;
 	private String detailsLink;
 	private String title;
-	private String version;
-	private String buildNr;
-	private String operatingSystem;
 	private Date date;
+	private VersionInfo versionInfo;
 	
+	public VersionInfo getVersionInfo() {
+		return versionInfo;
+	}
+
+	public Download() {
+		this.versionInfo = new VersionInfo();
+	}
 	public String getDownloadLink() {
 		return downloadLink;
 	}
@@ -28,24 +35,6 @@ public class Download {
 	}
 	public void setTitle(String title) {
 		this.title = title;
-	}
-	public String getVersion() {
-		return version;
-	}
-	public void setVersion(String version) {
-		this.version = version;
-	}
-	public String getBuildNr() {
-		return buildNr;
-	}
-	public void setBuildNr(String buildNr) {
-		this.buildNr = buildNr;
-	}
-	public String getOperatingSystem() {
-		return operatingSystem;
-	}
-	public void setOperatingSystem(String operatingSystem) {
-		this.operatingSystem = operatingSystem;
 	}
 	public Date getDate() {
 		return date;

@@ -148,7 +148,7 @@ public class Config {
 
 	}
 	
-	public static VersionInfo getVersionInfo(String jarPath) {
+	public static VersionInfo getVersionInfoFromJar(String jarPath) {
 		try {
 		
 			Debug.temporary(Config.class, "attempt to read version info from jarPath " + jarPath);
