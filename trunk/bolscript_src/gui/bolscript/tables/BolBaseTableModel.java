@@ -43,7 +43,7 @@ public class BolBaseTableModel extends AbstractTableModel {
 			BolName bolName = bolBase.getWellDefinedBolNames().get(rowIndex);
 
 			if (columnIndex < BolName.languagesCount) {
-				return bolName.getName(columnIndex);
+				return bolName.getNameForDisplay(columnIndex);
 			} else if (columnIndex == descriptionColumn) {
 				return bolName.getDescription();
 			} else if (columnIndex == detailsColumn) {

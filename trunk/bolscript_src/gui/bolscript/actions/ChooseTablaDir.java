@@ -34,7 +34,7 @@ public class ChooseTablaDir extends AbstractAction {
 
 		chosenFolder = new String(path);
 		Debug.debug(this, "os.name: " + System.getProperty("os.name").toLowerCase() );
-		if (Config.OS == Config.MAC) {
+		if (Config.operatingSystem == Config.OperatingSystems.Mac) {
 			System.setProperty("apple.awt.fileDialogForDirectories", "true");
 			FileDialog fileDialog = new FileDialog(owner, "Set Library Folder", FileDialog.LOAD);
 			fileDialog.setDirectory(path);

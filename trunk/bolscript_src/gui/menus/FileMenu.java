@@ -94,7 +94,7 @@ public class FileMenu extends JMenu {
 			
 			JMenuItem remover = new JMenuItem(new RemoveSelected(browser));
 			
-			int remKey = (Config.OS == Config.MAC) ? KeyEvent.VK_BACK_SPACE : KeyEvent.VK_DELETE;
+			int remKey = (Config.operatingSystem == Config.OperatingSystems.Mac) ? KeyEvent.VK_BACK_SPACE : KeyEvent.VK_DELETE;
 			remover.setAccelerator(KeyStroke.getKeyStroke(
 			        remKey, GuiConfig.MENU_SHORTKEY_MASK));
 			
