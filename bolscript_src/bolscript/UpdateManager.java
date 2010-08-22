@@ -1,5 +1,6 @@
 package bolscript;
 
+import java.io.File;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -10,9 +11,14 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import basics.Debug;
+import basics.FileManager;
+import basics.FileReadException;
 import basics.Tools;
 import bolscript.Download.DownloadTypes;
+import bolscript.UpdateInfo.VersionState;
 import bolscript.config.Config;
+import bolscript.config.RunParameters;
 import bolscript.config.VersionInfo;
 import bolscript.scanner.Parser;
 
@@ -25,15 +31,17 @@ import com.sun.syndication.io.XmlReader;
 
 public class UpdateManager {
 
-	private static final int connectionTimeOut = 3000;
-	private static final int readTimeOut = 3000;
+	private static final int connectionTimeOut = 10000;
+	private static final int readTimeOut = 10000;
 	private static final String downloadsUrl = "http://code.google.com/p/bolscript/downloads/list";
 	private static final String downloadsFeed = "http://code.google.com/feeds/p/bolscript/downloads/basic";
 	
 	UpdateInfo updateInfo;
 
 	public UpdateManager () {
-		updateInfo = new UpdateInfo();		
+		Debug.temporary(this, "Updatemanager constructor");
+		updateInfo = new UpdateInfo();
+		Debug.temporary(this, "Updatemanager constructed");
 	}
 
 	/**
@@ -41,14 +49,19 @@ public class UpdateManager {
 	 */
 	public void CheckForUpdates() {
 		VersionInfo currentVersionInfo;
+		updateInfo.setDownloadUrl(downloadsUrl);
 		try {
+			Debug.temporary(this, "Determining current version...");
 			currentVersionInfo = Config.getVersionInfoFromJar(Config.getJarPath());		
 			updateInfo.setCurrentVersion(currentVersionInfo);
 			if (currentVersionInfo.getOperatingSystem() == Config.OperatingSystems.Unknown) {
 				currentVersionInfo.setOperatingSystem(VersionInfo.getRunningOperatingSystem());
 			}
-			currentVersionInfo.setBuildNumber(1000);
-		} catch (Exception e) {			
+			if (RunParameters.fakeBuildNumber != -1) {
+				currentVersionInfo.setBuildNumber(RunParameters.fakeBuildNumber);
+			}
+
+		} catch (Exception e) {				
 			updateInfo.setError(new Exception("Could not determine current Version..."));
 			return;
 		}
@@ -57,7 +70,7 @@ public class UpdateManager {
 		URL url = null;
 		URLConnection connection = null;
 		try {
-			
+
 			url = new URL(downloadsFeed);
 			connection = url.openConnection();			
 			connection.setConnectTimeout(connectionTimeOut);
@@ -67,12 +80,12 @@ public class UpdateManager {
 			return;
 		}
 
-		try {					
+		try {			
+			Debug.temporary(this, "Connecting to download feed...");		
 			SyndFeedInput input = new SyndFeedInput();		
 			XmlReader reader = new XmlReader(connection);
 			SyndFeed feed = input.build(reader);
-
-		//	System.out.println(feed);
+			Debug.temporary(this, "Reading from download feed...");
 
 			List entries = feed.getEntries();			    
 			for (Object entryObj : entries) {
@@ -90,6 +103,7 @@ public class UpdateManager {
 		}
 
 		//determine fitting download
+		Debug.temporary(this, "Determining download candidates...");
 		Download bestCandidate = null;
 		Download changelog = null;
 		for (Download download : downloads) {
@@ -113,19 +127,32 @@ public class UpdateManager {
 				}
 			}
 		}
-
+		
 		//check for changelog
 		String changelogContent = null;
 		//download changelog
 		if (changelog != null) {
+			Debug.temporary(this, "Reading changelog...");
 			try {
+				if (!RunParameters.useLocalChangeLog) { 
 				URL changelogUrl = Tools.URIFromDangerousPlainTextUrl(changelog.getDownloadLink()).toURL();							
 				URLConnection connect = changelogUrl.openConnection();
 				connect.setConnectTimeout(connectionTimeOut);
 				connect.setReadTimeout(readTimeOut);
 				
 				InputStream contentStream = connect.getInputStream();
+				
 				changelogContent = Tools.inputStreamToString(contentStream);
+				} else {
+					File file = new File("/Users/hannes/Projekte/Workspace/bolscript googlecode/Changelog.html");
+					changelogContent = "";
+					try {
+						changelogContent = FileManager.getContents(file, Config.compositionEncoding);				
+					} catch (FileReadException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
 				updateInfo.setChangelog(stripToRelevantContent(changelogContent));
 
 			} catch (Exception e) {
@@ -134,22 +161,20 @@ public class UpdateManager {
 		}
 		
 		if (bestCandidate == null) {
+			Debug.temporary(this, "No Download candidate");
 			//fehler
-			updateInfo.setResult(UpdateInfo.VersionState.CouldNotCheck);
 			updateInfo.setError(new Exception("Could not find an apropriate download."));
-			updateInfo.setDownloadUrl(downloadsUrl);
 			return;
 			
 		} else if (bestCandidate.getVersionInfo().getBuildNumber()
 					<=	currentVersionInfo.getBuildNumber()) {
 			//everything is up to date
+			Debug.temporary(this, "Is up to date");
 			updateInfo.setResult(UpdateInfo.VersionState.OK);
-			updateInfo.setDownloadUrl(downloadsUrl);
 			return;
 			
-		} else {				
-				
-			
+		} else {								
+			Debug.temporary(this, "Found update");
 			updateInfo.setResult(UpdateInfo.VersionState.HasUpdates);
 			updateInfo.setDownloadUrl(bestCandidate.getDetailsLink());
 			updateInfo.setDownload(bestCandidate);

@@ -80,6 +80,8 @@
 			<fileset file="${resources.icons.windowsframeicon}" />
 
 			<zipfileset excludes="META-INF/*.SF" src="${lib.itext}" />
+			<zipfileset excludes="META-INF/*.SF" src="${lib.jdom}"/>
+			<zipfileset excludes="META-INF/*.SF" src="${lib.rome}"/>
 
 			<!-- include the resources.zip -->
 			<fileset file="${resources.zip.completepath}" />
@@ -134,6 +136,8 @@
 			<fileset file="${resources.icons.windowsframeicon}"/>
 
 			<zipfileset excludes="META-INF/*.SF" src="${lib.itext}"/>
+			<zipfileset excludes="META-INF/*.SF" src="${lib.jdom}"/>
+			<zipfileset excludes="META-INF/*.SF" src="${lib.rome}"/>
 
 			<!-- include the resources.zip -->
 			<fileset file="${resources.zip.completepath}"/>

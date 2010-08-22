@@ -1,9 +1,13 @@
 package bolscript;
 
+import basics.Debug;
 import bolscript.config.VersionInfo;
 
 public class UpdateInfo {
 
+	public UpdateInfo() {
+		Debug.temporary(this, "UpdateInfo constructed");
+	}
 	private String changelog;
 	private String downloadLink;
 	
@@ -12,6 +16,7 @@ public class UpdateInfo {
 		OK,
 		CouldNotCheck
 	}
+	
 	private VersionState result;
 	
 	private Download download;
@@ -35,6 +40,7 @@ public class UpdateInfo {
 	}
 	public void setError(Exception errorMessage) {
 		this.error = errorMessage;
+		setResult(VersionState.CouldNotCheck);
 	}
 	
 	public void setResult(VersionState result) {

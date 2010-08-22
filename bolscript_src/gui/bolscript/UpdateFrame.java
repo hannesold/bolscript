@@ -71,9 +71,12 @@ public class UpdateFrame extends JFrame {
 		JPanel all = new JPanel();
 		all.setLayout(new BorderLayout());
 		all.add(getInfoPanel(), BorderLayout.NORTH);
-		all.add(scrollPane, BorderLayout.CENTER);
+		if (updateInfo.getResult() != VersionState.OK) {
+			all.add(scrollPane, BorderLayout.CENTER);
+		}
 		all.add(getButtonPanel(), BorderLayout.SOUTH);
 		this.setContentPane(all);
+		this.setPreferredSize(new Dimension(460,(updateInfo.getResult() != VersionState.OK)?400:150));
 		this.pack();
 	}
 	
@@ -83,9 +86,11 @@ public class UpdateFrame extends JFrame {
 		JLabel infoText = new JLabel();
 		infoPanel.add(infoText);
 		String currentVersionOutput = "";
+		String currentVersion = "";
 		if (updateInfo.getCurrentVersion() != null) {
-			if (updateInfo.getCurrentVersion().getCompleteVersionString() != null) {
-				currentVersionOutput= updateInfo.getCurrentVersion().getCompleteVersionString();
+			if (updateInfo.getCurrentVersion().getGeneratedVersionString() != null) {
+				currentVersionOutput= updateInfo.getCurrentVersion().getGeneratedVersionString();
+				currentVersion = "<span style=\"color:#444444;\">Your current Version is: "+currentVersionOutput+"</span>";
 			}
 		}
 		switch (updateInfo.getResult()) {
@@ -93,28 +98,28 @@ public class UpdateFrame extends JFrame {
 				String newVersion = "";
 				
 				if (updateInfo.getDownload() != null) {
-					newVersion = updateInfo.getDownload().getTitle();
+					newVersion = "<h3>"+updateInfo.getDownload().getTitle()+"</h3>";
 				}
 				
-				infoText.setText("<html>" +
-						"<h4>A newer Version is available</h4>" 
-						+ newVersion  
-						+((!currentVersionOutput.isEmpty())?"<br/>Your current Version is: "+currentVersionOutput:"")+
-						"</html>");
+				infoText.setText("<html><body style=\"width:300px;\">" 
+						+((!currentVersionOutput.isEmpty())?currentVersion:"")+
+						"<div><b>A newer Version is available</b></div>" 
+						+ newVersion  +
+						"</body></html>");
 				break;
 			case CouldNotCheck:
-				infoText.setText("<html>" +
-						"<h4>Automatic update checking did not work.</h4>"
+				infoText.setText("<html><body style=\"width:300px;\">" +
+						"<div>Automatic update checking did not work.</div>"
 						+"Please check on the download page yourself."
-						+((!currentVersionOutput.isEmpty())?"<br/>Your current Version is: "+currentVersionOutput:"")
-						+"</html>");
+						+((!currentVersionOutput.isEmpty())?"<br/>"+currentVersion:"")
+						+"</body></html>");
 				break;
 			case OK:
-				infoText.setText("<html><h4>You already have the latest version.</h4>"
-						+((!currentVersionOutput.isEmpty())?"Your current Version is: "+currentVersionOutput+"<br/>":"")
-						+"No need for updating...</html>");
+				infoText.setText("<html><body style=\"width:300px;\"><div>You already have the latest version.</div>"
+						+((!currentVersionOutput.isEmpty())?currentVersion+"<br/>":"")
+						+"No need for updating...</body></html>");
 		}
-		infoPanel.setPreferredSize(new Dimension(400,80));
+		infoPanel.setPreferredSize(new Dimension(400,85));
 		return infoPanel;
 	}
 
