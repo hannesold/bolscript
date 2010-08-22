@@ -26,6 +26,7 @@ public class ConsoleUpdaterFactory implements TaskFactory {
 	class RefreshTask implements Runnable{
 		public void run() {
 			console.refreshLater();
+			
 		}
 		
 	}

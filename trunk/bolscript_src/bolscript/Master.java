@@ -9,6 +9,7 @@ import gui.bolscript.SearchPanel;
 import gui.bolscript.UpdateFrame;
 import gui.bolscript.actions.CloseEditor;
 import gui.bolscript.actions.OmmitChangesAndClose;
+import gui.bolscript.actions.OpenURL;
 import gui.bolscript.actions.SaveChanges;
 import gui.bolscript.composition.CompositionPanel;
 import gui.bolscript.dialogs.CouldNotBeRemovedDialog;
@@ -75,7 +76,7 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 	BolBaseFrame bolBaseFrame;
 
 	UpdateFrame updateFrame;
-	
+
 	PreferencesDialog prefsDialog;
 
 	CompositionPanel compositionPanel;
@@ -101,9 +102,11 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 		Debug.init();
 		Debug.initClassMaps(new Class[]{
 				Config.class,
-				ZipTools.class
-		}, new Class[]{
+				ZipTools.class,
 				Master.class,
+				UpdateManager.class,
+				OpenURL.class
+		}, new Class[]{				
 				FileManager.class,
 				CompositionBase.class,
 				FilterPanel.class,
@@ -113,7 +116,7 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 				SequencePanel.class,
 				BolBase.class
 		});
-		Debug.setExclusivelyMapped(true);
+		Debug.setExclusivelyMapped(false);
 	}
 
 	public void init() {
@@ -163,11 +166,11 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 			}
 
 
-				
 
-				
-				
-			
+
+
+
+
 			showLoadingframeThenLoad();
 		}});
 	}
@@ -396,14 +399,14 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 				case (OpenOrImportExistingFileDialog.IMPORT):
 					//add the file to a generated place
 					String completeNewFilename = CompositionBase.generateFilename(comp, Config.bolscriptSuffix, true);
-					comp.setLinkLocal(completeNewFilename);
-					
-					try {
-						compositionBase.saveCompositionToFile(comp, comp.getLinkLocal());
-					} catch (FileWriteException e) {
-						debug.critical("File could not be saved under " + comp.getLinkLocal());
-					}
-					break;
+				comp.setLinkLocal(completeNewFilename);
+
+				try {
+					compositionBase.saveCompositionToFile(comp, comp.getLinkLocal());
+				} catch (FileWriteException e) {
+					debug.critical("File could not be saved under " + comp.getLinkLocal());
+				}
+				break;
 				case(OpenOrImportExistingFileDialog.JUST_OPEN):
 					//do nothing
 					break;
@@ -579,26 +582,21 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 	}
 
 	public void checkForUpdates() {
-		
-		UpdateManager updateManager = new UpdateManager();
-		
-		updateManager.CheckForUpdates();		
-		UpdateInfo updateInfo = updateManager.getUpdateInfo();
-		
-		/*switch (updateInfo.getResult()) {
-		case OK:
-			JOptionPane.showMessageDialog(browserFrame, "You already have the latest version installed.", "Updates...", JOptionPane.OK_OPTION);
-			break;
-		default:			
-
-			break;
-		}	*/
-		updateFrame = new UpdateFrame(updateInfo);			
-		updateFrame.setPreferredSize(new Dimension(400,400));
-		updateFrame.setVisible(true);
+		Debug.temporary(this, "Instanciating Updatemanager...");
+		try {	
+			UpdateManager updateManager = new UpdateManager();
+			Debug.temporary(this, "Checking for updates...");
+			updateManager.CheckForUpdates();
+			Debug.temporary(this, "Showing update window");
+			updateFrame = new UpdateFrame(updateManager.getUpdateInfo());			
+			//updateFrame.setPreferredSize(new Dimension(400,400));
+			updateFrame.setVisible(true);
+		} catch (Exception ex) {
+			Debug.critical(this, "something went wrong in update manager: " + ex.getMessage() );
+		}
 	}
 
-	
+
 
 
 

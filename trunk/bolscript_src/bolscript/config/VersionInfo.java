@@ -88,9 +88,10 @@ public class VersionInfo {
 	public void setVersionNumber(String versionNumber) {
 		this.versionNumber = versionNumber;
 	}
-	public String getCompleteVersionString() {
-		return completeVersionString;
+	public String getGeneratedVersionString() {
+		return "v" +versionNumber + " (" + buildNumber +")";
 	}
+	
 	public void setCompleteVersionString(String completeVersionString) {
 		this.completeVersionString = completeVersionString;
 	}

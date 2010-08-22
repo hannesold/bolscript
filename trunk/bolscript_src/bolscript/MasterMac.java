@@ -1,11 +1,15 @@
 package bolscript;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
 import basics.Debug;
 import basics.GUI;
+import bolscript.config.RunParameters;
 
 import com.apple.eawt.Application;
 import com.apple.eawt.ApplicationEvent;
@@ -61,6 +65,19 @@ public class MasterMac extends Master implements ApplicationListener{
 			}
 			if (args[i].equalsIgnoreCase("noDebug")) {
 				Debug.setMute(true);
+			}
+			Pattern pat = Pattern.compile("(?i)fakeBuildNumber=(\\d+)");
+			Matcher matcher = pat.matcher(args[i]);
+			if (matcher.find()) {
+				try {
+					RunParameters.fakeBuildNumber = Integer.parseInt(matcher.group(1));
+				} catch (Exception ex) {
+				
+				}
+			}
+			Pattern pat2 = Pattern.compile("(?i)UseLocalChangeLog");
+			if (pat2.matcher(args[i]).find()) {
+				RunParameters.useLocalChangeLog = true;
 			}
 			i++;
 		}	
