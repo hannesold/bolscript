@@ -38,7 +38,7 @@ public abstract class BolPanelGeneral extends JPanel implements MouseListener{
 		this.emphasized = isEmphasized;
 		this.fontSize = fontSize;
 		
-		label = new JLabel(nameGiver.getName(language));
+		label = new JLabel(nameGiver.getNameForDisplay(language));
 		Font f = GuiConfig.getBolFont(language, fontSize, emphasized); //Config.bolFonts[language].deriveFont(fontSize);
 		label.setFont(f);
 		

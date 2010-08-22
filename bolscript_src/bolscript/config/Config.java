@@ -2,6 +2,7 @@ package bolscript.config;
 
 import java.awt.EventQueue;
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
@@ -41,8 +42,17 @@ public class Config {
 	public static final int 	BOLSCRIPT_MAXIMUM_TRUNCATION = 100;
 	public static final Rational BOLSCRIPT_MAXIMUM_SPEED_R = new Rational(BOLSCRIPT_MAXIMUM_SPEED);
 
-	public static final int 	MAC = 1111, WINDOWS = 2222;
-	public static int 			OS = 0;
+	public enum OperatingSystems {
+		Windows,
+		Mac,
+		Unknown
+	}
+	
+	
+	
+	
+	
+	public static OperatingSystems operatingSystem = OperatingSystems.Unknown;
 	public static boolean 		initialised = false;
 
 	public static Config config;
@@ -63,11 +73,7 @@ public class Config {
 		config = new Config();
 		listeners = new ArrayList<ConfigChangeListener>();
 
-		if (System.getProperty("os.name").toLowerCase().startsWith("mac")) {
-			OS = MAC;
-		} else {
-			if (System.getProperty("os.name").toLowerCase().startsWith("windows")) OS = WINDOWS;
-		}
+		operatingSystem = VersionInfo.getRunningOperatingSystem();
 
 		UserConfig.initFromStoredPreferences();
 		
@@ -77,6 +83,7 @@ public class Config {
 		
 		initialised = true;
 	}
+
 
 	public static void fireConfigChangedEvent(String ... changedPreferenceKeys) {
 		Debug.debug(Config.class, "CONFIG CHANGED!");
@@ -110,6 +117,19 @@ public class Config {
 			jarPath = (new File(uri.getPath()).getParent()) + fileSeperator + "builds" + fileSeperator + "bolscript.jar"; 
 		}
 		return jarPath;
+	}
+	
+	
+	public static boolean jarIsEditable(String jarPath) {
+		try {
+			JarFile jar = new JarFile(jarPath);
+		} catch (IOException e) {
+			return false;
+		}
+		File file = new File(jarPath);
+		if (!file.exists()) return false;
+		
+		return file.canWrite();
 	}
 	
 	public static void extractDefaultLibraryFolder(String targetFolder) throws Exception {

@@ -9,7 +9,11 @@ public class UpdateManagerTest {
 	@Test
 	public void testCheckForUpdates() {
 		UpdateManager updateManager = new UpdateManager();
-		updateManager.CheckForUpdates();
+		try {
+			updateManager.CheckForUpdates();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 }

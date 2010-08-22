@@ -68,6 +68,10 @@ public class BolNameBundle implements NamedInLanguages {
 		return labels[language];
 	}
 	
+	public String getNameForDisplay(int language) {
+		return getName(language);
+	}
+	
 	public String toString() {
 		return labels[BolName.SIMPLE];
 	}

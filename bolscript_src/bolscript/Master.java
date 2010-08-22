@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
 import org.junit.Test;
@@ -275,7 +276,7 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 
 	public void revealFileInOSFileManager(String filename) {
 		//windows implementation
-		if (Config.OS == Config.WINDOWS) {
+		if (Config.operatingSystem == Config.OperatingSystems.Windows) {
 			try {
 
 				/**
@@ -578,26 +579,23 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 	}
 
 	public void checkForUpdates() {
-		File file = new File("/Users/hannes/Projekte/Workspace/bolscript googlecode/Changelog.html");
-		String changelog = "";
-		try {
-			changelog = FileManager.getContents(file, Config.compositionEncoding);
-			String styleRemover = Pattern.quote("<style")+ "(.|"+Parser.N+")*"+Pattern.quote("/style>");
-			changelog = changelog.replaceAll(styleRemover, "");
-			
-		} catch (FileReadException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		UpdateInfo updateInfo = new UpdateInfo();
-		updateInfo.setChangelog(changelog);
-		updateInfo.setDownloadLink("blub");
 		
-		updateFrame = new UpdateFrame(updateInfo);
+		UpdateManager updateManager = new UpdateManager();
 		
-		updateFrame.setPreferredSize(new Dimension(400,500));
+		updateManager.CheckForUpdates();		
+		UpdateInfo updateInfo = updateManager.getUpdateInfo();
+		
+		/*switch (updateInfo.getResult()) {
+		case OK:
+			JOptionPane.showMessageDialog(browserFrame, "You already have the latest version installed.", "Updates...", JOptionPane.OK_OPTION);
+			break;
+		default:			
+
+			break;
+		}	*/
+		updateFrame = new UpdateFrame(updateInfo);			
+		updateFrame.setPreferredSize(new Dimension(400,400));
 		updateFrame.setVisible(true);
-		
 	}
 
 	

@@ -8,13 +8,15 @@ import java.util.HashMap;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
+import bolscript.config.Config.OperatingSystems;
+
 public class VersionInfo {
 	
 	private int buildNumber;
 	private String versionNumber = null;
 	private String completeVersionString = null;
 	//private String builtForOperatingSystem = null;
-	private int operatingSystem = Config.WINDOWS;
+	private Config.OperatingSystems operatingSystem = Config.OperatingSystems.Unknown;
 	private Date buildDate = null;
 	
 	public VersionInfo() {
@@ -58,20 +60,21 @@ public class VersionInfo {
 		} catch (Exception ex) {}
 		
 	}
-	public static int parseOperatingSystem(String opSysAsString) {
-		String regexForWindows = "(W|w)(i|I)(n|N).*";
-		String regexForMac = "OSX.*|OS X.*|Mac.*|mac.*";
+	public static Config.OperatingSystems parseOperatingSystem(String opSysAsString) {
+		String regexForWindows = "(?i)win.*";
+		String regexForMac = "(?i)OSX.*|OS X.*|Mac.*|mac.*";
 		if (opSysAsString.matches(regexForWindows)) {
-			return Config.WINDOWS;
+			return Config.OperatingSystems.Windows;
 		} else if (opSysAsString.matches(regexForMac)) {
-			return Config.MAC;
-		} else return Config.WINDOWS;
+			return Config.OperatingSystems.Mac;
+		}
+		return Config.OperatingSystems.Unknown;
 	}
 	
 	public String getOperatingSystemAsString() {		
-		if (operatingSystem == Config.MAC) return "OSX";
-		return "WINDOWS";		
+		return operatingSystem.toString();		
 	}
+	
 
 	public int getBuildNumber() {
 		return buildNumber;
@@ -91,10 +94,10 @@ public class VersionInfo {
 	public void setCompleteVersionString(String completeVersionString) {
 		this.completeVersionString = completeVersionString;
 	}
-	public int getBuiltForOperatingSystem() {
+	public Config.OperatingSystems getBuiltForOperatingSystem() {
 		return operatingSystem;
 	}
-	public void setBuiltForOperatingSystem(int operatingSystem) {
+	public void setOperatingSystem(Config.OperatingSystems operatingSystem) {
 		this.operatingSystem = operatingSystem;
 	}
 	public Date getBuildDate() {
@@ -102,6 +105,14 @@ public class VersionInfo {
 	}
 	public void setBuildDate(Date buildDate) {
 		this.buildDate = buildDate;
+	}
+
+	public OperatingSystems getOperatingSystem() {
+		return operatingSystem;
+	}
+
+	public static OperatingSystems getRunningOperatingSystem() {
+		return VersionInfo.parseOperatingSystem(System.getProperty("os.name"));
 	}
 	
 }

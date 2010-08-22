@@ -27,11 +27,11 @@ public class RevealCompositionInOSFileManager extends AbstractAction implements 
 		this.browser = browser;
 		this.composition = composition; 
 		
-		switch (Config.OS) {
-		case Config.WINDOWS:
+		switch (Config.operatingSystem) {
+		case Windows:
 			this.putValue(NAME, "Show in Windows Explorer");
 			break;
-		case Config.MAC:
+		case Mac:
 			this.putValue(NAME, "Reveal in Finder");
 			break;
 		default:

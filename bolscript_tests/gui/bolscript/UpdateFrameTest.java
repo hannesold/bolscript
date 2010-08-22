@@ -26,7 +26,7 @@ public class UpdateFrameTest {
 		}
 		UpdateInfo updateInfo = new UpdateInfo();
 		updateInfo.setChangelog(changelog);
-		updateInfo.setDownloadLink("blub");
+		updateInfo.setDownloadUrl("blub");
 		
 		updateFrame = new UpdateFrame(updateInfo);
 		EventQueue.invokeLater(new Runnable(){

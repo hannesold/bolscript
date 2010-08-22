@@ -205,6 +205,27 @@ public class BolName implements NamedInLanguages {
 	public String getName(int language) {
 		return language < languagesCount ? labels[language] : labels[SIMPLE];
 	}
+	
+	public String getNameForDisplay(int language) {
+		if (caseSensitivityMode != CaseSensitivityModes.None) {
+			return getName(language);	
+		} else {			
+			String candidate;
+			if (language >= languagesCount) {
+				candidate = labels[SIMPLE];   
+			} else candidate = labels[language];
+			
+			switch (language) {
+			case DEVANAGERI:
+				return candidate;
+			case TRANSLITERATION:
+				return candidate;
+			default:
+				return Tools.formatFirstCapital(candidate);	
+			}
+		}
+	}
+	
 	public String toString(int language) {
 		return language < languagesCount ? labels[language] : labels[SIMPLE];
 	}

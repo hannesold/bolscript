@@ -22,7 +22,7 @@
 							projectname="${login.project.name}" 
 							filename="${project.path}/${changeLogFile.completepath}" 
 							targetfilename="Changelog ${build.number}.html"
-							summary="Recent Changes up to v${version.num} build ${build.number}"
+							summary="Recent Changes up to Version ${version.num} ${build.number}"
 							labels="" 
 						/>
 		<replace file="${project.path}/${changeLogFile.completepath}">

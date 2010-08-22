@@ -226,13 +226,13 @@ public class CompositionListPanel extends JScrollPane  {
 			}
 			
 			public void mousePressed(MouseEvent e) {
-				if (Config.OS == Config.MAC) {
+				if (Config.operatingSystem == Config.OperatingSystems.Mac) {
 					processClick(e);
 				}
 			}
 			
 			public void mouseReleased(MouseEvent e) {
-				if (Config.OS != Config.MAC) {
+				if (Config.operatingSystem != Config.OperatingSystems.Mac) {
 					processClick(e);
 				}
 			}
