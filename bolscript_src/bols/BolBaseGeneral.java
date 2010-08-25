@@ -94,6 +94,7 @@ public abstract class BolBaseGeneral {
 
 	/**
 	 * Adds a BolName to the BolBase, overwrites any existing with an equal exact name.
+	 * Determines and assigns the weakest CaseSensitivityMode needed to distinguish similar bols.
 	 * @param bolName
 	 */
 	public void addBolName(BolName bolName) {
