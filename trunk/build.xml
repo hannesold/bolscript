@@ -9,22 +9,21 @@
 	<!--http://www.devdaily.com/blog/post/mac-os-x/sample-mac-jar-bundler-ant-build-script/-->
 	<!--ANT 1.7 is required-->
 
+	<property file="build.num"/>	
 	<property file="version.num"/>
-	<buildnumber file="build.num" />
+	
 	<property file="build.properties"/>
 
 	<tstamp>
 		<format property="TODAY" pattern="yyyy-MM-dd HH:mm:ss" />
 	</tstamp>
 
-	<taskdef name="jflex" classname="JFlex.anttask.JFlexTask" />
-
 	<taskdef name="jarbundler" classname="net.sourceforge.jarbundler.JarBundler" />
 
 	<taskdef name="launch4j" classname="net.sf.launch4j.ant.Launch4jTask" classpath="${launch4j.dir}/launch4j.jar :${launch4j.dir}/lib/xstream.jar" />
 
-	
 	<target name="clean_all">
+		<echo message="cleaning in preparation for v${version.num} build ${build.number}"/>
 		<delete file="${jar.completepath.mac}" />
 		<delete file="${jar.completepath.other}" />
 		<delete file="${resources.zip.completepath}" />
@@ -33,11 +32,6 @@
 		<delete file="${dir.build}/${app.name}.exe" />
 		<delete file="${jar.completepath.fonttests}" />
 		<delete file="${dir.build}/${win.zip}" />
-	</target>
-			
-	<target name="build_scanner">
-		<jflex file="bolscript_src/bolscript/scanner/SequenceScanner.flex" destdir="bolscript_src" verbose="true" nobak="true" />
-		<javac srcdir="bolscript_src/bolscript/scanner/" destdir="bin" />
 	</target>
 
 	<target name="generate_default_libraryfolder_from_mylibraryfolder">

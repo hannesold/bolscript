@@ -78,7 +78,7 @@ private void initColumnWidths () {
 
 public void selectBol(BolName bolName) {
 	Debug.temporary(this, "attempting to select " + bolName);
-	String toFind = bolName.getName(BolName.EXACT);
+	String toFind = bolName.getNameForDisplay(BolName.EXACT);
 	for (int i=0; i < model.getRowCount(); i++) {
 		if (model.getValueAt(i, BolName.EXACT).equals(toFind)) {
 			

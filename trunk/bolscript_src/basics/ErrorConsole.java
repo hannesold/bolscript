@@ -3,8 +3,10 @@ package basics;
 import gui.bolscript.actions.ToggleConsole;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.Font;
 import java.awt.TextArea;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -12,6 +14,8 @@ import java.awt.event.WindowListener;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+
+import bolscript.config.Config;
 
 public class ErrorConsole extends JFrame implements WindowListener {
 	TextArea textArea;
@@ -24,7 +28,6 @@ public class ErrorConsole extends JFrame implements WindowListener {
 		super("Console");
 		storage = new StringBuilder();
 		textArea = new TextArea();
-		
 
 		JPanel panel = new JPanel(new BorderLayout());
 		//JScrollPane scrollpanel = new JScrollPane(textArea);
@@ -44,11 +47,17 @@ public class ErrorConsole extends JFrame implements WindowListener {
 		synchronized (storage) {
 			storage.append(s);
 		}
+		
 	}
 	
 	public void refreshTextField() {
 		synchronized(storage) {
 			textArea.setText(storage.toString());
+			textArea.setCaretPosition(textArea.getText().length()-1);
+			
+			/*textArea.setBackground(Color.black);
+			textArea.setForeground(Color.white);*/
+			
 		}
 	}
 	
