@@ -8,6 +8,7 @@ import javax.swing.JPanel;
 
 import basics.GUI;
 import bolscript.config.GuiConfig;
+import bolscript.config.RunParameters;
 import bolscript.sequences.FootnoteUnit;
 
 public class FootnotePanel extends JPanel{
@@ -47,7 +48,7 @@ public class FootnotePanel extends JPanel{
 		this.setSize(size);
 		this.setPreferredSize(GUI.getPrefferedSize(label,100));
 		
-		if (GUI.showLayoutStructure) {
+		if (RunParameters.showLayoutStructure) {
 			this.setOpaque(true);
 			this.setBackground(new Color(220,180,180));
 		} else this.setOpaque(false);

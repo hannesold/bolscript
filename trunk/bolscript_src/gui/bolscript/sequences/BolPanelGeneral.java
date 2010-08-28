@@ -13,6 +13,7 @@ import javax.swing.border.LineBorder;
 import basics.GUI;
 import bols.NamedInLanguages;
 import bolscript.config.GuiConfig;
+import bolscript.config.RunParameters;
 
 public abstract class BolPanelGeneral extends JPanel implements MouseListener{
 	
@@ -59,7 +60,7 @@ public abstract class BolPanelGeneral extends JPanel implements MouseListener{
 		this.setPreferredSize(label.getSize());
 		
 		
-		if ( GUI.showLayoutStructure) {
+		if ( RunParameters.showLayoutStructure) {
 			this.setOpaque(true);
 			label.setOpaque(true);
 			this.setBackground(new Color(130,130,170,150));

@@ -8,6 +8,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import basics.GUI;
+import bolscript.config.RunParameters;
 
 public class SequenceTitlePanel extends JPanel {
 
@@ -31,7 +32,7 @@ public class SequenceTitlePanel extends JPanel {
 	public SequenceTitlePanel() {
 		super();
 		initLabels();
-		if (GUI.showLayoutStructure) {
+		if (RunParameters.showLayoutStructure) {
 			this.setBackground(cDistinctBackground);
 			this.setOpaque(true);
 			title.setBackground(cDistinctBackgroundLabel);

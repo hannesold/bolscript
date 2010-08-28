@@ -18,9 +18,9 @@ public class ToggleConsole extends AbstractAction {
 	
 	private void refreshName() {
 		if (Debug.isShowingConsole()) {
-			this.putValue(NAME, "Hide Errorconsole");
+			this.putValue(NAME, "Hide Debugconsole");
 		} else {
-			this.putValue(NAME, "Show Errorconsole");
+			this.putValue(NAME, "Show Debugconsole");
 		}
 	}
 	

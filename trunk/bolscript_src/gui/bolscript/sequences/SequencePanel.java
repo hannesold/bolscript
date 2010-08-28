@@ -27,6 +27,7 @@ import bols.tals.Tal;
 import bols.tals.Teental;
 import bols.tals.Vibhag;
 import bolscript.config.GuiConfig;
+import bolscript.config.RunParameters;
 import bolscript.packets.Packet;
 import bolscript.sequences.FootnoteUnit;
 import bolscript.sequences.Representable;
@@ -265,7 +266,7 @@ public class SequencePanel extends HighlightablePanel  {
 		this.setMinimumSize(currentTotalSize);
 
 		//adjust color
-		if (GUI.showLayoutStructure) {
+		if (RunParameters.showLayoutStructure) {
 			this.setBackground(cDistinctBackground);
 		}else {
 			this.setBackground(GuiConfig.sequencePanelBackgroundColor);

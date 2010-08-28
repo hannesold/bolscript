@@ -55,32 +55,8 @@ public class MasterMac extends Master implements ApplicationListener{
 	
 	public static void main(String [] args) {
 		
-		System.setProperty("apple.laf.useScreenMenuBar", "true");
-		
-		int i=0;
-		while (i<args.length) {
-			if (args[i].equalsIgnoreCase("showLayout")) {
-				GUI.showLayoutStructure = true;
-				debug.debug("showing layout");
-			}
-			if (args[i].equalsIgnoreCase("noDebug")) {
-				Debug.setMute(true);
-			}
-			Pattern pat = Pattern.compile("(?i)fakeBuildNumber=(\\d+)");
-			Matcher matcher = pat.matcher(args[i]);
-			if (matcher.find()) {
-				try {
-					RunParameters.fakeBuildNumber = Integer.parseInt(matcher.group(1));
-				} catch (Exception ex) {
-				
-				}
-			}
-			Pattern pat2 = Pattern.compile("(?i)UseLocalChangeLog");
-			if (pat2.matcher(args[i]).find()) {
-				RunParameters.useLocalChangeLog = true;
-			}
-			i++;
-		}	
+		System.setProperty("apple.laf.useScreenMenuBar", "true");		
+		initRunparametersCommandLineArguments(args);
 		master = new MasterMac();
 		master.init();
 	}

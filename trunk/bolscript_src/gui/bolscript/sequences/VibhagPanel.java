@@ -6,9 +6,9 @@ import java.awt.Dimension;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import basics.GUI;
 import bols.tals.Vibhag;
 import bolscript.config.GuiConfig;
+import bolscript.config.RunParameters;
 
 public class VibhagPanel extends JPanel {
 	
@@ -21,7 +21,7 @@ public class VibhagPanel extends JPanel {
 		this.setBorder(new VibhagBorder(Color.BLACK,GuiConfig.vibhagLineThicknesses[vibhag.getType()]));
 		this.setVisible(true);
 		this.setBackground(GuiConfig.vibhagPanelBackgroundColor);
-		if (GUI.showLayoutStructure) {
+		if (RunParameters.showLayoutStructure) {
 			this.setOpaque(true);
 			this.setBackground(new Color(180, 220, 180,180));
 		} else this.setOpaque(false);

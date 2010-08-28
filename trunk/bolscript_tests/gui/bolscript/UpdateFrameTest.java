@@ -14,6 +14,8 @@ import bolscript.config.Config;
 
 public class UpdateFrameTest {
 	UpdateFrame updateFrame;
+	UpdateInfo updateInfo;
+	
 	@Test
 	public void testUpdateFrame() {
 		File file = new File("/Users/hannes/Projekte/Workspace/bolscript googlecode/Changelog.html");
@@ -24,13 +26,15 @@ public class UpdateFrameTest {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		UpdateInfo updateInfo = new UpdateInfo();
+		updateInfo = new UpdateInfo();
 		updateInfo.setChangelog(changelog);
 		updateInfo.setDownloadUrl("blub");
 		
-		updateFrame = new UpdateFrame(updateInfo);
+		updateFrame = new UpdateFrame();
+		
 		EventQueue.invokeLater(new Runnable(){
 			public void run() {
+				updateFrame.displayInfo(updateInfo);
 				updateFrame.setPreferredSize(new Dimension(500,300));
 				updateFrame.setVisible(true);
 			}
