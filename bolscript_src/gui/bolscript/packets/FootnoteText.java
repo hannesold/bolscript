@@ -9,7 +9,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import basics.Debug;
-import basics.GUI;
+import bolscript.config.RunParameters;
 import bolscript.packets.Packet;
 import bolscript.sequences.FootnoteUnit;
 
@@ -46,7 +46,7 @@ public class FootnoteText extends JPanel {
 			text.setText((footnoteUnit.footnoteNrGlobal) + ")  " + footnoteUnit.getFootnoteText() +" ");
 		}
 		
-		if (GUI.showLayoutStructure) {
+		if (RunParameters.showLayoutStructure) {
 			this.setBackground(cDistinctBackground);
 			this.setOpaque(true);
 			text.setBackground(cDistinctBackgroundLabel);

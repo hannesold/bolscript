@@ -55,6 +55,7 @@ import bolscript.config.ConfigChangeEvent;
 import bolscript.config.ConfigChangeListener;
 import bolscript.config.GuiConfig;
 import bolscript.config.PreferenceKeys;
+import bolscript.config.RunParameters;
 import bolscript.config.UserConfig;
 import bolscript.packets.types.HistoryEntry;
 import bolscript.packets.types.HistoryOperationType;
@@ -93,6 +94,32 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 		runningAsMacApplication = false;
 	}	
 
+	public static void initRunparametersCommandLineArguments(String[] args) {
+		int i=0;
+		while (i<args.length) {
+			if (args[i].equalsIgnoreCase("showLayout")) {
+				RunParameters.showLayoutStructure = true;
+			}
+			if (args[i].equalsIgnoreCase("noDebug")) {
+				Debug.setMute(true);
+			}
+			Pattern pat = Pattern.compile("(?i)fakeBuildNumber=(\\d+)");
+			Matcher matcher = pat.matcher(args[i]);
+			if (matcher.find()) {
+				try {
+					RunParameters.fakeBuildNumber = Integer.parseInt(matcher.group(1));
+				} catch (Exception ex) {
+				
+				}
+			}
+			Pattern pat2 = Pattern.compile("(?i)UseLocalChangeLog");
+			if (pat2.matcher(args[i]).find()) {
+				RunParameters.useLocalChangeLog = true;
+			}
+			i++;
+		}	
+	}
+	
 	/**
 	 * Sets the class visibilities in the Debug class.
 	 * @param mute
@@ -221,18 +248,7 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 	 * @param args
 	 */
 	public static void main(String[] args) {
-
-		int i=0;
-		while (i<args.length) {
-			if (args[i].equalsIgnoreCase("showLayout")) {
-				GUI.showLayoutStructure = true;
-				debug.debug("showing layout");
-			}
-			if (args[i].equalsIgnoreCase("noDebug")) {
-				Debug.setMute(true);
-			}
-			i++;
-		}	
+		initRunparametersCommandLineArguments(args);
 		master = new Master();
 		master.init();
 
@@ -583,14 +599,18 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 
 	public void checkForUpdates() {
 		Debug.temporary(this, "Instanciating Updatemanager...");
-		try {	
-			UpdateManager updateManager = new UpdateManager();
-			Debug.temporary(this, "Checking for updates...");
-			updateManager.CheckForUpdates();
+		try {				
 			Debug.temporary(this, "Showing update window");
-			updateFrame = new UpdateFrame(updateManager.getUpdateInfo());			
-			//updateFrame.setPreferredSize(new Dimension(400,400));
+			updateFrame = new UpdateFrame();
 			updateFrame.setVisible(true);
+			
+			Debug.temporary(this, "Initing update manager thread...");
+			UpdateManager updateManager = new UpdateManager();
+			updateManager.setListener(updateFrame);
+			
+			new Thread(updateManager).start();
+			
+			
 		} catch (Exception ex) {
 			Debug.critical(this, "something went wrong in update manager: " + ex.getMessage() );
 		}

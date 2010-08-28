@@ -1,5 +1,6 @@
 package bolscript;
 
+import java.awt.EventQueue;
 import java.io.File;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -29,21 +30,49 @@ import com.sun.syndication.io.SyndFeedInput;
 import com.sun.syndication.io.XmlReader;
 
 
-public class UpdateManager {
+public class UpdateManager implements Runnable{
 
 	private static final int connectionTimeOut = 10000;
 	private static final int readTimeOut = 10000;
 	private static final String downloadsUrl = "http://code.google.com/p/bolscript/downloads/list";
 	private static final String downloadsFeed = "http://code.google.com/feeds/p/bolscript/downloads/basic";
 	
+	
+	public interface UpdateManagerListener {
+		public void displayInfo(UpdateInfo updateInfo);
+		
+	}
+	
+	UpdateManagerListener listener = null;
+	
+	public UpdateManagerListener getListener() {
+		return listener;
+	}
+
+	public void setListener(UpdateManagerListener listener) {
+		this.listener = listener;
+	}
+
 	UpdateInfo updateInfo;
 
 	public UpdateManager () {
-		Debug.temporary(this, "Updatemanager constructor");
 		updateInfo = new UpdateInfo();
-		Debug.temporary(this, "Updatemanager constructed");
 	}
-
+	
+	public void run() {
+		Debug.debug(this, "starting run()");
+		CheckForUpdates();
+		if (listener != null) {
+			EventQueue.invokeLater(new Runnable() {
+				public void run() {
+					Debug.debug(this, "sending result to listeners");
+					listener.displayInfo(updateInfo);
+				}
+			});	
+		}
+		Debug.debug(this, "UpdateManager ending run()");
+	}
+	
 	/**
 	 * Queries the download feed and fills the update info.
 	 */
@@ -135,14 +164,17 @@ public class UpdateManager {
 			Debug.temporary(this, "Reading changelog...");
 			try {
 				if (!RunParameters.useLocalChangeLog) { 
-				URL changelogUrl = Tools.URIFromDangerousPlainTextUrl(changelog.getDownloadLink()).toURL();							
-				URLConnection connect = changelogUrl.openConnection();
-				connect.setConnectTimeout(connectionTimeOut);
-				connect.setReadTimeout(readTimeOut);
-				
-				InputStream contentStream = connect.getInputStream();
-				
-				changelogContent = Tools.inputStreamToString(contentStream);
+					URL changelogUrl = Tools.URIFromDangerousPlainTextUrl(changelog.getDownloadLink()).toURL();	
+					Debug.temporary(this, "changelog url: " + changelogUrl);
+					URLConnection connect = changelogUrl.openConnection();
+					Debug.temporary(this, "connection...");
+					connect.setConnectTimeout(connectionTimeOut);
+					connect.setReadTimeout(readTimeOut);
+					Debug.temporary(this, "set Timeouts...");
+					InputStream contentStream = connect.getInputStream();
+					Debug.temporary(this, "connected");
+					changelogContent = Tools.inputStreamToString(contentStream);
+					Debug.temporary(this, "read content");
 				} else {
 					File file = new File("/Users/hannes/Projekte/Workspace/bolscript googlecode/Changelog.html");
 					changelogContent = "";
@@ -153,8 +185,9 @@ public class UpdateManager {
 						e.printStackTrace();
 					}
 				}
+				Debug.temporary(this, "stripping changelog content to relevant parts");
 				updateInfo.setChangelog(stripToRelevantContent(changelogContent));
-
+				Debug.temporary(this, "ok");
 			} catch (Exception e) {
 				//could not download changelog.
 			}
@@ -264,9 +297,16 @@ public class UpdateManager {
 	}
 
 	public String stripToRelevantContent(String changeLog) {
-		String styleRemover = Pattern.quote("<style")+ "(.|"+Parser.N+")*"+Pattern.quote("/style>");
+		Debug.debug(this, "creating styleremoverPattern...");
+		String styleRemover = "(?s)" + Pattern.quote("<style")+".*"+Pattern.quote("/style>");
+		Debug.debug(this, styleRemover);
+		Debug.debug(this, "stripping changelog");
+		Debug.debug(this, "before:" + changeLog);
 		String stripped = changeLog.replaceAll(styleRemover, "");		
-		stripped = stripped.replaceAll(Pattern.quote("body>"), "body style=\"font-size: 9px;\">");
+		Debug.debug(this, "after:" + changeLog);
+		Debug.debug(this, "replacing bodypart");
+		stripped = stripped.replaceAll(Pattern.quote("body>"), Matcher.quoteReplacement("body style=\"font-size: 9px;\">"));
+		Debug.debug(this, "r");
 		return stripped;
 	}
 	public UpdateInfo getUpdateInfo() {

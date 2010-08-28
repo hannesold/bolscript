@@ -6,7 +6,7 @@ import java.awt.Dimension;
 
 import javax.swing.JPanel;
 
-import basics.GUI;
+import bolscript.config.RunParameters;
 
 /**
  * A Cell is simply one beat (/matra)
@@ -30,7 +30,7 @@ public class CellPanel extends JPanel {
 		this.setBorder(CellBorder.getStandard(cBorder,1, SequencePanel.cellBorderPadding));
 		this.setVisible(true);
 		
-		if (GUI.showLayoutStructure) {
+		if (RunParameters.showLayoutStructure) {
 			this.setOpaque(true);
 			this.setBackground(new Color(220,220,220,200));
 		} else {

@@ -24,8 +24,6 @@ import javax.swing.event.ChangeListener;
  */
 public class GUI {
 	
-	public static boolean showLayoutStructure = false;
-
 	public static void setNativeLookAndFeel()
 	{
 	  try {

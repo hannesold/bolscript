@@ -7,8 +7,8 @@ import java.awt.LayoutManager;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import basics.GUI;
 import bolscript.config.GuiConfig;
+import bolscript.config.RunParameters;
 import bolscript.packets.Packet;
 import bolscript.sequences.FootnoteUnit;
 
@@ -43,7 +43,7 @@ public class CommentText extends JPanel {
 			text.setText((String) packet.getObject());
 		}
 		
-		if (GUI.showLayoutStructure) {
+		if (RunParameters.showLayoutStructure) {
 			this.setBackground(cDistinctBackground);
 			this.setOpaque(true);
 			text.setBackground(cDistinctBackgroundLabel);
