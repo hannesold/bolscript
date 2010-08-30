@@ -9,7 +9,9 @@ import java.util.regex.Pattern;
 
 import basics.Debug;
 import basics.Rational;
+import bols.Bol;
 import bols.BolBase;
+import bols.BolName;
 import bolscript.packets.HistoryEntries;
 import bolscript.packets.Packet;
 import bolscript.packets.Packets;
@@ -20,6 +22,7 @@ import bolscript.packets.types.PacketTypeDefinitions;
 import bolscript.packets.types.PacketType.ParseMode;
 import bolscript.sequences.FootnoteUnit;
 import bolscript.sequences.ReferencedBolPacketUnit;
+import bolscript.sequences.Representable;
 import bolscript.sequences.RepresentableSequence;
 
 /**
@@ -46,7 +49,7 @@ public class Parser {
 	 * Regex: Whitespaces and newline characters
 	 */
 	public static final String SN = "(?:\\s|[\n\r\f])";
-	
+
 	public static final String BOL_CANDIDATE_CORE = "[A-Za-z\\-]+";	
 	public static final String BOL_VARIANTS = "[0123456789.']*";	
 	public static final String BOLNAME_GROUP = "("+Parser.BOL_CANDIDATE_CORE + BOL_VARIANTS+ ")";
@@ -57,13 +60,13 @@ public class Parser {
 		BOLNAME_GROUP 
 		+ QUESTION_GROUP+"?"
 		+ EXCLAMATION_GROUP+"?";
-	
+
 	/**
 	 * A Regexp consisting of three groups: 0 the bolname, 1 an optional question mark, 2 an optional exclamation mark
 	 */
 	public static final Pattern BolCandidatePattern = Pattern.compile(BOL_CANDIDATE_REGEX);
-	
-	
+
+
 	/**
 	 * Regex: Whitespaces or newlines at beginning or end of sequence.
 	 */
@@ -94,8 +97,6 @@ public class Parser {
 	public static Pattern packetSplittingPattern = Pattern.compile(packetSplittingRegex);
 
 	public static Packets updatePacketsFromString(Packets oldPackets, String input) {
-		//Packets oldoldPackets = oldPackets.clone();
-		//oldoldPackets.addAll(oldPackets);
 
 		Packets newPackets = splitIntoPackets(input);
 
@@ -110,18 +111,22 @@ public class Parser {
 		int footnoteNr = 1;
 		int i = 0;
 
-		while (i<newPackets.size()) {
+		Packets changedBolPackets =  new Packets();
+
+		while (i < newPackets.size()) {
 			Packet current 		= newPackets.get(i);
 			String currentKey 	= current.getKey();
 			String currentValue = current.getValue();
 			Packet added 		= null;
 
 			Packet correspondingOldPacket = null;
+
 			for (int j=lastUsedOldPacket+1; j < oldPackets.size();j++) {
 				Packet old = oldPackets.get(j);
 
 				if (currentKey.equalsIgnoreCase(old.getKey())) {
 					if (currentValue.equalsIgnoreCase(old.getValue())) {
+
 						//this is like the old packet
 						lastUsedOldPacket = j;
 						correspondingOldPacket = old;
@@ -150,18 +155,41 @@ public class Parser {
 				if (correspondingOldPacket.getType() == PacketTypeDefinitions.BOLS) {
 					RepresentableSequence seq = (RepresentableSequence) correspondingOldPacket.getObject();
 					// check for references
-					ArrayList<ReferencedBolPacketUnit> referencedPacketUnits = seq.getReferencedBolPacketUnits();
-					for (ReferencedBolPacketUnit unit: referencedPacketUnits) {
-						//if (newPackets.conunit.getReferencedPacket())
 
-						Packet referencedPacket = newPackets.findReferencedBolPacket(correspondingOldPacket, unit.getReferencedPacket().getKey());
-						if (referencedPacket == null) {
-							//needs to be reparsed, since the reference seems to be gone
-							RepresentableSequence newSeq = sequenceParser.parseSequence(correspondingOldPacket, currentValue);
-							correspondingOldPacket.setObject(newSeq);
-						} else {
-							unit.setReferencedPacket(referencedPacket);
-							seq.clearCache();
+															
+					ArrayList<Representable> unitsToCheck = new ArrayList<Representable>();
+					unitsToCheck.addAll(seq.getFailedUnits());
+					unitsToCheck.addAll(seq.getReferencedBolPacketUnits());
+					unitsToCheck.addAll(seq.getBols());
+					
+					for (Representable unit: unitsToCheck) {
+						if (unit.getType() == Representable.REFERENCED_BOL_PACKET) {
+							ReferencedBolPacketUnit refBolPackUnit = (ReferencedBolPacketUnit) unit;
+							Packet referencedPacket = newPackets.findReferencedBolPacket(correspondingOldPacket, refBolPackUnit.getReferencedPacket().getKey());
+							if (referencedPacket == null) {
+								//needs to be reparsed, since the reference seems to be gone
+								RepresentableSequence newSeq = sequenceParser.parseSequence(correspondingOldPacket, currentValue);
+								correspondingOldPacket.setObject(newSeq);
+							} else {
+								refBolPackUnit.setReferencedPacket(referencedPacket);
+								seq.clearCache();
+							} 
+						} else {							
+							
+							if (unit.getType() == Representable.BOL) {
+								Bol bol = (Bol) unit;
+								Packet referencedPacket = newPackets.findReferencedBolPacket(correspondingOldPacket, bol.getBolName().getName(BolName.EXACT) );
+								
+								if (referencedPacket != null) {
+									Debug.temporary(Parser.class, "found existing failed unit, that now leads to a reference: " + unit.toString());
+									//needs to be reparsed, since the previously failed bol
+									seq = sequenceParser.parseSequence(current, current.getValue());
+									seq.setReferencedSpeedPacket(currentSpeedPacket);
+									added.setObject(seq);
+									break;
+								}
+							}
+							//Packet referencedPacket = newPackets.findReferencedBolPacket(correspondingOldPacket, );	
 						}
 					}
 
@@ -191,6 +219,8 @@ public class Parser {
 					seq.setReferencedSpeedPacket(currentSpeedPacket);
 					current.setObject(seq);
 					added = current;
+					changedBolPackets.add(current);
+					//
 				} else {
 					//add a meta packet
 					processMetaPacket(current);
@@ -302,7 +332,7 @@ public class Parser {
 
 		int i=0;
 
-		
+
 		while (m.find()) {
 			//isVisible
 
@@ -325,7 +355,7 @@ public class Parser {
 				boolean isVisible = type.displayInCompositionView() && (m.group(1) == null);
 
 				Packet packet = new Packet(m.group(2), m.group(3), type, isVisible);				
-				
+
 				packet.setTextReferencePacket(packetReference);
 				packet.setTextRefKey(keyReference);
 				packet.setTextRefValue(valueReference);
@@ -393,13 +423,13 @@ public class Parser {
 				break;
 			case PacketTypeDefinitions.HISTORY:
 				String[] lines = p.getValue().replaceAll(SNatBeginningOrEnd, "").split(Parser.N);
-				
+
 				//Debug.temporary(Parser.class, "parsing History-entries: \"" + p.getValue() +"\"");
 				HistoryEntries historyEntries = new HistoryEntries();
-				
+
 				for (int i=0; i < lines.length; i++) {					
 					input = lines[i].replaceAll(Parser.SNatBeginningOrEnd, "");
-					
+
 					HistoryEntry entry = null;
 					try {
 						//Debug.temporary(Parser.class, "parsing History-entry-candidate: " + input);
@@ -407,12 +437,12 @@ public class Parser {
 					} catch (ParseException e) {
 						Debug.critical(Parser.class, e);
 						e.printStackTrace();
-						
+
 					}
 					if (entry != null) {
 						historyEntries.add(entry);
 					}
-					
+
 				}
 				if (historyEntries.size() > 0) {
 					p.setObject(historyEntries);					
@@ -420,7 +450,7 @@ public class Parser {
 					debug.debug("failed to parse History events, will be ignored!");
 					p.setType(PacketTypeDefinitions.FAILED);
 				}
-				
+
 				break;
 			} // switch	
 		}
