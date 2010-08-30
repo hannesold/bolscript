@@ -251,11 +251,8 @@ public class BolscriptDocument extends DefaultStyledDocument{
 					
 
 					if (p.getType() == PacketTypeDefinitions.BOLS) {
-
 						RepresentableSequence seq = ((RepresentableSequence) p.getObject());
 						renderSequence(seq, p);
-
-
 					}
 
 				}
@@ -296,9 +293,8 @@ public class BolscriptDocument extends DefaultStyledDocument{
 
 		}
 	}
+	
 	private Style getUnitStyle(Representable r, boolean isAtCursor) {
-
-
 		int type = r.getType();
 		switch (type) {
 		case Representable.BOL:
