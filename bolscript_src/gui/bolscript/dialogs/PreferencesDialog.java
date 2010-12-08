@@ -68,12 +68,14 @@ public class PreferencesDialog extends JDialog implements WindowListener, Config
 
 		txtLibraryFolder = new JTextField();
 		txtLibraryFolder.setEditable(false);
+		txtLibraryFolder.setEnabled(false);
+
 		Debug.debug(this, "setting text");
 		txtLibraryFolder.setText(UserConfig.libraryFolder);
 		txtLibraryFolder.setPreferredSize(new Dimension(340, txtLibraryFolder.getPreferredSize().height));
 		chooseAction = new ChooseTablaDir(this);
 
-		btnLibraryFolderChooser = new JButton(new AbstractAction("Choose") {	
+		btnLibraryFolderChooser = new JButton(new AbstractAction("Browse...") {	
 			@Override
 			public void actionPerformed(ActionEvent e) { chooseDir(e); }
 		});
@@ -146,10 +148,10 @@ public class PreferencesDialog extends JDialog implements WindowListener, Config
 
 		if (UserConfig.firstRun &! UserConfig.hasChosenLibraryFolderThisRun) {
 			ok.setEnabled(false);
-
+			//this.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
 		}
 
-		this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+		
 
 		buttonPanel.add(ok);
 		JPanel libraryFolderPanel = new JPanel(new BorderLayout());
@@ -177,6 +179,7 @@ public class PreferencesDialog extends JDialog implements WindowListener, Config
 
 		Config.addChangeListener(this);
 
+		this.addWindowListener(this);
 		this.setResizable(false);
 
 	}
@@ -200,6 +203,7 @@ public class PreferencesDialog extends JDialog implements WindowListener, Config
 			Config.fireConfigChangedEvent(PreferenceKeys.LIBRARY_FOLDER);
 			changed = true;
 			ok.setEnabled(true);
+			this.setDefaultCloseOperation(HIDE_ON_CLOSE);
 		}
 	}
 
@@ -247,6 +251,9 @@ public class PreferencesDialog extends JDialog implements WindowListener, Config
 	 * closes the preferences dialog
 	 */
 	public void close() {
+		if (UserConfig.firstRun &! UserConfig.hasChosenLibraryFolderThisRun) {
+			System.exit(0); 
+		}
 		this.setVisible(false);
 	}
 	
@@ -264,9 +271,11 @@ public class PreferencesDialog extends JDialog implements WindowListener, Config
 
 	public void windowClosed(WindowEvent e) {
 
+		close();
 	}
 
 	public void windowClosing(WindowEvent e) {
+
 		close();
 	}
 

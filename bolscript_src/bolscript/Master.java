@@ -234,7 +234,8 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 			//bolBaseFrame.setVisible(true);
 
 		} catch (Exception e) {
-			debug.critical("something went wrong");
+			debug.critical("something went wrong, exception " + e.getMessage());
+			e.printStackTrace();
 			System.exit(0);
 		}
 		//loadingFrame.setVisible(false);
@@ -371,10 +372,6 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 			editors.remove(i);
 			compositionFrames.remove(i);
 		}
-
-	}
-
-	public void clickOnCompositionList(MouseEvent e) {
 
 	}
 
@@ -544,10 +541,11 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 	}
 
 	/**
-	 * Tries to close the program safely:
+	 * Prepares to close the program safely:
 	 * - attempts to close all open editors first
+	 * Returns true if all worked out, returns false if not.
 	 */
-	public void exit() {
+	public boolean prepareExit() {
 		debug.temporary("exiting");
 		boolean closeInterrupted = false;
 		int i=0;
@@ -562,6 +560,11 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 			}
 		}
 		if (!closeInterrupted) {
+			
+			if (MidiStationSimple.getStandard() != null) {
+				MidiStationSimple.getStandard().shutDown();
+			}
+			
 			debug.temporary("storing config....");
 			boolean configStored = false;
 			try {
@@ -571,19 +574,24 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 				configStored = false;
 			}
 			if (configStored) {
-				System.exit(0);
+				return true;
 			} else {
 				JOptionPane.showMessageDialog(browserFrame, "Sorry, the configuration could not be stored, you will have to reenter your library folder at the next program launch.", "Configuration not stored", JOptionPane.WARNING_MESSAGE);
-				System.exit(0);
+				return true;
 			}
-		}
+			
+		} else return false;
 
-		if (MidiStationSimple.getStandard() != null) {
-			MidiStationSimple.getStandard().shutDown();
-		}
+		
 
 	}
 
+	public void attemptExit() {
+		if (prepareExit()) {
+			System.exit(0);
+		}
+	}
+	
 	public boolean isRunningAsMacApplication() {
 		return runningAsMacApplication;
 	}

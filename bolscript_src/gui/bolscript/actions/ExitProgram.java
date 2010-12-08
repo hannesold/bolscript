@@ -22,7 +22,7 @@ public class ExitProgram extends AbstractAction {
 	}
 	
 	public void actionPerformed(ActionEvent e) {
-		Master.master.exit();
+		Master.master.attemptExit();
 	}
 	
 	

@@ -29,7 +29,11 @@ public class Config {
 	public static String pathToCompositionsNoSlash = "";// = "/Users/hannes/Projekte/Workspace/tabla/bols";
 	public static String pathToCompositions = "";// = "/Users/hannes/Projekte/Workspace/tabla/bols/";
 
-	public static String bolscriptSuffix = ".bols.txt";
+	
+	public static String bolscriptSuffixWithoutTxt = ".bols";
+	public static String bolscriptFinalSuffix = ".txt";
+	public static String bolscriptSuffix = ".bols.txt"
+		;
 	public static String bolBaseSuffix = ".bolbase.txt";
 	public static String pdfSuffix = ".pdf";
 	public static String bolBaseFilename = "bolbase" + bolBaseSuffix;

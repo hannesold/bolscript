@@ -1,16 +1,8 @@
 package bolscript;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
-
 import basics.Debug;
-import basics.GUI;
-import bolscript.config.RunParameters;
-
 import com.apple.eawt.Application;
 import com.apple.eawt.ApplicationEvent;
 import com.apple.eawt.ApplicationListener;
@@ -34,7 +26,6 @@ public class MasterMac extends Master implements ApplicationListener{
 				Debug.critical(this, "AppleScript for revealing file could not be run");
 				e.printStackTrace();
 			}
-		
 	}
 
 	public static Application application;
@@ -53,8 +44,7 @@ public class MasterMac extends Master implements ApplicationListener{
 		application.addApplicationListener(this);
 	}
 	
-	public static void main(String [] args) {
-		
+	public static void main(String [] args) {	
 		System.setProperty("apple.laf.useScreenMenuBar", "true");		
 		initRunparametersCommandLineArguments(args);
 		master = new MasterMac();
@@ -84,7 +74,9 @@ public class MasterMac extends Master implements ApplicationListener{
 	}
 
 	public void handleQuit(ApplicationEvent arg0) {
-		exit();
+		if (this.prepareExit()) {
+			System.exit(0);
+		}
 	}
 
 	public void handleReOpenApplication(ApplicationEvent arg0) {
