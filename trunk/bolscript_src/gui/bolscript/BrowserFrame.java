@@ -41,7 +41,8 @@ import bolscript.Master;
 import bolscript.config.Config;
 import bolscript.config.GuiConfig;
 
-public class BrowserFrame extends JFrame implements WindowListener, DropTargetListener{
+public class BrowserFrame extends JFrame implements WindowListener,
+		DropTargetListener {
 	private CompositionListPanel compositionListPanel;
 	private FilterPanel filterPanel;
 	private SearchPanel searchPanel;
@@ -49,9 +50,10 @@ public class BrowserFrame extends JFrame implements WindowListener, DropTargetLi
 
 	private DropTarget dropTarget, compositionListPanelDropTarget;
 
-	//private CompositionTableModel tableModel;
-	public BrowserFrame(Dimension size, CompositionTableModel model, FilterPanel filterPanel) {
-		super("Bolscript Browser");
+	// private CompositionTableModel tableModel;
+	public BrowserFrame(Dimension size, CompositionTableModel model,
+			FilterPanel filterPanel) {
+		super("Bolscript Library");
 
 		this.filterPanel = filterPanel;
 		this.searchPanel = filterPanel.getSearchPanel();
@@ -60,20 +62,21 @@ public class BrowserFrame extends JFrame implements WindowListener, DropTargetLi
 		headPanel.setLayout(new BorderLayout());
 		headPanel.add(searchPanel, BorderLayout.NORTH);
 		headPanel.add(filterPanel, BorderLayout.CENTER);
-		filterPanel.setMinimumSize(new Dimension(200,130));
+		filterPanel.setMinimumSize(new Dimension(200, 130));
 		JPanel lowerPanel = new JPanel();
 		lowerPanel.setLayout(new BorderLayout());
 		compositionListPanel = new CompositionListPanel(model);
-		lowerPanel.add(compositionListPanel,BorderLayout.CENTER);
+		lowerPanel.add(compositionListPanel, BorderLayout.CENTER);
 		JButton addButton = new JButton(new OpenNew());
-		lowerPanel.add(addButton,BorderLayout.SOUTH);
+		lowerPanel.add(addButton, BorderLayout.SOUTH);
 
 		JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		splitPane.setLeftComponent(headPanel);
 		splitPane.setRightComponent(lowerPanel);
 		this.setContentPane(splitPane);
 
-		dropTarget = new DropTarget(compositionListPanel.getCompositionTable(), this);
+		dropTarget = new DropTarget(compositionListPanel.getCompositionTable(),
+				this);
 		compositionListPanelDropTarget = new DropTarget(this, this);
 
 		initMenuBar();
@@ -82,22 +85,17 @@ public class BrowserFrame extends JFrame implements WindowListener, DropTargetLi
 		this.addWindowListener(this);
 		this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
-
-
 	}
-
 
 	public CompositionListPanel getCompositionListPanel() {
 		return compositionListPanel;
 	}
 
-
 	private void initMenuBar() {
 
-		JMenuBar menubar = new JMenuBar();		
+		JMenuBar menubar = new JMenuBar();
 		menubar.add(new FileMenu(this));
 		menubar.add(new EditMenu(this));
-
 
 		this.setJMenuBar(menubar);
 
@@ -106,96 +104,108 @@ public class BrowserFrame extends JFrame implements WindowListener, DropTargetLi
 
 	private void initMenuUpdater() {
 		menuUpdater = new MenuUpdater(this.getJMenuBar());
-		compositionListPanel.getCompositionTable().getSelectionModel().addListSelectionListener(new ListSelectionListener()  {
+		compositionListPanel.getCompositionTable().getSelectionModel()
+				.addListSelectionListener(new ListSelectionListener() {
 
-			@Override
-			public void valueChanged(ListSelectionEvent e) {
-				menuUpdater.updateEnabling();
-			}
-		});
+					@Override
+					public void valueChanged(ListSelectionEvent e) {
+						menuUpdater.updateEnabling();
+					}
+				});
 
-		compositionListPanel.getTableModel().addTableModelListener(new TableModelListener() {
+		compositionListPanel.getTableModel().addTableModelListener(
+				new TableModelListener() {
 
-			@Override
-			public void tableChanged(TableModelEvent e) {
-				menuUpdater.updateEnabling();	
-			}
-		});
+					@Override
+					public void tableChanged(TableModelEvent e) {
+						menuUpdater.updateEnabling();
+					}
+				});
 
 	}
-
 
 	public void windowClosing(WindowEvent e) {
-		Master.master.exit();
+		Master.master.attemptExit();
 	}
-	public void windowActivated(WindowEvent e) {}
-	public void windowClosed(WindowEvent e) {}
-	public void windowDeactivated(WindowEvent e) {}
-	public void windowDeiconified(WindowEvent e) {}
-	public void windowIconified(WindowEvent e) {}
-	public void windowOpened(WindowEvent e) {}
 
+	public void windowActivated(WindowEvent e) {
+	}
+
+	public void windowClosed(WindowEvent e) {
+	}
+
+	public void windowDeactivated(WindowEvent e) {
+	}
+
+	public void windowDeiconified(WindowEvent e) {
+	}
+
+	public void windowIconified(WindowEvent e) {
+	}
+
+	public void windowOpened(WindowEvent e) {
+	}
 
 	@Override
 	public void dragEnter(DropTargetDragEvent evt) {
-		this.compositionListPanel.setBorder(new LineBorder(GuiConfig.sequencePanelHighlightColor, 5));
+		this.compositionListPanel.setBorder(new LineBorder(
+				GuiConfig.sequencePanelHighlightColor, 5));
 	}
-
 
 	@Override
 	public void dragExit(DropTargetEvent dte) {
-			this.compositionListPanel.setBorder(null);	
+		this.compositionListPanel.setBorder(null);
 	}
-
 
 	@Override
 	public void dragOver(DropTargetDragEvent dtde) {
 
 	}
 
-
 	@Override
 	public void drop(DropTargetDropEvent evt) {
 		this.compositionListPanel.setBorder(null);
-		
-		if (evt.getCurrentDataFlavorsAsList().contains(CompositionDataFlavor.getFlavor())) {
+
+		if (evt.getCurrentDataFlavorsAsList().contains(
+				CompositionDataFlavor.getFlavor())) {
 			return;
 		}
-		
+
 		List<File> potentialBolscriptFiles = new ArrayList<File>();
-			int action = evt.getDropAction(); 
-			evt.acceptDrop(action);
+		int action = evt.getDropAction();
+		evt.acceptDrop(action);
 
-			try {
-				Transferable data = evt.getTransferable();
-				DataFlavor flavors[] = data.getTransferDataFlavors();
-				if (data.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
-					List<File> list = (List<File>) data.getTransferData(
-							DataFlavor.javaFileListFlavor);
+		try {
+			Transferable data = evt.getTransferable();
+			DataFlavor flavors[] = data.getTransferDataFlavors();
+			if (data.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
+				List<File> list = (List<File>) data
+						.getTransferData(DataFlavor.javaFileListFlavor);
 
-					for (File file : list) {
-						if (file.getName().toLowerCase().endsWith(Config.bolscriptSuffix)) {
-							potentialBolscriptFiles.add(file);
-						}
-					}
-					if (potentialBolscriptFiles.size()>0) {                	
-						Master.master.openSomeExistingFiles(potentialBolscriptFiles);
+				for (File file : list) {
+					if (file.getName().toLowerCase().endsWith(
+							Config.bolscriptSuffix)) {
+						potentialBolscriptFiles.add(file);
 					}
 				}
-			} catch (UnsupportedFlavorException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			} finally {
-				if (potentialBolscriptFiles.size()>0) {
-					evt.dropComplete(true);
-				} else {
-					evt.dropComplete(false);
-				}        	
+				if (potentialBolscriptFiles.size() > 0) {
+					Master.master
+							.openSomeExistingFiles(potentialBolscriptFiles);
+				}
 			}
-			
-	}
+		} catch (UnsupportedFlavorException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (potentialBolscriptFiles.size() > 0) {
+				evt.dropComplete(true);
+			} else {
+				evt.dropComplete(false);
+			}
+		}
 
+	}
 
 	@Override
 	public void dropActionChanged(DropTargetDragEvent dtde) {

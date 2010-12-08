@@ -42,7 +42,8 @@ public class SaveAs extends AbstractAction {
 		Debug.temporary(this, "setting path to " + currentFile.getParent());
 		fileDialog.setDirectory(currentFile.getParent());
 		fileDialog.setFilenameFilter(new SuffixFilter(Config.bolscriptSuffix));
-		fileDialog.setFile(currentFile.getName());
+		String filenam = currentFile.getName();
+		fileDialog.setFile(filenam);
 
 		fileDialog.setVisible(true);
 		//File Dialog is modal. 
@@ -78,9 +79,13 @@ public class SaveAs extends AbstractAction {
 			
 			String filename = fileDialog.getDirectory() + Config.fileSeperator + fileDialog.getFile();
 
-			/*if (!filename.endsWith(Config.bolscriptSuffix)) {
-				filename = filename + Config.bolscriptSuffix;
-			}*/
+			if (!filename.endsWith(Config.bolscriptSuffix)) {
+				if(filename.endsWith(Config.bolscriptSuffixWithoutTxt)) {
+					filename = filename + ".txt";
+				} else {
+					filename = filename + Config.bolscriptSuffix;
+				}
+			}
 			File file = new File(filename);
 			Debug.debug(this, "Save As : " + filename);
 			Master.master.saveEditorAs(editor, filename);

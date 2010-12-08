@@ -167,6 +167,7 @@ public class CompositionListPanel extends JScrollPane  {
 		compositionTable = new JTable(model);
 		compositionTable.setDefaultRenderer(Integer.class, new StateRenderer(false));
 		compositionTable.setDefaultRenderer(Object.class, new CellRenderer(true));
+		
 		compositionTable.setBackground(Color.white);
 		compositionTable.getColumnModel().getColumn(0).setMaxWidth(20);
 		compositionTable.getColumnModel().getColumn(1).setMinWidth(140);
@@ -176,11 +177,12 @@ public class CompositionListPanel extends JScrollPane  {
 		compositionTable.getColumnModel().getColumn(3).setMaxWidth(145);
 		compositionTable.getColumnModel().getColumn(4).setMinWidth(80);
 		compositionTable.getColumnModel().getColumn(5).setMinWidth(140);
-		compositionTable.getColumnModel().getColumn(6).setMinWidth(95);
+		int initialSortColumn = 6;
+		compositionTable.getColumnModel().getColumn(6).setMinWidth(95);		
 		compositionTable.getColumnModel().getColumn(6).setMaxWidth(95);
 		compositionTable.getColumnModel().getColumn(7).setMinWidth(95);
 		compositionTable.getColumnModel().getColumn(7).setMaxWidth(95);
-		compositionTable.addMouseListener(GUI.proxyClickListener(Master.master, "clickOnCompositionList"));
+		//compositionTable.addMouseListener(GUI.proxyClickListener(Master.master, "clickOnCompositionList"));
 		//compositionTable.setShowGrid(false);
 		compositionTable.setGridColor(GuiConfig.tableBG);
 		compositionTable.setShowGrid(false);
@@ -248,10 +250,14 @@ public class CompositionListPanel extends JScrollPane  {
 			sortKeys.add(new RowSorter.SortKey(i, SortOrder.ASCENDING));
 		}
 		sorter.setSortKeys(sortKeys); 
+		
+
 
 		//= new Def
 		compositionTable.setRowSorter(sorter);
-
+		compositionTable.getRowSorter().toggleSortOrder(initialSortColumn);
+		compositionTable.getRowSorter().toggleSortOrder(initialSortColumn);
+		
 		this.setViewportView(compositionTable);
 		this.getViewport().setBackground(Color.white);
 		

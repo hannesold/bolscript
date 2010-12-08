@@ -751,7 +751,7 @@ public class RepresentableSequence implements Representable, Collection<Represen
 				if (current.getType() == Representable.SPEED) {
 					SpeedUnit s = (SpeedUnit) current;
 
-					if (s.isAbsolute() &! currentSpeedUnit.getSpeed().equals(s.getSpeed())) {
+					if (s.isAbsolute()) { // &! (currentSpeedUnit.getSpeed().equals(s.getSpeed())) {
 						//add new absolute speeds directly
 						//Debug.temporary(this, "adding abs speed " + s + " (current speed was: " + currentSpeedUnit+")");
 						flat.add(s);

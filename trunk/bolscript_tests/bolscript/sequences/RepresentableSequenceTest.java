@@ -72,7 +72,32 @@ public class RepresentableSequenceTest {
 		Debug.temporary(this, "after flattening: " + flat.toStringAll());
 		//add relative speeds
 		
+		input = "(3 ta ki te 1 ge na (3 Dha ti te)x2 )x2";
+		seq = parser.parseSequence(null, input);
+		Debug.temporary(this, "before flattening: " + seq.toStringAll());
+		flat = seq.flatten();
+		Debug.temporary(this, "after flattening: " + flat.toStringAll());
+		
+		input = "(3 (3 ta ki te 1)x2)";
+		seq = parser.parseSequence(null, input);
+		Debug.temporary(this, "before flattening: " + seq.toStringAll());
+		flat = seq.flatten();
+		//.getBundled(bundlingMap,bundlingDepth, true);
+		Debug.temporary(this, "after flattening: " + flat.toStringAll());
+		flat = seq.flatten().getBundled(new Rational(2), false);
+		//.getBundled(bundlingMap,bundlingDepth, true);
+		Debug.temporary(this, "after bundling: " + flat.toStringAll());		
+		String out = "";
+		for (Representable r : flat) {
+			if (r.getType() == Representable.BOL) {
+				out += (r.toString()+((Bol)r).getSpeed() + " ");				
+			}
+		}
+		Debug.temporary(this, out);
+		
 	}
+	
+	
 	
 	@Ignore 
 	public void testTruncating() {

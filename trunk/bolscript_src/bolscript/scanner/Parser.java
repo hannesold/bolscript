@@ -24,6 +24,7 @@ import bolscript.sequences.FootnoteUnit;
 import bolscript.sequences.ReferencedBolPacketUnit;
 import bolscript.sequences.Representable;
 import bolscript.sequences.RepresentableSequence;
+import bolscript.sequences.SpeedUnit;
 
 /**
  * This class contains the essential methods for reading and parsing bolscript files,
@@ -79,6 +80,9 @@ public class Parser {
 	public static String RATIONAL = "\\d{1,2}+(?:/\\d{1,2}+)?";
 
 	public static Packet defaultSpeedPacket = new Packet("Speed", "1",PacketTypeDefinitions.SPEED,false);
+	static {
+		defaultSpeedPacket.setObject(new Rational(1));
+	}
 
 	/**
 	 * A Regular expression to split an input String into a series of packets.

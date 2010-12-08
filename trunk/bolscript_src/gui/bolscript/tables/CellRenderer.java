@@ -24,7 +24,8 @@ public class CellRenderer extends DefaultTableCellRenderer {
 			boolean isSelected, boolean hasFocus, int row, int column) {
 		
 		JLabel c = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);//new JLabel();
-		c.setText(" "+ value.toString() );
+		String stringValue = (value != null ? value.toString() : "");
+		c.setText(" " +  stringValue);
 		
 		c.setOpaque(true);
 		Dimension size = GUI.getPrefferedSize(c, 50);
@@ -41,7 +42,7 @@ public class CellRenderer extends DefaultTableCellRenderer {
 		}
 		
 		if (withToolTips) {
-			c.setToolTipText(value.toString());
+			c.setToolTipText(stringValue);
 		}
 		return c;
 	}
