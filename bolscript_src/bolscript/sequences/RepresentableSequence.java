@@ -40,6 +40,10 @@ public class RepresentableSequence implements Representable, Collection<Represen
 		getToStringPattern (new int[]{
 				Representable.BOL, 
 				Representable.BUNDLE});
+	public static boolean[] FOR_SEARCH_STRING_NO_PAUSES = 
+		getToStringPattern (new int[]{
+				Representable.BOL, 
+				Representable.BUNDLE});
 
 	static {
 		for (int i=0; i < Representable.nrOfTypes; i++) {
@@ -606,8 +610,8 @@ public class RepresentableSequence implements Representable, Collection<Represen
 			if (displayPattern[type]) {
 				switch (type) {
 
-				case Representable.BOL:
-					s.append(((Bol)get(i)).getBolName().getName(language)+ " ");
+				case Representable.BOL:					
+					s.append(((Bol)get(i)).getBolName().getName(language)+ " ");					
 					nrOfBols++;
 					if (nrOfBols > maxBols) return s.toString();
 					break;

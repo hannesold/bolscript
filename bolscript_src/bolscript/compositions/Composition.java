@@ -220,9 +220,15 @@ public class Composition implements DataStatePosessor{
 					
 					if (p.getObject() != null) {
 						RepresentableSequence r = (RepresentableSequence) p.getObject();
-						r = r.flatten(SpeedUnit.getDefaultSpeedUnit());						
-						addSearchString(r.toString(RepresentableSequence.FOR_SEARCH_STRING, BolName.EXACT));
-						addSearchString(r.toString(RepresentableSequence.FOR_SEARCH_STRING, BolName.SIMPLE));
+						r = r.flatten(SpeedUnit.getDefaultSpeedUnit());
+						String exact = r.toString(RepresentableSequence.FOR_SEARCH_STRING, BolName.EXACT);
+						String simple = r.toString(RepresentableSequence.FOR_SEARCH_STRING, BolName.SIMPLE);
+						addSearchString(exact);
+						addSearchString(simple);
+						String exact_noPausesAndSoOn = exact.replaceAll("( -)|( -)", "");
+						String simple_noPausesAndSoOn = exact.replaceAll("-", "");
+						addSearchString(exact_noPausesAndSoOn);
+						addSearchString(simple_noPausesAndSoOn);
 					}
 				}
 
