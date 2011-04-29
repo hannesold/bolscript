@@ -2,7 +2,10 @@ package bolscript;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
+
 import basics.Debug;
+import bolscript.config.GuiConfig;
+
 import com.apple.eawt.Application;
 import com.apple.eawt.ApplicationEvent;
 import com.apple.eawt.ApplicationListener;
@@ -54,7 +57,7 @@ public class MasterMac extends Master implements ApplicationListener{
 	@Override
 	public void showPreferences() {
 		super.showPreferences();
-		browserFrame.setVisible(true);
+		GuiConfig.setVisibleAndAdaptFrameLocation(browserFrame);
 	}
 	
 	public void handleAbout(ApplicationEvent arg0) {

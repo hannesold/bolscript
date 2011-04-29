@@ -3,11 +3,13 @@ package bolscript.config;
 
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.GraphicsEnvironment;
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.io.FileInputStream;
@@ -23,6 +25,7 @@ import javax.swing.JTable;
 import basics.Debug;
 import bols.BolName;
 import bols.tals.Vibhag;
+import bolscript.config.Config.OperatingSystems;
 
 /**
  * A class for storing the gui configuration
@@ -138,8 +141,10 @@ public class GuiConfig {
 		//Set all preferred font names to default
 		String bolFontDefaultName = "Arial";
 		
-		if (!existsFontFamily(bolFontDefaultName)) {
+		if (!existsFontFamily(bolFontDefaultName)) {			
 			Debug.critical(GuiConfig.class, "Default Font: " + bolFontDefaultName + " could not be found!");
+			bolFontDefaultName = new Font("SansSerif", Font.PLAIN, 12).getFamily();
+			Debug.debug(GuiConfig.class, "Setting default font to system sansserif font: " + bolFontDefaultName);
 		}
 		
 		for (int i=0; i < BolName.languagesCount; i++) {
@@ -154,7 +159,7 @@ public class GuiConfig {
 			bolFontSizeMax[i] = 48f;
 			
 			//Attempt to set preferred fonts
-			for (int j=0; j < bolFontNamesPreferred.length; j++) {
+			for (int j=0; j < bolFontNamesPreferred[i].length; j++) {
 				if (existsFontFamily(bolFontNamesPreferred[i][j])) {
 					bolFonts[i] 	= new Font(bolFontNamesPreferred[i][j], Font.PLAIN, (int) bolFontSizeStd[i]);
 					bolFontsBold[i] = new Font(bolFontNamesPreferred[i][j], Font.PLAIN, (int) bolFontSizeStd[i]);
@@ -285,5 +290,25 @@ public class GuiConfig {
 		return windowsFrameIcon;
 	}
 
+	private static Point adaptNewFrameLocation(Point location) {
+		if (location == null) location = new Point(0,0);
+		Point p = new Point(location.x, location.y);
+		if (Config.operatingSystem == OperatingSystems.Linux) {
+			if (p.y == 0) 
+			{
+				p.y += 30;
+			}
+		}
+		Debug.debug(GuiConfig.class, "returning new frame location ("+p.toString()+")");
+		return p;
+	}
+
+	private static void adaptNewFrameLocation(Component comp) {
+		comp.setLocation(adaptNewFrameLocation(comp.getLocation()));		
+	}
 	
+	public static void setVisibleAndAdaptFrameLocation(Component comp) {
+		adaptNewFrameLocation(comp);
+		comp.setVisible(true);
+	}
 }

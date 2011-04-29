@@ -189,7 +189,7 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 			if (UserConfig.firstRun) {
 				Debug.temporary(this, "first run");
 				prefsDialog.setModal(true);
-				prefsDialog.setVisible(true);
+				GuiConfig.setVisibleAndAdaptFrameLocation(prefsDialog);
 			}
 
 
@@ -222,8 +222,9 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 
 		try {
 
-			browserFrame = new BrowserFrame(GuiConfig.getBrowserFrameDimension(),compTableModel, filterPanel);
-			browserFrame.setVisible(true);
+			browserFrame = new BrowserFrame(GuiConfig.getBrowserFrameDimension(),compTableModel, filterPanel);			
+			GuiConfig.setVisibleAndAdaptFrameLocation(browserFrame);		
+			
 			Image icon = GuiConfig.getWindowsFrameIcon();
 			debug.temporary("imageIcon: " +icon);
 			if (icon != null) browserFrame.setIconImage(icon);
@@ -231,7 +232,7 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 			compositionFrames = new ArrayList<CompositionFrame>();//new CompositionFrame(new Dimension(800,600),false);
 
 			//bolBaseFrame = new BolBaseFrame(new Dimension(800,800));
-			//bolBaseFrame.setVisible(true);
+			//GuiConfig.setVisibleAndAdaptFrameLocation(bolBaseFrame);
 
 		} catch (Exception e) {
 			debug.critical("something went wrong, exception " + e.getMessage());
@@ -277,8 +278,6 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 				compositionBase.removeComposition(c);
 			}
 		}
-
-
 	}
 
 	public CompositionPanel getCompositionPanel() {
@@ -295,6 +294,7 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 
 
 	public void revealFileInOSFileManager(String filename) {
+		
 		//windows implementation
 		if (Config.operatingSystem == Config.OperatingSystems.Windows) {
 			try {
@@ -407,7 +407,7 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 			if (!path.startsWith(UserConfig.libraryFolder)) {
 				//want to import?
 				OpenOrImportExistingFileDialog question = new OpenOrImportExistingFileDialog(browserFrame, comps);
-				question.setVisible(true); // (modal)
+				GuiConfig.setVisibleAndAdaptFrameLocation(question); // (modal)
 				switch (question.getChoice()) {
 				case (OpenOrImportExistingFileDialog.IMPORT):
 					//add the file to a generated place
@@ -447,6 +447,9 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 				comp.getDataState().open(comp);
 
 				CompositionFrame compositionFrame = new CompositionFrame(comp, GuiConfig.getCompositionViewerSize(), compositionBase);
+			
+				GuiConfig.setVisibleAndAdaptFrameLocation(compositionFrame);
+				
 				Image icon = GuiConfig.getWindowsFrameIcon();
 				if (icon != null) compositionFrame.setIconImage(icon);
 
@@ -479,7 +482,7 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 
 		debug.debug("show SaveChangesDialog for " + editor);
 		editor.saveChangesDialog = new SaveChangesDialog(editor);
-		editor.saveChangesDialog.setVisible(true);
+		GuiConfig.setVisibleAndAdaptFrameLocation(editor.saveChangesDialog);
 
 		debug.debug("has decision for " + editor);
 
@@ -520,7 +523,7 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 
 		if (failed.size()>0) {
 			CouldNotBeRemovedDialog dialog = new CouldNotBeRemovedDialog(browserFrame, failed);
-			dialog.setVisible(true);
+			GuiConfig.setVisibleAndAdaptFrameLocation(dialog);
 			dialog.dispose();
 		}
 	}
@@ -598,7 +601,7 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 
 	public void showPreferences() {
 		prefsDialog.setModal(true);
-		prefsDialog.setVisible(true);
+		GuiConfig.setVisibleAndAdaptFrameLocation(prefsDialog);
 	}
 
 	public CompositionBase getCompositionBase() {
@@ -610,7 +613,7 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 		try {				
 			Debug.temporary(this, "Showing update window");
 			updateFrame = new UpdateFrame();
-			updateFrame.setVisible(true);
+			GuiConfig.setVisibleAndAdaptFrameLocation(updateFrame);
 			
 			Debug.temporary(this, "Initing update manager thread...");
 			UpdateManager updateManager = new UpdateManager();

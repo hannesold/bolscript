@@ -24,8 +24,6 @@ public class Bol implements Representable, HasPlayingStyle {
 		this(bolName, style, null, false);
 	}
 
-
-
 	public Bol (BolName bolName, PlayingStyle style, TextReference textReference, boolean emphasized) {
 		this.bolName = bolName;
 		this.style = style;
@@ -95,7 +93,6 @@ public class Bol implements Representable, HasPlayingStyle {
 		this.textReference = textReference;
 	}
 	
-
 	@Override
 	public SpeedUnit addFlattenedToSequence(RepresentableSequence seq, SpeedUnit basicSpeedUnit, int currentDepth) {
 		seq.add(this);

@@ -6,7 +6,6 @@ public class PreferenceKeys {
 	
 	public class DeprecatedKeys {
 		public static final String TABLA_FOLDER = "tablaFolder";
-		
 	}
 	
 	public static final String USER_ID = "USER_ID";

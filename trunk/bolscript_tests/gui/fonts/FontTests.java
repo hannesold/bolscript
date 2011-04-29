@@ -102,7 +102,7 @@ public void init() {
 	mainFrame = new JFrame("Font chooser");
 	mainFrame.setContentPane(panel);
 	mainFrame.pack();
-	mainFrame.setVisible(true);
+	GuiConfig.setVisibleAndAdaptFrameLocation(mainFrame);
 	mainFrame.addWindowListener(this);
 	
 	examplePanel = new JPanel();
@@ -110,7 +110,7 @@ public void init() {
 	JScrollPane scrollPane = new JScrollPane(examplePanel);
 	exampleFrame.setContentPane(scrollPane);
 	exampleFrame.pack();
-	exampleFrame.setVisible(true);
+	GuiConfig.setVisibleAndAdaptFrameLocation(exampleFrame);
 	exampleFrame.setLocation(GUI.getRight(mainFrame), GUI.getTop(mainFrame));
 	
 	refreshSequenceFrame();

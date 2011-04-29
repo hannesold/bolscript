@@ -5,6 +5,8 @@ import java.awt.Insets;
 import java.io.File;
 import java.io.FileOutputStream;
 
+import basics.Debug;
+
 import com.lowagie.text.Document;
 import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.PdfContentByte;
@@ -16,7 +18,6 @@ public class PdfInfo {
 
 	private double pdfPageWidth, pdfPageHeight;	
 	private Insets pdfPageMargins;
-
 
 	/**
 	 * Multiply a pixel with scalingFactor, to get its size in pdf scale.
@@ -76,40 +77,50 @@ public class PdfInfo {
 		return (float) (getInnerPdfPageWidth() /scalingFactor);
 	}
 
+	private static Rectangle pageSize = null;
 	static Rectangle getPdfPageSize() {
-		Rectangle pageSize = null;
-		Document document = new Document();
-		String randomFileNameForPdfTests = "temporary pdf file - can be deleted.pdf";
-		
-		try {
-			// step 2:
-			// we create a writer
-			PdfWriter writer;
-			
-			writer = PdfWriter.getInstance(document, new FileOutputStream(randomFileNameForPdfTests));
-			// step 3: we open the document
-			document.open();
-			// step 4: we add a table to the document
-	
-			PdfContentByte cb = writer.getDirectContent();
-	
-			pageSize = writer.getPageSize();
-			writer.close();
-			
-		} catch (Exception ex) {
-	
-		}
-		try {
-			File file = new File(randomFileNameForPdfTests);
-			if (file.exists()) {
-				file.delete();
+		if (pageSize == null) {		
+			Document document = new Document();
+			String randomFileNameForPdfTests = "temporary pdf file - can be deleted.pdf";
+
+			try {
+				// step 2:
+				// we create a writer
+				PdfWriter writer;
+
+				Debug.debug(PdfInfo.class, "trying to write sample pdf to " + randomFileNameForPdfTests);
+				FileOutputStream stream = new FileOutputStream(randomFileNameForPdfTests);
+				writer = PdfWriter.getInstance(document, stream);
+
+				// step 3: we open the document
+				document.open();
+
+				// step 4: we add a table to the document
+				PdfContentByte cb = writer.getDirectContent();
+
+				pageSize = writer.getPageSize();
+				stream.close();			
+			} catch (Exception ex) {
+				Debug.critical(PdfInfo.class, "Could not determine pdfPageSize by testing on sample pdf document!");
 			}
-		} catch (Exception ex) {
-			
+			try {
+				File file = new File(randomFileNameForPdfTests);
+				if (file.exists()) {
+					file.delete();
+				}
+			} catch (Exception ex) {
+				Debug.critical(PdfInfo.class, "Could not remove sample pdf!");
+			}
+			/*if (pageSize != null) {
+				float pageWidth =  pageSize.getWidth() -defaultPdfPageMargins.left - defaultPdfPageMargins.right;
+			//	float pageHeight =  pageSize.getHeight() -defaultPdfPageMargins.top - defaultPdfPageMargins.bottom;
+			}*/
 		}
-		float pageWidth =  pageSize.getWidth() -defaultPdfPageMargins.left - defaultPdfPageMargins.right;
-		float pageHeight =  pageSize.getHeight() -defaultPdfPageMargins.top - defaultPdfPageMargins.bottom;
-	
+		if (pageSize == null) {			
+			pageSize = new Rectangle(595, 842);
+			Debug.debug(PdfInfo.class, "Falling back to default page size...");
+		}
+		Debug.debug(PdfInfo.class, "returning pagesize: " + pageSize.toString());
 		return pageSize;
 	}
 

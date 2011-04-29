@@ -49,12 +49,9 @@ public class Config {
 	public enum OperatingSystems {
 		Windows,
 		Mac,
+		Linux,
 		Unknown
 	}
-	
-	
-	
-	
 	
 	public static OperatingSystems operatingSystem = OperatingSystems.Unknown;
 	public static boolean 		initialised = false;
@@ -66,6 +63,7 @@ public class Config {
 	public static String compositionEncoding = "UTF-8";
 	public static String bolBaseEncoding = "UTF-16";
 	public static Object bolscriptStandardLineSeperator ="\n";
+	
 	static {
 		if (!initialised) {
 			init();

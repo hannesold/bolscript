@@ -3,18 +3,16 @@ package gui.bolscript.actions;
 import gui.bolscript.BrowserFrame;
 import gui.bolscript.EditorFrame;
 import gui.bolscript.dialogs.RemoveAndDeleteDialog;
-import gui.bolscript.tables.CompositionTableModel;
 
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 
 import javax.swing.AbstractAction;
-import javax.swing.JTable;
 
 import basics.Debug;
 import bolscript.Master;
 import bolscript.compositions.Composition;
-import bolscript.compositions.DataState;
+import bolscript.config.GuiConfig;
 
 public class RemoveSelected extends AbstractAction implements EnablingUpdatable{
 	EditorFrame editor;
@@ -33,7 +31,7 @@ public class RemoveSelected extends AbstractAction implements EnablingUpdatable{
 		ArrayList<Composition> compsToRemove = getCompositionsToRemove();
 
 		RemoveAndDeleteDialog dialog = new RemoveAndDeleteDialog(browser);
-		dialog.setVisible(true);
+		GuiConfig.setVisibleAndAdaptFrameLocation(dialog);
 
 		switch (dialog.getChoice()) {
 
