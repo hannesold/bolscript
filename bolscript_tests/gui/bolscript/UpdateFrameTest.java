@@ -10,6 +10,7 @@ import basics.FileManager;
 import basics.FileReadException;
 import bolscript.UpdateInfo;
 import bolscript.config.Config;
+import bolscript.config.GuiConfig;
 
 
 public class UpdateFrameTest {
@@ -36,7 +37,7 @@ public class UpdateFrameTest {
 			public void run() {
 				updateFrame.displayInfo(updateInfo);
 				updateFrame.setPreferredSize(new Dimension(500,300));
-				updateFrame.setVisible(true);
+				GuiConfig.setVisibleAndAdaptFrameLocation(updateFrame);
 			}
 		});
 		

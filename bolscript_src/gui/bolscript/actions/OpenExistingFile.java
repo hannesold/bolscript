@@ -12,6 +12,7 @@ import javax.swing.AbstractAction;
 import basics.SuffixFilter;
 import bolscript.Master;
 import bolscript.config.Config;
+import bolscript.config.GuiConfig;
 
 public class OpenExistingFile extends AbstractAction {
 	private BrowserFrame browser;
@@ -30,7 +31,7 @@ public class OpenExistingFile extends AbstractAction {
 		FileDialog fileDialog = new FileDialog(browser, "Open", FileDialog.LOAD);
 		fileDialog.setDirectory(Config.homeDir);
 		fileDialog.setFilenameFilter(new SuffixFilter(Config.bolscriptSuffix));
-		fileDialog.setVisible(true);
+		GuiConfig.setVisibleAndAdaptFrameLocation(fileDialog);
 		
 		//File Dialog is modal. 
 		//When a location and filename is chosen the program continues here.
@@ -47,7 +48,7 @@ public class OpenExistingFile extends AbstractAction {
 				if (!dirPath.startsWith(compPath)) {
 					OpenFileDialog question = new OpenFileDialog(browser);
 
-					question.setVisible(true); // (modal)
+					GuiConfig.setVisibleAndAdaptFrameLocation(question); // (modal)
 					switch (question.getChoice()) {
 						case(OpenFileDialog.CANCEL):
 							fileDialog.dispose();

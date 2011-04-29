@@ -12,6 +12,7 @@ import javax.swing.filechooser.FileFilter;
 import basics.Debug;
 import basics.FolderFilter;
 import bolscript.config.Config;
+import bolscript.config.GuiConfig;
 import bolscript.config.UserConfig;
 
 public class ChooseTablaDir extends AbstractAction {
@@ -38,7 +39,7 @@ public class ChooseTablaDir extends AbstractAction {
 			System.setProperty("apple.awt.fileDialogForDirectories", "true");
 			FileDialog fileDialog = new FileDialog(owner, "Set Library Folder", FileDialog.LOAD);
 			fileDialog.setDirectory(path);
-			fileDialog.setVisible(true);
+			GuiConfig.setVisibleAndAdaptFrameLocation(fileDialog);
 			
 			if (fileDialog.getDirectory() != null) {
 				Debug.debug(this, "directory chosen: " + fileDialog.getDirectory());

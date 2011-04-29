@@ -7,8 +7,6 @@ import basics.GUI;
 import bolscript.compositions.Composition;
 
 public class FullTextSearchFilter extends StringArrayFilter implements Filter {
-
-
 	
 	public FullTextSearchFilter () {
 		super();

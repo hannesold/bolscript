@@ -6,6 +6,8 @@ import gui.bolscript.tasks.SkippingWorker;
 import java.awt.Dimension;
 import java.util.HashMap;
 
+import bolscript.config.GuiConfig;
+
 /**
  * <p>This class is used for debug messages of different debug codes.</p>
  * <p>Two maps map classes and debug codes to their visibilities,
@@ -201,7 +203,7 @@ public class Debug {
 	public static void showErrorConsole() {
 		if (!consoleShowing) {
 			consoleShowing = true;
-			console.setVisible(true);
+			GuiConfig.setVisibleAndAdaptFrameLocation(console);
 			consoleRefreshWorker.addUpdate();
 		}
 	}

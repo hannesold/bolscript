@@ -15,6 +15,7 @@ import bolscript.Master;
 import bolscript.compositions.CompositionBase;
 import bolscript.compositions.DataState;
 import bolscript.config.Config;
+import bolscript.config.GuiConfig;
 
 public class SaveAs extends AbstractAction {
 
@@ -45,7 +46,7 @@ public class SaveAs extends AbstractAction {
 		String filenam = currentFile.getName();
 		fileDialog.setFile(filenam);
 
-		fileDialog.setVisible(true);
+		GuiConfig.setVisibleAndAdaptFrameLocation(fileDialog);
 		//File Dialog is modal. 
 		//When a location and filename is chosen the program continues here.
 		
@@ -59,7 +60,7 @@ public class SaveAs extends AbstractAction {
 				String compPath = new File(Config.pathToCompositions).getAbsolutePath();
 				if (!dirPath.startsWith(compPath)) {
 					SaveOutsideLibraryFolder question = new SaveOutsideLibraryFolder(editor);
-					question.setVisible(true); // (modal)
+					GuiConfig.setVisibleAndAdaptFrameLocation(question); // (modal)
 					switch (question.getChoice()) {
 						case(SaveOutsideLibraryFolder.CANCEL):
 							fileDialog.dispose();

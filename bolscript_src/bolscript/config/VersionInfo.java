@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
+import basics.Debug;
 import bolscript.config.Config.OperatingSystems;
 
 public class VersionInfo {
@@ -61,13 +62,22 @@ public class VersionInfo {
 		
 	}
 	public static Config.OperatingSystems parseOperatingSystem(String opSysAsString) {
+		Debug.debug(Config.class, "Parsing operating system string: " + opSysAsString);
 		String regexForWindows = "(?i)win.*";
 		String regexForMac = "(?i)OSX.*|OS X.*|Mac.*|mac.*";
+		String regexForLinux = "(?i)linux.*";
+		
 		if (opSysAsString.matches(regexForWindows)) {
+			Debug.debug(Config.class, "Identified as Windows");
 			return Config.OperatingSystems.Windows;
 		} else if (opSysAsString.matches(regexForMac)) {
+			Debug.debug(Config.class, "Identified as Mac");
 			return Config.OperatingSystems.Mac;
+		} else if (opSysAsString.matches(regexForLinux)) {
+			Debug.debug(Config.class, "Identified as Linux");
+			return Config.OperatingSystems.Linux;
 		}
+		Debug.debug(Config.class, "Remains unknown...");
 		return Config.OperatingSystems.Unknown;
 	}
 	

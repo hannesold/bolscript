@@ -9,7 +9,7 @@ public interface Filter {
 	public final int OR = 0;
 	public final int AND = 1;
 	
-	public final int GHARANA =2;
+	public final int GHARANA = 2;
 	public final int SPEED = 3;
 	public final int TAL = 4;
 	public final int TYPE = 5;

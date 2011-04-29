@@ -45,7 +45,7 @@ public abstract class StringArrayFilter implements Filter, VisibleCompositionDon
 	}
 
 	/**
-	 * Sets the Filter to accept all compositions, , even if it is not accepted by the Filters actual algorithm.
+	 * Sets the Filter to accept all compositions, even if it is not accepted by the Filters actual algorithm.
 	 */
 	public void setAcceptAll(boolean acceptAll) {
 		this.acceptAll = acceptAll;
