@@ -20,6 +20,12 @@ public class PreferenceKeys {
 
 	public static final String LIBRARY_FOLDER = "libraryFolder";
 	
+	public static final String TABLE_SETTINGS = "tableSettings";
+	
+	public static final String WINDOW_WIDTH = "browserWindowWidth";
+	
+	public static final String WINDOW_HEIGHT= "browserWindowHeight";
+	
 	/*private static HashMap<String, String> deprecatedMap = new HashMap<String,String>();
 	static {
 		deprecatedMap.put(DeprecatedKeys.TABLA_FOLDER, LIBRARY_FOLDER);

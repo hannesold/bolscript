@@ -42,6 +42,8 @@ public class UserConfig {
 	public static boolean firstRun = true;
 	public static boolean hasChosenLibraryFolderThisRun = false;
 	
+	public static String tableSettingsAsXml = null;
+	
 	public UserConfig() {
 	}
 	
@@ -71,6 +73,16 @@ public class UserConfig {
 		preferences.putFloat(	STD_FONT_SIZE_INCREASE, stdFontSizeIncrease);
 		preferences.putInt(		STANDARD_LANGUAGE, 		standardLanguage);
 		
+		TableDisplaySettings tablesettings = GuiConfig.getCurrentTableDisplaySettings();
+		if (tablesettings != null) {
+			try {				
+				String xml = tablesettings.ToXml();
+				preferences.put(PreferenceKeys.TABLE_SETTINGS, xml);
+				tableSettingsAsXml = xml;
+			} catch(Exception ex){
+				Debug.debug(UserConfig.class, "Could not serialize comp-table display settings for storage in preferences");
+			}			
+		}
 		
 		//Debug.debug(Config.class, "storing properties under : " + new File(propertiesFilename).getAbsoluteFile());
 		try {
@@ -123,6 +135,10 @@ public class UserConfig {
 			standardLanguage 	= Tools.assure(0, 
 					preferences.getInt(STANDARD_LANGUAGE, BolName.SIMPLE), 
 					BolName.languagesCount);
+			
+			
+			tableSettingsAsXml = preferences.get(PreferenceKeys.TABLE_SETTINGS, null); 
+			
 		} catch (Exception e) {
 			Debug.critical(Config.class, "Preferences could not be loaded " + e);
 			failed = false;
@@ -131,6 +147,7 @@ public class UserConfig {
 		return failed;
 	}
 
+	
 	public static void setPdfExportPath(String folder) {
 		pdfExportPath = folder;
 	}

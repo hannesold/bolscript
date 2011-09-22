@@ -22,7 +22,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Graphics2D;
-import java.awt.Insets;
+import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -212,6 +212,15 @@ public class CompositionPanel extends JLayeredPane {
 	}
 
 
+	public void unhighlightAllBolPanels() {
+		for (Packet p: packetMap.keySet()) {
+			if (p.getType() == PacketTypeDefinitions.BOLS) {
+				SequencePanel sp = (SequencePanel) packetMap.get(p);
+				sp.unhighlightAllBols();
+			}
+		}
+	}
+	
 	/**
 	 * <p>Initializes the actions that are attached to this composition panel.</p>
 	 * <p>Font size increase/decrease, Bundling, language choosing etc.</p>
@@ -421,11 +430,7 @@ public class CompositionPanel extends JLayeredPane {
 						seq = ((RepresentableSequence) p.getObject())
 						.flatten()
 						.getBundled(bundlingMap,bundlingDepth, true);
-						/*}old parsemode: {
-							seq = ((RepresentableSequence) p.getObject()).getBundled(bundlingMap,bundlingDepth, true);
-						}*/
-
-
+						
 						SequencePanel sequencePanel = new SequencePanel(seq, tal, sequenceDimension, 0,"",0, language, GuiConfig.bolFontSizeStd[language] + fontSizeIncrease, p, unitPanelListener );
 
 						addLineBreak(new Float(newHeight), PageBreakPanel.LOW);
@@ -446,7 +451,6 @@ public class CompositionPanel extends JLayeredPane {
 			components.add((JComponent) Box.createRigidArea(new Dimension(10,40)));
 			addLineBreak(new Float(newHeight), PageBreakPanel.LOW);
 			newHeight += components.get(components.size()-1).getPreferredSize().height;
-
 		}
 
 		Dimension newSize = new Dimension(newWidth, newHeight);
@@ -508,7 +512,7 @@ public class CompositionPanel extends JLayeredPane {
 		float exactness = 3;
 
 		for (int j=0; j < pageBreaksFloat.size()-1; j++) {
-			pageBreakPanels.get(j).setActive(false, -1);
+			pageBreakPanels.get(j).setActive(false, j-1);
 		}
 		
 		while (spaceLeftInPdf>exactness && counter < 100) {
@@ -517,7 +521,7 @@ public class CompositionPanel extends JLayeredPane {
 			float previousLastPos = lastPositionOnPage;
 			lastPositionOnPage += pdfMap.getInnerPdfPageHeight();
 
-			//TODO clean up this mess need clear seperation of pagebreaksfloat and gui
+			//TODO clean up this mess: need clear seperation of pagebreaksfloat and gui
 			//find closest lineBreak (max deviation 50)
 			int i;
 			
@@ -576,13 +580,16 @@ public class CompositionPanel extends JLayeredPane {
 			contentPanel.setBackground(Color.WHITE);
 			Border backupBorder = contentPanel.getBorder();
 			contentPanel.setBorder(null);
-			//TODO
-			//highlightPacketNow(null);
+			
+			//remove all highlightings
+			highlightPacketNow(null);
+			unhighlightAllBolPanels();
+			
 			contentPanel.setOpaque(false);
-
 			metaPanel.setVisible(false);
 			
 			Debug.temporary(this, "compPanel createPDF started");
+			
 			// step 1: creation of a document-object
 			Document document = new Document();
 			try {
@@ -890,10 +897,20 @@ public class CompositionPanel extends JLayeredPane {
 	}
 
 	private void resizeCompositionFrame(int newRenderingWidth) {
-		int newFrameWidth = Math.max(0,compositionFrame.getSize().width - renderingWidth) 
+		int frameWidthBefore = compositionFrame.getWidth();
+		int newFrameWidth = Math.max(50,compositionFrame.getSize().width - renderingWidth) 
 		+ newRenderingWidth
-		+ GuiConfig.compositionPanelMarginSide*2;			
+		+ GuiConfig.compositionPanelMarginSide*2;
+		
 		compositionFrame.setSize( newFrameWidth, compositionFrame.getSize().height);
+		if (newFrameWidth> GuiConfig.getScreenSize().width) {
+			compositionFrame.setLocation(new Point(0, compositionFrame.getLocation().y));
+		} else {
+			int x = Math.max(0, 
+						Math.min(compositionFrame.getLocation().x - ((newFrameWidth-frameWidthBefore)/2),
+								GuiConfig.getScreenSize().width-newFrameWidth));
+			compositionFrame.setLocation(new Point(x, compositionFrame.getLocation().y));
+		}
 	}
 
 	public void resetFontSize() {

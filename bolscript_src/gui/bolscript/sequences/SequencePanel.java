@@ -92,6 +92,8 @@ public class SequencePanel extends HighlightablePanel  {
 
 	protected UnitPanelListener unitPanelListener;
 
+	public BolPanelGeneral currentlyHighlightedBolPanel = null;
+	
 	public SequencePanel(RepresentableSequence sequence, Tal tal, Dimension size, int minRows, String fixedLargestWidthBol, int fixedMaxSpeed, int language, float fontSize, Packet containingPacket, UnitPanelListener unitPanelListener) {
 		super();
 		this.setLayout(null);
@@ -131,9 +133,18 @@ public class SequencePanel extends HighlightablePanel  {
 					BolBundle bundlePanel = ((BolBundlePanel) e.getSource()).getBolBundle();
 					dispatchUnitClick(bundlePanel);
 				}
-
-
 			}
+			@Override
+			public void mouseEntered(MouseEvent arg0) {		
+				if (BolPanel.class.isInstance(arg0.getSource())) {
+					currentlyHighlightedBolPanel = (BolPanel) arg0.getSource();
+				}
+			}
+			@Override
+			public void mouseExited(MouseEvent arg0) {		
+				currentlyHighlightedBolPanel = null;
+			}
+			
 		};
 		render();
 	}
@@ -509,4 +520,9 @@ public class SequencePanel extends HighlightablePanel  {
 		return lineBreaks;
 	}
 
+	public void unhighlightAllBols() {		
+		if (currentlyHighlightedBolPanel != null) {
+			currentlyHighlightedBolPanel.normalDisplay();
+		}
+	}
 }

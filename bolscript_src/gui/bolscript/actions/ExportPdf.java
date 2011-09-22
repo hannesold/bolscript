@@ -10,6 +10,7 @@ import javax.swing.AbstractAction;
 
 import basics.Debug;
 import basics.SuffixFilter;
+import bolscript.Master;
 import bolscript.compositions.Composition;
 import bolscript.compositions.CompositionBase;
 import bolscript.config.Config;
@@ -56,10 +57,12 @@ public class ExportPdf extends AbstractAction {
 			
 			Debug.debug(this, "Export Pdf As : " + filename);
 			
-			this.compFrame.createPdf(filename, false);
+			this.compFrame.createPdf(filename, false);			
 			
 			// remember export path
 			UserConfig.setPdfExportPath(fileDialog.getDirectory());
+			
+			Master.master.revealFileInOSFileManager(filename);
 		} else {
 			// was cancelled
 		}

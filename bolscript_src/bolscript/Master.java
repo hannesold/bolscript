@@ -64,24 +64,18 @@ import bolscript.scanner.Parser;
 public class Master implements ConfigChangeListener{//implements ApplicationListener{//extends JFrame implements WindowListener {
 
 	public static Master master;
-
 	protected static boolean runningAsMacApplication;
-
-	//public static Application application;
 
 	CompositionBase compositionBase;
 	CompositionTableModel compTableModel;
-
 	ArrayList<EditorFrame> editors;
 	BrowserFrame browserFrame;
 	BolBaseFrame bolBaseFrame;
-
 	UpdateFrame updateFrame;
-
 	PreferencesDialog prefsDialog;
-
 	CompositionPanel compositionPanel;
 	ArrayList<CompositionFrame> compositionFrames;
+
 	private FilterPanel filterPanel;
 	private SearchPanel searchPanel;
 
@@ -180,10 +174,7 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 				e1.printStackTrace();
 			}*/
 
-
 		prefsDialog = new PreferencesDialog();
-
-
 
 		EventQueue.invokeLater(new Runnable() { public void run() {
 			if (UserConfig.firstRun) {
@@ -191,13 +182,6 @@ public class Master implements ConfigChangeListener{//implements ApplicationList
 				prefsDialog.setModal(true);
 				GuiConfig.setVisibleAndAdaptFrameLocation(prefsDialog);
 			}
-
-
-
-
-
-
-
 			showLoadingframeThenLoad();
 		}});
 	}
