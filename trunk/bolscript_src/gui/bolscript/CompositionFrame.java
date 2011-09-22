@@ -136,7 +136,7 @@ public class CompositionFrame extends JFrame implements WindowListener, Composit
 		 * @param filename TODO
 		 */
 		public void createPdf(String filename, boolean shapes) {
-		 compositionPanel.createPdf(filename, shapes, true);
+			compositionPanel.createPdf(filename, shapes, true);
 		}
 
 		public void showLater() {

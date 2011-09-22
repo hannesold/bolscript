@@ -18,6 +18,8 @@ import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
@@ -40,6 +42,8 @@ import basics.Debug;
 import bolscript.Master;
 import bolscript.config.Config;
 import bolscript.config.GuiConfig;
+import bolscript.config.PreferenceKeys;
+import bolscript.config.UserConfig;
 
 public class BrowserFrame extends JFrame implements WindowListener,
 		DropTargetListener {
@@ -83,6 +87,33 @@ public class BrowserFrame extends JFrame implements WindowListener,
 		this.pack();
 		this.setSize(size);
 		this.addWindowListener(this);
+		this.addComponentListener(new ComponentListener() {
+			
+			@Override
+			public void componentShown(ComponentEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void componentResized(ComponentEvent arg0) {
+				UserConfig.preferences.putInt(PreferenceKeys.WINDOW_WIDTH, ((JFrame) arg0.getSource()).getSize().width);
+				UserConfig.preferences.putInt(PreferenceKeys.WINDOW_HEIGHT, ((JFrame) arg0.getSource()).getSize().height);
+				
+			}
+			
+			@Override
+			public void componentMoved(ComponentEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void componentHidden(ComponentEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
 		this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
 	}

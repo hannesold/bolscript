@@ -1,9 +1,14 @@
 package gui.bolscript.tables;
 
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
 
 import javax.swing.table.AbstractTableModel;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Unmarshaller;
+
+import org.xml.sax.InputSource;
 
 import basics.Debug;
 import bolscript.compositions.Composition;
@@ -13,6 +18,7 @@ import bolscript.compositions.CompositionBaseListener;
 import bolscript.compositions.CompositionChangeEvent;
 import bolscript.compositions.CompositionChangedListener;
 import bolscript.compositions.DataState;
+import bolscript.config.TableDisplaySettings;
 import bolscript.packets.types.PacketType;
 import bolscript.packets.types.PacketTypeDefinitions;
 
@@ -122,5 +128,6 @@ public class CompositionTableModel extends AbstractTableModel implements Composi
 	}
 	
 	
-
+	
+	
 }

@@ -22,10 +22,14 @@ import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 
+import com.sun.security.auth.UserPrincipal;
+
 import basics.Debug;
 import bols.BolName;
 import bols.tals.Vibhag;
 import bolscript.config.Config.OperatingSystems;
+import bolscript.config.TableDisplaySettings;
+import bolscript.config.TableDisplaySetting;
 
 /**
  * A class for storing the gui configuration
@@ -126,10 +130,17 @@ public class GuiConfig {
 	}
 
 	public static Dimension getBrowserFrameDimension() {
-		return limitByScreen(400,800,0.5,1);
+		return limitByScreen(UserConfig.preferences.getInt(PreferenceKeys.WINDOW_WIDTH, 400), UserConfig.preferences.getInt(PreferenceKeys.WINDOW_HEIGHT,800),
+				0.5,1);
 	}
 	public static Dimension getCompositionViewerSize() {
-		return limitByScreen(600,700,0.5,1);
+		
+		if (getScreenSize().width > 1400) {
+			return limitByScreen(700,700,0.5,1);
+		} else {
+			return limitByScreen(600,700,0.5,1);
+		}
+		
 	}
 	public static Dimension getEditorSize() {
 		return limitByScreen(410,700,0.5,1);
@@ -268,8 +279,29 @@ public class GuiConfig {
 	static Image windowsFrameIcon;
 
 
-
-
+	private static TableDisplaySettings currentTableDisplaySettings = null;//new TableDisplaySettings();	
+	
+	public static TableDisplaySettings initTableDisplaySettings(JTable table) {
+		if (currentTableDisplaySettings ==null) {
+			currentTableDisplaySettings = new TableDisplaySettings(table);
+			currentTableDisplaySettings.initFromTable(table);
+			String tableSettingsLoadedFromPrefs = UserConfig.tableSettingsAsXml;
+			if (tableSettingsLoadedFromPrefs != null) {
+				try {
+					TableDisplaySettings fromPrefs = TableDisplaySettings.FromXml(tableSettingsLoadedFromPrefs);
+					currentTableDisplaySettings.CopyValues(fromPrefs);
+				} catch (Exception ex) {
+					Debug.debug(GuiConfig.class, "no table display settings found loaded from preferences");
+				}
+			}	
+		}
+		return currentTableDisplaySettings;
+	}
+	
+	public static TableDisplaySettings getCurrentTableDisplaySettings() {
+		return currentTableDisplaySettings;
+	}
+	
 	public static Image getWindowsFrameIcon() {
 		if (windowsFrameIcon==null) {
 			URL url = Config.class.getResource("/bolscript-logo-32x32.png");
@@ -303,6 +335,10 @@ public class GuiConfig {
 		return p;
 	}
 
+	public static Dimension getScreenSize(){
+		return Toolkit.getDefaultToolkit().getScreenSize();
+	}
+	
 	private static void adaptNewFrameLocation(Component comp) {
 		comp.setLocation(adaptNewFrameLocation(comp.getLocation()));		
 	}

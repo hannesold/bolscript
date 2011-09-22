@@ -14,6 +14,8 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -32,13 +34,20 @@ import javax.swing.RowSorter;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SortOrder;
 import javax.swing.TransferHandler;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.RowSorterEvent;
+import javax.swing.event.RowSorterListener;
+import javax.swing.event.TableColumnModelEvent;
+import javax.swing.event.TableColumnModelListener;
 import javax.swing.table.TableRowSorter;
 
-import basics.GUI;
+import basics.Debug;
 import bolscript.Master;
 import bolscript.compositions.Composition;
 import bolscript.config.Config;
 import bolscript.config.GuiConfig;
+import bolscript.config.TableDisplaySettings;
 
 public class CompositionListPanel extends JScrollPane  {
 
@@ -158,7 +167,6 @@ public class CompositionListPanel extends JScrollPane  {
     }
 	JTable compositionTable = null;
 	CompositionTableModel tableModel = null;
-
 	
 	public CompositionListPanel(CompositionTableModel model) {
 		super(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
@@ -169,6 +177,8 @@ public class CompositionListPanel extends JScrollPane  {
 		compositionTable.setDefaultRenderer(Object.class, new CellRenderer(true));
 		
 		compositionTable.setBackground(Color.white);
+		
+		
 		compositionTable.getColumnModel().getColumn(0).setMaxWidth(20);
 		compositionTable.getColumnModel().getColumn(1).setMinWidth(140);
 		compositionTable.getColumnModel().getColumn(2).setMinWidth(90);
@@ -192,6 +202,23 @@ public class CompositionListPanel extends JScrollPane  {
 		//compositionTable.setPreferredScrollableViewportSize(new Dimension(1000,500));
 		//compositionTable.setPreferredSize(new Dimension(1000,500));
 		compositionTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		
+		//set Rowsorters
+		RowSorter<CompositionTableModel> sorter = new TableRowSorter<CompositionTableModel>(model);
+		List <RowSorter.SortKey> sortKeys = new ArrayList<RowSorter.SortKey>();
+		for (int i = 1; i < model.getColumnCount(); i++) {
+			sortKeys.add(new RowSorter.SortKey(i, SortOrder.ASCENDING));
+		}
+		sorter.setSortKeys(sortKeys); 
+		
+		compositionTable.setRowSorter(sorter);
+		compositionTable.getRowSorter().toggleSortOrder(initialSortColumn);
+		compositionTable.getRowSorter().toggleSortOrder(initialSortColumn);
+		
+		TableDisplaySettings tableSettings = GuiConfig.initTableDisplaySettings(compositionTable);
+		tableSettings.copySettingsToTable(compositionTable);
+		
+		sorter.addRowSorterListener(tableSettings);
 		
 		compositionTable.addMouseListener(new MouseAdapter()
 		{
@@ -240,23 +267,54 @@ public class CompositionListPanel extends JScrollPane  {
 			}
 
 		});
-
-
-
-		//set Rowsorters
-		RowSorter<CompositionTableModel> sorter = new TableRowSorter<CompositionTableModel>(model);
-		List <RowSorter.SortKey> sortKeys = new ArrayList<RowSorter.SortKey>();
-		for (int i = 1; i < model.getColumnCount(); i++) {
-			sortKeys.add(new RowSorter.SortKey(i, SortOrder.ASCENDING));
-		}
-		sorter.setSortKeys(sortKeys); 
+		compositionTable.addPropertyChangeListener(new PropertyChangeListener() {
+			
+			@Override
+			public void propertyChange(PropertyChangeEvent arg0) {
+				// TODO Auto-generated method stub
+				
+				Debug.debug(this,  arg0.getPropertyName() + ": " + arg0.getNewValue() + " (before: " + arg0.getOldValue()+")");
+			}
+		});
+		compositionTable.getColumnModel().addColumnModelListener(new TableColumnModelListener() {
+			
+			@Override
+			public void columnSelectionChanged(ListSelectionEvent arg0) {
+				// TODO Auto-generated method stub
+				Debug.debug(this, "column selection changed, now: "+ arg0.getFirstIndex()+"-"+arg0.getLastIndex());
+			}
+			
+			@Override
+			public void columnRemoved(TableColumnModelEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void columnMoved(TableColumnModelEvent arg0) {
+				// TODO Auto-generated method stub
+				//Debug.debug(this, "column moved: " + arg0.getFromIndex() + " to " + arg0.getToIndex());
+				if (arg0.getFromIndex() != arg0.getToIndex()) {
+					GuiConfig.getCurrentTableDisplaySettings().addColumnMoveProtocol(arg0.getFromIndex(), arg0.getToIndex());
+					Debug.debug(this,"column move protocolled from " + arg0.getFromIndex() + " to " + arg0.getToIndex());
+				}
+			}
+			
+			@Override
+			public void columnMarginChanged(ChangeEvent arg0) {
+				// TODO Auto-generated method stub				
+				Debug.debug(this, "margin changed: " + arg0.toString());
+				GuiConfig.getCurrentTableDisplaySettings().initFromTable();
+				Debug.debug(this, "rewritten table display settings in guiconfig");
+			}
+			
+			@Override
+			public void columnAdded(TableColumnModelEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
 		
-
-
-		//= new Def
-		compositionTable.setRowSorter(sorter);
-		compositionTable.getRowSorter().toggleSortOrder(initialSortColumn);
-		compositionTable.getRowSorter().toggleSortOrder(initialSortColumn);
 		
 		this.setViewportView(compositionTable);
 		this.getViewport().setBackground(Color.white);
@@ -266,11 +324,18 @@ public class CompositionListPanel extends JScrollPane  {
 
 
 		this.setOpaque(false);
-
-		//this.addMouseListener(this);
-
 	}
 
+	public class listener implements PropertyChangeListener {
+
+		@Override
+		public void propertyChange(PropertyChangeEvent arg0) {
+			// TODO Auto-generated method stub
+			Debug.debug(this, arg0);
+		}
+		
+	}
+	
 	public JPopupMenu getPopupMenu(Composition comp) {
 		JPopupMenu popupMenu = new JPopupMenu();
 		JMenuItem open = new JMenuItem(new OpenComposition(comp));
