@@ -208,6 +208,7 @@ public abstract class BolBaseGeneral {
 
 	public void addReplacementPacket(String key, String val, BolNameBundle bolNameBundle) {
 		Packet replacementPacket = new Packet(key, val, PacketTypeDefinitions.BOLS, false);
+		replacementPacket.setExcludedFromSearch(true);
 		replacementPacket.setObject(bolNameBundle);
 		standardReplacements.add(replacementPacket);
 	}

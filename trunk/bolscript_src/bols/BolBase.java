@@ -1,23 +1,29 @@
 package bols;
 
+import static bolscript.sequences.Representable.BOL_CANDIDATE;
+import static bolscript.sequences.Representable.SPEED;
+import static bolscript.sequences.Representable.WHITESPACES;
 import gui.bolscript.tasks.Task;
-import gui.bolscript.tasks.Task.TaskException;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.sun.tools.internal.xjc.Language;
+
 import basics.Debug;
 import basics.FileManager;
 import basics.FileReadException;
-import basics.Rational;
 import basics.Tools;
-import bols.BolName.CaseSensitivityModes;
 import bolscript.config.Config;
 import bolscript.scanner.Parser;
+import bolscript.scanner.SequenceScannerPublic;
+import bolscript.scanner.SequenceToken;
+import bolscript.sequences.Representable;
 
 
 public class BolBase extends BolBaseGeneral {
@@ -30,7 +36,7 @@ public class BolBase extends BolBaseGeneral {
 	private class PotentialBundle {
 		String[] labels;
 		String description;
-		ArrayList<String> bolNameStrings;
+		ArrayList<SequenceToken> bolNameStrings;
 	}
 
 	private class PotentialCombinedBolName {
@@ -226,11 +232,7 @@ public class BolBase extends BolBaseGeneral {
 									potentialBundle.labels = entries;
 									potentialBundle.description = description;
 									
-									Matcher m = bundlePattern.matcher(typeField);
-									potentialBundle.bolNameStrings = new ArrayList<String>();
-									while (m.find()) {
-										potentialBundle.bolNameStrings.add(m.group(0));							
-									}
+									potentialBundle.bolNameStrings = parseBundleUnits(typeField);
 
 									potentialBundles.add(potentialBundle);
 								}
@@ -269,9 +271,45 @@ public class BolBase extends BolBaseGeneral {
 			//potentialBundleLabels.add(names);
 			//potentialBundleDescriptions.add(description);
 			//potentialBundles.add(currentBundle);
+			
+			if (potBundle.bolNameStrings.size() > 0) {
+			boolean allUsedBolnamesExist = true;
+			ArrayList<BolName> currentBundlesBolNames = new ArrayList<BolName>();
+			
+			ArrayList<String> bundleUnits = new ArrayList<String>();
+			StringBuilder builder = new StringBuilder();
+			int b = 0;
+			for (SequenceToken token : potBundle.bolNameStrings) {
+				boolean failed = false;
+				builder.append(" ");
+				if (token.type == BOL_CANDIDATE) {
+					BolName bn = getBolName(token.text);
+					if (bn == null) {
+						allUsedBolnamesExist = false;
+						break;
+					} else {
+						currentBundlesBolNames.add(bn);						
+					}
+					builder.append(bn.getName(BolName.EXACT));
+				} else {
+					builder.append(token.text);
+				}
+			} 
+			if (allUsedBolnamesExist) {
+				BolName[] currentArray = new BolName[currentBundlesBolNames.size()]; 
+				currentArray = currentBundlesBolNames.toArray(currentArray);
+				BolNameBundle bundle = new BolNameBundle(currentArray, potBundle.labels);
+				bundle.setDescription(potBundle.description);
 
-			//the first entry must be a number
-			if (potBundle.bolNameStrings.size() > 1) {
+				standardBolNameBundles.add(bundle);
+				//addBolNameBundle(bundle);
+				//Debug.temporary(this, "setting replacement bundle name to '" + bundle.getName(BolName.EXACT).replaceAll(Reader.SNatBeginningOrEnd,"") +"'");
+				addReplacementPacket(bundle.getName(BolName.EXACT), 
+						" (" + builder.toString() + " ) ", bundle);
+			}
+		}
+	
+			/*if (potBundle.bolNameStrings.size() > 1) {
 
 				Rational bundleSpeed = new Rational(1);
 				if (potBundle.bolNameStrings.get(0).matches("[0-9]+")) {
@@ -300,7 +338,7 @@ public class BolBase extends BolBaseGeneral {
 					addReplacementPacket(bundle.getName(BolName.EXACT), 
 							" ( " + bundleSpeed + "! " + bundle.getExactBolNames() + " ) ", bundle);
 				}
-			}
+			}*/
 		}
 		
 		// Assign case sensitivities...
@@ -308,6 +346,53 @@ public class BolBase extends BolBaseGeneral {
 		
 	}
 
+	public ArrayList<SequenceToken> parseBundleUnits(String input) {
+		ArrayList<SequenceToken> units = new ArrayList<SequenceToken>();
+	
+		SequenceScannerPublic scanner = new SequenceScannerPublic(input);
+		
+		int assumedTokenStartPosition = 0;		
+		SequenceToken token = null;
+		try {
+			token = scanner.nextToken();
+		} catch (IOException e) {
+			Debug.critical(this, "scanner threw an exception!");
+			e.printStackTrace();
+			return null;
+		}
+		
+		while (token != null) {
+			if (token.textReference.start() > assumedTokenStartPosition) {
+				SequenceToken failedToken = new SequenceToken(Representable.FAILED, 
+						input.substring(assumedTokenStartPosition, 
+										token.textReference.start()), 
+										assumedTokenStartPosition, 
+										token.textReference.line());				
+			} 
+			assumedTokenStartPosition = token.textReference.end();
+			
+			switch (token.type) {
+			case BOL_CANDIDATE:
+				units.add(token);
+				break;
+
+			case SPEED:
+				units.add(token);
+				break;
+				
+			default:
+			}
+
+			try {
+				token = scanner.nextToken();
+			} catch (IOException e) {
+				Debug.critical(this, "scanner threw an exception!");
+				e.printStackTrace();
+				return null;
+			}
+		}
+		return units;
+	}
 
 	/**
 	 * BolMaps are maps from one Bol to a Midinote, coordinates and a hand

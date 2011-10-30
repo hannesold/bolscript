@@ -72,10 +72,22 @@ public class Packet {
 	private TextReference textRefKey;
 	private TextReference textRefValue;
 	private boolean highlighted;
+	
+	private boolean excludedFromSearch;
+	
+	public boolean isExcludedFromSearch() {
+		return excludedFromSearch;
+	}
+
+	public void setExcludedFromSearch(boolean excludedFromSearch) {
+		this.excludedFromSearch = excludedFromSearch;
+	}
+
 	public Packet(String key, String value, int type, boolean visible) {
 		super();
 		this.key = key;
 		this.value = value;
+		this.excludedFromSearch = false;
 		setType(type);
 		this.visible = visible;
 		this.object = null;
@@ -85,12 +97,14 @@ public class Packet {
 		this.highlighted = false;
 		this.id = packetId++;
 		
+		
 	}
 	
 	public Packet(String key, String value, PacketType type, boolean visible) {
 		super();
 		this.key = key;
 		this.value = value;
+		this.excludedFromSearch = false;
 		this.packetType = type;
 		this.visible = visible;
 		this.object = null;

@@ -20,6 +20,7 @@ import basics.Debug;
 import basics.FileManager;
 import basics.FileReadException;
 import basics.Rational;
+import bols.BolBase;
 import bols.BolName;
 import bols.tals.Tal;
 import bols.tals.TalBase;
@@ -122,6 +123,7 @@ public class Composition implements DataStatePosessor{
 	 * @param file
 	 * @throws FileReadException
 	 */
+
 	public Composition(File file, TalBase talBase) throws FileReadException{
 		
 		String completeRawData = FileManager.getContents(file, Config.maxBolscriptFileSize, Config.compositionEncoding);
@@ -216,19 +218,30 @@ public class Composition implements DataStatePosessor{
 		if (editorPackets != null) {
 			//add bols to searchstring
 			for (Packet p: editorPackets) {
-				if (p.getType() == PacketTypeDefinitions.BOLS) {
+				if (p.getType() == PacketTypeDefinitions.BOLS &! p.isExcludedFromSearch()) {
 					
 					if (p.getObject() != null) {
-						RepresentableSequence r = (RepresentableSequence) p.getObject();
-						r = r.flatten(SpeedUnit.getDefaultSpeedUnit());
-						String exact = r.toString(RepresentableSequence.FOR_SEARCH_STRING, BolName.EXACT);
-						String simple = r.toString(RepresentableSequence.FOR_SEARCH_STRING, BolName.SIMPLE);
+						RepresentableSequence rep = (RepresentableSequence) p.getObject();
+						
+						//flattened
+						RepresentableSequence flat = rep.flatten(SpeedUnit.getDefaultSpeedUnit());
+						String exact = flat.toString(RepresentableSequence.FOR_SEARCH_STRING, BolName.EXACT);
+						String simple = flat.toString(RepresentableSequence.FOR_SEARCH_STRING, BolName.SIMPLE);
 						addSearchString(exact);
 						addSearchString(simple);
 						String exact_noPausesAndSoOn = exact.replaceAll("( -)|( -)", "");
 						String simple_noPausesAndSoOn = exact.replaceAll("-", "");
 						addSearchString(exact_noPausesAndSoOn);
 						addSearchString(simple_noPausesAndSoOn);
+						
+						//unflattened
+						addSearchString(rep.toString(RepresentableSequence.FOR_SEARCH_STRING, BolName.EXACT));
+						addSearchString(rep.toString(RepresentableSequence.FOR_SEARCH_STRING, BolName.SIMPLE));
+						addSearchString(rep.toString(RepresentableSequence.FOR_SEARCH_STRING_NO_PAUSES, BolName.SIMPLE));
+						addSearchString(rep.toString(RepresentableSequence.FOR_SEARCH_STRING_NO_PAUSES, BolName.EXACT));
+						
+						addSearchString(p.getValue());
+						
 					}
 				}
 
@@ -328,7 +341,8 @@ public class Composition implements DataStatePosessor{
 			PacketType packetType = packets.get(i).getPType();
 			int type = packetType.getId();
 
-			if (type != PacketTypeDefinitions.FAILED) metaValues.addString(KEYS, p.getKey());
+			//if (type != PacketTypeDefinitions.FAILED &&
+					
 
 			if (obj!=null) {
 
@@ -350,6 +364,11 @@ public class Composition implements DataStatePosessor{
 					break;
 
 				case PacketTypeDefinitions.BOLS:	
+					
+					if (!p.isExcludedFromSearch()) {
+						metaValues.addString(KEYS, p.getKey());
+					}
+					
 					RepresentableSequence seq = ((RepresentableSequence) obj);
 					RepresentableSequence flat = seq.flatten();
 					

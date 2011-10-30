@@ -210,8 +210,8 @@ public class SequenceParser {
 				SequenceToken failedToken = new SequenceToken(Representable.FAILED, 
 						input.substring(assumedTokenStartPosition, 
 										token.textReference.start()), 
-									assumedTokenStartPosition, 
-								token.textReference.line());
+										assumedTokenStartPosition, 
+										token.textReference.line());
 				seq.add(new FailedUnit(failedToken, "Could not be parsed."));
 				//}
 				
