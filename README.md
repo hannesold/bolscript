@@ -14,10 +14,10 @@ I would greatly appreciate any developer who wants to contribute, take over the 
 Just write me an email to [bolscript@gmail.com](mailto:bolscript@gmail.com)
 
 ## Install on Windows ##
-[Download](http://code.google.com/p/bolscript/downloads/list), Unzip, then move the .exe and the .jar file anywhere you like, for example to c:\programs\bolscript\ or so. Start the program by double clicking the .exe. If you want to have a link to the program on your desktop or in your startmenu you will have to add it manually. _I have tested it on Win XP and Win 7_
+[Download v0.3](http://oudbrothers.de/bolscript/releases/Bolscript%20for%20Windows%20v0.3%20(2499).zip), Unzip, then move the .exe and the .jar file anywhere you like, for example to c:\programs\bolscript\ or so. Start the program by double clicking the .exe. If you want to have a link to the program on your desktop or in your startmenu you will have to add it manually. _I have tested it on Win XP and Win 7_
 
 ## Install on Mac ##
-[Download](http://code.google.com/p/bolscript/downloads/list), open the dmg and drag the Bolscript.app application in your applications folder. _I have tested it from Mac OS X 10.6 and 10.10_
+[Download v0.3](http://oudbrothers.de/bolscript/releases/Bolscript%20for%20Mac%20v0.3%20(2499).dmg.zip), open the dmg and drag the Bolscript.app application in your applications folder. _I have tested it from Mac OS X 10.6 up to Yosemite 10.10_
 
 ## Install on Linux ##
 You can download the windows version and forget about the .exe. Launch the jar in some way (java -jar bolscript.jar...).
