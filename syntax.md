@@ -1,0 +1,39 @@
+## General structure ##
+Each composition is kept in one bolscript file with the file ending `.bols.txt`, with the only exception being tals, which need to have the ending `.tal.bols.txt`.
+
+## Key / Value pairs ##
+Each bolscript file is made up of key/value packets of the form
+`Key: Value`
+The program knows certain keys:
+  * Editor - the name of the editor of this file
+  * Editors - the names, if there is more than one editor
+  * Gharana - the name of the gharana of
+  * Gharanas - a comma seperated list of gharanas
+  * Name - a name for the composition, if no name is entered, bolscript attempts to generate one
+  * Tal - Set a tal for the upcoming parts of the composition (Example Tal: Teental). Note that only Tals found amoung your tabla folder will be correctly interpretable by bolscript.
+  * Type - the composition type, for example Kaida, Tukra, Rela, ...
+  * Types - a list of one or more comma seperated types
+  * Comment - A Comment which will be displayed in the composition viewer
+  * $Comment - A hidden comment.
+  * Speed - this is the general speed in number of bols per beat (matra)
+Some special keys are reserved for defining tals:
+  * Layout
+  * Length
+  * Vibhags
+You can use _any other key_, such as `Theme`, `Variation 1` or `A` or `Tihai` to begin a bol sequence.
+
+# Entering bol sequences #
+## Exampe 1 - entering bolsequences ##
+```
+My first sequence:
+dha dhin dhin dha dha dhin dhin dha dha tin tin na na dhin dhin dha
+
+A: dha ge ti te
+$B: na ge dhin ne
+
+An example of reusing sequences:
+A A B B
+
+```
+
+Note that, because of the leading $, B is not displayed in composition viewer as a sequence of its own.

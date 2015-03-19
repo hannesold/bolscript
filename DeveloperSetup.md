@@ -1,0 +1,54 @@
+# Overview - Bolscript and Gat #
+
+Note that two projects are included.
+## Bolscript - tabla notation and composition management ##
+This is the program, for which I installed this google code site, it should be the focus of your attention. The bolscript source folders are bolscript\_src and bolscript\_tests and they are independent of the other group called gat.
+Main class is `bolscript/Master` or `bolscript/MasterMac` for OS X
+## Gat - genetic algorithm tabla composition program for kaidas ##
+A project I started 2006 in my bachelor report and haven't updated much since then. Gat uses a lot of bolscripts classes. I want to have it in here so it keeps working when refactorings in bolscript are done. Main class is `managing/Manager`.
+For details see [gat](gat.md).
+
+# Developer setup #
+## Requirements ##
+  * Make sure you have the Java 1.6 JDK or higher.
+  * As an IDE I use eclipse with subclipse plugin for svn support.
+## Svn checkout and eclipse project ##
+  1. Checkout trunk using `svn checkout https://bolscript.googlecode.com/svn/trunk/ bolscript --username your.name` . Move the trunk folder into your eclipse workspace and rename it to bolscript or whatever.
+  1. In eclipse create a new Java Project, select _create from existing source_ and select the folder.
+  1. Go to preferences->team->ignored resources and add .project, .classpath, settings.xml, or deselect them at each commit.
+  1. In project preferences make sure the source folders are ´bolscript\_src´, ´bolscript\_tests´, ´gat\_src´, ´gat\_tests´.
+  1. Assign ´bin´ as output folder for bolscript\_src, <b>provide other output folders for the other three source folders!</b>This is because the ant script (see below) includes everything from the bin folder in the jars for distribution, and only bolscript (not gat and tests) shall be included.
+## Required libraries ##
+In the project preferences add links to the following libraries:
+  * junit 4 - this is part of the jdk
+  * itext - this is used for pdf export. Download the itext core jar from http://www.lowagie.com/iText/ <b>Note: I added itext to the lib folder included in the svn</b>. I did this, so I could process it in the bolscript Ant build.xml without referring to system specific external paths.
+  * swixml - this is not used in bolscript, but in gat. Get a jar at http://www.swixml.org/.
+I have an additional folder 3dparty, where I save this kind of stuff.
+
+# Building Bolscript #
+## Java building ##
+Choose 1.6 as Java compiler in your eclipse or project settings.
+
+## Preparing Ant for mac os x application bundles ##
+Ant is included in eclipse, however we need an additional ant library:
+Download [jarbundler](http://sourceforge.net/projects/jarbundler/) and place the jarbundler.jar somewhere, I chose my 3dparty project folder. Go to Eclipse preferences->Ant->Runtime->add external jars. Jarbundler provides an ant task for building application bundles, and this is used in the build.xml.
+
+## Adding the ant builder to the project ##
+Go to Project preferences, add an Ant Builder to your project builders, choose build.xml. Go to targets and include
+create\_applicationbundle\_for\_mac, create\_jar\_for\_pc targets at "After a 'Clean'",
+and clean\_all at "During a 'Clean'".
+<b>The full ant building process will be triggered if you do Project->Clean...</b>
+
+### The ant script build.xml builds: ###
+  * A resources.zip including the default tablafolder and the bolscript icon as png.
+  * A jar bundle for mac using MasterMac as main class.
+  * A jar bundle for any system using Master as main class.
+  * An application bundle for mac os x using a Jarbundler task.
+Note that the jar bundles contain all classes from the bin folder, where only the compiled bolscript (not the gat) classes are kept.
+
+# Running bolscript from eclipse #
+  1. Run `bolscript/Master` or `bolscript/MasterMac` (OS X) as a Java Program.
+  1. Copy the `resources/tablafolder_default` somewhere on your system, and choose it as tabla folder when first running bolscript, or: choose a new folder and bolscript will extract the default contents there from the jar. <b>The ant build process has to be run at least once for this to work.</b> This is because bolscript uses either the resources.zip from within builds/bolscript.jar or from within the jar from which it is run, if this is the case.
+
+# Running bolscript from jar or Bolscript.app OS x application bundle #
+When you have completed the ant build process or downloaded a version from google code you can simply double click one of the jars or the application bundle and it should run.
